@@ -8,3 +8,14 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFStarterRoster",AssetBaseClass="/Script/DigimonMMOFramework.DMFStarterRosterData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFDigimonAbility",AssetBaseClass="/Script/DigimonMMOFramework.DMFDigimonAbilityData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
+
+
+; v0.8.0 Care defaults. Asset references can be assigned more safely in Project Settings.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnableCareSystem=True
+CareServerTickInterval=10.0
+CarePresentationLeadInSeconds=0.35
+CareInterServingPauseSeconds=0.20
+CareFallbackMontageDurationSeconds=1.0
+; DefaultDigiMeatMesh=/Game/...
+; DefaultPooMesh=/Game/...

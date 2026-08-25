@@ -6,6 +6,7 @@
 #include "DMFPlayerDigimonComponent.generated.h"
 
 class ADMFDigimonCharacter;
+class ADMFDigimonCarePropActor;
 class ADMFPlayerState;
 class UDMFDigimonCombatComponent;
 class UDMFDigimonSpeciesData;
@@ -22,6 +23,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFPartyHealed, int32, DigimonHeale
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFScanDataChanged, FPrimaryAssetId, SpeciesId, float, ScanPercent, bool, bMaterializationReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFScanDataRewardGranted, FPrimaryAssetId, SpeciesId, float, AddedPercent, float, NewPercent, bool, bMaterializationReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFMaterializationResult, bool, bSuccess, FText, Message, FPrimaryAssetId, SpeciesId, FGuid, NewDigimonInstanceId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFCareStateChanged, FGuid, DigimonInstanceId, FDMFDigimonCareState, CareState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFCareSequenceStarted, FGuid, DigimonInstanceId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFCareSequenceFinished, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId);
 
 UCLASS(ClassGroup=(DigimonMMO), meta=(BlueprintSpawnableComponent))
 class DIGIMONMMOFRAMEWORK_API UDMFPlayerDigimonComponent : public UActorComponent
@@ -71,6 +75,17 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Scan & Materialization")
     FDMFMaterializationResult OnMaterializationResult;
 
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Care")
+    FDMFCareStateChanged OnCareStateChanged;
+
+    /** Owner-only presentation event. The controller hides the Digimon menu before the first eating Montage. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Care")
+    FDMFCareSequenceStarted OnCareSequenceStarted;
+
+    /** Owner-only result. Successful sequences reopen the shared menu directly on CARE. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Care")
+    FDMFCareSequenceFinished OnCareSequenceFinished;
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Inventory")
     TArray<FDMFDigimonInstance> GetDigimonInventory() const;
 
@@ -118,6 +133,26 @@ public:
 
     UFUNCTION(Client, Reliable)
     void ClientMaterializationResult(bool bSuccess, const FText& Message, FPrimaryAssetId SpeciesId, FGuid NewDigimonInstanceId);
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Care")
+    bool GetActivePartnerCareState(FDMFDigimonCareState& OutCareState) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Care")
+    bool IsCareSequenceActive() const { return bCareSequenceActive; }
+
+    /** Returns -1 when no waste is scheduled; otherwise seconds until due (0 when overdue and waiting for a summoned partner). */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Care")
+    float GetSecondsUntilActivePartnerWaste() const;
+
+    /** Server-authoritative unlimited-DigiMeat loop. Each serving plays the species Feeding Montage twice by default. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Care")
+    void ServerFeedActivePartnerUntilFull();
+
+    UFUNCTION(Client, Reliable)
+    void ClientCareSequenceStarted(FGuid DigimonInstanceId);
+
+    UFUNCTION(Client, Reliable)
+    void ClientCareSequenceFinished(bool bSuccess, const FText& Message, FGuid DigimonInstanceId);
 
     /** Sets an owned Digimon as active and optionally summons it beside the player's pawn. */
     UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Partner")
@@ -184,8 +219,23 @@ private:
     UPROPERTY(ReplicatedUsing=OnRep_ScanData)
     TArray<FDMFScanDataEntry> ReplicatedScanData;
 
+    UPROPERTY(ReplicatedUsing=OnRep_CareSequenceActive)
+    bool bCareSequenceActive = false;
+
+    UPROPERTY(Replicated)
+    FGuid CareSequenceInstanceId;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ADMFDigimonCarePropActor> ActiveCareDigiMeatActor;
+
     FTimerHandle AutosaveTimer;
+    FTimerHandle CareTickTimer;
+    FTimerHandle CareSequenceTimer;
     double LastAbilityCommandServerTime = -1000.0;
+    int32 CareMontagePlayIndex = 0;
+    int32 CareServingVoiceSoundIndex = INDEX_NONE;
+    bool bCareRestoreAutoBattle = false;
+    bool bCareRestoreRetaliation = false;
 
     UFUNCTION()
     void OnRep_CommandTarget();
@@ -211,11 +261,28 @@ private:
     UFUNCTION()
     void OnRep_StarterSelectionRequired();
 
+    UFUNCTION()
+    void OnRep_CareSequenceActive();
+
     bool ResolveStarterSpecies(FPrimaryAssetId StarterSpeciesId, class UDMFDigimonSpeciesData*& OutSpecies) const;
     UDMFDigimonSpeciesData* ResolveSpeciesById(FPrimaryAssetId SpeciesId) const;
     FDMFDigimonInstance BuildStarterInstance(const UDMFDigimonSpeciesData& Species) const;
     FDMFDigimonInstance BuildMaterializedInstance(const UDMFDigimonSpeciesData& Species) const;
     bool AwardScanDataForVictory(const UDMFDigimonSpeciesData& Species, float& OutAddedPercent, float& OutNewPercent, bool& bOutReady);
     void BroadcastScanState(FPrimaryAssetId SpeciesId);
+
+    FDMFReplicatedDigimonEntry* FindInventoryEntry(FGuid InstanceId);
+    const FDMFReplicatedDigimonEntry* FindInventoryEntry(FGuid InstanceId) const;
+    bool NormalizeAndApplyCareDecay(FDMFReplicatedDigimonEntry& Entry, const UDMFDigimonSpeciesData& Species, int64 NowUtcTicks);
+    void BroadcastCareState(const FDMFReplicatedDigimonEntry& Entry);
+    void CareTick();
+    bool ValidateCareFeedingRequest(FDMFReplicatedDigimonEntry*& OutEntry, UDMFDigimonSpeciesData*& OutSpecies, FText& OutFailure);
+    void BeginCareServing();
+    void PlayNextCareMontage();
+    void CompleteCareServing();
+    void FinishCareSequence(bool bSuccess, const FText& Message);
+    void DestroyActiveCareMeat();
+    bool SpawnScheduledWaste(FDMFReplicatedDigimonEntry& Entry, UDMFDigimonSpeciesData& Species);
+
     void PersistOwningPlayer();
 };

@@ -80,6 +80,14 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     {
         ScanMaterializeTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleScanMaterializeTab);
     }
+    if (CareTabButton)
+    {
+        CareTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareTab);
+    }
+    if (FeedDigiMeatButton)
+    {
+        FeedDigiMeatButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleFeedDigiMeat);
+    }
     if (MaterializeDigimonButton)
     {
         MaterializeDigimonButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializeSelected);
@@ -88,6 +96,7 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     BindDigimonComponent();
     RefreshInventory();
     RefreshScanData();
+    RefreshCareData();
     RefreshTabPresentation();
 }
 
@@ -99,6 +108,8 @@ void UDMFDigimonInventoryWidget::NativeDestruct()
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
+        BoundDigimonComponent->OnCareStateChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
+        BoundDigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
     }
     BoundDigimonComponent = nullptr;
     Super::NativeDestruct();
@@ -194,10 +205,18 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     ScanTabLabel->SetText(NSLOCTEXT("DMF", "ScanMaterializeTabLabel", "SCAN & MATERIALIZE"));
     DMFNativeUI::StyleText(ScanTabLabel, 15, DMFNativeUI::Text(), true);
     ScanMaterializeTabButton->AddChild(ScanTabLabel);
-    TabRow->AddChildToHorizontalBox(ScanMaterializeTabButton);
+    TabRow->AddChildToHorizontalBox(ScanMaterializeTabButton)->SetPadding(FMargin(0,0,8,0));
+
+    CareTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("CareTabButton"));
+    DMFNativeUI::StyleButton(CareTabButton);
+    UTextBlock* CareTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareTabLabel"));
+    CareTabLabel->SetText(NSLOCTEXT("DMF", "CareTabLabel", "CARE"));
+    DMFNativeUI::StyleText(CareTabLabel, 15, DMFNativeUI::Text(), true);
+    CareTabButton->AddChild(CareTabLabel);
+    TabRow->AddChildToHorizontalBox(CareTabButton);
 
     UTextBlock* FutureTabsLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FutureTabsLabel"));
-    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "   BANK • PARTY • DIGIVOLUTION • CARE   /   FUTURE MODULES"));
+    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "   BANK • PARTY • DIGIVOLUTION   /   FUTURE MODULES"));
     DMFNativeUI::StyleText(FutureTabsLabel, 11, DMFNativeUI::Muted(), true);
     if (UHorizontalBoxSlot* FutureSlot = TabRow->AddChildToHorizontalBox(FutureTabsLabel)) { FutureSlot->SetSize(DMFNativeUI::FillSize()); FutureSlot->SetVerticalAlignment(VAlign_Center); FutureSlot->SetHorizontalAlignment(HAlign_Right); }
 
@@ -424,6 +443,109 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     MaterializeLabel->SetText(NSLOCTEXT("DMF","MaterializeDigimonButtonLabel","MATERIALIZE DIGIMON")); MaterializeLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(MaterializeLabel,15,DMFNativeUI::Text(),true);
     MaterializeDigimonButton->AddChild(MaterializeLabel);
     ScanDetailsColumn->AddChildToVerticalBox(MaterializeDigimonButton)->SetPadding(FMargin(0,4,0,0));
+
+    // CARE tab: polished virtual-pet dashboard. All mutation buttons route through the owner component's server RPC.
+    CareContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("CareContentRow"));
+    if (UVerticalBoxSlot* CareContentLayoutSlot = WindowColumn->AddChildToVerticalBox(CareContentRow))
+    {
+        CareContentLayoutSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    USizeBox* CareMainSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("CareMainSize"));
+    CareMainSize->SetWidthOverride(795.0f);
+    if (UHorizontalBoxSlot* CareMainLayoutSlot = CareContentRow->AddChildToHorizontalBox(CareMainSize))
+    {
+        CareMainLayoutSlot->SetPadding(FMargin(0,0,14,0));
+        CareMainLayoutSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    UBorder* CareMainBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("CareMainBorder"));
+    DMFNativeUI::StylePanel(CareMainBorder, DMFNativeUI::PanelRaised(), FMargin(16.0f));
+    CareMainSize->AddChild(CareMainBorder);
+    UVerticalBox* CareMainColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("CareMainColumn"));
+    CareMainBorder->AddChild(CareMainColumn);
+
+    UTextBlock* CareHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareHeader"));
+    CareHeader->SetText(NSLOCTEXT("DMF", "CareHeader", "VIRTUAL PET CARE"));
+    DMFNativeUI::StyleText(CareHeader, 17, DMFNativeUI::Accent(), true);
+    CareMainColumn->AddChildToVerticalBox(CareHeader)->SetPadding(FMargin(0,0,0,10));
+
+    UHorizontalBox* CareProfileRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("CareProfileRow"));
+    CareMainColumn->AddChildToVerticalBox(CareProfileRow)->SetPadding(FMargin(0,0,0,14));
+    USizeBox* CarePortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("CarePortraitSize"));
+    CarePortraitSize->SetWidthOverride(220.0f); CarePortraitSize->SetHeightOverride(190.0f);
+    UBorder* CarePortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("CarePortraitBorder"));
+    DMFNativeUI::StylePanel(CarePortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(5.0f));
+    CarePortraitSize->AddChild(CarePortraitBorder);
+    CarePortraitImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("CarePortraitImage"));
+    CarePortraitBorder->AddChild(CarePortraitImage);
+    CareProfileRow->AddChildToHorizontalBox(CarePortraitSize)->SetPadding(FMargin(0,0,16,0));
+
+    UVerticalBox* CareIdentityColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("CareIdentityColumn"));
+    if (UHorizontalBoxSlot* CareIdentityLayoutSlot = CareProfileRow->AddChildToHorizontalBox(CareIdentityColumn))
+    {
+        CareIdentityLayoutSlot->SetSize(DMFNativeUI::FillSize());
+        CareIdentityLayoutSlot->SetVerticalAlignment(VAlign_Center);
+    }
+    CareNameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareNameText"));
+    DMFNativeUI::StyleText(CareNameText, 28, DMFNativeUI::Text(), true);
+    CareIdentityColumn->AddChildToVerticalBox(CareNameText);
+    CareMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareMetaText"));
+    DMFNativeUI::StyleText(CareMetaText, 14, DMFNativeUI::Gold(), true);
+    CareIdentityColumn->AddChildToVerticalBox(CareMetaText)->SetPadding(FMargin(0,2,0,14));
+    UTextBlock* UnlimitedText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("UnlimitedDigiMeatText"));
+    UnlimitedText->SetText(NSLOCTEXT("DMF", "UnlimitedDigiMeat", "∞  UNLIMITED DIGIMEAT"));
+    DMFNativeUI::StyleText(UnlimitedText, 18, DMFNativeUI::Success(), true);
+    CareIdentityColumn->AddChildToVerticalBox(UnlimitedText)->SetPadding(FMargin(0,0,0,6));
+    UTextBlock* CareHelpText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareHelpText"));
+    CareHelpText->SetText(NSLOCTEXT("DMF", "CareHelp", "Feed your summoned partner until full. The menu hides during eating so the complete in-world animation can be watched."));
+    CareHelpText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(CareHelpText, 12, DMFNativeUI::Muted());
+    CareIdentityColumn->AddChildToVerticalBox(CareHelpText);
+
+    UTextBlock* HungerLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("HungerLabel"));
+    HungerLabel->SetText(NSLOCTEXT("DMF", "HungerLabel", "HUNGER / FULLNESS"));
+    DMFNativeUI::StyleText(HungerLabel, 13, DMFNativeUI::Muted(), true);
+    CareMainColumn->AddChildToVerticalBox(HungerLabel);
+    CareHungerText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareHungerText"));
+    DMFNativeUI::StyleText(CareHungerText, 22, DMFNativeUI::Accent(), true);
+    CareMainColumn->AddChildToVerticalBox(CareHungerText);
+    CareHungerProgressBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("CareHungerProgressBar"));
+    CareHungerProgressBar->SetFillColorAndOpacity(DMFNativeUI::Accent());
+    CareMainColumn->AddChildToVerticalBox(CareHungerProgressBar)->SetPadding(FMargin(0,4,0,14));
+
+    UHorizontalBox* MoodBars = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("CareMoodBars"));
+    CareMainColumn->AddChildToVerticalBox(MoodBars)->SetPadding(FMargin(0,0,0,12));
+    UVerticalBox* HappinessColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("HappinessColumn"));
+    if (UHorizontalBoxSlot* HappinessLayoutSlot = MoodBars->AddChildToHorizontalBox(HappinessColumn)) { HappinessLayoutSlot->SetSize(DMFNativeUI::FillSize()); HappinessLayoutSlot->SetPadding(FMargin(0,0,8,0)); }
+    UTextBlock* HappinessLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("HappinessLabel")); HappinessLabel->SetText(NSLOCTEXT("DMF","HappinessLabel","HAPPINESS")); DMFNativeUI::StyleText(HappinessLabel,11,DMFNativeUI::Muted(),true); HappinessColumn->AddChildToVerticalBox(HappinessLabel);
+    CareHappinessProgressBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("CareHappinessProgressBar")); CareHappinessProgressBar->SetFillColorAndOpacity(DMFNativeUI::Success()); HappinessColumn->AddChildToVerticalBox(CareHappinessProgressBar)->SetPadding(FMargin(0,4,0,0));
+    UVerticalBox* DisciplineColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DisciplineColumn"));
+    if (UHorizontalBoxSlot* DisciplineLayoutSlot = MoodBars->AddChildToHorizontalBox(DisciplineColumn)) { DisciplineLayoutSlot->SetSize(DMFNativeUI::FillSize()); DisciplineLayoutSlot->SetPadding(FMargin(8,0,0,0)); }
+    UTextBlock* DisciplineLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DisciplineLabel")); DisciplineLabel->SetText(NSLOCTEXT("DMF","DisciplineLabel","DISCIPLINE")); DMFNativeUI::StyleText(DisciplineLabel,11,DMFNativeUI::Muted(),true); DisciplineColumn->AddChildToVerticalBox(DisciplineLabel);
+    CareDisciplineProgressBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("CareDisciplineProgressBar")); CareDisciplineProgressBar->SetFillColorAndOpacity(DMFNativeUI::Gold()); DisciplineColumn->AddChildToVerticalBox(CareDisciplineProgressBar)->SetPadding(FMargin(0,4,0,0));
+
+    UBorder* CareStatsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("CareStatsBorder"));
+    DMFNativeUI::StylePanel(CareStatsBorder, DMFNativeUI::PanelSoft(), FMargin(12.0f));
+    if (UVerticalBoxSlot* CareStatsLayoutSlot = CareMainColumn->AddChildToVerticalBox(CareStatsBorder)) { CareStatsLayoutSlot->SetSize(DMFNativeUI::FillSize()); }
+    CareStatisticsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareStatisticsText"));
+    CareStatisticsText->SetAutoWrapText(true); DMFNativeUI::StyleText(CareStatisticsText, 14, DMFNativeUI::Text()); CareStatsBorder->AddChild(CareStatisticsText);
+
+    USizeBox* CareActionSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("CareActionSize"));
+    CareActionSize->SetWidthOverride(335.0f);
+    CareContentRow->AddChildToHorizontalBox(CareActionSize)->SetVerticalAlignment(VAlign_Fill);
+    UBorder* CareActionBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("CareActionBorder"));
+    DMFNativeUI::StylePanel(CareActionBorder, DMFNativeUI::PanelRaised(), FMargin(16.0f)); CareActionSize->AddChild(CareActionBorder);
+    UVerticalBox* CareActionColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("CareActionColumn")); CareActionBorder->AddChild(CareActionColumn);
+    UTextBlock* FeedingHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FeedingHeader")); FeedingHeader->SetText(NSLOCTEXT("DMF","FeedingHeader","DIGIMEAT FEEDING")); DMFNativeUI::StyleText(FeedingHeader,14,DMFNativeUI::Gold(),true); CareActionColumn->AddChildToVerticalBox(FeedingHeader)->SetPadding(FMargin(0,0,0,10));
+    CareFeedingRulesText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareFeedingRulesText")); CareFeedingRulesText->SetAutoWrapText(true); DMFNativeUI::StyleText(CareFeedingRulesText,13,DMFNativeUI::Text()); CareActionColumn->AddChildToVerticalBox(CareFeedingRulesText)->SetPadding(FMargin(0,0,0,12));
+    UBorder* WasteBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("WasteStatusBorder")); DMFNativeUI::StylePanel(WasteBorder,DMFNativeUI::PanelSoft(),FMargin(12)); CareActionColumn->AddChildToVerticalBox(WasteBorder)->SetPadding(FMargin(0,0,0,10));
+    CareWasteStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareWasteStatusText")); CareWasteStatusText->SetAutoWrapText(true); DMFNativeUI::StyleText(CareWasteStatusText,13,DMFNativeUI::Muted()); WasteBorder->AddChild(CareWasteStatusText);
+    UTextBlock* CareSafetyText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareSafetyText"));
+    CareSafetyText->SetText(NSLOCTEXT("DMF","CareSafetyText","CARE RULES\n• Feeding is server-authoritative.\n• Combat is paused while eating.\n• Waste has zero collision and cleans itself up automatically."));
+    CareSafetyText->SetAutoWrapText(true); DMFNativeUI::StyleText(CareSafetyText,12,DMFNativeUI::Muted());
+    if (UVerticalBoxSlot* CareSafetyLayoutSlot = CareActionColumn->AddChildToVerticalBox(CareSafetyText)) { CareSafetyLayoutSlot->SetSize(DMFNativeUI::FillSize()); CareSafetyLayoutSlot->SetPadding(FMargin(0,0,0,10)); }
+    FeedDigiMeatButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("FeedDigiMeatButton")); DMFNativeUI::StyleButton(FeedDigiMeatButton,true);
+    UTextBlock* FeedLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FeedDigiMeatLabel")); FeedLabel->SetText(NSLOCTEXT("DMF","FeedDigiMeatUntilFull","FEED DIGIMEAT UNTIL FULL")); FeedLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(FeedLabel,14,DMFNativeUI::Text(),true); FeedDigiMeatButton->AddChild(FeedLabel); CareActionColumn->AddChildToVerticalBox(FeedDigiMeatButton);
 }
 
 void UDMFDigimonInventoryWidget::BindDigimonComponent()
@@ -442,6 +564,8 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
+        BoundDigimonComponent->OnCareStateChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
+        BoundDigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
     }
 
     BoundDigimonComponent = NewComponent;
@@ -451,6 +575,8 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnPartnerActionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
+        BoundDigimonComponent->OnCareStateChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
+        BoundDigimonComponent->OnCareSequenceFinished.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
     }
 }
 
@@ -853,20 +979,24 @@ void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTa
     ActiveMenuTab = NewTab;
     RefreshTabPresentation();
     if (ActiveMenuTab == EDMFDigimonMenuTab::Collection) RefreshInventory();
-    else RefreshScanData();
+    else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) RefreshScanData();
+    else RefreshCareData();
 }
 
 void UDMFDigimonInventoryWidget::RefreshTabPresentation()
 {
     if (InventoryContentRow) InventoryContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Collection ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (ScanContentRow) ScanContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (CareContentRow) CareContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Care ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     DMFNativeUI::StyleButton(CollectionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Collection);
     DMFNativeUI::StyleButton(ScanMaterializeTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize);
+    DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
     if (DigimonStatusText)
     {
-        DigimonStatusText->SetText(ActiveMenuTab == EDMFDigimonMenuTab::Collection
-            ? NSLOCTEXT("DMF","CollectionTabStatus","Select a Digimon slot to inspect, summon or recall your active partner.")
-            : NSLOCTEXT("DMF","ScanTabStatus","Battle Wild Digimon to build Scan Data, then materialize completed species into your Collection."));
+        FText Status = NSLOCTEXT("DMF","CollectionTabStatus","Select a Digimon slot to inspect, summon or recall your active partner.");
+        if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) Status = NSLOCTEXT("DMF","ScanTabStatus","Battle Wild Digimon to build Scan Data, then materialize completed species into your Collection.");
+        else if (ActiveMenuTab == EDMFDigimonMenuTab::Care) Status = NSLOCTEXT("DMF","CareTabStatus","Care for your summoned partner with unlimited DigiMeat and monitor its persistent virtual-pet needs.");
+        DigimonStatusText->SetText(Status);
         DigimonStatusText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
     }
 }
@@ -953,10 +1083,76 @@ void UDMFDigimonInventoryWidget::RefreshSelectedScanDetails()
     if (ScanSelectedDescriptionText) ScanSelectedDescriptionText->SetText(Species->Description.IsEmpty()?NSLOCTEXT("DMF","NoScanSpeciesDescription","No species description has been assigned yet."):Species->Description);
 }
 
+void UDMFDigimonInventoryWidget::RefreshCareData()
+{
+    BindDigimonComponent();
+    if (!BoundDigimonComponent) return;
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    FDMFDigimonCareState Care;
+    FDMFDigimonInstance Instance;
+    const FGuid ActiveId = BoundDigimonComponent->GetActivePartnerInstanceId();
+    const bool bHasCare = ActiveId.IsValid() && BoundDigimonComponent->GetActivePartnerCareState(Care) && BoundDigimonComponent->GetDigimonByInstanceId(ActiveId, Instance);
+    UDMFDigimonSpeciesData* Species = bHasCare ? ResolveSpecies(Instance.SpeciesId) : nullptr;
+    const bool bSummoned = BoundDigimonComponent->IsActivePartnerSummoned();
+    const bool bCareEnabled = Settings && Settings->bEnableCareSystem && Species && Species->bCareEnabled;
+
+    if (!bHasCare || !Species)
+    {
+        if (CarePortraitImage) CarePortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        if (CareNameText) CareNameText->SetText(NSLOCTEXT("DMF","CareNoPartner","NO ACTIVE DIGIMON"));
+        if (CareMetaText) CareMetaText->SetText(NSLOCTEXT("DMF","CareNoPartnerMeta","Select and summon a partner from COLLECTION."));
+        if (CareHungerText) CareHungerText->SetText(NSLOCTEXT("DMF","CareNoHunger","-- / 100%"));
+        if (CareHungerProgressBar) CareHungerProgressBar->SetPercent(0.0f);
+        if (CareHappinessProgressBar) CareHappinessProgressBar->SetPercent(0.0f);
+        if (CareDisciplineProgressBar) CareDisciplineProgressBar->SetPercent(0.0f);
+        if (CareStatisticsText) CareStatisticsText->SetText(NSLOCTEXT("DMF","CareNoStats","HUNGER       --\nHAPPINESS    --\nDISCIPLINE   --\nCARE MISTAKES --"));
+        if (CareWasteStatusText) CareWasteStatusText->SetText(NSLOCTEXT("DMF","CareNoWaste","DIGESTION\nNo active partner care state is available."));
+        if (CareFeedingRulesText) CareFeedingRulesText->SetText(NSLOCTEXT("DMF","CareNoRules","Summon a Digimon to inspect its species feeding configuration."));
+        if (FeedDigiMeatButton) FeedDigiMeatButton->SetIsEnabled(false);
+        return;
+    }
+
+    if (CarePortraitImage)
+    {
+        if (UTexture2D* Texture = Species->Portrait.LoadSynchronous()) { CarePortraitImage->SetBrushFromTexture(Texture,true); CarePortraitImage->SetVisibility(ESlateVisibility::Visible); }
+        else CarePortraitImage->SetVisibility(ESlateVisibility::Hidden);
+    }
+    const FText DisplayName = !Instance.Nickname.IsEmpty() ? FText::FromString(Instance.Nickname) : (Species->DisplayName.IsEmpty() ? FText::FromName(Instance.SpeciesId.PrimaryAssetName) : Species->DisplayName);
+    if (CareNameText) CareNameText->SetText(DisplayName);
+    if (CareMetaText) CareMetaText->SetText(FText::Format(NSLOCTEXT("DMF","CareMetaFormat","{0}  •  {1}  •  Lv.{2}  •  {3}"), DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(),static_cast<int64>(Species->Stage)), DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(),static_cast<int64>(Species->Attribute)), FText::AsNumber(Instance.Stats.Level), bSummoned ? NSLOCTEXT("DMF","CareSummoned","SUMMONED") : NSLOCTEXT("DMF","CareRecalled","RECALLED")));
+
+    const float Hunger = FMath::Clamp(Care.Hunger,0.0f,100.0f);
+    if (CareHungerText) CareHungerText->SetText(Hunger >= 99.99f ? NSLOCTEXT("DMF","CareHungerFull","100%  •  FULL") : FText::Format(NSLOCTEXT("DMF","CareHungerFormat","{0}% / 100%"),FText::AsNumber(FMath::RoundToInt(Hunger))));
+    if (CareHungerProgressBar) { CareHungerProgressBar->SetPercent(Hunger/100.0f); CareHungerProgressBar->SetFillColorAndOpacity(Hunger < 25.0f ? DMFNativeUI::Danger() : (Hunger >= 99.99f ? DMFNativeUI::Success() : DMFNativeUI::Accent())); }
+    if (CareHappinessProgressBar) CareHappinessProgressBar->SetPercent(FMath::Clamp(Care.Happiness/100.0f,0.0f,1.0f));
+    if (CareDisciplineProgressBar) CareDisciplineProgressBar->SetPercent(FMath::Clamp(Care.Discipline/100.0f,0.0f,1.0f));
+    if (CareStatisticsText) CareStatisticsText->SetText(FText::Format(NSLOCTEXT("DMF","CareStatsFormat","HUNGER         {0}%\nHAPPINESS      {1}%\nDISCIPLINE     {2}%\nCARE MISTAKES  {3}"),FText::AsNumber(FMath::RoundToInt(Hunger)),FText::AsNumber(FMath::RoundToInt(Care.Happiness)),FText::AsNumber(FMath::RoundToInt(Care.Discipline)),FText::AsNumber(Care.CareMistakes)));
+
+    if (CareFeedingRulesText)
+    {
+        CareFeedingRulesText->SetText(FText::Format(NSLOCTEXT("DMF","CareRulesFormat","UNLIMITED SUPPLY\n+{0}% Hunger per serving\nEating Montage ×{1}\nHunger decay: {2}% / real-time hour\nHand socket: {3}"), FText::AsNumber(FMath::RoundToInt(Species->DigiMeatHungerPercentPerServing)), FText::AsNumber(FMath::Clamp(Species->FeedingMontagePlaysPerServing,1,8)), FText::AsNumber(Species->HungerDecayPercentPerHour), FText::FromName(Species->DigiMeatHandSocketName)));
+    }
+    if (CareWasteStatusText)
+    {
+        const float Seconds = BoundDigimonComponent->GetSecondsUntilActivePartnerWaste();
+        FText WasteState = !Species->bWasteEnabled
+            ? NSLOCTEXT("DMF","CareWasteDisabled","DIGESTION\nWaste is disabled for this species.")
+            : (Seconds < 0.0f ? NSLOCTEXT("DMF","CareWasteNone","DIGESTION\nNo poop is currently scheduled.")
+                : (Seconds <= 0.01f ? NSLOCTEXT("DMF","CareWasteDue","DIGESTION\nPoop is due when the partner is available in-world.")
+                    : FText::Format(NSLOCTEXT("DMF","CareWasteCountdown","DIGESTION\nNext poop in approximately {0} sec.\nCleanup lifetime: {1} sec."),FText::AsNumber(FMath::CeilToInt(Seconds)),FText::AsNumber(FMath::RoundToInt(Species->PooLifetimeSeconds)))));
+        CareWasteStatusText->SetText(WasteState);
+    }
+
+    const bool bReadyToFeed = bCareEnabled && bSummoned && Instance.CurrentHP > 0 && Hunger < 99.99f && !BoundDigimonComponent->IsCareSequenceActive();
+    if (FeedDigiMeatButton) FeedDigiMeatButton->SetIsEnabled(bReadyToFeed);
+}
+
 void UDMFDigimonInventoryWidget::HandleInventoryChanged()
 {
     RefreshInventory();
     RefreshSelectedScanDetails();
+    RefreshCareData();
 }
 
 void UDMFDigimonInventoryWidget::HandleScanDataChanged(const FPrimaryAssetId SpeciesId, const float ScanPercent, const bool bMaterializationReady)
@@ -981,6 +1177,10 @@ void UDMFDigimonInventoryWidget::HandleMaterializationResult(const bool bSuccess
 
 void UDMFDigimonInventoryWidget::HandleCollectionTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Collection); }
 void UDMFDigimonInventoryWidget::HandleScanMaterializeTab() { SetActiveMenuTab(EDMFDigimonMenuTab::ScanAndMaterialize); }
+void UDMFDigimonInventoryWidget::HandleCareTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Care); }
+void UDMFDigimonInventoryWidget::HandleFeedDigiMeat() { if (BoundDigimonComponent) BoundDigimonComponent->ServerFeedActivePartnerUntilFull(); }
+void UDMFDigimonInventoryWidget::HandleCareStateChanged(const FGuid DigimonInstanceId, const FDMFDigimonCareState CareState) { RefreshCareData(); }
+void UDMFDigimonInventoryWidget::HandleCareSequenceFinished(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId) { RefreshCareData(); if (DigimonStatusText && !Message.IsEmpty()) { DigimonStatusText->SetText(Message); DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger())); } }
 void UDMFDigimonInventoryWidget::HandleScanSpeciesPressed(const FPrimaryAssetId SpeciesId) { SelectedScanSpeciesId=SpeciesId; RefreshScanData(); }
 void UDMFDigimonInventoryWidget::HandleMaterializeSelected() { if(BoundDigimonComponent && SelectedScanSpeciesId.IsValid()) BoundDigimonComponent->ServerMaterializeDigimon(SelectedScanSpeciesId); }
 

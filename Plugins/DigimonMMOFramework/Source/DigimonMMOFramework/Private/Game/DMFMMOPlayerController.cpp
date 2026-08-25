@@ -129,6 +129,10 @@ void ADMFMMOPlayerController::BindStarterState()
     DMFPlayerState->DigimonComponent->OnStarterRequirementChanged.AddDynamic(this, &ADMFMMOPlayerController::HandleStarterRequirementChanged);
     DMFPlayerState->DigimonComponent->OnScanDataRewardGranted.RemoveDynamic(this, &ADMFMMOPlayerController::HandleScanDataRewardGranted);
     DMFPlayerState->DigimonComponent->OnScanDataRewardGranted.AddDynamic(this, &ADMFMMOPlayerController::HandleScanDataRewardGranted);
+    DMFPlayerState->DigimonComponent->OnCareSequenceStarted.RemoveDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceStarted);
+    DMFPlayerState->DigimonComponent->OnCareSequenceStarted.AddDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceStarted);
+    DMFPlayerState->DigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceFinished);
+    DMFPlayerState->DigimonComponent->OnCareSequenceFinished.AddDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceFinished);
     GetWorldTimerManager().ClearTimer(StarterUIRetryTimer);
     RefreshStarterSelectionUI();
 }
@@ -190,6 +194,44 @@ void ADMFMMOPlayerController::HandleScanDataRewardGranted(const FPrimaryAssetId 
     }
 }
 
+void ADMFMMOPlayerController::HandleCareSequenceStarted(const FGuid DigimonInstanceId)
+{
+    if (!IsLocalController()) return;
+
+    bCarePresentationActive = true;
+    bReopenCareMenuAfterSequence = DigimonInventoryWidget != nullptr;
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->RemoveFromParent();
+        DigimonInventoryWidget = nullptr;
+    }
+    if (CombatQuickBarWidget)
+    {
+        CombatQuickBarWidget->RemoveFromParent();
+        CombatQuickBarWidget = nullptr;
+    }
+    // Feeding is an in-world presentation. Remove modal UI/input locks before the server starts the first Montage.
+    RestoreGameplayInputMode();
+}
+
+void ADMFMMOPlayerController::HandleCareSequenceFinished(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId)
+{
+    if (!IsLocalController()) return;
+
+    const bool bShouldReopenCare = bReopenCareMenuAfterSequence;
+    bCarePresentationActive = false;
+    bReopenCareMenuAfterSequence = false;
+    if (bShouldReopenCare)
+    {
+        OpenCareUI();
+        if (DigimonInventoryWidget) DigimonInventoryWidget->RefreshCareData();
+    }
+    else
+    {
+        RefreshCombatQuickBar();
+    }
+}
+
 void ADMFMMOPlayerController::HandlePlayerSkinRequirementChanged(const bool bRequired)
 {
     // Mandatory onboarding uses bPlayerSkinMenuOpenedManually=false and closes naturally when the
@@ -206,7 +248,7 @@ bool ADMFMMOPlayerController::IsMandatoryPlayerSkinSelectionActive() const
 
 void ADMFMMOPlayerController::RefreshPlayerSkinSelectionUI()
 {
-    if (!IsLocalController())
+    if (!IsLocalController() || bCarePresentationActive)
     {
         return;
     }
@@ -280,7 +322,7 @@ void ADMFMMOPlayerController::RefreshPlayerSkinSelectionUI()
 
 void ADMFMMOPlayerController::OpenPlayerSkinSelectionUI()
 {
-    if (!IsLocalController())
+    if (!IsLocalController() || bCarePresentationActive)
     {
         return;
     }
@@ -302,6 +344,7 @@ void ADMFMMOPlayerController::ClosePlayerSkinSelectionUI()
 
 void ADMFMMOPlayerController::TogglePlayerSkinSelectionUI()
 {
+    if (bCarePresentationActive) return;
     if (PlayerSkinWidget)
     {
         ClosePlayerSkinSelectionUI();
@@ -390,7 +433,7 @@ void ADMFMMOPlayerController::RefreshStarterSelectionUI()
 
 void ADMFMMOPlayerController::OpenDigimonInventoryUI()
 {
-    if (!IsLocalController())
+    if (!IsLocalController() || bCarePresentationActive)
     {
         return;
     }
@@ -462,6 +505,7 @@ void ADMFMMOPlayerController::CloseDigimonInventoryUI()
 
 void ADMFMMOPlayerController::ToggleDigimonInventoryUI()
 {
+    if (bCarePresentationActive) return;
     if (DigimonInventoryWidget)
     {
         CloseDigimonInventoryUI();
@@ -478,6 +522,7 @@ void ADMFMMOPlayerController::RefreshDigimonInventoryUI()
     {
         DigimonInventoryWidget->RefreshInventory();
         DigimonInventoryWidget->RefreshScanData();
+        DigimonInventoryWidget->RefreshCareData();
     }
 }
 
@@ -487,6 +532,15 @@ void ADMFMMOPlayerController::OpenScanMaterializeUI()
     if (DigimonInventoryWidget)
     {
         DigimonInventoryWidget->SetActiveMenuTab(EDMFDigimonMenuTab::ScanAndMaterialize);
+    }
+}
+
+void ADMFMMOPlayerController::OpenCareUI()
+{
+    OpenDigimonInventoryUI();
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->SetActiveMenuTab(EDMFDigimonMenuTab::Care);
     }
 }
 
@@ -523,7 +577,7 @@ void ADMFMMOPlayerController::RestoreGameplayInputMode()
 
 void ADMFMMOPlayerController::RefreshCombatQuickBar()
 {
-    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget)
+    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bCarePresentationActive)
     {
         return;
     }
@@ -556,6 +610,7 @@ void ADMFMMOPlayerController::RefreshCombatQuickBar()
 
 void ADMFMMOPlayerController::SetDigimonCommandTarget(ADMFDigimonCharacter* NewTarget)
 {
+    if (bCarePresentationActive) return;
     ADMFPlayerState* DMFPlayerState = GetPlayerState<ADMFPlayerState>();
     if (DMFPlayerState && DMFPlayerState->DigimonComponent)
     {
@@ -601,7 +656,7 @@ bool ADMFMMOPlayerController::SelectDigimonCommandTargetUnderCursor()
 
 void ADMFMMOPlayerController::CommandPartnerTargetAndAttack(ADMFDigimonCharacter* Target, const int32 SlotIndex)
 {
-    if (!Target || SlotIndex < 0)
+    if (bCarePresentationActive || !Target || SlotIndex < 0)
     {
         return;
     }
@@ -615,7 +670,7 @@ void ADMFMMOPlayerController::CommandPartnerTargetAndAttack(ADMFDigimonCharacter
 
 void ADMFMMOPlayerController::CommandActivePartnerAbilitySlot(const int32 SlotIndex)
 {
-    if (SlotIndex < 0)
+    if (bCarePresentationActive || SlotIndex < 0)
     {
         return;
     }
@@ -658,7 +713,7 @@ void ADMFMMOPlayerController::ClientHealerInteractionResult_Implementation(const
 
 void ADMFMMOPlayerController::HandleDefaultTargetInput()
 {
-    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget)
+    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !bCarePresentationActive)
     {
         SelectDigimonCommandTargetUnderCursor();
     }
@@ -676,7 +731,7 @@ void ADMFMMOPlayerController::HandleDigimonInventoryMenuInput()
 
 void ADMFMMOPlayerController::ExecuteDefaultAbilitySlot(const int32 SlotIndex)
 {
-    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget)
+    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bCarePresentationActive)
     {
         return;
     }

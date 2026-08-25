@@ -89,7 +89,8 @@ UENUM(BlueprintType)
 enum class EDMFDigimonMenuTab : uint8
 {
     Collection,
-    ScanAndMaterialize UMETA(DisplayName="Scan & Materialize")
+    ScanAndMaterialize UMETA(DisplayName="Scan & Materialize"),
+    Care
 };
 
 USTRUCT(BlueprintType)
@@ -153,6 +154,10 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigimonCareState
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Care")
     int64 NextWasteUtcTicks = 0;
+
+    /** Server UTC timestamp used to apply deterministic online/offline Hunger decay. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Care")
+    int64 LastCareUpdateUtcTicks = 0;
 };
 
 USTRUCT(BlueprintType)

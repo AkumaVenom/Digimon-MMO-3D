@@ -1,8 +1,26 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.7.1-alpha — UE5.8 Scan Toast Slot Shadow Compile Fix`
+**Version:** `0.8.1-alpha — Care Prop CustomDepth Cel-Shading Integration`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+
+## New in v0.8.1-alpha — DigiMeat & Poo CustomDepth Cel Shading
+
+The replicated `ADMFDigimonCarePropActor` now follows the framework-wide cel-shading contract: **DigiMeat and world poo always render into Unreal CustomDepth** on host, remote clients and late viewers. The native mesh is enabled in the constructor and the invariant is reasserted during construction, BeginPlay and replicated presentation refresh, so species/global mesh swaps cannot silently drop out of the post-process cel shader.
+
+`ADMFDigimonCarePropActor` also exposes `CustomDepthStencilValue` (`0-255`, default `0`) plus Blueprint-callable `RefreshFrameworkCustomDepth()`. Blueprint children that add extra mesh components are included by the refresh pass. This is presentation-only and adds **no replicated gameplay state or network bandwidth**; the existing server-authoritative feeding, Hunger, waste, collision and cleanup contracts are unchanged.
+
+## New in v0.8.0-alpha — Virtual-Pet Care, DigiMeat Feeding & World Waste
+
+The shared **DIGIMON MENU** now includes a polished `CARE` tab driven by the same owner-only persistent Digimon instance state used by Collection and Scan Data. Hunger uses `0 = empty / 100 = full`, decays from authoritative UTC time (including offline time), and existing v0.7.x dormant care saves are migrated without suddenly starving established Digimon.
+The account SaveGame is now formally **schema v3** for persistent Care while preserving all earlier account, player-skin, Collection and Scan data.
+
+Feeding is an MMO-safe server transaction. `FEED DIGIMEAT UNTIL FULL` validates the summoned partner, combat state, species care configuration, Feeding Montage, DigiMeat mesh and text-configurable hand socket. The owner menu and combat HUD are hidden before presentation begins so the player can watch the Digimon eat. A replicated DigiMeat actor attaches to the configured hand socket using a per-species relative transform/scale, the species Feeding Montage plays **twice in sequence per serving by default**, an optional feeding voice is multicast, Hunger is awarded only after the complete serving, and servings loop until full. The CARE page automatically returns when the sequence finishes.
+
+Feeding schedules persistent digestion/waste. When due and the partner is in-world, the server traces the ground beneath the Digimon and spawns a replicated, scalable poo presentation actor at that location. It has **no collision, no overlaps and no navigation influence**, can play a server-selected funny fart cue for viewers, and destroys itself automatically after the configured lifetime. See `Docs/SETUP_CARE_SYSTEM.md` for the complete per-species setup and multiplayer acceptance checklist.
+
+Blueprint projects can reskin/extend all presentation surfaces: care data remains server-owned; the shared menu, care prop actor and character cosmetic events are presentation layers.
 
 
 ## New in v0.7.1-alpha — UE5.8 Scan Toast Compile Fix
@@ -15,7 +33,7 @@ A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-onl
 
 The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into the active Collection.
 
-The Digimon menu is now a tabbed shell: `COLLECTION` and `SCAN & MATERIALIZE` are implemented today, while the layout intentionally reserves the same menu architecture for future Bank, Party, Digivolution and Care modules. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
+The Digimon menu is now a tabbed shell: `COLLECTION` and `SCAN & MATERIALIZE` are implemented today, while the layout intentionally reserves the same menu architecture for future Bank, Party and Digivolution modules. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
 
 Per species, configure `DMFDigimonSpeciesData -> Scan & Materialization`: `bScanDataEnabled`, `BattleScanPercentReward`, `ScanPercentCap`, `bMaterializationEnabled`, and `MaterializationRequiredScanPercent`. Materializable species must have `WorldActorClass` set to the normal partner Blueprint derived from `DMFDigimonCharacter`, never the `DMFWildDigimonCharacter` Blueprint. Scan Data is owner-only replicated and saved in the account record automatically. See `Docs/SETUP_SCAN_MATERIALIZATION.md`.
 
@@ -256,7 +274,7 @@ This maintenance release preserves the complete v0.3.0 player-avatar/skin featur
 
 ## Cel-shading / Custom Depth contract
 
-All framework player-avatar skins and Digimon automatically force `Render CustomDepth Pass = true` on their owned mesh components. Skin swaps, Digimon initialization and replicated state refreshes reassert the flag. Both base classes expose `CustomDepthStencilValue` plus a Blueprint-callable `RefreshFrameworkCustomDepth()` for dynamically created mesh components. Unreal project-level Custom Depth must still be enabled under Rendering for post-process materials to sample it.
+All framework player-avatar skins, Digimon, and Care presentation props automatically force `Render CustomDepth Pass = true` on their owned mesh components. Skin swaps, Digimon initialization, replicated state refreshes and Care-prop presentation refreshes reassert the flag. `ADMFPlayerAvatarCharacter`, `ADMFDigimonCharacter` and `ADMFDigimonCarePropActor` expose `CustomDepthStencilValue` plus a Blueprint-callable `RefreshFrameworkCustomDepth()` for dynamically created mesh components. Unreal project-level Custom Depth must still be enabled under Rendering for post-process materials to sample it.
 
 ## Setup
 
@@ -302,7 +320,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2)

@@ -74,6 +74,20 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Digimon")
     UDMFDigimonSpeciesData* ResolveSpeciesData() const;
 
+    /** Replicated native eating presentation. The server chooses the voice index so every viewer hears the same cue. */
+    UFUNCTION(NetMulticast, Reliable, Category="Digimon MMO|Care|Presentation")
+    void MulticastPlayCareFeedingCue(int32 FeedingVoiceIndex);
+
+    /** Replicated waste/fart presentation triggered only by the authoritative care scheduler. */
+    UFUNCTION(NetMulticast, Reliable, Category="Digimon MMO|Care|Presentation")
+    void MulticastPlayCareWasteCue(int32 FartSoundIndex);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Care|Presentation")
+    void BP_OnCareFeedingCue(int32 FeedingVoiceIndex);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Care|Presentation")
+    void BP_OnCareWasteCue(int32 FartSoundIndex);
+
     /**
      * Applies the persistent defeated presentation used by both player partners and wild Digimon.
      * The species Death Montage plays once and, by default, freezes near its final pose until the

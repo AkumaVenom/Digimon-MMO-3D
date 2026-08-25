@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.8.1-alpha — Care Prop CustomDepth Cel-Shading Integration
+
+### Added / Fixed — Care presentation rendering
+- `ADMFDigimonCarePropActor` now forces **Render CustomDepth Pass = true** for DigiMeat and replicated world poo, bringing both Care meshes under the same cel-shading/post-process contract already used by Digimon and player avatars.
+- Added Blueprint-editable `CustomDepthStencilValue` (`0-255`, default `0`) and Blueprint-callable `RefreshFrameworkCustomDepth()` to the Care prop base.
+- The CustomDepth invariant is reasserted during native construction, Actor construction, BeginPlay and every replicated Care presentation refresh, so species/global mesh resolution cannot disable cel shading.
+- Blueprint children that add additional `UMeshComponent` presentation pieces are included by the refresh pass.
+- CustomDepth remains strictly cosmetic/local presentation: no new replicated fields, RPCs, ownership rules, Hunger state, feeding timing or waste authority were added.
+- Poo remains no-collision/no-overlap/no-navigation and server-lifespan cleaned exactly as in v0.8.0.
+
+### Documentation / regression contract
+- Updated README, Care setup, architecture, networking, roadmap, test plan and validation report for the Care-prop cel-shading contract.
+- v0.8.0 server-authoritative Care behavior and all v0.7.1 Scan/Materialization regression contracts remain intact.
+
+## 0.8.0-alpha — Virtual-Pet Care, DigiMeat Feeding & Replicated World Waste
+
+### Added — persistent Care state
+- Activated `FDMFDigimonCareState` as a server-maintained part of every owned Digimon instance, with Hunger, Happiness, Discipline, Care Mistakes, last-fed time, next-waste time and a UTC care-update timestamp.
+- Hunger semantics are `0 = empty`, `100 = full`; new/materialized Digimon use the species `StartingHungerPercent`.
+- Added deterministic real-time/offline Hunger decay using server UTC deltas and per-species `HungerDecayPercentPerHour`.
+- Added a compatibility migration for untouched v0.7.x dormant care defaults so established saves begin full instead of being interpreted as newly starving.
+- The project-level `Enable Care System` switch now freezes all Hunger/offline Care progression as well as UI/actions; autosave and partner-selection paths cannot decay Hunger behind a disabled Care system.
+- Bumped the account SaveGame schema to **v3** to formally version persistent Care data while preserving v2 player-skin and earlier account fields.
+
+### Added — unlimited DigiMeat feeding
+- Added `ServerFeedActivePartnerUntilFull`; clients request only the action while the server validates ownership, summoned/healthy partner state, idle combat, species care enablement, Feeding Montage, DigiMeat mesh and configured skeletal hand socket.
+- Added per-species DigiMeat mesh override, text-writable socket name, relative location/rotation/**scale**, Hunger-per-serving, montage play count/rate and feeding voice array.
+- A replicated `DMFDigimonCarePropActor` attaches DigiMeat to the Digimon hand. The default serving plays the Feeding Montage **two complete times in sequence**, then applies Hunger, then repeats servings until 100%.
+- The server temporarily disables partner combat automation/targeting while eating and restores the prior allowed auto-battle state when care ends. Combat/partner RPCs reject conflicting commands during a care sequence.
+
+### Added — feeding presentation flow
+- The owning PlayerController receives a reliable care-start event before the first Montage. It removes the Digimon Menu and quickbar, releases modal UI input, and lets the player watch the in-world eating sequence.
+- A configurable presentation lead-in protects remote clients from seeing the first Montage behind the closing UI.
+- When feeding finishes, the owning menu is recreated directly on `CARE` with refreshed replicated state.
+
+### Added — digestion and world poop
+- Successful feeding schedules a persistent server UTC waste time using species min/max delay.
+- When due and the active partner is spawned, the server traces directly beneath the Digimon and creates a replicated world poo actor at the ground impact.
+- Poo has species-configurable mesh/world scale/ground offset/lifetime and optional fart sounds. Collision, overlap generation and navigation influence are forcibly disabled, so players can walk through/stand in it.
+- Poo actors self-clean with server lifespan; overdue waste remains pending while a partner is recalled/offline and resolves once it safely exists in-world.
+
+### Added — polished CARE UI
+- Added `CARE` as a first-class tab in the existing native Digimon Menu shell.
+- Added active-partner portrait/meta, large Hunger meter, Happiness/Discipline meters, care-stat summary, unlimited DigiMeat rules, digestion/waste state and `FEED DIGIMEAT UNTIL FULL`.
+- The UI is still Blueprintable/reskinnable and never owns gameplay authority.
+
+### Blueprint/data exposure
+- Added global Care settings for tick cadence, presentation lead-in/inter-serving timing, fallback presentation duration, default DigiMeat/Poo meshes and a Blueprint-replaceable replicated Care Prop Actor class.
+- Added character `BP_OnCareFeedingCue` / `BP_OnCareWasteCue` presentation events plus care delegates/functions on the player Digimon component and `OpenCareUI` on the MMO PlayerController.
+
+### Documentation / validation
+- Added `Docs/SETUP_CARE_SYSTEM.md` and updated README, architecture, networking, roadmap, native UI setup, test plan, validation report and DefaultGame integration template.
+- Unreal Engine/UnrealBuildTool is not present in the build environment used to assemble this source release; a clean UE5.8.1 compile and host + remote-client runtime test remain the authoritative acceptance gates.
+
 ## 0.7.1-alpha — UE5.8 Scan Toast Slot Shadow Compile Fix
 
 ### Fixed

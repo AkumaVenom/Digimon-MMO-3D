@@ -92,9 +92,9 @@
 /DNDEBUG=1
 /DUE_BUILD_DEVELOPMENT=1
 /DORIGINAL_FILE_NAME="UnrealEditor-DigimonMMOFramework.dll"
-/DBUILD_ICON_FILE_NAME="\"C:\\Users\\Leen\\Documents\\Unreal Projects\\DigimonMMO3D\\Build\\Windows\\Application.ico\""
+/DBUILD_ICON_FILE_NAME="\"C:\\Users\\Leen\\Documents\\Unreal Projects\\Digimon-MMO-3D\\Build\\Windows\\Application.ico\""
 /DPROJECT_COMPANY_NAME=AkumaVenom
 /DPROJECT_PRODUCT_NAME="Digimon MMO 3D"
 /DPROJECT_PRODUCT_IDENTIFIER=DigimonMMO3D
-/fo "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Default.rc2.res"
+/fo "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Default.rc2.res"
 "../Build/Windows/Resources/Default.rc2"

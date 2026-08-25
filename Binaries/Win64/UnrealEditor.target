@@ -14,8 +14,8 @@
 	{
 		"MajorVersion": 5,
 		"MinorVersion": 8,
-		"PatchVersion": 1,
-		"Changelist": 56057345,
+		"PatchVersion": 2,
+		"Changelist": 56702186,
 		"CompatibleChangelist": 55116800,
 		"IsLicenseeVersion": 0,
 		"IsPromotedBuild": 0,
@@ -13897,6 +13897,14 @@
 		}
 	],
 	"RuntimeDependencies": [
+		{
+			"Path": "$(EngineDir)/Binaries/DotNET/Microsoft/PartnerCenterTool/PartnerCenterTool.exe",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/DotNET/Microsoft/PartnerCenterTool/PartnerCenterTool.exe.config",
+			"Type": "NonUFS"
+		},
 		{
 			"Path": "$(EngineDir)/Binaries/DotNET/OidcToken/win-x64/OidcToken.exe",
 			"Type": "NonUFS"

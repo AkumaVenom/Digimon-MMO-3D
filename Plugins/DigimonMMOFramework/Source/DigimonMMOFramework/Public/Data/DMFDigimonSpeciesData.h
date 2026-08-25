@@ -7,6 +7,7 @@
 
 class ADMFDigimonCharacter;
 class USkeletalMesh;
+class UStaticMesh;
 class UAnimMontage;
 class UParticleSystem;
 class UNiagaraSystem;
@@ -150,6 +151,76 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
     TSoftObjectPtr<UAnimMontage> FeedingMontage;
+
+    // -------------------- Virtual Pet Care --------------------
+
+    /** Master per-species care switch. Hunger, feeding and waste are ignored when disabled. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care")
+    bool bCareEnabled = true;
+
+    /** New Digimon begin at this Hunger percentage. In this framework, 100 means fully fed. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Hunger", meta=(EditCondition="bCareEnabled", ClampMin="0.0", ClampMax="100.0"))
+    float StartingHungerPercent = 100.0f;
+
+    /** Real-time Hunger loss per hour, applied by the server and across offline time. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Hunger", meta=(EditCondition="bCareEnabled", ClampMin="0.0", ClampMax="100.0"))
+    float HungerDecayPercentPerHour = 4.0f;
+
+    /** Hunger restored after one complete DigiMeat serving presentation. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled", ClampMin="0.1", ClampMax="100.0"))
+    float DigiMeatHungerPercentPerServing = 25.0f;
+
+    /** The feeding Montage is replayed this many times consecutively for each serving. Default is exactly two. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled", ClampMin="1", ClampMax="8"))
+    int32 FeedingMontagePlaysPerServing = 2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled", ClampMin="0.05", ClampMax="4.0"))
+    float FeedingMontagePlayRate = 1.0f;
+
+    /** Text-writable skeletal socket/bone name used to attach DigiMeat to this species' hand. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled"))
+    FName DigiMeatHandSocketName = TEXT("hand_r");
+
+    /** Optional species override. If empty, the framework Default DigiMeat Mesh is used. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled"))
+    TSoftObjectPtr<UStaticMesh> DigiMeatMesh;
+
+    /** Per-species socket offset/rotation/scale. Scale is intentionally exposed because Digimon skeleton socket scales vary heavily. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(EditCondition="bCareEnabled"))
+    FTransform DigiMeatRelativeTransform = FTransform::Identity;
+
+    /** Dedicated eating voices. One deterministic index is chosen by the server per serving and multicast to viewers. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Audio", meta=(EditCondition="bCareEnabled"))
+    TArray<TSoftObjectPtr<USoundBase>> FeedingVoiceSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled"))
+    bool bWasteEnabled = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled", ClampMin="1.0"))
+    float MinimumWasteDelaySeconds = 120.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled", ClampMin="1.0"))
+    float MaximumWasteDelaySeconds = 180.0f;
+
+    /** Optional species override. If empty, the framework Default Poo Mesh is used. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled"))
+    TSoftObjectPtr<UStaticMesh> PooMesh;
+
+    /** World scale for the spawned poo actor. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled"))
+    FVector PooWorldScale = FVector(1.0f);
+
+    /** Small offset along the traced ground normal to avoid z-fighting. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled", ClampMin="0.0", ClampMax="50.0"))
+    float PooGroundOffset = 1.5f;
+
+    /** Automatic server-side cleanup lifetime for replicated poo. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Waste", meta=(EditCondition="bCareEnabled && bWasteEnabled", ClampMin="1.0"))
+    float PooLifetimeSeconds = 180.0f;
+
+    /** Optional funny fart cues played for all relevant clients when this Digimon poops. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Care|Audio", meta=(EditCondition="bCareEnabled && bWasteEnabled"))
+    TArray<TSoftObjectPtr<USoundBase>> WasteFartSounds;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
     TSoftObjectPtr<UAnimMontage> InteractMontage;

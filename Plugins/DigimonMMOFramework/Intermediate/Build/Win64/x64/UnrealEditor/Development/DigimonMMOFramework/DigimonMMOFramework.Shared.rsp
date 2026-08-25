@@ -42,7 +42,7 @@
 /wd4267
 /wd4100
 /I "."
-/I "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private"
+/I "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private"
 /I "../Intermediate/Build/Win64/UnrealEditor/Inc/InputCore/UHT"
 /I "Runtime/InputCore/Classes"
 /I "Runtime/InputCore/Public"
@@ -54,9 +54,9 @@
 /I "Runtime/CoreUObject/Public"
 /I "Runtime/CorePreciseFP/Public"
 /I "Runtime/Json/Public"
-/I "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/UnrealEditor/Inc/DigimonMMOFramework/UHT"
-/I "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Plugins/DigimonMMOFramework/Source"
-/I "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Public"
+/I "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/UnrealEditor/Inc/DigimonMMOFramework/UHT"
+/I "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source"
+/I "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Public"
 /I "../Intermediate/Build/Win64/UnrealEditor/Inc/Engine/UHT"
 /I "Runtime/Engine/Classes"
 /I "Runtime/Engine/Public"
@@ -351,7 +351,7 @@
 /I "../Intermediate/Build/Win64/UnrealEditor/Inc/AIModule/UHT"
 /I "Runtime/AIModule/Classes"
 /I "Runtime/AIModule/Public"
-/I "C:/Users/Leen/Documents/Unreal Projects/DigimonMMO3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd"
+/I "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd"
 /external:W0
 /external:I "ThirdParty/GuidelinesSupportLibrary/GSL-1144/include"
 /external:I "ThirdParty/AtomicQueue"

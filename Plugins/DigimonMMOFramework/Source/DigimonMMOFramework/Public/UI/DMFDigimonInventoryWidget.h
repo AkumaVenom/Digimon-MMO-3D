@@ -37,6 +37,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Scan & Materialization")
     void RefreshScanData();
 
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Care")
+    void RefreshCareData();
+
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI")
     void SetActiveMenuTab(EDMFDigimonMenuTab NewTab);
 
@@ -100,6 +103,9 @@ protected:
     TObjectPtr<UButton> ScanMaterializeTabButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> CareTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> ScanSpeciesGrid;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
@@ -129,6 +135,39 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> MaterializeDigimonButton;
 
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UImage> CarePortraitImage;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareNameText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareMetaText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareHungerText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UProgressBar> CareHungerProgressBar;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UProgressBar> CareHappinessProgressBar;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UProgressBar> CareDisciplineProgressBar;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareStatisticsText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareWasteStatusText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> CareFeedingRulesText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> FeedDigiMeatButton;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFPlayerDigimonComponent> BoundDigimonComponent;
@@ -140,6 +179,7 @@ private:
 
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> InventoryContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> ScanContentRow;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> CareContentRow;
 
     void BuildNativeFallbackUI();
     void BindDigimonComponent();
@@ -162,6 +202,18 @@ private:
 
     UFUNCTION()
     void HandleScanMaterializeTab();
+
+    UFUNCTION()
+    void HandleCareTab();
+
+    UFUNCTION()
+    void HandleFeedDigiMeat();
+
+    UFUNCTION()
+    void HandleCareStateChanged(FGuid DigimonInstanceId, FDMFDigimonCareState CareState);
+
+    UFUNCTION()
+    void HandleCareSequenceFinished(bool bSuccess, FText Message, FGuid DigimonInstanceId);
 
     UFUNCTION()
     void HandleScanSpeciesPressed(FPrimaryAssetId SpeciesId);

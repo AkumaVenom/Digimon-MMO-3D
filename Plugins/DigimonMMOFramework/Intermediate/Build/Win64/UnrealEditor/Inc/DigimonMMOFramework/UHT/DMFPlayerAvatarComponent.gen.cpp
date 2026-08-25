@@ -270,7 +270,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function ApplyToAccountRecord Property Definitions *****************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 33b54cb53053acf2e22ec9e0160b8a9d5e333ec9
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 0c6bb126aeae0d59bbdbec5b7db6284376b56d73
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -522,7 +522,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromAccountRecord Property Definitions **********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // 33b54cb53053acf2e22ec9e0160b8a9d5e333ec9
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // 0c6bb126aeae0d59bbdbec5b7db6284376b56d73
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -993,11 +993,11 @@ struct UHT_STATICS
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplySelectedSkinToCurrentPawn, "ApplySelectedSkinToCurrentPawn" }, // 975e6acdeb0bf4a10fc4c0d4b2a60e6299d7be7b
-		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // f7973ef3b848348b3471af5427bb2628508360cf
+		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // 2a994164ecfe50a84a09f82c10b04e70941845b0
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ClientPlayerSkinSelectionResult, "ClientPlayerSkinSelectionResult" }, // c0d1a190fa5ad11332038ff7d730e65d9fe94072
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_GetAvailablePlayerSkins, "GetAvailablePlayerSkins" }, // 92eaa4761b26d497ac27f7d19aa41d57f8a3aace
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_GetSelectedPlayerSkinId, "GetSelectedPlayerSkinId" }, // fc890e6e9ac99610f35575232980f00179ba52e3
-		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // 100c25ae91f57c2822664fcd3deff01d681773b2
+		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // 7840fa790c3961f8c892752c3ccb3cceb89568a2
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_IsPlayerSkinSelectionRequired, "IsPlayerSkinSelectionRequired" }, // cb6ac56765d2a3eecc99a87d69caabb93ccd94db
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_OnRep_PlayerSkinSelectionRequired, "OnRep_PlayerSkinSelectionRequired" }, // 483b007a6e8e991cadad9baa3db05e1c0cd82128
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_OnRep_SelectedPlayerSkinId, "OnRep_SelectedPlayerSkinId" }, // 2073d62c0b15c1221515eec83790d34fa1d6cf28
@@ -1106,14 +1106,14 @@ UDMFPlayerAvatarComponent::~UDMFPlayerAvatarComponent() {}
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
 #endif
-#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_Statics
+#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_Statics
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFPlayerAvatarComponent, TEXT("UDMFPlayerAvatarComponent"), &Z_Registration_Info_UClass_UDMFPlayerAvatarComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerAvatarComponent), 937972600U) },
+		{ Z_Construct_UClass_UDMFPlayerAvatarComponent, TEXT("UDMFPlayerAvatarComponent"), &Z_Registration_Info_UClass_UDMFPlayerAvatarComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerAvatarComponent), 2438525087U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_3b9053f3497500aa5f052616bb2be13197ecef7b{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_6380f49c1f45fd7a4b497033419eea6acb6c36ab{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

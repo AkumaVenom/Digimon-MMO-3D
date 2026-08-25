@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/MeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 
 ADMFDigimonCharacter::ADMFDigimonCharacter()
@@ -487,6 +488,48 @@ UDMFDigimonSpeciesData* ADMFDigimonCharacter::ResolveSpeciesData() const
     const FSoftObjectPath Path = AssetManager.GetPrimaryAssetPath(SpeciesId);
     return Path.IsValid() ? Cast<UDMFDigimonSpeciesData>(Path.TryLoad()) : nullptr;
 }
+
+void ADMFDigimonCharacter::MulticastPlayCareFeedingCue_Implementation(const int32 FeedingVoiceIndex)
+{
+    UDMFDigimonSpeciesData* Species = ResolveSpeciesData();
+    if (!Species)
+    {
+        return;
+    }
+
+    if (UAnimMontage* FeedingMontage = Species->FeedingMontage.LoadSynchronous())
+    {
+        if (UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr)
+        {
+            AnimInstance->Montage_Play(FeedingMontage, FMath::Max(0.05f, Species->FeedingMontagePlayRate));
+        }
+    }
+
+    if (Species->FeedingVoiceSounds.IsValidIndex(FeedingVoiceIndex))
+    {
+        if (USoundBase* VoiceSound = Species->FeedingVoiceSounds[FeedingVoiceIndex].LoadSynchronous())
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, VoiceSound, GetActorLocation());
+        }
+    }
+
+    BP_OnCareFeedingCue(FeedingVoiceIndex);
+}
+
+void ADMFDigimonCharacter::MulticastPlayCareWasteCue_Implementation(const int32 FartSoundIndex)
+{
+    UDMFDigimonSpeciesData* Species = ResolveSpeciesData();
+    if (Species && Species->WasteFartSounds.IsValidIndex(FartSoundIndex))
+    {
+        if (USoundBase* FartSound = Species->WasteFartSounds[FartSoundIndex].LoadSynchronous())
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, FartSound, GetActorLocation());
+        }
+    }
+
+    BP_OnCareWasteCue(FartSoundIndex);
+}
+
 
 void ADMFDigimonCharacter::RefreshFrameworkCustomDepth()
 {

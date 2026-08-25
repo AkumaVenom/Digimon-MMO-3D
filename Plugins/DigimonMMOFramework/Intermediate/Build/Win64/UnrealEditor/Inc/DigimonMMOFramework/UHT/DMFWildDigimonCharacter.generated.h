@@ -24,7 +24,7 @@ enum class EDMFWildSpawnRarity : uint8;
 struct Z_Construct_UScriptStruct_FDMFWildGroundTransitionState_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWildGroundTransitionState(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_22_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_22_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFWildGroundTransitionState_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFWildGroundTransitionState(ETypeConstructPhase::Inner); }
 
@@ -33,7 +33,7 @@ struct FDMFWildGroundTransitionState;
 // ********** End ScriptStruct FDMFWildGroundTransitionState ***************************************
 
 // ********** Begin Class ADMFWildDigimonCharacter *************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execOnRep_GroundTransitionState); \
 	DECLARE_FUNCTION(execIsGroundTransitionActive); \
 	DECLARE_FUNCTION(execBeginGroundDespawn); \
@@ -46,11 +46,11 @@ struct FDMFWildGroundTransitionState;
 	DECLARE_FUNCTION(execSetWildAutoBattleEnabled);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFWildDigimonCharacter_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFWildDigimonCharacter(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFWildDigimonCharacter_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFWildDigimonCharacter(ETypeConstructPhase); \
@@ -70,7 +70,7 @@ public: \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	ADMFWildDigimonCharacter(ADMFWildDigimonCharacter&&) = delete; \
 	ADMFWildDigimonCharacter(const ADMFWildDigimonCharacter&) = delete; \
@@ -80,14 +80,14 @@ public: \
 	NO_API virtual ~ADMFWildDigimonCharacter();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_46_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_46_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h_49_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -97,7 +97,7 @@ class ADMFWildDigimonCharacter;
 // ********** End Class ADMFWildDigimonCharacter ***************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonCharacter_h
 
 // ********** Begin Enum EDMFWildGroundTransitionMode **********************************************
 #define FOREACH_ENUM_EDMFWILDGROUNDTRANSITIONMODE(op) \

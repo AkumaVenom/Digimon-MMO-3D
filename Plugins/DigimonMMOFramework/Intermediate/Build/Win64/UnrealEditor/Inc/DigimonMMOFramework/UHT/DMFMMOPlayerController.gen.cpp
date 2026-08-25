@@ -13,6 +13,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 void EmptyLinkFunctionForGeneratedCodeDMFMMOPlayerController() {}
 
 // ********** Begin Cross Module References ********************************************************
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FGuid(ETypeConstructPhase);
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FPrimaryAssetId(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_APlayerController(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -409,6 +410,126 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execCommandPartnerTargetAndAttack)
 }
 // ********** End Class ADMFMMOPlayerController Function CommandPartnerTargetAndAttack *************
 
+// ********** Begin Class ADMFMMOPlayerController Function HandleCareSequenceFinished **************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceFinished_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms
+	{
+		bool bSuccess;
+		FText Message;
+		FGuid DigimonInstanceId;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleCareSequenceFinished constinit property declarations ************
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleCareSequenceFinished constinit property declarations **************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleCareSequenceFinished Property Definitions ***********************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms, Message), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleCareSequenceFinished Property Definitions *************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "HandleCareSequenceFinished", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00840401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventHandleCareSequenceFinished_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceFinished(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execHandleCareSequenceFinished)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY(FTextProperty,Z_Param_Message);
+	P_GET_STRUCT(FGuid,Z_Param_DigimonInstanceId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleCareSequenceFinished(Z_Param_bSuccess,Z_Param_Message,Z_Param_DigimonInstanceId);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function HandleCareSequenceFinished ****************
+
+// ********** Begin Class ADMFMMOPlayerController Function HandleCareSequenceStarted ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceStarted_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventHandleCareSequenceStarted_Parms
+	{
+		FGuid DigimonInstanceId;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleCareSequenceStarted constinit property declarations *************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleCareSequenceStarted constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleCareSequenceStarted Property Definitions ************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventHandleCareSequenceStarted_Parms, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleCareSequenceStarted Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "HandleCareSequenceStarted", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventHandleCareSequenceStarted_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00840401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventHandleCareSequenceStarted_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceStarted(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execHandleCareSequenceStarted)
+{
+	P_GET_STRUCT(FGuid,Z_Param_DigimonInstanceId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleCareSequenceStarted(Z_Param_DigimonInstanceId);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function HandleCareSequenceStarted *****************
+
 // ********** Begin Class ADMFMMOPlayerController Function HandlePlayerSkinRequirementChanged ******
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -594,6 +715,63 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execHandleStarterRequirementChanged)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function HandleStarterRequirementChanged ***********
+
+// ********** Begin Class ADMFMMOPlayerController Function IsCarePresentationActive ****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_IsCarePresentationActive_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventIsCarePresentationActive_Parms
+	{
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function IsCarePresentationActive constinit property declarations **************
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOPlayerController_eventIsCarePresentationActive_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function IsCarePresentationActive constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function IsCarePresentationActive Property Definitions *************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOPlayerController_eventIsCarePresentationActive_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function IsCarePresentationActive Property Definitions ***************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "IsCarePresentationActive", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventIsCarePresentationActive_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventIsCarePresentationActive_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_IsCarePresentationActive(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execIsCarePresentationActive)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->IsCarePresentationActive();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function IsCarePresentationActive ******************
 
 // ********** Begin Class ADMFMMOPlayerController Function IsDigimonInventoryUIOpen ****************
 #ifdef UHT_STATICS
@@ -828,6 +1006,50 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execIsPlayerSkinSelectionUIOpen)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function IsPlayerSkinSelectionUIOpen ***************
+
+// ********** Begin Class ADMFMMOPlayerController Function OpenCareUI ******************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_OpenCareUI_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|UI" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opens the shared Digimon menu directly on the virtual-pet CARE tab. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opens the shared Digimon menu directly on the virtual-pet CARE tab." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OpenCareUI constinit property declarations ****************************
+// ********** End Function OpenCareUI constinit property declarations ******************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "OpenCareUI", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_OpenCareUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenCareUI)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OpenCareUI();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function OpenCareUI ********************************
 
 // ********** Begin Class ADMFMMOPlayerController Function OpenDigimonInventoryUI ******************
 #ifdef UHT_STATICS
@@ -1604,13 +1826,17 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("ClosePlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execClosePlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("CommandActivePartnerAbilitySlot"), .Pointer = &ADMFMMOPlayerController::execCommandActivePartnerAbilitySlot },
 		{ .NameUTF8 = UTF8TEXT("CommandPartnerTargetAndAttack"), .Pointer = &ADMFMMOPlayerController::execCommandPartnerTargetAndAttack },
+		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceFinished"), .Pointer = &ADMFMMOPlayerController::execHandleCareSequenceFinished },
+		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceStarted"), .Pointer = &ADMFMMOPlayerController::execHandleCareSequenceStarted },
 		{ .NameUTF8 = UTF8TEXT("HandlePlayerSkinRequirementChanged"), .Pointer = &ADMFMMOPlayerController::execHandlePlayerSkinRequirementChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleScanDataRewardGranted"), .Pointer = &ADMFMMOPlayerController::execHandleScanDataRewardGranted },
 		{ .NameUTF8 = UTF8TEXT("HandleStarterRequirementChanged"), .Pointer = &ADMFMMOPlayerController::execHandleStarterRequirementChanged },
+		{ .NameUTF8 = UTF8TEXT("IsCarePresentationActive"), .Pointer = &ADMFMMOPlayerController::execIsCarePresentationActive },
 		{ .NameUTF8 = UTF8TEXT("IsDigimonInventoryUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonInventoryUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsDigimonMenuUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonMenuUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsFrameworkPlayerAvatarPossessed"), .Pointer = &ADMFMMOPlayerController::execIsFrameworkPlayerAvatarPossessed },
 		{ .NameUTF8 = UTF8TEXT("IsPlayerSkinSelectionUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsPlayerSkinSelectionUIOpen },
+		{ .NameUTF8 = UTF8TEXT("OpenCareUI"), .Pointer = &ADMFMMOPlayerController::execOpenCareUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonMenuUI },
 		{ .NameUTF8 = UTF8TEXT("OpenPlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execOpenPlayerSkinSelectionUI },
@@ -1636,13 +1862,17 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClosePlayerSkinSelectionUI, "ClosePlayerSkinSelectionUI" }, // aea3717f1069c904491fb40ceb6a641c4744099b
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandActivePartnerAbilitySlot, "CommandActivePartnerAbilitySlot" }, // 23e8ffa3a886714910a4020728670525fc575c67
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandPartnerTargetAndAttack, "CommandPartnerTargetAndAttack" }, // 29f86ad7ebe90c83566ec078666ff7b3fed62be5
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceFinished, "HandleCareSequenceFinished" }, // 19f516ba8872840b2c39243f2545fb5cb8c6d50f
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceStarted, "HandleCareSequenceStarted" }, // 12e99f63bcc79520007a4e4ccecb1a57ee3333e0
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandlePlayerSkinRequirementChanged, "HandlePlayerSkinRequirementChanged" }, // 68dd8a3d5479a2f4ce30a20dc045bdf5faad3e0c
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleScanDataRewardGranted, "HandleScanDataRewardGranted" }, // 8a6ca3842df5e4f71d9dedf3b2f8ae845361dc80
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleStarterRequirementChanged, "HandleStarterRequirementChanged" }, // 234f1c30a81b8146dc2439518b9346db300f0300
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsCarePresentationActive, "IsCarePresentationActive" }, // 5a7fc4571c9e51c59d73d7457472045128624433
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonInventoryUIOpen, "IsDigimonInventoryUIOpen" }, // 30dca46d49345b134256374d71d946aaaaf02902
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonMenuUIOpen, "IsDigimonMenuUIOpen" }, // 28782c7ad6876aac2319228f063dafa4993ac8ce
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsFrameworkPlayerAvatarPossessed, "IsFrameworkPlayerAvatarPossessed" }, // 137e1d5c5a9b74264ed1d4818e7daa146901353f
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsPlayerSkinSelectionUIOpen, "IsPlayerSkinSelectionUIOpen" }, // 1dff57173550fa8c99970326a60d43d1f9750f57
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenCareUI, "OpenCareUI" }, // 4dbc31bd7c13010e3254b6d69f91cd5480fb52f2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonInventoryUI, "OpenDigimonInventoryUI" }, // 3947e5ecc7643b8a10541f4dc0cb64fdc929fe37
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonMenuUI, "OpenDigimonMenuUI" }, // 787480e966b131e71ec312ab075f06312bab1600
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPlayerSkinSelectionUI, "OpenPlayerSkinSelectionUI" }, // d2bef495faf2ebf66a36702e48fbd948f57318c2
@@ -1752,14 +1982,14 @@ ADMFMMOPlayerController::~ADMFMMOPlayerController() {}
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
 #endif
-#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_Statics
+#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_Statics
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 404420283U) },
+		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 1115063034U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_a68d25f8b542b6beadb0e7e63399d5793a7a2dec{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_86acbffcdf95a73bc957bb4c5a53460d85740a6c{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

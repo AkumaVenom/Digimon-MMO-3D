@@ -77,6 +77,114 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execApplyDefeatedPresentation)
 }
 // ********** End Class ADMFDigimonCharacter Function ApplyDefeatedPresentation ********************
 
+// ********** Begin Class ADMFDigimonCharacter Function BP_OnCareFeedingCue ************************
+struct DMFDigimonCharacter_eventBP_OnCareFeedingCue_Parms
+{
+	int32 FeedingVoiceIndex;
+};
+static FName NAME_ADMFDigimonCharacter_BP_OnCareFeedingCue = FName(TEXT("BP_OnCareFeedingCue"));
+void ADMFDigimonCharacter::BP_OnCareFeedingCue(int32 FeedingVoiceIndex)
+{
+	DMFDigimonCharacter_eventBP_OnCareFeedingCue_Parms Parms;
+	Parms.FeedingVoiceIndex=FeedingVoiceIndex;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_BP_OnCareFeedingCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareFeedingCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|Presentation" },
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BP_OnCareFeedingCue constinit property declarations *******************
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FeedingVoiceIndex;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BP_OnCareFeedingCue constinit property declarations *********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BP_OnCareFeedingCue Property Definitions ******************************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FeedingVoiceIndex = { "FeedingVoiceIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventBP_OnCareFeedingCue_Parms, FeedingVoiceIndex), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingVoiceIndex,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BP_OnCareFeedingCue Property Definitions ********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "BP_OnCareFeedingCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventBP_OnCareFeedingCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x08020800, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventBP_OnCareFeedingCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareFeedingCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Class ADMFDigimonCharacter Function BP_OnCareFeedingCue **************************
+
+// ********** Begin Class ADMFDigimonCharacter Function BP_OnCareWasteCue **************************
+struct DMFDigimonCharacter_eventBP_OnCareWasteCue_Parms
+{
+	int32 FartSoundIndex;
+};
+static FName NAME_ADMFDigimonCharacter_BP_OnCareWasteCue = FName(TEXT("BP_OnCareWasteCue"));
+void ADMFDigimonCharacter::BP_OnCareWasteCue(int32 FartSoundIndex)
+{
+	DMFDigimonCharacter_eventBP_OnCareWasteCue_Parms Parms;
+	Parms.FartSoundIndex=FartSoundIndex;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_BP_OnCareWasteCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareWasteCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|Presentation" },
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BP_OnCareWasteCue constinit property declarations *********************
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FartSoundIndex;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BP_OnCareWasteCue constinit property declarations ***********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BP_OnCareWasteCue Property Definitions ********************************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FartSoundIndex = { "FartSoundIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventBP_OnCareWasteCue_Parms, FartSoundIndex), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FartSoundIndex,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BP_OnCareWasteCue Property Definitions **********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "BP_OnCareWasteCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventBP_OnCareWasteCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x08020800, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventBP_OnCareWasteCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareWasteCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Class ADMFDigimonCharacter Function BP_OnCareWasteCue ****************************
+
 // ********** Begin Class ADMFDigimonCharacter Function BP_OnDefeatedPresentationCleared ***********
 static FName NAME_ADMFDigimonCharacter_BP_OnDefeatedPresentationCleared = FName(TEXT("BP_OnDefeatedPresentationCleared"));
 void ADMFDigimonCharacter::BP_OnDefeatedPresentationCleared()
@@ -389,7 +497,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromInstance Property Definitions ***************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // e6e75c2fbf4c76aeacffc5124dd1e08c71077ffa
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // f89e6b19c10f6a21938b5f57ba95c3a42497ea5e
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InOwningPlayerState = { "InOwningPlayerState", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, InOwningPlayerState), Z_Construct_UClass_ADMFPlayerState, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Instance,
@@ -544,6 +652,142 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execIsFacingActor)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFDigimonCharacter Function IsFacingActor ********************************
+
+// ********** Begin Class ADMFDigimonCharacter Function MulticastPlayCareFeedingCue ****************
+struct DMFDigimonCharacter_eventMulticastPlayCareFeedingCue_Parms
+{
+	int32 FeedingVoiceIndex;
+};
+static FName NAME_ADMFDigimonCharacter_MulticastPlayCareFeedingCue = FName(TEXT("MulticastPlayCareFeedingCue"));
+void ADMFDigimonCharacter::MulticastPlayCareFeedingCue(int32 FeedingVoiceIndex)
+{
+	DMFDigimonCharacter_eventMulticastPlayCareFeedingCue_Parms Parms;
+	Parms.FeedingVoiceIndex=FeedingVoiceIndex;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_MulticastPlayCareFeedingCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Replicated native eating presentation. The server chooses the voice index so every viewer hears the same cue. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Replicated native eating presentation. The server chooses the voice index so every viewer hears the same cue." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function MulticastPlayCareFeedingCue constinit property declarations ***********
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FeedingVoiceIndex;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function MulticastPlayCareFeedingCue constinit property declarations *************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function MulticastPlayCareFeedingCue Property Definitions **********************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FeedingVoiceIndex = { "FeedingVoiceIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventMulticastPlayCareFeedingCue_Parms, FeedingVoiceIndex), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingVoiceIndex,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function MulticastPlayCareFeedingCue Property Definitions ************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "MulticastPlayCareFeedingCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventMulticastPlayCareFeedingCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00024CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventMulticastPlayCareFeedingCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execMulticastPlayCareFeedingCue)
+{
+	P_GET_PROPERTY(FIntProperty,Z_Param_FeedingVoiceIndex);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->MulticastPlayCareFeedingCue_Implementation(Z_Param_FeedingVoiceIndex);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function MulticastPlayCareFeedingCue ******************
+
+// ********** Begin Class ADMFDigimonCharacter Function MulticastPlayCareWasteCue ******************
+struct DMFDigimonCharacter_eventMulticastPlayCareWasteCue_Parms
+{
+	int32 FartSoundIndex;
+};
+static FName NAME_ADMFDigimonCharacter_MulticastPlayCareWasteCue = FName(TEXT("MulticastPlayCareWasteCue"));
+void ADMFDigimonCharacter::MulticastPlayCareWasteCue(int32 FartSoundIndex)
+{
+	DMFDigimonCharacter_eventMulticastPlayCareWasteCue_Parms Parms;
+	Parms.FartSoundIndex=FartSoundIndex;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_MulticastPlayCareWasteCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Care|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Replicated waste/fart presentation triggered only by the authoritative care scheduler. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Replicated waste/fart presentation triggered only by the authoritative care scheduler." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function MulticastPlayCareWasteCue constinit property declarations *************
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FartSoundIndex;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function MulticastPlayCareWasteCue constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function MulticastPlayCareWasteCue Property Definitions ************************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FartSoundIndex = { "FartSoundIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventMulticastPlayCareWasteCue_Parms, FartSoundIndex), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FartSoundIndex,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function MulticastPlayCareWasteCue Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "MulticastPlayCareWasteCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventMulticastPlayCareWasteCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00024CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventMulticastPlayCareWasteCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execMulticastPlayCareWasteCue)
+{
+	P_GET_PROPERTY(FIntProperty,Z_Param_FartSoundIndex);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->MulticastPlayCareWasteCue_Implementation(Z_Param_FartSoundIndex);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function MulticastPlayCareWasteCue ********************
 
 // ********** Begin Class ADMFDigimonCharacter Function OnRep_DigimonState *************************
 #ifdef UHT_STATICS
@@ -1079,6 +1323,8 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("InitializeFromInstance"), .Pointer = &ADMFDigimonCharacter::execInitializeFromInstance },
 		{ .NameUTF8 = UTF8TEXT("IsDefeatedPresentationActive"), .Pointer = &ADMFDigimonCharacter::execIsDefeatedPresentationActive },
 		{ .NameUTF8 = UTF8TEXT("IsFacingActor"), .Pointer = &ADMFDigimonCharacter::execIsFacingActor },
+		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareFeedingCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareFeedingCue },
+		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareWasteCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareWasteCue },
 		{ .NameUTF8 = UTF8TEXT("OnRep_DigimonState"), .Pointer = &ADMFDigimonCharacter::execOnRep_DigimonState },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFDigimonCharacter::execRefreshFrameworkCustomDepth },
 		{ .NameUTF8 = UTF8TEXT("ResolveSpeciesData"), .Pointer = &ADMFDigimonCharacter::execResolveSpeciesData },
@@ -1089,15 +1335,19 @@ struct UHT_STATICS
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ApplyDefeatedPresentation, "ApplyDefeatedPresentation" }, // b8440df8e9c35910b0402dd86b71b625bccf2b38
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareFeedingCue, "BP_OnCareFeedingCue" }, // 0560cdbe8b9665aa4ff5f393ecef6f6d9853b114
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnCareWasteCue, "BP_OnCareWasteCue" }, // 44559e821120f910f17eec7b6f3ea319859c3e3a
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDefeatedPresentationCleared, "BP_OnDefeatedPresentationCleared" }, // 386e581d68819559cfb5da9571fd30a088bb9f5a
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDefeatedPresentationStarted, "BP_OnDefeatedPresentationStarted" }, // 1920048099d724fb97a8fc1f5970b5bb8500c921
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigimonStateReady, "BP_OnDigimonStateReady" }, // 473067256b97b7e00f27fdb0a97ee167fd77f1a1
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ClearDefeatedPresentation, "ClearDefeatedPresentation" }, // b14c38225239b24d0a997c135d0859f12f75d5e9
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ConfigureCombatAutomation, "ConfigureCombatAutomation" }, // 9d9c31dff8b2ca3b69dfcb03e31bd8de62e3d82b
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_GetCombatFacingTarget, "GetCombatFacingTarget" }, // 88fac54dc3269cdadfd3e0457f15e26072aef18c
-		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // d6bf0c286abaa8606a53a25f90a383f35e2175eb
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // 6344f28ebe691a3be9cdce028ede718f835c1a5b
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsDefeatedPresentationActive, "IsDefeatedPresentationActive" }, // c6f3ef436154295f09326cdd11f522bb80a74f73
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsFacingActor, "IsFacingActor" }, // 7668a789a94fa255d97d4f46cba6c0236f4e2153
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue, "MulticastPlayCareFeedingCue" }, // a0e74399d79f72c637f3d96e47a259d85b814675
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue, "MulticastPlayCareWasteCue" }, // 70ef942ca92f2582f5251147291095dfa83edf7e
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ResolveSpeciesData, "ResolveSpeciesData" }, // ef9c63bfa88bbcf754437dd5749581017e42c278
@@ -1245,14 +1495,14 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
 #endif
-#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_Statics
+#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_Statics
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 2559452473U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 984698186U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_1e7eb649a88fa08e99e75e57434d3f9513058f44{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_d35f734a813acc6ae5622918628bdfc609e90e7d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

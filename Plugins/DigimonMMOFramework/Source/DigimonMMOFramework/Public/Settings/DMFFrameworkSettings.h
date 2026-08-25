@@ -12,6 +12,8 @@ class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFPlayerSkinData;
+class ADMFDigimonCarePropActor;
+class UStaticMesh;
 class UWorld;
 
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Digimon MMO Framework"))
@@ -94,6 +96,38 @@ public:
     /** Default MMO rule: only framework Wild Digimon victories award Scan Data. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Scan & Materialization")
     bool bAwardScanDataFromWildVictoriesOnly = true;
+
+    /** Master switch for persistent virtual-pet care, feeding and world waste. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care")
+    bool bEnableCareSystem = true;
+
+    /** Authoritative care maintenance cadence. Hunger decay uses UTC deltas, so this does not affect progression accuracy. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care", meta=(ClampMin="1.0", ClampMax="60.0"))
+    float CareServerTickInterval = 10.0f;
+
+    /** Small delay after the owner UI is hidden before the first eating Montage begins. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(ClampMin="0.0", ClampMax="5.0"))
+    float CarePresentationLeadInSeconds = 0.35f;
+
+    /** Pause between complete DigiMeat servings while Feed Until Full is looping. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(ClampMin="0.0", ClampMax="5.0"))
+    float CareInterServingPauseSeconds = 0.20f;
+
+    /** Used only when a feeding Montage is assigned but returns an unusable duration. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Feeding", meta=(ClampMin="0.1", ClampMax="10.0"))
+    float CareFallbackMontageDurationSeconds = 1.0f;
+
+    /** Global DigiMeat mesh. A species can override this while keeping its own socket transform/scale. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Presentation")
+    TSoftObjectPtr<UStaticMesh> DefaultDigiMeatMesh;
+
+    /** Global poo mesh. A species can override this and always controls its own world scale. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Presentation")
+    TSoftObjectPtr<UStaticMesh> DefaultPooMesh;
+
+    /** Blueprint-replaceable replicated prop actor used for both attached DigiMeat and no-collision world poo. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Presentation")
+    TSubclassOf<ADMFDigimonCarePropActor> CarePropActorClass;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat")
     bool bShowNativeCombatQuickBar = true;

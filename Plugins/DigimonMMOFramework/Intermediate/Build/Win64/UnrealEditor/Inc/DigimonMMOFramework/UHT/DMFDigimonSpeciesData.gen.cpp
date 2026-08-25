@@ -13,12 +13,15 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 void EmptyLinkFunctionForGeneratedCodeDMFDigimonSpeciesData() {}
 
 // ********** Begin Cross Module References ********************************************************
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FTransform(ETypeConstructPhase);
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UPrimaryDataAsset(ETypeConstructPhase);
 COREUOBJECT_API UClass* Z_Construct_UClass_UClass(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UAnimMontage(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UParticleSystem(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_USkeletalMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_USoundBase(ETypeConstructPhase);
+ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UTexture2D(ETypeConstructPhase);
 NIAGARA_API UClass* Z_Construct_UClass_UNiagaraSystem(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -358,6 +361,194 @@ struct UHT_STATICS
 		{ "Category", "Animation" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bCareEnabled_MetaData[] = {
+		{ "Category", "Care" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master per-species care switch. Hunger, feeding and waste are ignored when disabled. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master per-species care switch. Hunger, feeding and waste are ignored when disabled." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StartingHungerPercent_MetaData[] = {
+		{ "Category", "Care|Hunger" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** New Digimon begin at this Hunger percentage. In this framework, 100 means fully fed. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "New Digimon begin at this Hunger percentage. In this framework, 100 means fully fed." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HungerDecayPercentPerHour_MetaData[] = {
+		{ "Category", "Care|Hunger" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Real-time Hunger loss per hour, applied by the server and across offline time. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Real-time Hunger loss per hour, applied by the server and across offline time." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiMeatHungerPercentPerServing_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Hunger restored after one complete DigiMeat serving presentation. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Hunger restored after one complete DigiMeat serving presentation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FeedingMontagePlaysPerServing_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "8" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** The feeding Montage is replayed this many times consecutively for each serving. Default is exactly two. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "The feeding Montage is replayed this many times consecutively for each serving. Default is exactly two." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FeedingMontagePlayRate_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.05" },
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiMeatHandSocketName_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Text-writable skeletal socket/bone name used to attach DigiMeat to this species' hand. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Text-writable skeletal socket/bone name used to attach DigiMeat to this species' hand." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiMeatMesh_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional species override. If empty, the framework Default DigiMeat Mesh is used. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional species override. If empty, the framework Default DigiMeat Mesh is used." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiMeatRelativeTransform_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Per-species socket offset/rotation/scale. Scale is intentionally exposed because Digimon skeleton socket scales vary heavily. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Per-species socket offset/rotation/scale. Scale is intentionally exposed because Digimon skeleton socket scales vary heavily." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FeedingVoiceSounds_MetaData[] = {
+		{ "Category", "Care|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Dedicated eating voices. One deterministic index is chosen by the server per serving and multicast to viewers. */" },
+#endif
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Dedicated eating voices. One deterministic index is chosen by the server per serving and multicast to viewers." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bWasteEnabled_MetaData[] = {
+		{ "Category", "Care|Waste" },
+		{ "EditCondition", "bCareEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumWasteDelaySeconds_MetaData[] = {
+		{ "Category", "Care|Waste" },
+		{ "ClampMin", "1.0" },
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumWasteDelaySeconds_MetaData[] = {
+		{ "Category", "Care|Waste" },
+		{ "ClampMin", "1.0" },
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PooMesh_MetaData[] = {
+		{ "Category", "Care|Waste" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional species override. If empty, the framework Default Poo Mesh is used. */" },
+#endif
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional species override. If empty, the framework Default Poo Mesh is used." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PooWorldScale_MetaData[] = {
+		{ "Category", "Care|Waste" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** World scale for the spawned poo actor. */" },
+#endif
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "World scale for the spawned poo actor." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PooGroundOffset_MetaData[] = {
+		{ "Category", "Care|Waste" },
+		{ "ClampMax", "50.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Small offset along the traced ground normal to avoid z-fighting. */" },
+#endif
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Small offset along the traced ground normal to avoid z-fighting." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PooLifetimeSeconds_MetaData[] = {
+		{ "Category", "Care|Waste" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Automatic server-side cleanup lifetime for replicated poo. */" },
+#endif
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Automatic server-side cleanup lifetime for replicated poo." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WasteFartSounds_MetaData[] = {
+		{ "Category", "Care|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional funny fart cues played for all relevant clients when this Digimon poops. */" },
+#endif
+		{ "EditCondition", "bCareEnabled && bWasteEnabled" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional funny fart cues played for all relevant clients when this Digimon poops." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_InteractMontage_MetaData[] = {
 		{ "Category", "Animation" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
@@ -436,6 +627,34 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_Attack2Montage;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DeathMontage;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_FeedingMontage;
+	static void NewProp_bCareEnabled_SetBit(void* Obj)
+	{
+		((UDMFDigimonSpeciesData*)Obj)->bCareEnabled = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bCareEnabled;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_StartingHungerPercent;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_HungerDecayPercentPerHour;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DigiMeatHungerPercentPerServing;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FeedingMontagePlaysPerServing;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FeedingMontagePlayRate;
+	static const UECodeGen_Private::FNamePropertyParams NewProp_DigiMeatHandSocketName;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DigiMeatMesh;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigiMeatRelativeTransform;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_FeedingVoiceSounds_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_FeedingVoiceSounds;
+	static void NewProp_bWasteEnabled_SetBit(void* Obj)
+	{
+		((UDMFDigimonSpeciesData*)Obj)->bWasteEnabled = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bWasteEnabled;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MinimumWasteDelaySeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MaximumWasteDelaySeconds;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_PooMesh;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_PooWorldScale;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PooGroundOffset;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PooLifetimeSeconds;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_WasteFartSounds_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_WasteFartSounds;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_InteractMontage;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_WinMontage;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_Attack1CascadeParticle;
@@ -493,6 +712,26 @@ const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Attack1M
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Attack2Montage = { "Attack2Montage", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Attack2Montage), Z_Construct_UClass_UAnimMontage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Attack2Montage_MetaData), NewProp_Attack2Montage_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DeathMontage = { "DeathMontage", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DeathMontage), Z_Construct_UClass_UAnimMontage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DeathMontage_MetaData), NewProp_DeathMontage_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_FeedingMontage = { "FeedingMontage", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, FeedingMontage), Z_Construct_UClass_UAnimMontage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FeedingMontage_MetaData), NewProp_FeedingMontage_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bCareEnabled = { "bCareEnabled", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFDigimonSpeciesData), &UHT_STATICS::NewProp_bCareEnabled_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bCareEnabled_MetaData), NewProp_bCareEnabled_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_StartingHungerPercent = { "StartingHungerPercent", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, StartingHungerPercent), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StartingHungerPercent_MetaData), NewProp_StartingHungerPercent_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_HungerDecayPercentPerHour = { "HungerDecayPercentPerHour", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, HungerDecayPercentPerHour), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HungerDecayPercentPerHour_MetaData), NewProp_HungerDecayPercentPerHour_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigiMeatHungerPercentPerServing = { "DigiMeatHungerPercentPerServing", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DigiMeatHungerPercentPerServing), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiMeatHungerPercentPerServing_MetaData), NewProp_DigiMeatHungerPercentPerServing_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FeedingMontagePlaysPerServing = { "FeedingMontagePlaysPerServing", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, FeedingMontagePlaysPerServing), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FeedingMontagePlaysPerServing_MetaData), NewProp_FeedingMontagePlaysPerServing_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_FeedingMontagePlayRate = { "FeedingMontagePlayRate", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, FeedingMontagePlayRate), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FeedingMontagePlayRate_MetaData), NewProp_FeedingMontagePlayRate_MetaData) };
+const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_DigiMeatHandSocketName = { "DigiMeatHandSocketName", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Name, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DigiMeatHandSocketName), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiMeatHandSocketName_MetaData), NewProp_DigiMeatHandSocketName_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DigiMeatMesh = { "DigiMeatMesh", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DigiMeatMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiMeatMesh_MetaData), NewProp_DigiMeatMesh_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigiMeatRelativeTransform = { "DigiMeatRelativeTransform", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DigiMeatRelativeTransform), Z_Construct_UScriptStruct_FTransform, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiMeatRelativeTransform_MetaData), NewProp_DigiMeatRelativeTransform_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_FeedingVoiceSounds_Inner = { "FeedingVoiceSounds", nullptr, (EPropertyFlags)0x0004000000000000, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, 0, Z_Construct_UClass_USoundBase, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_FeedingVoiceSounds = { "FeedingVoiceSounds", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, FeedingVoiceSounds), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FeedingVoiceSounds_MetaData), NewProp_FeedingVoiceSounds_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bWasteEnabled = { "bWasteEnabled", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFDigimonSpeciesData), &UHT_STATICS::NewProp_bWasteEnabled_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bWasteEnabled_MetaData), NewProp_bWasteEnabled_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumWasteDelaySeconds = { "MinimumWasteDelaySeconds", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, MinimumWasteDelaySeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumWasteDelaySeconds_MetaData), NewProp_MinimumWasteDelaySeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MaximumWasteDelaySeconds = { "MaximumWasteDelaySeconds", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, MaximumWasteDelaySeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumWasteDelaySeconds_MetaData), NewProp_MaximumWasteDelaySeconds_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_PooMesh = { "PooMesh", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, PooMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PooMesh_MetaData), NewProp_PooMesh_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PooWorldScale = { "PooWorldScale", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, PooWorldScale), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PooWorldScale_MetaData), NewProp_PooWorldScale_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PooGroundOffset = { "PooGroundOffset", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, PooGroundOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PooGroundOffset_MetaData), NewProp_PooGroundOffset_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PooLifetimeSeconds = { "PooLifetimeSeconds", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, PooLifetimeSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PooLifetimeSeconds_MetaData), NewProp_PooLifetimeSeconds_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_WasteFartSounds_Inner = { "WasteFartSounds", nullptr, (EPropertyFlags)0x0004000000000000, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, 0, Z_Construct_UClass_USoundBase, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_WasteFartSounds = { "WasteFartSounds", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, WasteFartSounds), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WasteFartSounds_MetaData), NewProp_WasteFartSounds_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_InteractMontage = { "InteractMontage", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, InteractMontage), Z_Construct_UClass_UAnimMontage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InteractMontage_MetaData), NewProp_InteractMontage_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_WinMontage = { "WinMontage", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, WinMontage), Z_Construct_UClass_UAnimMontage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WinMontage_MetaData), NewProp_WinMontage_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Attack1CascadeParticle = { "Attack1CascadeParticle", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Attack1CascadeParticle), Z_Construct_UClass_UParticleSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Attack1CascadeParticle_MetaData), NewProp_Attack1CascadeParticle_MetaData) };
@@ -541,6 +780,26 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Attack2Montage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DeathMontage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingMontage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bCareEnabled,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingHungerPercent,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_HungerDecayPercentPerHour,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiMeatHungerPercentPerServing,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingMontagePlaysPerServing,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingMontagePlayRate,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiMeatHandSocketName,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiMeatMesh,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiMeatRelativeTransform,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingVoiceSounds_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedingVoiceSounds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bWasteEnabled,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumWasteDelaySeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumWasteDelaySeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PooMesh,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PooWorldScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PooGroundOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PooLifetimeSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WasteFartSounds_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WasteFartSounds,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InteractMontage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WinMontage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Attack1CascadeParticle,
@@ -615,17 +874,17 @@ UDMFDigimonSpeciesData::~UDMFDigimonSpeciesData() {}
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
 #endif
-#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_Statics
+#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_Statics
 struct UHT_STATICS
 {
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
 		{ Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement_Statics::NewStructOps, TEXT("DMFDigivolutionRequirement"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionRequirement, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionRequirement), 3240359619U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 3841450806U) },
+		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 1845031583U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_84ca54224405add4ec97f446491ab5b9e88c079a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_5e324b94ea1ecba825662693caf02eef8ed32e67{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

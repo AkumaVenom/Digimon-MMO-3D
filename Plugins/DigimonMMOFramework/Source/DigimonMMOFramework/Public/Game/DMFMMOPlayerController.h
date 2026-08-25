@@ -69,6 +69,13 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Scan & Materialization|UI")
     void OpenScanMaterializeUI();
 
+    /** Opens the shared Digimon menu directly on the virtual-pet CARE tab. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Care|UI")
+    void OpenCareUI();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Care|UI")
+    bool IsCarePresentationActive() const { return bCarePresentationActive; }
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Inventory|UI")
     bool IsDigimonInventoryUIOpen() const { return DigimonInventoryWidget != nullptr; }
 
@@ -133,6 +140,8 @@ private:
 
     bool bPlayerSkinMenuOpenedManually = false;
     bool bFrameworkModalInputLocked = false;
+    bool bCarePresentationActive = false;
+    bool bReopenCareMenuAfterSequence = false;
 
     FTimerHandle StarterUIRetryTimer;
     FTimerHandle AvatarUIRetryTimer;
@@ -144,6 +153,12 @@ private:
 
     UFUNCTION()
     void HandleScanDataRewardGranted(FPrimaryAssetId SpeciesId, float AddedPercent, float NewPercent, bool bMaterializationReady);
+
+    UFUNCTION()
+    void HandleCareSequenceStarted(FGuid DigimonInstanceId);
+
+    UFUNCTION()
+    void HandleCareSequenceFinished(bool bSuccess, FText Message, FGuid DigimonInstanceId);
 
     UFUNCTION()
     void HandlePlayerSkinRequirementChanged(bool bRequired);

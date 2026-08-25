@@ -18,7 +18,7 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 // ********** Begin Class UDMFCredentialUtility ****************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execIsValidUsername); \
 	DECLARE_FUNCTION(execHashCredential);
 
@@ -26,7 +26,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 struct Z_Construct_UClass_UDMFCredentialUtility_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFCredentialUtility(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_UDMFCredentialUtility_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_UDMFCredentialUtility(ETypeConstructPhase); \
@@ -35,7 +35,7 @@ public: \
 	DECLARE_SERIALIZER(UDMFCredentialUtility)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API UDMFCredentialUtility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
@@ -47,13 +47,13 @@ public: \
 	NO_API virtual ~UDMFCredentialUtility();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_7_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_7_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h_10_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -63,6 +63,6 @@ class UDMFCredentialUtility;
 // ********** End Class UDMFCredentialUtility ******************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Utility_DMFCredentialUtility_h
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

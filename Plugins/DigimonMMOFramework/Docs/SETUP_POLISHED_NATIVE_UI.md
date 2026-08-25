@@ -144,4 +144,13 @@ The v0.6 native layout adds new **optional** bindings. Legacy optional bindings 
 12. Repeat in a two-client network test and confirm all UI reflects replicated/server-authoritative state rather than creating local gameplay state.
 
 ## v0.7.0 shared Digimon menu shell
-The v0.6 Collection presentation is now page one of the shared **DIGIMON MENU**. The native fallback adds `COLLECTION` and `SCAN & MATERIALIZE` tabs without removing any existing Collection slot/detail bindings. Use `Species -> Portrait` for both pages. Projects using a Blueprint child can mirror the same tab architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, and `Refresh Scan Data`. Future Bank/Party/Digivolution/Care work should extend this shell rather than creating disconnected full-screen menus.
+The v0.6 Collection presentation is now page one of the shared **DIGIMON MENU**. The native fallback adds `COLLECTION`, `SCAN & MATERIALIZE` and `CARE` tabs without removing any existing Collection slot/detail bindings. Use `Species -> Portrait` for both pages. Projects using a Blueprint child can mirror the same tab architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Scan Data`, and `Refresh Care Data`. Future Bank/Party/Digivolution work should extend this shell rather than creating disconnected full-screen menus.
+
+
+## v0.8.0 CARE page
+
+The native fallback now provides a third first-class page, **CARE**, using the same 1180×720 menu shell, dark raised panels, cyan accent hierarchy and gold secondary emphasis as Collection and Scan. The page shows the active partner portrait/meta, a large Hunger meter, Happiness and Discipline meters, Care Mistakes, unlimited DigiMeat rules, waste/digestion status and the server-backed `FEED DIGIMEAT UNTIL FULL` action.
+
+When feeding is accepted, the widget is intentionally removed rather than left translucent over the world. `ADMFMMOPlayerController` also removes the combat quickbar and restores game input before the first eating Montage. At server completion it recreates the menu and selects `EDMFDigimonMenuTab::Care`, so the player sees the updated Hunger state immediately after watching the animation.
+
+Blueprint children may replace the layout while retaining `RefreshCareData`, `SetActiveMenuTab(Care)` and the owner component care delegates/RPC. Keep gameplay mutation on `UDMFPlayerDigimonComponent`; do not award Hunger from widget Blueprint logic.

@@ -20,16 +20,16 @@ class ADMFPlayerAvatarCharacter;
 class APlayerController;
 
 // ********** Begin Class ADMFMMOGameMode **********************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execHasFrameworkPlayerAvatar); \
 	DECLARE_FUNCTION(execEnsureFrameworkPlayerAvatar);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFMMOGameMode_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFMMOGameMode_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase); \
@@ -38,7 +38,7 @@ public: \
 	DECLARE_SERIALIZER(ADMFMMOGameMode)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	ADMFMMOGameMode(ADMFMMOGameMode&&) = delete; \
 	ADMFMMOGameMode(const ADMFMMOGameMode&) = delete; \
@@ -48,14 +48,14 @@ public: \
 	NO_API virtual ~ADMFMMOGameMode();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_9_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_9_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -65,6 +65,6 @@ class ADMFMMOGameMode;
 // ********** End Class ADMFMMOGameMode ************************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

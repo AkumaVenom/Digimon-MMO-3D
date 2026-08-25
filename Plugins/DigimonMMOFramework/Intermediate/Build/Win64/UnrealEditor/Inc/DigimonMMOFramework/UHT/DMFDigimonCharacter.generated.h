@@ -22,12 +22,16 @@ class UDMFDigimonSpeciesData;
 struct FDMFDigimonInstance;
 
 // ********** Begin Class ADMFDigimonCharacter *****************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual void MulticastPlayCareWasteCue_Implementation(int32 FartSoundIndex); \
+	virtual void MulticastPlayCareFeedingCue_Implementation(int32 FeedingVoiceIndex); \
 	DECLARE_FUNCTION(execOnRep_DigimonState); \
 	DECLARE_FUNCTION(execRefreshFrameworkCustomDepth); \
 	DECLARE_FUNCTION(execIsDefeatedPresentationActive); \
 	DECLARE_FUNCTION(execClearDefeatedPresentation); \
 	DECLARE_FUNCTION(execApplyDefeatedPresentation); \
+	DECLARE_FUNCTION(execMulticastPlayCareWasteCue); \
+	DECLARE_FUNCTION(execMulticastPlayCareFeedingCue); \
 	DECLARE_FUNCTION(execResolveSpeciesData); \
 	DECLARE_FUNCTION(execGetCombatFacingTarget); \
 	DECLARE_FUNCTION(execIsFacingActor); \
@@ -38,11 +42,11 @@ struct FDMFDigimonInstance;
 	DECLARE_FUNCTION(execInitializeFromInstance);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFDigimonCharacter_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCharacter(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFDigimonCharacter_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFDigimonCharacter(ETypeConstructPhase); \
@@ -62,7 +66,7 @@ public: \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	ADMFDigimonCharacter(ADMFDigimonCharacter&&) = delete; \
 	ADMFDigimonCharacter(const ADMFDigimonCharacter&) = delete; \
@@ -72,14 +76,14 @@ public: \
 	NO_API virtual ~ADMFDigimonCharacter();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_14_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_14_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_17_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -89,6 +93,6 @@ class ADMFDigimonCharacter;
 // ********** End Class ADMFDigimonCharacter *******************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

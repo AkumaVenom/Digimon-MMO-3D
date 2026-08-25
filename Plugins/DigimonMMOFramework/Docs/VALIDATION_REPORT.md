@@ -1,5 +1,44 @@
 # Validation Report
 
+## v0.8.1-alpha — Care Prop CustomDepth Cel-Shading source validation
+
+This patch is intentionally presentation-only over the user-runtime-validated v0.8.0 Care build. Unreal Engine/UnrealBuildTool is not installed in this environment, so the authoritative acceptance gate remains a clean UE5.8.1 compile plus host/remote-client PIE.
+
+Validated source contracts include:
+- Final static gate covers **66 C++/header/build source files and 14,768 source/build lines**.
+- The existing **27 reflected Server/Client/NetMulticast RPC declarations** still all have matching `_Implementation` bodies; this rendering patch adds no RPCs.
+- `ADMFDigimonCarePropActor` forces CustomDepth in its native mesh constructor and reasserts it through `OnConstruction`, `BeginPlay` and `ApplyPresentation`.
+- `RefreshFrameworkCustomDepth()` enumerates all owned `UMeshComponent` instances, so Blueprint-added Care presentation meshes can be reasserted as well.
+- `CustomDepthStencilValue` is clamped to Unreal's `0-255` stencil range and defaults to `0`, matching the existing framework character contract.
+- CustomDepth/stencil state is not replicated and does not alter server authority, RPC count, owner-only Care persistence, feeding timing, DigiMeat attachment, waste placement, collision or cleanup.
+- Existing v0.8.0 Care and v0.7.1 Scan/Materialization source remains additive; no feature-removal migration is introduced by this patch.
+
+Required runtime acceptance: verify attached DigiMeat and spawned poo are affected by the existing project cel-shading post process on both host and remote client, while poo remains fully non-colliding and self-cleaning.
+
+## v0.8.0-alpha — Virtual-Pet Care source validation
+
+Static/source validation was performed against the user-runtime-validated v0.7.1 Scan & Materialization baseline. Unreal Engine/UnrealBuildTool is not installed in this environment; therefore no claim of UE5.8.1 compilation or PIE runtime acceptance is made for v0.8.0 until the project is compiled/tested by the user.
+
+Validated source contracts include:
+- Final static gate covers **66 C++/header/build source files and 14,718 source/build lines**.
+- **27 reflected Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies.
+- Generated-header include ordering passes for every modified header; modified source delimiters balance; no runtime `TODO`/`FIXME` placeholders or UE5.8 `UWidget::Slot` shadow candidates were introduced.
+- Care state remains inside `FDMFDigimonInstance` and therefore follows existing owner-only Fast Array replication/account persistence instead of creating a client-owned parallel ledger.
+- New/materialized instances initialize species-driven Hunger; v0.7.x dormant care defaults receive a compatibility migration.
+- Account SaveGame schema is bumped to v3; earlier v2 player-skin persistence is preserved and legacy Care semantics are migrated at authoritative account initialization.
+- Server UTC time owns online/offline Hunger decay and persisted waste due times.
+- The global Care master switch freezes Care progression consistently across live ticks, partner selection and autosave normalization; disabling the feature cannot decay Hunger behind the disabled UI.
+- `ServerFeedActivePartnerUntilFull` independently validates the summoned owned partner, health, idle combat, species care enablement, Feeding Montage, DigiMeat mesh and configured hand socket.
+- Feeding creates a replicated care prop, attaches it to the species socket using an exposed relative transform/scale, plays the server-controlled Montage count sequentially, awards Hunger only after a complete serving and persists each serving.
+- Owner menu/quickbar hiding is presentation-only and occurs before a configurable server lead-in; completion returns the menu to CARE.
+- Conflicting partner/combat RPCs are rejected while care is active and combat automation is disabled during feeding.
+- Waste is server scheduled/spawned, uses a ground trace at the partner location, replicates presentation, forces collision/overlap/navigation off and self-cleans through actor lifespan.
+- Feeding/fart audio indices are selected on authority and sent through existing replicated character presentation.
+- CARE is integrated into the existing tabbed native menu rather than a disconnected UI.
+- README, changelog, Care setup, architecture, networking, roadmap, native UI setup, test plan, validation report and config template are updated for this milestone.
+
+Required authoritative acceptance: clean UE5.8.1 compile, then the full host + remote-client Care checklist in `TEST_PLAN.md`, followed by existing Scan/Materialization and combat regression tests.
+
 ## v0.7.1-alpha — UE5.8 Scan Toast Slot Shadow Compile Fix
 
 ### Compiler feedback addressed

@@ -33,6 +33,14 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // and will follow the configured first-time skin-selection policy.
             Database->SchemaVersion = 2;
         }
+
+        if (Database->SchemaVersion < 3)
+        {
+            // v3 formalizes persistent virtual-pet Care state. The serialized struct already carries
+            // backward-compatible defaults; the authoritative Digimon component performs the one-time
+            // legacy Hunger/Fullness semantic migration when each account is initialized.
+            Database->SchemaVersion = 3;
+        }
     }
     else
     {

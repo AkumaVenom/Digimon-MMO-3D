@@ -15,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeDMFFrameworkSettings() {}
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 DEVELOPERSETTINGS_API UClass* Z_Construct_UClass_UDeveloperSettings(ETypeConstructPhase);
 COREUOBJECT_API UClass* Z_Construct_UClass_UClass(ETypeConstructPhase);
+ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
@@ -22,6 +23,7 @@ ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
 UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFCombatQuickBarWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCarePropActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFLoginMainMenuWidget(ETypeConstructPhase);
@@ -184,6 +186,94 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Default MMO rule: only framework Wild Digimon victories award Scan Data." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableCareSystem_MetaData[] = {
+		{ "Category", "Care" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for persistent virtual-pet care, feeding and world waste. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for persistent virtual-pet care, feeding and world waste." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CareServerTickInterval_MetaData[] = {
+		{ "Category", "Care" },
+		{ "ClampMax", "60.0" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Authoritative care maintenance cadence. Hunger decay uses UTC deltas, so this does not affect progression accuracy. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Authoritative care maintenance cadence. Hunger decay uses UTC deltas, so this does not affect progression accuracy." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CarePresentationLeadInSeconds_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Small delay after the owner UI is hidden before the first eating Montage begins. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Small delay after the owner UI is hidden before the first eating Montage begins." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CareInterServingPauseSeconds_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Pause between complete DigiMeat servings while Feed Until Full is looping. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Pause between complete DigiMeat servings while Feed Until Full is looping." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CareFallbackMontageDurationSeconds_MetaData[] = {
+		{ "Category", "Care|Feeding" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Used only when a feeding Montage is assigned but returns an unusable duration. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Used only when a feeding Montage is assigned but returns an unusable duration." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultDigiMeatMesh_MetaData[] = {
+		{ "Category", "Care|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global DigiMeat mesh. A species can override this while keeping its own socket transform/scale. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global DigiMeat mesh. A species can override this while keeping its own socket transform/scale." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultPooMesh_MetaData[] = {
+		{ "Category", "Care|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global poo mesh. A species can override this and always controls its own world scale. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global poo mesh. A species can override this and always controls its own world scale." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CarePropActorClass_MetaData[] = {
+		{ "Category", "Care|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Blueprint-replaceable replicated prop actor used for both attached DigiMeat and no-collision world poo. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Blueprint-replaceable replicated prop actor used for both attached DigiMeat and no-collision world poo." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativeCombatQuickBar_MetaData[] = {
@@ -356,6 +446,18 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bAwardScanDataFromWildVictoriesOnly = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAwardScanDataFromWildVictoriesOnly;
+	static void NewProp_bEnableCareSystem_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableCareSystem = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableCareSystem;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_CareServerTickInterval;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_CarePresentationLeadInSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_CareInterServingPauseSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_CareFallbackMontageDurationSeconds;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultDigiMeatMesh;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultPooMesh;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_CarePropActorClass;
 	static void NewProp_bShowNativeCombatQuickBar_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bShowNativeCombatQuickBar = 1;
@@ -422,6 +524,14 @@ const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ScanNotificat
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeScanNotifications = { "bShowNativeScanNotifications", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeScanNotifications_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeScanNotifications_MetaData), NewProp_bShowNativeScanNotifications_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableScanAndMaterialization = { "bEnableScanAndMaterialization", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableScanAndMaterialization_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableScanAndMaterialization_MetaData), NewProp_bEnableScanAndMaterialization_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAwardScanDataFromWildVictoriesOnly = { "bAwardScanDataFromWildVictoriesOnly", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAwardScanDataFromWildVictoriesOnly_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAwardScanDataFromWildVictoriesOnly_MetaData), NewProp_bAwardScanDataFromWildVictoriesOnly_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableCareSystem = { "bEnableCareSystem", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableCareSystem_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableCareSystem_MetaData), NewProp_bEnableCareSystem_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_CareServerTickInterval = { "CareServerTickInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CareServerTickInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareServerTickInterval_MetaData), NewProp_CareServerTickInterval_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_CarePresentationLeadInSeconds = { "CarePresentationLeadInSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CarePresentationLeadInSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CarePresentationLeadInSeconds_MetaData), NewProp_CarePresentationLeadInSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_CareInterServingPauseSeconds = { "CareInterServingPauseSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CareInterServingPauseSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareInterServingPauseSeconds_MetaData), NewProp_CareInterServingPauseSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_CareFallbackMontageDurationSeconds = { "CareFallbackMontageDurationSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CareFallbackMontageDurationSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareFallbackMontageDurationSeconds_MetaData), NewProp_CareFallbackMontageDurationSeconds_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultDigiMeatMesh = { "DefaultDigiMeatMesh", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultDigiMeatMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultDigiMeatMesh_MetaData), NewProp_DefaultDigiMeatMesh_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultPooMesh = { "DefaultPooMesh", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultPooMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultPooMesh_MetaData), NewProp_DefaultPooMesh_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CarePropActorClass = { "CarePropActorClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CarePropActorClass), Z_Construct_UClass_UClass, Z_Construct_UClass_ADMFDigimonCarePropActor, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CarePropActorClass_MetaData), NewProp_CarePropActorClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeCombatQuickBar = { "bShowNativeCombatQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeCombatQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeCombatQuickBar_MetaData), NewProp_bShowNativeCombatQuickBar_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings = { "bEnableDefaultCombatInputBindings", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultCombatInputBindings_MetaData), NewProp_bEnableDefaultCombatInputBindings_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultClickTargetInput = { "bEnableDefaultClickTargetInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultClickTargetInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultClickTargetInput_MetaData), NewProp_bEnableDefaultClickTargetInput_MetaData) };
@@ -459,6 +569,14 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeScanNotifications,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableScanAndMaterialization,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAwardScanDataFromWildVictoriesOnly,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableCareSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareServerTickInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CarePresentationLeadInSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareInterServingPauseSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareFallbackMontageDurationSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultDigiMeatMesh,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultPooMesh,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CarePropActorClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeCombatQuickBar,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultClickTargetInput,
@@ -539,14 +657,14 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
 #endif
-#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_Statics
+#define UHT_STATICS Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_Statics
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2904173459U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1389595045U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_ecb0814d76d42193e1532e8be9035670fff94336{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_7b7541bb889deb71444524ea8a25ea2fc9110d8f{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

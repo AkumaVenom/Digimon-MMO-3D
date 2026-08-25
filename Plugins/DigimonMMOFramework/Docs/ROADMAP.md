@@ -27,7 +27,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Attack 1/2 montage + Cascade/Niagara execution and replicated cues.
 - Death/win handling and battle rewards.
 
-## Phase 3 — Capture progression
+## Phase 3 — Capture progression (implemented in v0.7.0-alpha)
 - Species scan-data ledger.
 - Battle victory scan rewards.
 - 100% materialization eligibility.
@@ -48,12 +48,16 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Native drag/drop item UI and quick slots.
 - Feed items integrated with Digimon care.
 
-## Phase 6 — Virtual-pet care
-- Hunger/fullness/care progression.
-- Feeding interaction and montage.
-- Server time-based waste scheduling.
-- Replicated world poop actor/static mesh at the Digimon's actual location.
-- Care mistake/evolution hooks.
+## Phase 6 — Virtual-pet care (core implemented in v0.8.0-alpha)
+- Persistent Hunger/fullness with server UTC online/offline decay — IMPLEMENTED.
+- Unlimited DigiMeat feeding with per-species hand socket, transform/scale, sequential eating Montages and voice cues — IMPLEMENTED.
+- Feeding presentation hides the Digimon Menu/quickbar, then returns directly to CARE — IMPLEMENTED.
+- Persistent server time-based waste scheduling — IMPLEMENTED.
+- Replicated, scalable, no-collision world poo actor placed on traced ground at the Digimon's standing location — IMPLEMENTED.
+- DigiMeat and poo automatically participate in framework CustomDepth/cel-shading presentation with Blueprint-tunable stencil value — IMPLEMENTED in v0.8.1-alpha.
+- Fart presentation + automatic waste cleanup lifetime — IMPLEMENTED.
+- Happiness, Discipline and Care Mistakes are persistent/exposed foundations; gameplay rules that mutate them remain future care expansion.
+- Care-state digivolution requirements/hooks remain Phase 7 integration work.
 
 ## Phase 7 — Growth and digivolution
 - EXP curves and level-up rewards.
@@ -110,4 +114,4 @@ Future UI work can build on this presentation layer for full drag/drop party slo
 - AI controller yaw hardening for target-facing.
 
 - Scan & Materialization — IMPLEMENTED in v0.7.0-alpha
-- Future shared Digimon menu tabs: Bank, Party, Digivolution, Care
+- Future shared Digimon menu tabs: Bank, Party, Digivolution

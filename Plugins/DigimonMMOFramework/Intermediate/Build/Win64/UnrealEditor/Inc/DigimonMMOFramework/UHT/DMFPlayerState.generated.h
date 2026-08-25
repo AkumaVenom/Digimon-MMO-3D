@@ -18,7 +18,7 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 // ********** Begin Class ADMFPlayerState **********************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execSetAuthenticatedAccount); \
 	DECLARE_FUNCTION(execGetAuthenticatedUsername);
 
@@ -26,7 +26,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 struct Z_Construct_UClass_ADMFPlayerState_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFPlayerState(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFPlayerState_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFPlayerState(ETypeConstructPhase); \
@@ -41,7 +41,7 @@ public: \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	ADMFPlayerState(ADMFPlayerState&&) = delete; \
 	ADMFPlayerState(const ADMFPlayerState&) = delete; \
@@ -51,13 +51,13 @@ public: \
 	NO_API virtual ~ADMFPlayerState();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_10_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_10_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h_13_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -67,6 +67,6 @@ class ADMFPlayerState;
 // ********** End Class ADMFPlayerState ************************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerState_h
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

@@ -1,9 +1,29 @@
-# UE5.8 Validation Plan — 0.6.4-alpha
+# UE5.8 Validation Plan — 0.8.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.6.4 specifically requires regression testing of repeatable SP-cost abilities, buffered manual input, combat-facing, multiplayer possession, polished UI, passive wild retaliation and the existing spawner/persistence contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.8.1 adds Care-prop CustomDepth/cel-shading integration on top of the v0.8.0 server-authoritative virtual-pet Care milestone while retaining all Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+
+## A0. v0.8.1 Care / CustomDepth / feeding / waste multiplayer acceptance
+
+1. Configure one species with Care enabled, Hunger below 100, Feeding Montage, valid text-entered hand socket, DigiMeat mesh/relative scale, feeding voice, Poo mesh/world scale, fart sound, and temporary 10–20 second waste delay.
+2. Run two-player PIE: listen host + remote client, with a summoned partner for each separate account.
+3. Host opens `I -> CARE`; verify the panel shows only the host account's active partner and persistent care values.
+4. Host presses **FEED DIGIMEAT UNTIL FULL**. Verify Digimon Menu and combat quickbar disappear **before** the first Montage and gameplay view/input return.
+5. Verify both peers see the replicated DigiMeat attached to the configured hand socket at the species-specific scale **and affected by the project's CustomDepth cel shader**.
+6. Verify exactly two complete eating Montage plays occur per serving by default, in sequence; voice plays from the server-selected species sound.
+7. Verify Hunger changes only after the pair completes; servings repeat until 100%; no client can attack/change target/recall/swap/toggle auto-battle during the sequence.
+8. Verify menu automatically reappears directly on CARE with refreshed 100% Hunger when feeding completes.
+9. Repeat steps 3–8 from the remote client and confirm only that client's private care state changes while the host still sees shared 3D presentation.
+10. Wait for waste. Verify both peers see the correct Digimon produce a fart cue and a scalable poo actor appears on traced ground beneath its standing location **and is affected by the project's CustomDepth cel shader**.
+11. Walk through/stand in the poo; verify it has no collision/overlap blocking and does not affect navigation.
+12. Verify the server lifespan removes the poo for both peers.
+12a. If using a non-zero stencil convention, set `CustomDepthStencilValue` on a Blueprint child of `DMFDigimonCarePropActor`, repeat DigiMeat + poo presentation, and verify both meshes write the expected stencil locally on host and client.
+13. Feed again, log out before waste is due, reconnect after due time and summon; verify overdue persistent waste resolves after the partner exists in-world.
+14. Reconnect both accounts and verify Hunger/next-waste/care values remain account-separated.
+15. Restore production waste delay/lifetime and run the existing Scan/Materialization + combat regression tests below.
 
 
-## A0. v0.6.4 repeat-safe ability regression
+
+## A1. v0.6.4 repeat-safe ability regression
 
 1. Use a partner with at least 20 SP and a slot-1 ability costing 5 SP.
 2. Target a durable wild Digimon with `E`.

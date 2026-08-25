@@ -154,4 +154,17 @@ Ability range is evaluated by the authoritative combat component as horizontal c
 
 `UDMFPlayerDigimonComponent` owns the authoritative per-account `ReplicatedScanData` array (`COND_OwnerOnly`). `HandleAuthoritativeBattleVictory` is the single mutation boundary for scan rewards. Species tuning comes from `UDMFDigimonSpeciesData`; no client-supplied reward values are accepted. Materialization is a server RPC that resolves the species, re-checks progress and capacity, validates a partner WorldActorClass, builds a unique `FDMFDigimonInstance`, subtracts the requirement, marks Collection replication dirty and persists immediately.
 
-The native `UDMFDigimonInventoryWidget` is now the tabbed Digimon menu shell. Collection and Scan/Materialize are current tabs; future modules should add pages to this shell instead of creating unrelated full-screen menus. `UDMFScanNotificationWidget` is presentation-only and receives owner-client reward events after the server has mutated state.
+The native `UDMFDigimonInventoryWidget` is now the tabbed Digimon menu shell. Collection, Scan/Materialize and Care are current tabs; future modules should add pages to this shell instead of creating unrelated full-screen menus. `UDMFScanNotificationWidget` is presentation-only and receives owner-client reward events after the server has mutated state.
+
+
+## v0.8.0 virtual-pet Care authority
+
+`UDMFPlayerDigimonComponent` is the authoritative Care state machine. `FDMFDigimonInstance::Care` remains part of the same owner-only replicated Fast Array and server account record as combat vitals/stats. Hunger decay is integrated from server UTC timestamps, feeding requests contain no client-provided reward/timing values, and successful serving/waste transitions persist through the existing account subsystem.
+
+`UDMFDigimonSpeciesData` owns static tuning/presentation references: starting Hunger, decay rate, Hunger per serving, Feeding Montage play count/rate, text-writable hand socket, DigiMeat mesh/relative transform (including scale), feeding voices, waste delay range, poo mesh/world scale/ground offset/lifetime and fart sounds. Project-wide fallback DigiMeat/Poo meshes and timing values live in `UDMFFrameworkSettings`.
+
+`ADMFDigimonCarePropActor` is a lightweight replicated presentation actor. The server creates/attaches DigiMeat or places waste on a ground trace, while every peer resolves the same species/global mesh from replicated `SpeciesId` + `PropType`. The actor forcibly disables collision, overlap generation and navigation influence. Waste lifespan is server-owned. As of v0.8.1, every Care-prop mesh also locally forces `Render CustomDepth Pass = true` and a Blueprint-tunable stencil value, matching the framework cel-shading invariant without adding replicated state.
+
+Feeding deliberately crosses UI and world presentation layers: the server accepts/locks the care sequence, sends an owner-client start event, and waits a configurable lead-in before the first Montage. `ADMFMMOPlayerController` removes the Digimon Menu/quickbar and restores game input so the 3D animation is visible. Completion recreates the shared menu directly on `CARE`. This owner-side presentation never mutates Hunger.
+
+`ADMFDigimonCharacter` provides reliable multicast cosmetic cues for feeding Montage/voice and waste/fart presentation. The server chooses audio indices. Care locks existing combat/partner command RPCs for the duration so clients cannot race feeding against target/ability/recall state.

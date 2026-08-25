@@ -10,6 +10,9 @@ void EmptyLinkFunctionForGeneratedCodeDigimonMMOFramework_init() {}
 static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compiled with !UE_WITH_CONSTINIT_OBJECT");
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAbilityExecuted__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFBattleRewardGranted__DelegateSignature(ETypeConstructPhase);
+	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceFinished__DelegateSignature(ETypeConstructPhase);
+	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceStarted__DelegateSignature(ETypeConstructPhase);
+	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareStateChanged__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatStateChanged__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatTargetChanged__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatVitalsChanged__DelegateSignature(ETypeConstructPhase);
@@ -43,6 +46,9 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 		static FTypeConstructFunc* SingletonFuncArray[] = {
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAbilityExecuted__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFBattleRewardGranted__DelegateSignature,
+			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceFinished__DelegateSignature,
+			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceStarted__DelegateSignature,
+			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareStateChanged__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatStateChanged__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatTargetChanged__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCombatVitalsChanged__DelegateSignature,
@@ -74,13 +80,13 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 			SingletonFuncArray,
 			UE_ARRAY_COUNT(SingletonFuncArray),
 			PKG_CompiledIn | 0x00000000,
-			0xB6E1C9DC,
-			0x11A12D05,
+			0x1DAE9AE0,
+			0xC3A079B0,
 			METADATA_PARAMS(0, nullptr)
 		};
 		UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_DigimonMMOFramework.OuterSingleton, PackageParams);
 	}
 	return Z_Registration_Info_UPackage__Script_DigimonMMOFramework.OuterSingleton;
 }
-static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xB6E1C9DC, 0x11A12D05));
+static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x1DAE9AE0, 0xC3A079B0));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

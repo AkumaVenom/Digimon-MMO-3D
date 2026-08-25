@@ -25,7 +25,7 @@ enum class EDMFWildSpawnRarity : uint8;
 struct Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_19_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_19_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights(ETypeConstructPhase::Inner); }
 
@@ -37,7 +37,7 @@ struct FDMFWildSpawnRarityWeights;
 struct Z_Construct_UScriptStruct_FDMFWildSpawnEntry_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWildSpawnEntry(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_46_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_46_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFWildSpawnEntry_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFWildSpawnEntry(ETypeConstructPhase::Inner); }
 
@@ -46,7 +46,7 @@ struct FDMFWildSpawnEntry;
 // ********** End ScriptStruct FDMFWildSpawnEntry **************************************************
 
 // ********** Begin Class ADMFWildDigimonSpawner ***************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execHandleManagedWildDefeated); \
 	DECLARE_FUNCTION(execHandleManagedWildDestroyed); \
 	DECLARE_FUNCTION(execOnRep_SpawnerState); \
@@ -59,11 +59,11 @@ struct FDMFWildSpawnEntry;
 	DECLARE_FUNCTION(execIsSpawnerActive);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFWildDigimonSpawner_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFWildDigimonSpawner(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFWildDigimonSpawner_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFWildDigimonSpawner(ETypeConstructPhase); \
@@ -80,7 +80,7 @@ public: \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	ADMFWildDigimonSpawner(ADMFWildDigimonSpawner&&) = delete; \
 	ADMFWildDigimonSpawner(const ADMFWildDigimonSpawner&) = delete; \
@@ -90,14 +90,14 @@ public: \
 	NO_API virtual ~ADMFWildDigimonSpawner();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_110_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_110_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h_113_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -107,6 +107,6 @@ class ADMFWildDigimonSpawner;
 // ********** End Class ADMFWildDigimonSpawner *****************************************************
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_DigimonMMO3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h
+#define CURRENT_FILE_ID FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

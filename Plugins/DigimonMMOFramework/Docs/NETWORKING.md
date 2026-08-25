@@ -127,3 +127,16 @@ Positive-SP and zero-SP abilities remain server-authoritative. Clients submit th
 
 ## Scan & Materialization replication
 Scan Data lives on the owning `UDMFPlayerDigimonComponent` and replicates owner-only. Rewards are calculated only on authority from the defeated species data. The client reward RPC exists for presentation; it does not carry permission to mutate Scan Data. Materialization requests send only a species ID, after which the server independently validates global/species settings, threshold, Collection capacity and partner class before creating the new owned Digimon. Persistence is written immediately after successful materialization and at the normal account save boundaries.
+
+
+## Care replication and RPC contract
+
+Care follows the same MMO trust boundary as combat and materialization:
+
+`Owner CARE UI -> ServerFeedActivePartnerUntilFull -> server ownership/summon/health/idle/species/Montage/mesh/socket validation -> server care lock -> owner ClientCareSequenceStarted -> replicated DigiMeat + character multicast presentation -> server Hunger mutation/persistence -> repeat until full -> ClientCareSequenceFinished`
+
+Clients never submit Hunger gain, decay, waste timing, mesh scale authority, sound index, completion timing or world spawn transforms. Species and project settings are resolved on authority. The owner-only `ReplicatedInventory` carries the persistent Care struct; other players do not receive another account's private Hunger ledger through that array. They see the normal replicated partner actor and the replicated care prop/cosmetic multicast required for shared-world presentation.
+
+Waste uses persisted server UTC scheduling. At due time, authority traces beneath the currently spawned active partner and creates a replicated `ADMFDigimonCarePropActor`. `SpeciesId` and `PropType` replicate to resolve presentation for current/late viewers; actor movement/attachment or world transform is server-owned. The actor disables collision/overlaps/navigation and server lifespan performs cleanup. DigiMeat/poo CustomDepth and stencil application are local rendering state reasserted by the Care prop on each peer; they add no network payload or client authority.
+
+During `bCareSequenceActive`, the owner component rejects conflicting set-active, recall, auto-battle, target and ability RPCs. The server also disables the partner's combat automation/target and stops AI movement before feeding, then restores the previously allowed auto-battle state on completion.
