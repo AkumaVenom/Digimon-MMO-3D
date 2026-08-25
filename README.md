@@ -153,13 +153,9 @@ The goal is to make battles feel like you and your Digimon are fighting **togeth
 
 # 🍖 Digimon Care System
 
-> **Currently in development**
-
-Digimon MMO 3D is expanding beyond combat so that your Digimon also needs attention and care.
+Digimon MMO 3D is expanded beyond combat so that your Digimon also needs attention and care.
 
 The Care System is being designed to make partners feel more like living creatures within the Digital World.
-
-One of the first major care mechanics is **feeding**.
 
 Players will be able to give their Digimon food such as DigiMeat to manage their partner's hunger.
 
