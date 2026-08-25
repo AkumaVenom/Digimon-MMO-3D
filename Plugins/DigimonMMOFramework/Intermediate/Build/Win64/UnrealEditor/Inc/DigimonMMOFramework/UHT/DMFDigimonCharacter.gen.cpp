@@ -19,6 +19,7 @@ COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FPrimaryAssetId(ETypeCo
 ENGINE_API UClass* Z_Construct_UClass_ACharacter(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_AActor(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UAnimMontage(ETypeConstructPhase);
+UMG_API UClass* Z_Construct_UClass_UWidgetComponent(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -870,6 +871,50 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execRefreshFrameworkCustomDepth)
 }
 // ********** End Class ADMFDigimonCharacter Function RefreshFrameworkCustomDepth ******************
 
+// ********** Begin Class ADMFDigimonCharacter Function RefreshWorldNameplate **********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|UI|World Nameplates" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Re-applies global nameplate enablement, widget class, height and cull distance. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Re-applies global nameplate enablement, widget class, height and cull distance." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshWorldNameplate constinit property declarations *****************
+// ********** End Function RefreshWorldNameplate constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "RefreshWorldNameplate", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execRefreshWorldNameplate)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshWorldNameplate();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function RefreshWorldNameplate ************************
+
 // ********** Begin Class ADMFDigimonCharacter Function ResolveSpeciesData *************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1217,6 +1262,17 @@ struct UHT_STATICS
 		{ "ToolTip", "Makes a defeated Digimon non-blocking while its body remains visible in the world." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NameplateWidgetComponent_MetaData[] = {
+		{ "Category", "Digimon MMO|UI|World Nameplates" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Automatic client-side compact MMO plate showing Digimon identity/type/level and replicated health. */" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Automatic client-side compact MMO plate showing Digimon identity/type/level and replicated health." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CombatComponent_MetaData[] = {
 		{ "Category", "Digimon MMO|Combat" },
 		{ "EditInline", "true" },
@@ -1229,6 +1285,16 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SpeciesId_MetaData[] = {
 		{ "Category", "Digimon" },
 		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReplicatedNickname_MetaData[] = {
+		{ "Category", "Digimon" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Public presentation nickname. Empty falls back to the species display name. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Public presentation nickname. Empty falls back to the species display name." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReplicatedStats_MetaData[] = {
 		{ "Category", "Digimon" },
@@ -1298,9 +1364,11 @@ struct UHT_STATICS
 		((ADMFDigimonCharacter*)Obj)->bDisableCapsuleCollisionWhenDefeated = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bDisableCapsuleCollisionWhenDefeated;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_NameplateWidgetComponent;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CombatComponent;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_SpeciesId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_ReplicatedNickname;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_ReplicatedStats;
 	static const UECodeGen_Private::FNamePropertyParams NewProp_ReplicatedAbilityIds_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_ReplicatedAbilityIds;
@@ -1327,6 +1395,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareWasteCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareWasteCue },
 		{ .NameUTF8 = UTF8TEXT("OnRep_DigimonState"), .Pointer = &ADMFDigimonCharacter::execOnRep_DigimonState },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFDigimonCharacter::execRefreshFrameworkCustomDepth },
+		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFDigimonCharacter::execRefreshWorldNameplate },
 		{ .NameUTF8 = UTF8TEXT("ResolveSpeciesData"), .Pointer = &ADMFDigimonCharacter::execResolveSpeciesData },
 		{ .NameUTF8 = UTF8TEXT("SetCombatTeamId"), .Pointer = &ADMFDigimonCharacter::execSetCombatTeamId },
 		{ .NameUTF8 = UTF8TEXT("StartCombatFacingTarget"), .Pointer = &ADMFDigimonCharacter::execStartCombatFacingTarget },
@@ -1350,6 +1419,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue, "MulticastPlayCareWasteCue" }, // 70ef942ca92f2582f5251147291095dfa83edf7e
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // 6bd71dc2f39809ecbe83a51eb8aa9897fa31053d
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ResolveSpeciesData, "ResolveSpeciesData" }, // ef9c63bfa88bbcf754437dd5749581017e42c278
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_SetCombatTeamId, "SetCombatTeamId" }, // c8e085c086216ee6ee1e0581032ffa1db9f74954
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_StartCombatFacingTarget, "StartCombatFacingTarget" }, // d8a99159017f69288be5eca9b79ced6736418d2c
@@ -1373,9 +1443,11 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DefeatedPoseH
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DefeatedMontagePlayRate = { "DefeatedMontagePlayRate", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, DefeatedMontagePlayRate), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefeatedMontagePlayRate_MetaData), NewProp_DefeatedMontagePlayRate_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bDisableMovementWhenDefeated = { "bDisableMovementWhenDefeated", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFDigimonCharacter), &UHT_STATICS::NewProp_bDisableMovementWhenDefeated_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bDisableMovementWhenDefeated_MetaData), NewProp_bDisableMovementWhenDefeated_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bDisableCapsuleCollisionWhenDefeated = { "bDisableCapsuleCollisionWhenDefeated", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFDigimonCharacter), &UHT_STATICS::NewProp_bDisableCapsuleCollisionWhenDefeated_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bDisableCapsuleCollisionWhenDefeated_MetaData), NewProp_bDisableCapsuleCollisionWhenDefeated_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_NameplateWidgetComponent = { "NameplateWidgetComponent", nullptr, (EPropertyFlags)0x01140000000a001d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, NameplateWidgetComponent), Z_Construct_UClass_UWidgetComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NameplateWidgetComponent_MetaData), NewProp_NameplateWidgetComponent_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CombatComponent = { "CombatComponent", nullptr, (EPropertyFlags)0x01140000000a001d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, CombatComponent), Z_Construct_UClass_UDMFDigimonCombatComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatComponent_MetaData), NewProp_CombatComponent_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", "OnRep_DigimonState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInstanceId_MetaData), NewProp_DigimonInstanceId_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpeciesId = { "SpeciesId", "OnRep_DigimonState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, SpeciesId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SpeciesId_MetaData), NewProp_SpeciesId_MetaData) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_ReplicatedNickname = { "ReplicatedNickname", "OnRep_DigimonState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, ReplicatedNickname), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedNickname_MetaData), NewProp_ReplicatedNickname_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ReplicatedStats = { "ReplicatedStats", "OnRep_DigimonState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, ReplicatedStats), Z_Construct_UScriptStruct_FDMFDigimonStats, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedStats_MetaData), NewProp_ReplicatedStats_MetaData) }; // 520b7c977c816e4f689d80785fbab8bbe48405a6
 const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_ReplicatedAbilityIds_Inner = { "ReplicatedAbilityIds", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Name, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ReplicatedAbilityIds = { "ReplicatedAbilityIds", "OnRep_DigimonState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFDigimonCharacter, ReplicatedAbilityIds), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedAbilityIds_MetaData), NewProp_ReplicatedAbilityIds_MetaData) };
@@ -1395,9 +1467,11 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefeatedMontagePlayRate,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bDisableMovementWhenDefeated,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bDisableCapsuleCollisionWhenDefeated,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NameplateWidgetComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpeciesId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedNickname,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedStats,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedAbilityIds_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedAbilityIds,
@@ -1472,6 +1546,7 @@ void ADMFDigimonCharacter::ValidateGeneratedRepEnums(const TArray<struct FRepRec
 {
 	static FName Name_DigimonInstanceId(TEXT("DigimonInstanceId"));
 	static FName Name_SpeciesId(TEXT("SpeciesId"));
+	static FName Name_ReplicatedNickname(TEXT("ReplicatedNickname"));
 	static FName Name_ReplicatedStats(TEXT("ReplicatedStats"));
 	static FName Name_ReplicatedAbilityIds(TEXT("ReplicatedAbilityIds"));
 	static FName Name_OwningPlayerState(TEXT("OwningPlayerState"));
@@ -1479,6 +1554,7 @@ void ADMFDigimonCharacter::ValidateGeneratedRepEnums(const TArray<struct FRepRec
 	const bool bIsValid = true
 		&& Name_DigimonInstanceId == ClassReps[(int32)ENetFields_Private::DigimonInstanceId].Property->GetFName()
 		&& Name_SpeciesId == ClassReps[(int32)ENetFields_Private::SpeciesId].Property->GetFName()
+		&& Name_ReplicatedNickname == ClassReps[(int32)ENetFields_Private::ReplicatedNickname].Property->GetFName()
 		&& Name_ReplicatedStats == ClassReps[(int32)ENetFields_Private::ReplicatedStats].Property->GetFName()
 		&& Name_ReplicatedAbilityIds == ClassReps[(int32)ENetFields_Private::ReplicatedAbilityIds].Property->GetFName()
 		&& Name_OwningPlayerState == ClassReps[(int32)ENetFields_Private::OwningPlayerState].Property->GetFName()
@@ -1499,10 +1575,10 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 984698186U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3659481447U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_d35f734a813acc6ae5622918628bdfc609e90e7d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_ec2a689cdd03a795e10f49ca4cfa6c7826c29f3e{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -60,6 +60,16 @@ Cooldown UI uses synchronized server world time rather than the local client's c
 
 Inventory drag/drop, materialization, stat-spend, evolution and ranked-reward operations should continue to follow the same narrow validated-request contract.
 
+## v0.9.0 world-nameplate replication contract
+
+World nameplates are **local presentation reconstructed from normal replicated actor state**. The Widget Components and `UDMFWorldNameplateWidget` do not replicate and send no gameplay RPCs. Dedicated servers do not render them.
+
+Player identity uses Unreal's standard public `APlayerState::PlayerName`. On successful authoritative account authentication, the server sets PlayerName to the authenticated username. The framework's `AuthenticatedUsername` field remains owner-only and `CredentialDigestServerOnly` remains server-only; only the public username required for MMO identity presentation is exposed to other players.
+
+Digimon identity/health uses `SpeciesId`, `ReplicatedStats`, the new public presentation-only `ReplicatedNickname`, and the already replicated Combat Component HP. Clients may display these values but cannot author them. Damage, level/stats and nickname persistence continue to originate from the existing authoritative gameplay/persistence paths.
+
+The nameplate refresh interval and max draw distances affect only local presentation/performance; changing them does not alter network relevancy, combat replication or ownership.
+
 ## Authentication boundary
 
 The alpha's built-in account gate is appropriate for private development and packaged multiplayer testing, but it is not a replacement for a production identity service. The credential digest in travel options is a bearer-equivalent value and can be replayed if intercepted.

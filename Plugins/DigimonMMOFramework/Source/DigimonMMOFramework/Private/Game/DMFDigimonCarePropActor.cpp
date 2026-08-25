@@ -13,8 +13,8 @@ ADMFDigimonCarePropActor::ADMFDigimonCarePropActor()
     bReplicates = true;
     SetReplicateMovement(true);
     SetActorEnableCollision(false);
-    NetUpdateFrequency = 10.0f;
-    MinNetUpdateFrequency = 2.0f;
+    SetNetUpdateFrequency(10.0f);
+    SetMinNetUpdateFrequency(2.0f);
 
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CarePropMesh"));
     SetRootComponent(MeshComponent);

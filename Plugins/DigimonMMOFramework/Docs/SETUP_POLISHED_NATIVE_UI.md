@@ -154,3 +154,8 @@ The native fallback now provides a third first-class page, **CARE**, using the s
 When feeding is accepted, the widget is intentionally removed rather than left translucent over the world. `ADMFMMOPlayerController` also removes the combat quickbar and restores game input before the first eating Montage. At server completion it recreates the menu and selects `EDMFDigimonMenuTab::Care`, so the player sees the updated Hunger state immediately after watching the animation.
 
 Blueprint children may replace the layout while retaining `RefreshCareData`, `SetActiveMenuTab(Care)` and the owner component care delegates/RPC. Keep gameplay mutation on `UDMFPlayerDigimonComponent`; do not award Hunger from widget Blueprint logic.
+
+
+## v0.9.0 automatic world nameplates
+
+The polished native UI language now extends into the 3D world through automatic Player and Digimon nameplates. No manual Widget Component is required on framework-derived actors. Configure the master/per-category switches, distance culling and Blueprint widget overrides under **Project Settings → Digimon MMO Framework → UI → World Nameplates**. See `SETUP_WORLD_NAMEPLATES.md` for the complete contract.

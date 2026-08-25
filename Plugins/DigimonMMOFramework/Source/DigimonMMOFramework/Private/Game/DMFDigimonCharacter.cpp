@@ -9,9 +9,12 @@
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/MeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Settings/DMFFrameworkSettings.h"
+#include "UI/DMFWorldNameplateWidget.h"
 
 ADMFDigimonCharacter::ADMFDigimonCharacter()
 {
@@ -27,6 +30,15 @@ ADMFDigimonCharacter::ADMFDigimonCharacter()
     }
     CombatComponent = CreateDefaultSubobject<UDMFDigimonCombatComponent>(TEXT("CombatComponent"));
 
+    NameplateWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DigimonNameplateWidget"));
+    NameplateWidgetComponent->SetupAttachment(RootComponent);
+    NameplateWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    NameplateWidgetComponent->SetDrawAtDesiredSize(true);
+    NameplateWidgetComponent->SetPivot(FVector2D(0.5f, 1.0f));
+    NameplateWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    NameplateWidgetComponent->SetGenerateOverlapEvents(false);
+    NameplateWidgetComponent->SetWidgetClass(UDMFWorldNameplateWidget::StaticClass());
+
     // Make the inherited skeletal mesh cel-shading-ready even on the CDO/Blueprint defaults.
     GetMesh()->SetRenderCustomDepth(true);
 }
@@ -41,6 +53,7 @@ void ADMFDigimonCharacter::BeginPlay()
 {
     Super::BeginPlay();
     RefreshFrameworkCustomDepth();
+    RefreshWorldNameplate();
 
     // Combat state replication is the durable source of truth for defeated presentation.
     // This also covers actors that begin play already defeated in a future gameplay mode.
@@ -65,6 +78,7 @@ void ADMFDigimonCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ADMFDigimonCharacter, DigimonInstanceId);
     DOREPLIFETIME(ADMFDigimonCharacter, SpeciesId);
+    DOREPLIFETIME(ADMFDigimonCharacter, ReplicatedNickname);
     DOREPLIFETIME(ADMFDigimonCharacter, ReplicatedStats);
     DOREPLIFETIME(ADMFDigimonCharacter, ReplicatedAbilityIds);
     DOREPLIFETIME(ADMFDigimonCharacter, OwningPlayerState);
@@ -80,6 +94,7 @@ void ADMFDigimonCharacter::InitializeFromInstance(const FDMFDigimonInstance& Ins
 
     DigimonInstanceId = Instance.InstanceId;
     SpeciesId = Instance.SpeciesId;
+    ReplicatedNickname = Instance.Nickname;
     ReplicatedStats = Instance.Stats;
     ReplicatedAbilityIds = Instance.EquippedAbilityIds;
     OwningPlayerState = InOwningPlayerState;
@@ -89,6 +104,7 @@ void ADMFDigimonCharacter::InitializeFromInstance(const FDMFDigimonInstance& Ins
     }
     ForceNetUpdate();
     RefreshFrameworkCustomDepth();
+    RefreshWorldNameplate();
     BP_OnDigimonStateReady();
 }
 
@@ -473,6 +489,48 @@ void ADMFDigimonCharacter::ConfigureCombatAutomation(const bool bEnableAutoBattl
     }
 }
 
+void ADMFDigimonCharacter::RefreshWorldNameplate()
+{
+    if (!NameplateWidgetComponent)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bEnabled = Settings
+        && Settings->bEnableWorldNameplates
+        && Settings->bEnableDigimonNameplates
+        && GetNetMode() != NM_DedicatedServer;
+
+    NameplateWidgetComponent->SetVisibility(bEnabled, true);
+    if (!bEnabled)
+    {
+        return;
+    }
+
+    const float CapsuleHalfHeight = GetCapsuleComponent() ? GetCapsuleComponent()->GetScaledCapsuleHalfHeight() : 88.0f;
+    NameplateWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, CapsuleHalfHeight + FMath::Max(0.0f, Settings->DigimonNameplateHeightOffset)));
+    NameplateWidgetComponent->SetCullDistance(FMath::Max(0.0f, Settings->DigimonNameplateMaxDrawDistance));
+    NameplateWidgetComponent->SetRedrawTime(FMath::Clamp(Settings->WorldNameplateRefreshInterval, 0.05f, 1.0f));
+    NameplateWidgetComponent->SetTickWhenOffscreen(false);
+
+    TSubclassOf<UDMFWorldNameplateWidget> DesiredClass = Settings->DigimonNameplateWidgetClass;
+    if (!DesiredClass)
+    {
+        DesiredClass = UDMFWorldNameplateWidget::StaticClass();
+    }
+    if (NameplateWidgetComponent->GetWidgetClass() != DesiredClass)
+    {
+        NameplateWidgetComponent->SetWidgetClass(DesiredClass);
+    }
+
+    NameplateWidgetComponent->InitWidget();
+    if (UDMFWorldNameplateWidget* NameplateWidget = Cast<UDMFWorldNameplateWidget>(NameplateWidgetComponent->GetUserWidgetObject()))
+    {
+        NameplateWidget->SetObservedActor(this);
+    }
+}
+
 UDMFDigimonSpeciesData* ADMFDigimonCharacter::ResolveSpeciesData() const
 {
     if (!SpeciesId.IsValid())
@@ -552,6 +610,7 @@ void ADMFDigimonCharacter::RefreshFrameworkCustomDepth()
 void ADMFDigimonCharacter::OnRep_DigimonState()
 {
     RefreshFrameworkCustomDepth();
+    RefreshWorldNameplate();
 
     // SpeciesId can arrive after CombatState on a joining client. Re-applying here is idempotent
     // and guarantees a defeated actor can still resolve and display its species Death Montage.

@@ -21,6 +21,7 @@ ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FHitResult(ETypeConstructPha
 ENGINE_API UClass* Z_Construct_UClass_AActor(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UCameraComponent(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_USpringArmComponent(ETypeConstructPhase);
+UMG_API UClass* Z_Construct_UClass_UWidgetComponent(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -1493,6 +1494,50 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execRefreshFrameworkCustomDepth)
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function RefreshFrameworkCustomDepth *************
 
+// ********** Begin Class ADMFPlayerAvatarCharacter Function RefreshWorldNameplate *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshWorldNameplate_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|UI|World Nameplates" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Re-applies global nameplate enablement, widget class, height and cull distance. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Re-applies global nameplate enablement, widget class, height and cull distance." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshWorldNameplate constinit property declarations *****************
+// ********** End Function RefreshWorldNameplate constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "RefreshWorldNameplate", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshWorldNameplate(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execRefreshWorldNameplate)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshWorldNameplate();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function RefreshWorldNameplate *******************
+
 // ********** Begin Class ADMFPlayerAvatarCharacter Function ResetNativeInputState *****************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1851,6 +1896,17 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NameplateWidgetComponent_MetaData[] = {
+		{ "Category", "Digimon MMO|UI|World Nameplates" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Automatic client-side MMO username plate. It reads the replicated APlayerState display name and adds no custom RPC traffic. */" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Automatic client-side MMO username plate. It reads the replicated APlayerState display name and adds no custom RPC traffic." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableNativeThirdPersonInput_MetaData[] = {
 		{ "Category", "Digimon MMO|Player Avatar|Input" },
 #if !UE_BUILD_SHIPPING
@@ -1999,6 +2055,7 @@ struct UHT_STATICS
 // ********** Begin Class ADMFPlayerAvatarCharacter constinit property declarations ****************
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CameraBoom;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_FollowCamera;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_NameplateWidgetComponent;
 	static void NewProp_bEnableNativeThirdPersonInput_SetBit(void* Obj)
 	{
 		((ADMFPlayerAvatarCharacter*)Obj)->bEnableNativeThirdPersonInput = 1;
@@ -2069,6 +2126,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("MoveRight"), .Pointer = &ADMFPlayerAvatarCharacter::execMoveRight },
 		{ .NameUTF8 = UTF8TEXT("OnRep_Sprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execOnRep_Sprinting },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshFrameworkCustomDepth },
+		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshWorldNameplate },
 		{ .NameUTF8 = UTF8TEXT("ResetNativeInputState"), .Pointer = &ADMFPlayerAvatarCharacter::execResetNativeInputState },
 		{ .NameUTF8 = UTF8TEXT("ServerSetSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execServerSetSprinting },
 		{ .NameUTF8 = UTF8TEXT("StartSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execStartSprinting },
@@ -2102,6 +2160,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MoveRight, "MoveRight" }, // 7ba866a1b9cffb870d488569b3da898d4d04a77d
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_OnRep_Sprinting, "OnRep_Sprinting" }, // 3276587a1c3ec52175887967c00c53dc0068cfe0
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 82ed465b5a8dc30a6b50f8fc50fc512aeb7b7eb2
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // cb47dc40b54e6bd40a047d5f62ea4b3e0c6dcb01
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetNativeInputState, "ResetNativeInputState" }, // 3bae772d7a61997b6ab04490de3cc459cf8b7bb0
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ServerSetSprinting, "ServerSetSprinting" }, // e35b8284bc15b0222ab1c719a7c631c9de2a5033
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_StartSprinting, "StartSprinting" }, // a4b131e002fc083c2ac26835c41f1a11f339df4b
@@ -2119,6 +2178,7 @@ struct UHT_STATICS
 // ********** Begin Class ADMFPlayerAvatarCharacter Property Definitions ***************************
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CameraBoom = { "CameraBoom", nullptr, (EPropertyFlags)0x01140000000a001d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, CameraBoom), Z_Construct_UClass_USpringArmComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CameraBoom_MetaData), NewProp_CameraBoom_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_FollowCamera = { "FollowCamera", nullptr, (EPropertyFlags)0x01140000000a001d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, FollowCamera), Z_Construct_UClass_UCameraComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FollowCamera_MetaData), NewProp_FollowCamera_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_NameplateWidgetComponent = { "NameplateWidgetComponent", nullptr, (EPropertyFlags)0x01140000000a001d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, NameplateWidgetComponent), Z_Construct_UClass_UWidgetComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NameplateWidgetComponent_MetaData), NewProp_NameplateWidgetComponent_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableNativeThirdPersonInput = { "bEnableNativeThirdPersonInput", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFPlayerAvatarCharacter), &UHT_STATICS::NewProp_bEnableNativeThirdPersonInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableNativeThirdPersonInput_MetaData), NewProp_bEnableNativeThirdPersonInput_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WalkSpeed = { "WalkSpeed", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, WalkSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WalkSpeed_MetaData), NewProp_WalkSpeed_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_SprintSpeed = { "SprintSpeed", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, SprintSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SprintSpeed_MetaData), NewProp_SprintSpeed_MetaData) };
@@ -2141,6 +2201,7 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_LastInteract
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CameraBoom,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FollowCamera,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NameplateWidgetComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableNativeThirdPersonInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WalkSpeed,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SprintSpeed,
@@ -2243,10 +2304,10 @@ ADMFPlayerAvatarCharacter::~ADMFPlayerAvatarCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 629510235U) },
+		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 3487752935U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_290c8d98a270e549b29674f1b88b8d8a32e6ee35{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_585d00e3f20ecf0b75a46481c5564c3f76037cb3{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

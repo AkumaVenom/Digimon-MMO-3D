@@ -1,5 +1,30 @@
 # Validation Report
 
+## v0.9.1-alpha — UE5.8 nameplate compile-fix validation
+
+The user's UE5.8.1/MSVC build log identified exactly two hard compiler errors in the v0.9.0 nameplate implementation: `C2445` at the player-avatar and Digimon fallback-widget-class conditional expressions. Both expressions mixed `TSubclassOf<UDMFWorldNameplateWidget>` with `UClass*` from `StaticClass()`, allowing multiple common conversions.
+
+Corrective validation:
+- Player and Digimon nameplate fallback selection now uses explicit `TSubclassOf<UDMFWorldNameplateWidget>` assignment followed by an `if (!DesiredClass)` native-class fallback; no mixed-type conditional expression remains.
+- The same build log also exposed two UE5.8 deprecation warnings in the Care prop. Direct network-frequency member writes were replaced with `SetNetUpdateFrequency(10.0f)` and `SetMinNetUpdateFrequency(2.0f)` without changing values.
+- Source audit confirms the two reported `C2445` patterns and the deprecated direct member writes are absent from the corrected tree.
+- Final static gate covers **68 source/header/build files and 15,324 source/build lines**.
+- Reflected surface remains **35 UCLASS**, **298 UFUNCTION** and **513 UPROPERTY** declarations; comparison against v0.9.0 finds **zero existing reflected UFUNCTION names removed**.
+- All **27 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies.
+- Generated-header include ordering passes, no runtime `TODO`/`FIXME` placeholders are present, and the corrected tree removes no baseline file.
+- A clean UE5.8.1 Editor build is still required to promote this source package to runtime acceptance.
+
+
+## v0.9.0-alpha — World Nameplates source validation
+
+- Added the native `UDMFWorldNameplateWidget` source pair and automatic Player/Digimon Widget Components.
+- Added project-wide and per-category enable gates, cull distances, capsule-relative offsets, refresh throttling and Blueprint widget overrides.
+- Player public identity uses `APlayerState::PlayerName`; private `AuthenticatedUsername` remains owner-only and credential digest remains server-only.
+- Digimon HP reads the existing replicated combat vitals; `ReplicatedNickname` is the only new Digimon presentation replication field.
+- No nameplate Server/Client/Multicast RPCs were added.
+- Existing Care, Scan/Materialization, combat, possession, persistence and CustomDepth systems were preserved.
+- Unreal Engine/UnrealBuildTool is not installed in the source-assembly environment; a UE5.8.1 compile and host + remote-client PIE test remain the authoritative release gate.
+
 ## v0.8.1-alpha — Care Prop CustomDepth Cel-Shading source validation
 
 This patch is intentionally presentation-only over the user-runtime-validated v0.8.0 Care build. Unreal Engine/UnrealBuildTool is not installed in this environment, so the authoritative acceptance gate remains a clean UE5.8.1 compile plus host/remote-client PIE.

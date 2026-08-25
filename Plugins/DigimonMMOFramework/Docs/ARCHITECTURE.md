@@ -168,3 +168,12 @@ The native `UDMFDigimonInventoryWidget` is now the tabbed Digimon menu shell. Co
 Feeding deliberately crosses UI and world presentation layers: the server accepts/locks the care sequence, sends an owner-client start event, and waits a configurable lead-in before the first Montage. `ADMFMMOPlayerController` removes the Digimon Menu/quickbar and restores game input so the 3D animation is visible. Completion recreates the shared menu directly on `CARE`. This owner-side presentation never mutates Hunger.
 
 `ADMFDigimonCharacter` provides reliable multicast cosmetic cues for feeding Montage/voice and waste/fart presentation. The server chooses audio indices. Care locks existing combat/partner command RPCs for the duration so clients cannot race feeding against target/ability/recall state.
+
+
+## v0.9.0 World Nameplate presentation layer
+
+`ADMFPlayerAvatarCharacter` and `ADMFDigimonCharacter` each own a non-authoritative `UWidgetComponent` configured for crisp Screen-space presentation. At BeginPlay/replication refresh the actor resolves the global framework settings, applies enable/cull/height rules, initializes the selected native or Blueprint widget class, and gives the widget an observed actor.
+
+`UDMFWorldNameplateWidget` is deliberately shared so the framework has one compact presentation contract while still exposing separate project-level Player/Digimon widget-class overrides. The native fallback collapses Digimon-only metadata/HP when observing a player, and expands the same small panel for Digimon identity/type/health. It polls presentation at a throttled interval rather than inventing replicated UI state.
+
+Player username display uses `APlayerState::PlayerName`, which is the public display-name channel. Private account fields do not change their ownership contract. Digimon HP remains owned by `UDMFDigimonCombatComponent`; the plate is only a view of replicated combat truth.

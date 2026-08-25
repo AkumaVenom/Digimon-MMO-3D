@@ -1,0 +1,30 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\game\\dmfplayerstate.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\digimonmmoframework\\definitions.digimonmmoframework.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\game\\dmfplayerstate.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\playerstate.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\playerstate.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfplayerstate.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\components\\dmfplayerdigimoncomponent.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\dmftypes.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\net\\core\\classes\\net\\serialization\\fastarrayserializer.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\net\\core\\public\\net\\core\\misc\\guidreferences.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\net\\core\\public\\net\\core\\pushmodel\\pushmodel.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\net\\core\\public\\net\\core\\netcoremodule.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\netcore\\uht\\fastarrayserializer.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmftypes.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfplayerdigimoncomponent.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\components\\dmfplayeravatarcomponent.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfplayeravatarcomponent.generated.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\public\\net\\unrealnetwork.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\net\\core\\public\\net\\core\\propertyconditions\\propertyconditions.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

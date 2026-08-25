@@ -8,6 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UWidgetComponent;
 class UDMFPlayerSkinData;
 class ADMFDigimonCharacter;
 class ADMFMMOPlayerController;
@@ -42,6 +43,14 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|Player Avatar|Camera")
     TObjectPtr<UCameraComponent> FollowCamera;
+
+    /** Automatic client-side MMO username plate. It reads the replicated APlayerState display name and adds no custom RPC traffic. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|UI|World Nameplates")
+    TObjectPtr<UWidgetComponent> NameplateWidgetComponent;
+
+    /** Re-applies global nameplate enablement, widget class, height and cull distance. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI|World Nameplates")
+    void RefreshWorldNameplate();
 
     /** Disable this in a Blueprint child when the project supplies its own Enhanced Input stack. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Input")

@@ -8,6 +8,7 @@
 #include "Components/InputComponent.h"
 #include "Components/MeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Data/DMFPlayerSkinData.h"
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Game/DMFPlayerState.h"
@@ -20,6 +21,8 @@
 #include "Materials/MaterialInterface.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
+#include "Settings/DMFFrameworkSettings.h"
+#include "UI/DMFWorldNameplateWidget.h"
 
 ADMFPlayerAvatarCharacter::ADMFPlayerAvatarCharacter()
 {
@@ -52,6 +55,15 @@ ADMFPlayerAvatarCharacter::ADMFPlayerAvatarCharacter()
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
 
+    NameplateWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerNameplateWidget"));
+    NameplateWidgetComponent->SetupAttachment(RootComponent);
+    NameplateWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    NameplateWidgetComponent->SetDrawAtDesiredSize(true);
+    NameplateWidgetComponent->SetPivot(FVector2D(0.5f, 1.0f));
+    NameplateWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    NameplateWidgetComponent->SetGenerateOverlapEvents(false);
+    NameplateWidgetComponent->SetWidgetClass(UDMFWorldNameplateWidget::StaticClass());
+
     GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
     GetMesh()->SetRenderCustomDepth(true);
 }
@@ -68,6 +80,7 @@ void ADMFPlayerAvatarCharacter::BeginPlay()
     ApplyMovementSpeed();
     RefreshFrameworkCustomDepth();
     RefreshSkinFromPlayerState();
+    RefreshWorldNameplate();
 }
 
 void ADMFPlayerAvatarCharacter::Tick(const float DeltaSeconds)
@@ -128,12 +141,57 @@ void ADMFPlayerAvatarCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
     RefreshSkinFromPlayerState();
+    RefreshWorldNameplate();
 }
 
 void ADMFPlayerAvatarCharacter::OnRep_PlayerState()
 {
     Super::OnRep_PlayerState();
     RefreshSkinFromPlayerState();
+    RefreshWorldNameplate();
+}
+
+void ADMFPlayerAvatarCharacter::RefreshWorldNameplate()
+{
+    if (!NameplateWidgetComponent)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bEnabled = Settings
+        && Settings->bEnableWorldNameplates
+        && Settings->bEnablePlayerNameplates
+        && GetNetMode() != NM_DedicatedServer
+        && (Settings->bShowLocalPlayerNameplate || !IsLocallyControlled());
+
+    NameplateWidgetComponent->SetVisibility(bEnabled, true);
+    if (!bEnabled)
+    {
+        return;
+    }
+
+    const float CapsuleHalfHeight = GetCapsuleComponent() ? GetCapsuleComponent()->GetScaledCapsuleHalfHeight() : 96.0f;
+    NameplateWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, CapsuleHalfHeight + FMath::Max(0.0f, Settings->PlayerNameplateHeightOffset)));
+    NameplateWidgetComponent->SetCullDistance(FMath::Max(0.0f, Settings->PlayerNameplateMaxDrawDistance));
+    NameplateWidgetComponent->SetRedrawTime(FMath::Clamp(Settings->WorldNameplateRefreshInterval, 0.05f, 1.0f));
+    NameplateWidgetComponent->SetTickWhenOffscreen(false);
+
+    TSubclassOf<UDMFWorldNameplateWidget> DesiredClass = Settings->PlayerNameplateWidgetClass;
+    if (!DesiredClass)
+    {
+        DesiredClass = UDMFWorldNameplateWidget::StaticClass();
+    }
+    if (NameplateWidgetComponent->GetWidgetClass() != DesiredClass)
+    {
+        NameplateWidgetComponent->SetWidgetClass(DesiredClass);
+    }
+
+    NameplateWidgetComponent->InitWidget();
+    if (UDMFWorldNameplateWidget* NameplateWidget = Cast<UDMFWorldNameplateWidget>(NameplateWidgetComponent->GetUserWidgetObject()))
+    {
+        NameplateWidget->SetObservedActor(this);
+    }
 }
 
 void ADMFPlayerAvatarCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

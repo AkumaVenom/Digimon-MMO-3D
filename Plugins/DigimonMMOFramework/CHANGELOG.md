@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.9.1-alpha — UE5.8 World Nameplate Widget-Class Compile Fix
+
+### Fixed — UE5.8.1/MSVC nameplate fallback compilation
+- Fixed the two UE5.8.1/MSVC `C2445` errors reported by the first v0.9.0 editor build in `DMFPlayerAvatarCharacter.cpp` and `DMFDigimonCharacter.cpp`.
+- Removed the ambiguous conditional expressions that mixed `TSubclassOf<UDMFWorldNameplateWidget>` and raw `UClass*` fallback values. The configured subclass is now copied first and the native `UDMFWorldNameplateWidget::StaticClass()` fallback is assigned explicitly only when the configured class is empty.
+- This is a compile-compatibility correction only; player/Digimon nameplate behavior, authority, replication, distance culling, styling and Blueprint replacement hooks are unchanged.
+
+### Fixed — UE5.8 Care-prop network API deprecations
+- Replaced direct writes to deprecated `AActor::NetUpdateFrequency` and `MinNetUpdateFrequency` with `SetNetUpdateFrequency()` / `SetMinNetUpdateFrequency()` in `DMFDigimonCarePropActor`.
+- No Care replication frequency values or runtime behavior changed.
+
+### Preserved / validation contract
+- No existing source file, reflected function, RPC, Care feature, Scan/Materialization feature, combat feature or persistence path was removed.
+- Clean UE5.8.1 Editor compilation remains the authoritative acceptance gate for this corrected source package.
+
+## 0.9.0-alpha — Polished MMO Player & Digimon World Nameplates
+
+### Added — automatic player username plates
+- Added a native `DMFWorldNameplateWidget` and automatic Screen-space Widget Component to every `DMFPlayerAvatarCharacter`.
+- The authoritative login path now mirrors the authenticated username into Unreal's normal public replicated `APlayerState::PlayerName`; the framework's `AuthenticatedUsername` remains owner-only and credential digests remain server-only.
+- Remote players therefore see each other's usernames automatically without any custom nameplate RPC. The local player's own plate is hidden by default.
+
+### Added — compact Digimon identity / combat plates
+- Every `DMFDigimonCharacter`, including owned partners and Wild Digimon, automatically receives the compact native plate.
+- Digimon presentation shows nickname/species name, level, stage, attribute, a slim HP bar and optional numeric HP.
+- Added replicated `ReplicatedNickname` presentation state so future/custom Digimon nicknames can be visible to other players while wild Digimon naturally fall back to species DisplayName.
+- HP is sourced from the already replicated combat vitals; no parallel health authority or gameplay RPC was introduced.
+
+### Added — global configuration / reskinning
+- Added `Enable World Nameplates` master control plus independent Player and Digimon enable switches.
+- Added local-player visibility, player/Digimon max draw distances, capsule-relative height offsets, optional numeric Digimon HP and a throttled native refresh interval.
+- Added separate Blueprint-replaceable Player and Digimon nameplate widget-class settings, both defaulting to the polished native fallback.
+- Added Blueprint-callable `RefreshWorldNameplate()` to Player Avatar and Digimon actors and a `BP_OnNameplateRefreshed` presentation hook on the widget.
+- Dedicated servers skip nameplate rendering.
+
+### Documentation / regression contract
+- Added `Docs/SETUP_WORLD_NAMEPLATES.md` and updated README, architecture, networking, roadmap, UI setup, test plan, validation report and config template.
+- v0.8.1 Care/CustomDepth, v0.7 Scan/Materialization, combat, possession, skins, persistence and wild-spawner behavior remain additive regression contracts.
+
 ## 0.8.1-alpha — Care Prop CustomDepth Cel-Shading Integration
 
 ### Added / Fixed — Care presentation rendering

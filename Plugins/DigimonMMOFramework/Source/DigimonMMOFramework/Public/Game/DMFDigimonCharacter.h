@@ -9,6 +9,7 @@ class ADMFPlayerState;
 class UDMFDigimonCombatComponent;
 class UDMFDigimonSpeciesData;
 class UAnimMontage;
+class UWidgetComponent;
 class AActor;
 
 UCLASS(Blueprintable)
@@ -136,6 +137,14 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Defeat Presentation")
     void BP_OnDefeatedPresentationCleared();
 
+    /** Automatic client-side compact MMO plate showing Digimon identity/type/level and replicated health. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|UI|World Nameplates")
+    TObjectPtr<UWidgetComponent> NameplateWidgetComponent;
+
+    /** Re-applies global nameplate enablement, widget class, height and cull distance. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI|World Nameplates")
+    void RefreshWorldNameplate();
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|Combat")
     TObjectPtr<UDMFDigimonCombatComponent> CombatComponent;
 
@@ -144,6 +153,10 @@ public:
 
     UPROPERTY(ReplicatedUsing=OnRep_DigimonState, BlueprintReadOnly, Category="Digimon")
     FPrimaryAssetId SpeciesId;
+
+    /** Public presentation nickname. Empty falls back to the species display name. */
+    UPROPERTY(ReplicatedUsing=OnRep_DigimonState, BlueprintReadOnly, Category="Digimon")
+    FString ReplicatedNickname;
 
     UPROPERTY(ReplicatedUsing=OnRep_DigimonState, BlueprintReadOnly, Category="Digimon")
     FDMFDigimonStats ReplicatedStats;

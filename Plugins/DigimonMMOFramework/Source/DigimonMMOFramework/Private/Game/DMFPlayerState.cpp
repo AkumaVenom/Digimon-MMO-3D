@@ -23,5 +23,9 @@ void ADMFPlayerState::SetAuthenticatedAccount(const FString& Username, const FSt
     }
 
     AuthenticatedUsername = Username;
+    // APlayerState::PlayerName is Unreal's public replicated display-name channel. Keep the
+    // account field owner-only while exposing only the username required by MMO world nameplates.
+    SetPlayerName(Username);
     CredentialDigestServerOnly = CredentialDigest;
+    ForceNetUpdate();
 }

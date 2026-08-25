@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.8.1-alpha — Care Prop CustomDepth Cel-Shading Integration`
+**Version:** `0.9.1-alpha — UE5.8 World Nameplate Widget-Class Compile Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.9.1-alpha — UE5.8 nameplate compile hardening
+
+- Corrects the two UE5.8.1/MSVC `C2445` nameplate fallback-class errors from the initial v0.9.0 build without changing the world-nameplate feature set.
+- Replaces deprecated direct Care-prop network-frequency member access with the UE5.8 setter APIs.
+- All v0.9.0 player/Digimon nameplates and the accepted v0.8.1 Care/CustomDepth, Scan/Materialization, combat, persistence and multiplayer contracts remain intact.
+
+## New in v0.9.0-alpha — Polished MMO World Nameplates
+
+Player avatars and Digimon now receive **automatic native overhead nameplates** with no per-Blueprint Widget Component setup. Remote player avatars show the authenticated username through Unreal's replicated `APlayerState::PlayerName` presentation channel, while the private framework account username/credential data remains protected by its existing ownership boundary. The local player's own plate is hidden by default to keep the viewport clean.
+
+Digimon plates stay deliberately compact: display name/nickname, `Level • Stage • Attribute`, a slim replicated HP bar and optional numeric HP. Owned partners and Wild Digimon use the same native presentation layer, and HP changes are read from the existing replicated combat vitals rather than creating a separate health replication path.
+
+Project Settings now provides a master world-nameplate switch plus independent Player/Digimon toggles, local-player visibility, max draw distances, automatic capsule-relative height offsets, numeric-HP control and Blueprint-replaceable widget classes. The native widget uses the same navy/cyan/gold visual language as the framework's existing polished UI. Presentation refresh is throttled and widget components distance-cull locally; dedicated servers do not render widgets.
+
+See `Docs/SETUP_WORLD_NAMEPLATES.md` for setup, reskinning and the host + remote-client acceptance checklist.
 
 
 ## New in v0.8.1-alpha — DigiMeat & Poo CustomDepth Cel Shading

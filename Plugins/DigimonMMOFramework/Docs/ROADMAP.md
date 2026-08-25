@@ -34,6 +34,12 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Server-authoritative materialization into the active Digimon inventory.
 - Duplicate materialization rules and configurable scan caps.
 
+## MMO presentation layer — world nameplates (implemented in v0.9.0-alpha)
+- Automatic remote-player username plates using the public replicated PlayerState display-name channel.
+- Automatic owned/wild Digimon plates with compact name, level, stage, attribute and replicated HP.
+- Master + per-category global settings, draw-distance culling, capsule-relative height and native/Blueprint-reskinnable UI.
+- Presentation remains client-side and does not introduce a second gameplay-authority path.
+
 ## Phase 4 — Digimon collection UX
 - Functional native roster/select/summon/recall menu implemented in v0.5.0.
 - Native drag/drop active Digimon inventory UI.

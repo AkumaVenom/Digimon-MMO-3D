@@ -1,6 +1,26 @@
-# UE5.8 Validation Plan — 0.8.1-alpha
+# UE5.8 Validation Plan — 0.9.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.8.1 adds Care-prop CustomDepth/cel-shading integration on top of the v0.8.0 server-authoritative virtual-pet Care milestone while retaining all Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.9.1 corrects the UE5.8/MSVC widget-class fallback compile issue in the v0.9.0 automatic Player/Digimon MMO world nameplates on top of the accepted v0.8.1 Care/CustomDepth baseline while retaining all Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+
+## C0. v0.9.1 compile-fix acceptance
+
+1. Replace the previous v0.9.0 plugin with v0.9.1 and perform a UE5.8.1 Editor Development build.
+2. Verify `DMFPlayerAvatarCharacter.cpp` and `DMFDigimonCharacter.cpp` no longer report `C2445` at the nameplate widget-class fallback.
+3. Verify `DMFDigimonCarePropActor.cpp` no longer emits the v0.9.0 direct-access deprecation warnings for `NetUpdateFrequency` / `MinNetUpdateFrequency`.
+4. Continue into the full world-nameplate and earlier regression suites below.
+
+## N0. v0.9.0 world-nameplate multiplayer acceptance
+
+1. Launch host + remote client PIE and authenticate with two different usernames.
+2. Host must see Client username above the remote avatar; Client must see Host username above the remote avatar.
+3. Each locally controlled avatar must hide its own plate by default; enable `Show Local Player Nameplate` and verify the optional local plate.
+4. Owned Digimon and Wild Digimon must automatically display a compact name, level, stage, attribute and HP.
+5. Damage a Digimon and verify host/client health-bar and numeric HP update from replicated combat vitals.
+6. Verify owned Digimon with a persisted nickname display that nickname; empty nickname falls back to species DisplayName.
+7. Verify Player and Digimon max draw distances independently cull the corresponding plates.
+8. Verify the master and per-category global switches disable the expected layers without affecting actors/combat.
+9. Verify a dedicated-server target performs no widget rendering while clients still render nameplates from replicated state.
+10. Run the v0.8.1 Care acceptance and earlier combat/Scan/possession regression sections after nameplate validation.
 
 ## A0. v0.8.1 Care / CustomDepth / feeding / waste multiplayer acceptance
 

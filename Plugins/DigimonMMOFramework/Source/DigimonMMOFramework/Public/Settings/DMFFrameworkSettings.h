@@ -11,6 +11,7 @@ class UDMFCombatQuickBarWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
+class UDMFWorldNameplateWidget;
 class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
@@ -88,6 +89,54 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     bool bShowNativeScanNotifications = true;
+
+    /** Master switch for all automatic world-space MMO nameplates. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates")
+    bool bEnableWorldNameplates = true;
+
+    /** Show authenticated player usernames above replicated player avatars. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Players", meta=(EditCondition="bEnableWorldNameplates"))
+    bool bEnablePlayerNameplates = true;
+
+    /** Local players normally do not need their own overhead username. Enable for debugging/specific MMO presentation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Players", meta=(EditCondition="bEnableWorldNameplates && bEnablePlayerNameplates"))
+    bool bShowLocalPlayerNameplate = false;
+
+    /** Maximum camera distance at which player nameplates render. Zero disables distance culling. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Players", meta=(EditCondition="bEnableWorldNameplates && bEnablePlayerNameplates", ClampMin="0.0"))
+    float PlayerNameplateMaxDrawDistance = 6000.0f;
+
+    /** Additional height above the avatar collision capsule. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Players", meta=(EditCondition="bEnableWorldNameplates && bEnablePlayerNameplates", ClampMin="0.0", ClampMax="500.0"))
+    float PlayerNameplateHeightOffset = 34.0f;
+
+    /** Native fallback is supplied; assign a Blueprint child to reskin player plates without replacing actor/network logic. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Players", meta=(EditCondition="bEnableWorldNameplates && bEnablePlayerNameplates"))
+    TSubclassOf<UDMFWorldNameplateWidget> PlayerNameplateWidgetClass;
+
+    /** Show compact Digimon name/level/type/health plates above owned and wild Digimon. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Digimon", meta=(EditCondition="bEnableWorldNameplates"))
+    bool bEnableDigimonNameplates = true;
+
+    /** Maximum camera distance at which Digimon nameplates render. Zero disables distance culling. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Digimon", meta=(EditCondition="bEnableWorldNameplates && bEnableDigimonNameplates", ClampMin="0.0"))
+    float DigimonNameplateMaxDrawDistance = 4500.0f;
+
+    /** Additional height above each Digimon collision capsule, allowing differently sized species to position cleanly. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Digimon", meta=(EditCondition="bEnableWorldNameplates && bEnableDigimonNameplates", ClampMin="0.0", ClampMax="500.0"))
+    float DigimonNameplateHeightOffset = 24.0f;
+
+    /** Keep the health readout compact: disable this to show only the slim health bar. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Digimon", meta=(EditCondition="bEnableWorldNameplates && bEnableDigimonNameplates"))
+    bool bShowDigimonNumericHealthOnNameplates = true;
+
+    /** Native fallback is supplied; assign a Blueprint child to reskin Digimon plates without replacing combat/network logic. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Digimon", meta=(EditCondition="bEnableWorldNameplates && bEnableDigimonNameplates"))
+    TSubclassOf<UDMFWorldNameplateWidget> DigimonNameplateWidgetClass;
+
+    /** Throttled presentation refresh interval. Actor state itself continues to replicate at its normal framework cadence. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates|Performance", meta=(EditCondition="bEnableWorldNameplates", ClampMin="0.05", ClampMax="1.0"))
+    float WorldNameplateRefreshInterval = 0.15f;
 
     /** Master switch for the persistent Scan Data / Materialization system. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Scan & Materialization")
