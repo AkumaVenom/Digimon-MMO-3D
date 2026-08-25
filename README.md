@@ -165,6 +165,8 @@ Once the eating sequence finishes, the Care interface returns and displays the D
 
 The wider Care System is planned to grow into additional needs, reactions and Digimon behaviours over time.
 
+<img width="2304" height="1470" alt="care" src="https://github.com/user-attachments/assets/32527931-60ff-4300-b972-4ee55b9a5013" />
+
 ---
 
 # ❤️ Your Digimon Is More Than a Combat Unit
