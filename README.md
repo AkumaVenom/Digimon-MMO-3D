@@ -1,310 +1,400 @@
-# Digimon MMO Framework — UE5.8
+# Digimon MMO 3D Framework — UE5.8
 
-**Version:** `0.7.1-alpha — UE5.8 Scan Toast Slot Shadow Compile Fix`
+### Explore the Digital World. Raise your partner. Build your collection. Fight together.
 
-A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+**Digimon MMO 3D** is an ambitious multiplayer 3D Digimon fan project focused on creating the feeling of living inside a persistent Digital World alongside your own Digimon partners.
 
+Explore, battle wild Digimon, collect Scan Data, materialize new partners, grow your collection, care for your Digimon, and adventure alongside other players in a shared multiplayer experience.
 
-## New in v0.7.1-alpha — UE5.8 Scan Toast Compile Fix
+The project is currently in active development and is being built system-by-system with a strong focus on multiplayer gameplay, persistence, progression, and the bond between the player and their Digimon.
 
-- Fixed the UE5.8.1/MSVC `C4458` build failure in `DMFScanNotificationWidget.cpp` where a local `UOverlaySlot* Slot` variable hid the inherited `UWidget::Slot` member.
-- Renamed the local variable to `ToastOverlaySlot`; Scan Data, Materialization, the tabbed Digimon Menu, persistence, replication and combat behavior are otherwise unchanged from v0.7.0-alpha.
-- Scanned the runtime source for other local `Slot` declarations that could collide with `UWidget::Slot`; no additional UI shadowing candidates remain.
+<img width="2172" height="724" alt="Splash" src="https://github.com/user-attachments/assets/5dae9cac-93dc-41d5-ac1c-83530b1a6b6c" />
 
-## New in v0.7.0-alpha — Scan Data & Materialization
+---
 
-The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into the active Collection.
+## 🌐 Welcome to the Digital World
 
-The Digimon menu is now a tabbed shell: `COLLECTION` and `SCAN & MATERIALIZE` are implemented today, while the layout intentionally reserves the same menu architecture for future Bank, Party, Digivolution and Care modules. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
+Digimon MMO 3D is designed around one simple idea:
 
-Per species, configure `DMFDigimonSpeciesData -> Scan & Materialization`: `bScanDataEnabled`, `BattleScanPercentReward`, `ScanPercentCap`, `bMaterializationEnabled`, and `MaterializationRequiredScanPercent`. Materializable species must have `WorldActorClass` set to the normal partner Blueprint derived from `DMFDigimonCharacter`, never the `DMFWildDigimonCharacter` Blueprint. Scan Data is owner-only replicated and saved in the account record automatically. See `Docs/SETUP_SCAN_MATERIALIZATION.md`.
+**Your Digimon should feel like a real partner — not just another character in your inventory.**
 
+Your journey begins by creating your account and choosing your first Digimon partner.
 
+From there, you can enter the Digital World, encounter other Digimon, battle them, collect their Scan Data, build your Digimon Collection, choose which Digimon accompanies you, and progressively strengthen your team.
 
+The game is being developed as a true multiplayer experience, allowing players to host and join worlds while maintaining their own account and Digimon progression.
 
+---
 
-## New in v0.6.4-alpha — repeat-safe ability commands
+# 🎮 The Core Gameplay Loop
 
-Manual quick-slot commands now use a server-authoritative **latest-command input buffer**. Pressing `1`–`4` while the partner is still attacking, recovering, cooling down, chasing, or turning no longer loses the input. The queued ability remains pending and executes as soon as SP, cooldown, range, facing, target validity, and leash validation all pass. SP is deducted only when the attack actually begins. Expired cooldown entries are pruned, and authoritative cooldown validation uses the server world clock directly. This builds on v0.6.3 capsule-aware melee reach rather than replacing it.
+Your adventure revolves around exploring, battling, collecting and raising Digimon.
 
-## New in v0.6.3-alpha — reliable ability execution and capsule-aware melee reach
+### Explore
 
-- Fixed short-range/manual abilities that could queue forever while a longer-range or 0-SP ability still worked.
-- Ability range is now measured horizontally **capsule edge-to-edge**, not actor-center to actor-center. This keeps melee reach consistent across small and large Digimon collision capsules.
-- AI chase acceptance now uses the same capsule-aware range contract and disables the extra `StopOnOverlap` radius that could leave a melee attacker just outside legal range.
-- Authoritative impact-time range validation uses the same rule, so an attack that is allowed to start is not silently discarded by a different range formula at impact time.
-- Positive SP-cost and zero-SP abilities now share one normalized cost path; SP is not consumed until range, target, cooldown, and facing validation have all succeeded.
-- Combat target-facing now also synchronizes AI control yaw and temporarily suppresses controller-driven yaw while attacking, preventing a controller from fighting the turn-in-place gate.
-- No changes to the polished v0.6.0 UI, v0.6.1 possession recovery, wild retaliation policy, spawner population/rarity, persistence, healer, or account systems.
+Travel through the 3D Digital World with your active Digimon partner by your side.
 
-## New in v0.6.2-alpha — replicated combat target facing
+Discover wild Digimon, future locations, activities, progression opportunities and other players throughout the world.
 
-- Partner and wild Digimon now perform a smooth server-authoritative turn-in-place toward the Digimon they are about to attack.
-- Attacks may be gated until the attacker is within an exposed yaw tolerance, preventing sideways/backwards attack Montages.
-- The facing loop is active only while needed; normal movement orientation is restored after recovery/chase so roaming and following stay natural.
-- Character replicated movement carries yaw to host/clients; clients do not author combat rotation.
-- `DMFDigimonCharacter` exposes `Enable Combat Facing`, `Require Facing Before Attack`, `Combat Facing Turn Rate`, `Attack Facing Tolerance`, and an advanced update interval, plus Blueprint calls for explicit facing control/inspection.
-- See `Docs/SETUP_COMBAT_TARGET_FACING.md`.
+### Battle
 
-## Fixed in v0.6.1-alpha — remote-client avatar possession
+Encounter wild Digimon and enter real-time battles.
 
-The framework now enforces that late-joining clients enter gameplay possessing a `DMFPlayerAvatarCharacter` (or the project's Blueprint child) rather than remaining in Unreal's flying fallback `DefaultPawn`. The server validates the pawn after normal `HandleStartingNewPlayer`, repairs missing/wrong pawns, reasserts `ClientRestart` to remote clients, reapplies the account-selected skin, and restores the active partner once onboarding permits it.
+Your Digimon can actively participate in combat while you influence the battle using abilities and commands.
 
-The local remote PlayerController also performs a short bounded acknowledgement/retry check after joining. Skin selection and starter confirmation are additional authoritative recovery checkpoints, so a successful UI selection can no longer leave the client attached to the wrong pawn.
+Combat is being designed around the feeling of fighting **alongside your Digimon**, rather than simply controlling it as another player character.
 
-**Recommended OpenWorld configuration remains:**
-- GameMode Override = your Blueprint child of `DMFMMOGameMode`.
-- Default Pawn Class = your Blueprint child of `DMFPlayerAvatarCharacter`.
-- Player Controller / Player State = framework defaults or compatible Blueprint children.
-- At least one valid `PlayerStart`.
+### Collect Scan Data
 
-See `Docs/SETUP_MULTIPLAYER_CLIENT_POSSESSION.md`.
+Defeating and encountering Digimon can contribute **Scan Data** toward that Digimon species.
 
+Scan Data represents your growing understanding of that Digimon.
 
-## New in v0.6.0-alpha — polished native UI by default
+Reach the required materialization threshold and you can create a Digimon of that species for your own collection.
 
-The framework no longer ships programmer-style gray-list fallback menus. The native defaults are now a coordinated MMO UI suite: a centered login/main-menu/admin card, portrait-driven starter and character selectors, a real Digimon portrait-slot inventory with selected stats and summon/recall actions, and a bottom-center ability HUD with ability icons/cooldowns.
+### Materialize Digimon
 
-**Existing data assets drive the visuals automatically:**
-- `DMFDigimonSpeciesData -> Portrait` = inventory slot, selected Digimon portrait and starter card/preview.
-- `DMFPlayerSkinData -> Portrait` = character skin card/preview.
-- `DMFDigimonAbilityData -> Icon` = combat quick-slot icon.
+Once enough Scan Data has been obtained, that Digimon can be **Materialized**.
 
-The native Digimon collection renders the configured `MaxActiveDigimonInventory` as a 6-column slot grid, including empty slots. Occupied slots show name, level and Active/Summoned/KO state; selecting one opens a profile with Stage/Attribute, Level/EXP, HP/SP, STR/INT/DEF/SPD, ABI/CAM and the species description. Summon/recall remains server-authoritative.
+The newly materialized Digimon becomes a real individual member of your Digimon Collection rather than simply unlocking the species.
 
-All polished widgets remain Blueprintable/reskinnable. Existing Blueprint subclasses are not required to migrate to the native layout, and legacy optional binding names remain supported where practical. See `Docs/SETUP_POLISHED_NATIVE_UI.md`.
+You can then select it as one of your partners and summon it into the world.
 
+### Raise Your Partners
 
+Digimon are intended to become companions that you look after and develop over time.
 
+Progression will continue to expand beyond combat and collection into care, growth and additional Digimon-raising systems.
 
+---
 
-## Fixed in v0.5.5-alpha — deterministic death pose + passive-until-attacked wild combat
+# 🐣 Choose Your Starter Digimon
 
-- Player-owned and wild Digimon now lock their Death Montage at blend-out start and pause skeletal animation evaluation so a defeated Digimon cannot return to Idle. Player partners remain frozen until recall/revive; wild Digimon remain frozen until the spawner removes them.
-- Defeat animation startup is now driven only by authoritative/replicated `CombatState=Defeated`; the defeat multicast is cosmetic-only, removing the client ordering race that could let a Montage finish before the client knew it was defeated.
-- Wild combat is now split into two clear policies: **Proactive Auto Battle** and **Retaliate When Attacked**. The recommended MMO default is proactive off + retaliation on. Wild Digimon peacefully roam until a hostile Digimon actually damages them, then the server makes that aggressor their combat target and they fight back inside their normal leash.
-- Spawner defaults now match that behavior: `Allow Proactive Auto Battle=false`, `Allow Retaliation When Attacked=true`. Proactive aggression can still be enabled for intentionally hostile encounter zones.
-- `DMFWildDigimonCharacter` exposes authoritative `Set Wild Auto Battle Enabled` and `Set Wild Retaliation Enabled` calls, with replicated policy state for Blueprint/UI inspection.
+Every new journey needs a beginning.
 
-> **v0.5.5 defeated-pose contract:** when a Digimon reaches `Defeated`, its species Death Montage owns the mesh until the Montage starts blend-out; at that exact boundary the framework pauses the Montage and skeletal evaluator so neither player nor wild Digimon can return to Idle while defeated. Player partners remain frozen until recall/revive; wild Digimon remain frozen until their spawner corpse timer removes them.
+New players are introduced to the world by selecting their first **Starter Digimon**.
 
+Your starter becomes your first true partner and the beginning of your Digimon Collection.
 
-## Fixed in v0.5.4-alpha — UE5.8.1 death-pose compiler feedback
+Starter selection is tied directly to your player account, allowing your adventure and partner progression to remain associated with your character as the game continues to grow.
 
-- Corrected the three `C4458` errors introduced by v0.5.3 in `DMFDigimonCharacter.cpp`. Local variables named `Mesh` shadowed `ACharacter::Mesh`, and this project's UE5.8.1 warning policy promotes that diagnostic to an error.
-- Renamed those locals to `DigimonMesh` in defeated-presentation apply/hold/clear paths. This is a naming-only compile correction: death montage playback, persistent defeated pose, revive/recall behavior, replication, interaction, healer, roster and wild-spawner behavior are unchanged.
-- The supplied build log shows UHT completing successfully and all other plugin translation units compiling past this layer; the only reported C++ diagnostics are the three `C4458` occurrences in `DMFDigimonCharacter.cpp`.
+---
 
-## Persistent defeated partner presentation (v0.5.3)
+# 🔍 Scan Data & Materialization
 
-A player-owned Digimon that reaches `0 HP` now remains physically present in its defeated pose until the player recalls/dismisses it or an authoritative healer revives it. The framework plays the species `DeathMontage`, stops AI/CharacterMovement, makes the capsule non-blocking by default, and freezes the montage near its final pose instead of allowing the AnimBP to return to idle. `CombatState` replication is the durable source of truth, so late-joining clients also reconstruct the defeated presentation.
+One of the major collection systems in Digimon MMO 3D is the **Scan Data System**.
 
-Configure the species `DeathMontage` normally, then tune the partner/wild Blueprint under **Digimon MMO -> Defeat Presentation** if a particular animation needs a slightly earlier/later held frame. The default normalized hold time is `0.97`. See `Docs/SETUP_DEFEATED_PARTNER_PRESENTATION.md`.
+Instead of simply capturing every Digimon you encounter, you gradually gather data about different Digimon species.
 
-## Added in v0.5.2-alpha — one-call player interaction / Digimon targeting
+Your Scan Data progresses toward the required materialization amount.
 
-- `ADMFPlayerAvatarCharacter` now exposes a ready-to-use inherited `Interact` Blueprint node. The framework player performs the interaction trace and internally dispatches supported Digimon/healer actors, so the normal player Blueprint no longer needs controller, PlayerState, Digimon or healer casts.
-- Native `E` interaction is enabled by default and is independently disableable for Enhanced Input projects. The same `Interact` function remains callable from any project Input Action.
-- Interaction trace tuning is exposed on the player Blueprint: distance, line-vs-sphere sweep radius, trace channel, trace complexity, active-partner ignore and optional debug drawing.
-- Digimon interaction defaults to **target only**. The intended manual-combat flow is `E -> target`, then `1-4 -> ability`. Optional target+attack interaction and explicit `Interact With Digimon And Attack` are also available.
-- Cast-free helper nodes accept generic `Actor` references for projects that already have overlap/UI hit actors. `Clear Digimon Target`, `Command Digimon Ability Slot`, current-target and prompt/result helpers are exposed directly on the player.
-- `DMFHealerActor` now includes a query-only native interaction sphere, so a basic healer Blueprint is immediately detectable by the player interaction trace while authoritative healer range/reuse validation remains server-side.
-- Legacy Left-Mouse target selection now defaults off independently from the default `1-4` ability commands.
-- See `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md` for the exact setup.
+Once the threshold has been reached:
 
+**Scan Data → Materialization → New Digimon → Your Collection**
 
-## Fixed in v0.5.1-alpha — UE5.8.1 compiler feedback
+The materialized Digimon becomes part of your personal collection and can be selected as a partner.
 
-- Corrected the `C2664` failure in `UDMFPlayerDigimonComponent::IsActivePartnerSummoned()`. The function is no longer defined inline against a forward-declared `ADMFDigimonCharacter`; its implementation now lives in the `.cpp` after the complete Digimon character type is included.
-- The supplied UE5.8.1 build log shows UHT completing successfully and eight C++ compile actions failing on the same header expression, so this maintenance release targets that single root compiler defect without changing v0.5.0 gameplay behavior.
-- All v0.5.0 manual partner combat, JRPG balance, healer, Digimon roster/summon/recall features and the tested v0.4.1 wild-spawner behavior are preserved.
-
-
-
-## Added in v0.5.0-alpha — player combat control, battle pacing, healer and Digimon roster UI
-
-- Player-owned partners no longer auto-acquire or auto-attack by default. They still follow the player and execute explicit manual commands, including out-of-range chase/queue behavior.
-- New `bPlayerPartnerAutoBattle` project setting defaults to `false`; wild Digimon retain their independent `bAutoBattle` setting.
-- New Blueprint calls on `ADMFMMOPlayerController`: `SetDigimonCommandTarget`, `CommandPartnerTargetAndAttack`, and `CommandActivePartnerAbilitySlot`. These are intended to be called directly from a project interaction/targeting trace without granting combat authority to the client.
-- Added non-persistent role-level combat tuning: player-owned partners default to `1.50x` outgoing damage and `0.50x` incoming Digimon-combat damage. Both values are exposed in Project Settings. Wild Blueprint classes also expose independent outgoing/incoming multipliers (default `1.0`). Persistent species/player stats are not silently rewritten.
-- Added Blueprintable replicated `ADMFHealerActor`. Project interaction logic calls `RequestHeal`; the owning PlayerController routes the request to the server, which validates range/reuse/availability and restores owned Digimon for free. HP/SP, defeated restoration, bank inclusion, auto-resummon, interaction radius, messages and reuse delay are exposed.
-- Healer use persists immediately, can restore defeated partners, and can automatically re-summon the selected active partner after healing. A cosmetic multicast Blueprint event is provided for healer VFX/audio/NPC animation.
-- Added native/reskinnable `UDMFDigimonInventoryWidget` and entry buttons. Default `I` toggles the roster menu; Blueprint Open/Close/Toggle/Refresh calls are exposed on `ADMFMMOPlayerController`.
-- The roster UI lists owned Digimon with level/HP/SP/active/defeated state and allows server-authoritative Set Active/Summon and Recall actions. A defeated Digimon cannot be summoned until healed.
-- Added server RPCs on `UDMFPlayerDigimonComponent` for selecting/summoning, recalling and optionally toggling active-partner auto battle, plus authoritative `HealAllOwnedDigimon`.
-- Existing account persistence, v0.4.1 wild-spawner capsule placement, rarity/roaming/emergence, native frontend bootstrap, player skins and Custom Depth contracts are preserved.
-- See `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`.
-
-## Fixed in v0.4.1-alpha — Wild spawn placement
-
-- Corrected a v0.4.0 spawn-placement defect where the terrain/NavMesh surface point was used directly as an `ACharacter` actor origin. Because a Character origin is at the center of its capsule, this could embed half the capsule in terrain and cause `AdjustIfPossibleButDontSpawnIfColliding` to reject every spawn.
-- Spawn placement now reads the selected `BP_Wild_<Species>` class default capsule half-height and places the capsule bottom on the resolved ground/NavMesh surface plus `Spawn Ground Offset`. Different Digimon Blueprint capsule sizes are respected automatically.
-- Added clear server Output Log messages for spawner activation, successful wild spawns, no eligible spawn-table entries, and bounded placement failure.
-- No intentional changes to rarity selection, population, roaming/leash, emergence, combat, persistence, login, player skins, starter flow, or Custom Depth behavior.
-
-## Added in v0.4.0-alpha — MMO wild Digimon proximity / rarity spawner
-
-- `ADMFWildDigimonSpawner`: Blueprintable, replicated world population actor with server-only spawn decisions.
-- Player-proximity activation plus larger deactivation radius and grace period for stable MMO streaming/hysteresis.
-- Inclusive min/max active population roll per activation with staggered initial spawning.
-- Weighted rarity tiers (`Common`, `Uncommon`, `Rare`, `Epic`, `Legendary`, `Mythic`) plus per-entry weight multipliers and per-entry live caps.
-- Per-entry species, wild Blueprint class and min/max level range.
-- Ground trace + optional NavMesh projection + player-distance rejection + collision-aware deferred spawning.
-- Replicated `SpawnRarity` and individual `SpawnHomeLocation` on wild Digimon.
-- Timer-driven free roaming around each individual home point using random reachable NavMesh locations.
-- Existing combat automation uses the same individual spawn point as its hard leash home.
-- Replicated synchronized ground emergence: the authoritative capsule stays on valid ground while the mesh rises smoothly from below ground; combat/movement/collision are suppressed until the transition completes.
-- Optional synchronized ground sink when the last nearby player leaves and the spawner unloads.
-- Per-entry emergence depth/duration override for differently sized Digimon.
-- Defeat-aware replacement queue with randomized respawn delay and configurable corpse/death-presentation lifetime.
-- Blueprint runtime calls/events for forced activation/deactivation, one-off spawn, state counts, spawn notification and ground-transition cosmetics.
-- `NavigationSystem` runtime dependency added for placement and idle roaming.
-- See `Docs/SETUP_WILD_DIGIMON_SPAWNER.md` for the complete Editor setup and multiplayer acceptance test.
-
-
-This baseline preserves the authoritative account/onboarding and real-time combat foundations and adds a ready-to-use replicated third-person player character plus persistent, server-authoritative character-skin selection.
-
-
-## v0.3.1-alpha compiler-feedback maintenance fix
-
-This maintenance release preserves the complete v0.3.0 player-avatar/skin feature set while correcting the UE5.8.1 compiler diagnostics reported by the first real Editor build of that feature layer. `ADMFMMOPlayerController` no longer declares local variables named `PlayerState` (which hides `AController::PlayerState` under the project's warnings-as-errors build policy), and `BP_OnPlayerSkinSelectionResult` now uses UHT's canonical `const FText&` signature. No gameplay, replication, persistence, skin-selection authority, starter, or combat behavior is intentionally changed.
-
-## Added in v0.3.0-alpha — Player avatar / character skin framework
-
-- `ADMFPlayerAvatarCharacter`: ready-to-derive replicated third-person player pawn, now the default MMO pawn class.
-- Native fallback controls: WASD, mouse look, jump, replicated sprint, crouch and gamepad sticks; projects can disable them and supply Enhanced Input.
-- Camera boom + follow camera exposed for Blueprint tuning.
-- `UDMFPlayerSkinData` Primary Data Asset: stable skin ID, display metadata, skeletal mesh, AnimBP class, relative mesh transform, material overrides and portrait.
-- `UDMFPlayerAvatarComponent` on `ADMFPlayerState`: owner-routed server RPCs, persistent selected skin ID, replication to all clients and Blueprint delegates.
-- Skin switching is presentation-only: the authoritative pawn/controller/position/inventory/partner are never replaced just to change appearance.
-- Native `UDMFPlayerSkinSelectionWidget` with fully functional fallback UI and Blueprint preview/result events.
-- Automatic skin discovery through Asset Manager: no hard-coded skin roster array. Add an enabled `DMFPlayerSkinData` asset and it appears automatically.
-- First-time skin selection can be mandatory and is sequenced before Starter Digimon onboarding.
-- `F6` opens the character skin menu during gameplay by default. Blueprint-callable Open/Close/Toggle/Refresh functions are exposed on `DMFMMOPlayerController`.
-- Character selection persists immediately in the host account database and survives reconnect/server restart.
-- Existing v0.2.x accounts migrate safely: they retain Digimon state and simply have no selected avatar skin until they choose one.
-
-
-## Fixed in v0.2.2-alpha — UE5.8 compile compatibility
-
-- Explicitly unwraps replicated `TObjectPtr<ADMFDigimonCharacter>` target fallbacks with `.Get()` where UE5.8/MSVC otherwise reports ambiguous conditional-expression result types.
-- Normalizes `ClientStarterSelectionResult` to the UE5.8 UHT-generated RPC signature (`bool`, `const FText&`, `FGuid`) in both declaration and implementation.
-- Eliminates the generated-code `C2511`/`C2352` cascade caused by the mismatched RPC signature.
-- No gameplay, replication-authority, persistence, combat or onboarding behavior is intentionally changed by this maintenance release.
-
-
-## Fixed in v0.2.1-alpha — UE5.8 compile compatibility
-
-- Replaced the obsolete `#include "Engine/PrimaryAssetId.h"` path with UE5.8's documented `#include "UObject/PrimaryAssetId.h"`.
-- Applied the fix consistently in `DMFTypes.h`, `DMFStarterEntryButton.h`, and `DMFStarterSelectionWidget.h`.
-- No gameplay, replication, persistence, UI, combat, starter, or data-asset contracts were changed by this compatibility release.
-- This patch directly addresses every compiler error present in the supplied UE5.8.1 UnrealBuildTool log; a fresh UE5.8 build is still required to expose any subsequent errors that were previously masked by the missing header.
-
-## Added in v0.2.0-alpha — Real-time battle core
-
-- `DMFDigimonAbilityData` Primary Data Assets for Blueprint-first ability authoring.
-- Replicated `DMFDigimonCombatComponent` on every framework Digimon character.
-- Server-authoritative HP, SP, cooldown, range, target, damage and defeat validation.
-- JRPG-style STR/INT attack scaling with DEF mitigation.
-- Autonomous hostile target acquisition, chasing and basic attacks.
-- Automatic player-partner follow behavior outside combat.
-- Shared team-ID hostility rules for player, wild, NPC and future ranked teams.
-- Player commands routed through the owning PlayerState component rather than trusting the spawned partner actor.
-- Server-side command queue: out-of-range quick-slot commands chase the selected target and execute in range after full revalidation.
-- Server-side command-rate guard to reject abusive quick-slot RPC bursts before combat processing.
-- Four-slot native quick-access combat bar with replicated cooldown feedback.
-- Ready-to-use manual combat inputs: player `E / Interact` targets through the avatar interaction layer and number keys 1–4 command quick slots. Legacy Left-Mouse target selection remains available as an independently toggleable controller binding and defaults off in v0.5.2.
-- Ready-to-bind cursor target selection on the MMO PlayerController.
-- Replicated combat target/state/vitals with Blueprint delegates.
-- Unreliable multicast cosmetic attack cues for montage/VFX/audio; gameplay results remain replicated authoritative state.
-- Species-level Attack1/Attack2 Cascade/Niagara/montage fields remain supported as presentation fallbacks.
-- Ready-to-place `ADMFWildDigimonCharacter` with species, level, team, aggro and leash settings.
-- Wild level stat scaling from species Data Assets.
-- Persistent active-partner HP/SP synchronization.
-- Configurable account autosave interval.
-- Battle EXP and money rewards persisted on authoritative victory.
-- Blueprint hooks for ability presentation, defeat presentation, target changes, combat state, vitals and battle rewards.
-
-## Foundation retained from v0.1.0
-
-- Multiplayer-only MMO gameplay GameMode (`ADMFMMOGameMode`).
-- Frontend GameMode/HUD with a fully functional native UMG fallback login/main-menu UI.
-- Username/password credential staging with server-side validation during connection.
-- Optional first-login auto-registration on the host's server-side account database.
-- Fixed regular-player join target compiled into the runtime (not exposed to UI, settings or Blueprint).
-- Admin-only `Host & Play` flow protected by the requested admin passphrase, stored in source as a one-way digest instead of plaintext.
-- Single package flow: normal users join; an unlocked admin may start the authoritative listen host.
-- Persistent account database through a host-side `USaveGame` database.
-- Blueprint/data-asset driven Digimon species definitions.
-- JRPG-style Digimon stat foundation: Level, EXP, HP, SP, STR, INT, DEF, SPD, ABI and CAM.
-- Per-Digimon unique persistent instance IDs.
-- Per-instance current HP/SP, care state, equipped abilities and unspent attribute points.
-- Digivolution requirement definitions with level plus optional stat thresholds.
-- Exposed animation inputs: Attack 1, Attack 2, Death, Feeding, Interact and Win montages.
-- Exposed Cascade VFX inputs for Attack 1 / Attack 2 plus optional Niagara equivalents.
-- Exposed Digimon idle/voice sound list.
-- Owner-only Fast Array replication for the player's active Digimon inventory.
-- Active partner identity replication.
-- Starter roster `PrimaryDataAsset`.
-- Native starter selection UI with selectable starter list and stat preview.
-- Server-authoritative starter validation/grant with explicit owner-only success/failure result feedback.
-- Server-side Blueprint admin/reset hook for starter onboarding support/testing.
-- New starter is automatically assigned a unique instance ID, added to the player's replicated inventory, made active, persisted, and spawned as the player's 3D partner when a valid world actor class is configured.
-- Returning players bypass starter selection and load their existing partner.
-- Blueprint events/hooks for custom presentation and 3D starter preview implementations.
-- Account schema already reserves Digimon Bank, scan-data, money, ranked battle points and F→S+ rank state so later systems extend the same persistence contract.
-
-## Cel-shading / Custom Depth contract
-
-All framework player-avatar skins and Digimon automatically force `Render CustomDepth Pass = true` on their owned mesh components. Skin swaps, Digimon initialization and replicated state refreshes reassert the flag. Both base classes expose `CustomDepthStencilValue` plus a Blueprint-callable `RefreshFrameworkCustomDepth()` for dynamically created mesh components. Unreal project-level Custom Depth must still be enabled under Rendering for post-process materials to sample it.
-
-## Setup
-
-1. Copy the `DigimonMMOFramework` folder into `<YourProject>/Plugins/`.
-2. Regenerate project files and compile for UE5.8.
-3. Enable **Digimon MMO Framework**.
-4. Set your blank main-menu level to use `DMFFrontendGameMode`.
-5. Set your open-world gameplay level to use `DMFMMOGameMode`.
-6. Create `/Game/DigimonData` for framework Data Assets. Merge `ConfigTemplates/DMF_Project_DefaultGame.ini.snippet` into your project's `Config/DefaultGame.ini` so species/roster/ability/player-skin Primary Assets are discovered and always cooked.
-7. Create a Blueprint derived from `DMFPlayerAvatarCharacter` if you want project-specific camera/movement defaults, and assign it as your MMO GameMode Default Pawn Class. The native class is already the C++ default.
-8. Create one `DMFPlayerSkinData` asset per selectable character under `/Game/DigimonData` and assign each existing skeletal mesh/AnimBP. The skin UI discovers enabled assets automatically.
-9. In **Project Settings → Game → Digimon MMO Framework**, assign:
-   - `Frontend Map`
-   - `Open World Map`
-   - `Starter Roster`
-   - optional `Default Player Skin` when skin selection is not mandatory
-10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets.
-11. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
-12. Every playable/summonable species should provide a `WorldActorClass` derived from `ADMFDigimonCharacter`.
-13. Create a `DMFStarterRosterData` asset under `/Game/DigimonData` and add the desired starter species.
-14. Cover the combat/exploration area with a valid `NavMeshBoundsVolume` so authoritative Digimon AI can follow, chase and return to its leash anchor.
-15. For MMO population streaming, create a Blueprint child of `DMFWildDigimonSpawner`, add rarity-weighted spawn entries and place it inside valid NavMesh. See `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`.
-16. Place standalone `ADMFWildDigimonCharacter` Blueprints only for fixed/scripted encounters if desired.
-17. Package normally. The admin can log in, unlock Admin and choose **Host & Play**. Regular users log in and choose **Join Game**.
-
-## UE5.8 packaging note
-
-The framework defaults live in C++ and project-editable `UDeveloperSettings`. The included `ConfigTemplates/DMF_Project_DefaultGame.ini.snippet` is intentionally a **project config merge template**, not a plugin `DefaultGame.ini`. UE5.8 does not currently package plugin configuration files automatically, so required Asset Manager scan/cook rules belong in the consuming project's configuration.
-
-The snippet does not clear or replace your existing Primary Asset types. It adds the four DMF Primary Asset types (`DMFDigimonSpecies`, `DMFStarterRoster`, `DMFDigimonAbility`, `DMFPlayerSkin`) and marks them `AlwaysCook`.
-
-## Blueprint-first contract
-
-All content-facing species fields, starter definitions and major runtime entry points are Blueprint visible. The supplied native widgets work without Blueprint assets, but they are intentionally subclassable so a project can replace the presentation while retaining authoritative framework behavior.
-
-## Security note
-
-The requested hidden hostname is intentionally not exposed through the UI/settings/Blueprint surface, but no hostname embedded in a client binary can be made truly secret from a determined reverse engineer.
-
-Likewise, this alpha provides an out-of-the-box private-host login gate, not internet-grade account security. Credential digests carried in Unreal travel options can be replayed if traffic is captured. Before public production deployment, replace the credential transport with a TLS-backed authentication service that issues short-lived signed session tickets. The persistence and PlayerState interfaces are structured so that authentication can be swapped without rewriting Digimon inventory/onboarding logic.
-
-## Source inspiration
-
-The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
-
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
-
-
-## Native frontend UI bootstrap (0.3.2)
-
-The native login, player-skin, starter and combat widgets are functional C++ fallbacks and do not require Widget Blueprint assets. Their fallback `WidgetTree` is constructed during `RebuildWidget()` so it exists before the underlying Slate widget is built. `DMFFrontendHUD` also retries briefly if the local PlayerController is not ready on its first `BeginPlay` frame. A correctly configured blank MainMenu using `DMFFrontendGameMode` should therefore show the native login UI rather than an empty black viewport.
+This system is inspired by the concept of Digimon being composed of digital information and makes building your collection part of the wider progression experience.
+
+<img width="3791" height="1991" alt="DigimonMMO3D3" src="https://github.com/user-attachments/assets/2f1137c9-2e8d-4b20-88d5-c89b2def536b" />
+
+---
+
+# 📚 Your Digimon Collection
+
+Every Digimon you obtain is stored as part of your own **Digimon Collection**.
+
+Your collection is designed around individual Digimon rather than treating every member of the same species as identical.
+
+As Digimon MMO 3D continues to develop, these individual partners can form the foundation for increasingly deeper progression, care and customization systems.
+
+From your collection you can manage your available Digimon and decide which partner you want accompanying you in the Digital World.
+
+<img width="3780" height="2000" alt="DigimonMMO3D4" src="https://github.com/user-attachments/assets/c5453846-7ef8-4c66-9925-e0d0898a3eb9" />
+
+---
+
+# 🐲 Partner Digimon
+
+Choose a Digimon from your collection and make it your active partner.
+
+Your selected Digimon can be summoned into the world where it travels and fights alongside you.
+
+Partner selection and summoning are synchronized correctly across multiplayer sessions, allowing other players to see and interact with the Digimon accompanying you.
+
+Your partner is intended to become the center of your adventure.
+
+---
+
+# ⚔️ Real-Time Digimon Combat
+
+Combat in Digimon MMO 3D is being designed for a living multiplayer world rather than traditional turn-based encounters.
+
+Digimon can participate directly in battle while players use commands and abilities to influence the fight.
+
+The wider combat system is being built around:
+
+* Real-time Digimon encounters
+* Player and Digimon cooperation
+* Digimon versus Digimon combat
+* Wild Digimon
+* Multiplayer synchronization
+* Player-issued combat abilities and commands
+* Quick-access ability systems
+* Progression rewards
+* Scan Data rewards
+* Future expansion into increasingly advanced battle mechanics
+
+The goal is to make battles feel like you and your Digimon are fighting **together**.
+
+---
+
+# 🍖 Digimon Care System
+
+> **Currently in development**
+
+Digimon MMO 3D is expanding beyond combat so that your Digimon also needs attention and care.
+
+The Care System is being designed to make partners feel more like living creatures within the Digital World.
+
+One of the first major care mechanics is **feeding**.
+
+Players will be able to give their Digimon food such as DigiMeat to manage their partner's hunger.
+
+When your Digimon begins eating, the game interface temporarily gets out of the way so you can actually watch your partner eat instead of having the moment hidden behind menus.
+
+Once the eating sequence finishes, the Care interface returns and displays the Digimon's updated condition.
+
+The wider Care System is planned to grow into additional needs, reactions and Digimon behaviours over time.
+
+---
+
+# ❤️ Your Digimon Is More Than a Combat Unit
+
+A major goal of Digimon MMO 3D is making the relationship between player and Digimon matter.
+
+Your partner is intended to:
+
+* Travel beside you
+* Fight beside you
+* React to your actions
+* Need care and attention
+* Develop over time
+* Become part of your long-term progression
+* Remain associated with your account and collection
+
+The game will continue expanding these systems as development progresses.
+
+---
+
+# 🎒 Inventory & Player Progression
+
+Digimon MMO 3D is being built with persistent player progression.
+
+Your account can maintain important progression information between sessions instead of resetting every time you leave the game.
+
+The wider progression framework is being designed to support systems such as:
+
+* Digimon Collections
+* Individual Digimon
+* Active Partners
+* Scan Data
+* Materialized Digimon
+* Player inventory
+* Digimon management
+* Care progression
+* Future progression systems
+
+More systems will be connected to persistent accounts as development continues.
+
+---
+
+# 🏦 Digimon Storage
+
+As your Digimon Collection grows, management becomes increasingly important.
+
+Digimon MMO 3D is being designed with dedicated Digimon management and storage systems so that players can build much larger collections without every Digimon needing to remain immediately active.
+
+The goal is to eventually give players the freedom to collect, organize and raise many different Digimon while maintaining a smaller active group of partners.
+
+---
+
+# 🌍 Multiplayer
+
+Digimon MMO 3D is being developed from the ground up around multiplayer.
+
+Players can host a game and allow other players to join the same Digital World.
+
+Core gameplay information is synchronized between players so important actions are represented consistently throughout the session.
+
+Multiplayer development currently includes support for systems such as:
+
+* Hosting a multiplayer world
+* Joining another player's world
+* Player accounts
+* Individual account progression
+* Digimon Collections
+* Scan Data
+* Digimon Materialization
+* Partner selection
+* Partner summoning
+* Persistent player information
+* Multiplayer Digimon gameplay
+
+The long-term objective is to keep expanding these foundations toward a much larger Digimon online experience.
+
+---
+
+# 👤 Player Accounts
+
+Digimon MMO 3D includes its own account-based progression foundation.
+
+Your account represents your individual journey through the Digital World.
+
+Different players can maintain their own progression, allowing Digimon, collections and other persistent information to remain associated with the correct player.
+
+This is an important part of the game's multiplayer foundation and will continue to support additional persistent systems as they are introduced.
+
+---
+
+# 🖥️ Starting a Game
+
+From the game's frontend you can access the available multiplayer options.
+
+### Hosting
+
+Create a multiplayer session and enter the Digital World as the host.
+
+Other players can then connect to your game.
+
+### Joining
+
+Connect to a host and enter their Digital World with your own player account and progression.
+
+### Returning Players
+
+Existing account information can be loaded so that supported persistent progression can continue between sessions.
+
+> Digimon MMO 3D is still in active development, so the exact frontend flow and available options may change between builds.
+
+---
+
+# 🚧 Current Development Status
+
+**Digimon MMO 3D is currently an Alpha project.**
+
+A large amount of the game's underlying multiplayer and progression technology is already functional, but the complete game is still being developed.
+
+Systems may be redesigned, expanded or replaced as development continues.
+
+Current development is focused on building strong foundations first and expanding them into a much larger game rather than rushing individual features simply to increase the feature count.
+
+---
+
+# ✅ Major Systems Already Established
+
+The project currently has working foundations for:
+
+* Multiplayer gameplay
+* Player accounts
+* Persistent account progression
+* Starter Digimon selection
+* Individual Digimon ownership
+* Digimon Collection management
+* Active partner selection
+* Digimon partner summoning
+* Scan Data accumulation
+* Scan Data persistence
+* Digimon Materialization
+* Multiplayer Collection synchronization
+* Multiplayer partner synchronization
+* Digimon inventory and management foundations
+* Real-time Digimon gameplay foundations
+
+The **Digimon Care System**, including feeding and hunger-related gameplay, is currently being expanded and prepared as one of the next major gameplay milestones.
+
+---
+
+# 🔮 What Is Coming Next?
+
+Digimon MMO 3D is intended to grow far beyond its current Alpha foundations.
+
+Future development can continue expanding areas such as:
+
+* Deeper Digimon Care
+* Hunger and additional partner needs
+* More Digimon behaviours
+* Expanded real-time combat
+* More abilities and battle commands
+* Digimon progression
+* Evolution systems
+* Larger Digimon Collections
+* Expanded storage and management
+* More wild Digimon
+* Exploration content
+* Multiplayer activities
+* World progression
+* Additional persistent systems
+* More reasons to interact with and care for your partners
+
+Each major feature is being built so that it can become part of the same connected Digimon experience rather than existing as an isolated mechanic.
+
+---
+
+# 💾 Alpha Notice
+
+Please remember that Digimon MMO 3D is under active development.
+
+During Alpha development:
+
+* Features may change.
+* User interfaces may be redesigned.
+* Balance is not final.
+* Saved data formats may occasionally change between major development builds.
+* Bugs and unfinished content should be expected.
+* Some announced systems may still be under development.
+* Content shown during development does not necessarily represent the final game.
+
+Testing and feedback are extremely valuable during this stage of development.
+
+---
+
+# 🎯 The Vision
+
+Digimon MMO 3D is ultimately about creating a Digital World where your Digimon feels like **your partner**.
+
+Not simply a collectible.
+
+Not simply a combat unit.
+
+Not simply another inventory entry.
+
+A companion you discovered, raised, fought beside and shared an adventure with.
+
+The long-term vision combines:
+
+**Exploration + Digimon Raising + Real-Time Combat + Collection + Progression + Multiplayer**
+
+into one connected 3D Digimon experience.
+
+---
+
+# 💙 Thank You for Following Development
+
+Digimon MMO 3D is an evolving passion project, and every new system brings the Digital World another step closer to life.
+
+Whether you are interested in collecting Digimon, raising your favourite partner, battling alongside friends, exploring the Digital World, or simply watching the project grow, thank you for being part of the journey.
+
+### The Digital World is only just beginning.
+
+---
+
+## ⚠️ Disclaimer
+
+**Digimon MMO 3D is an unofficial fan-made project.**
+
+Digimon and all related names, characters, logos, designs and trademarks are the property of their respective copyright and trademark holders.
+
+This project is not affiliated with, endorsed by, sponsored by, or officially connected to Bandai, Bandai Namco Entertainment, Toei Animation, or any other official Digimon rights holder.
+
+All original project code, systems and project-specific content remain subject to their respective ownership and licensing terms.
