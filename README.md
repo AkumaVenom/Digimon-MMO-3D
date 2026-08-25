@@ -24,7 +24,7 @@ From there, you can enter the Digital World, encounter other Digimon, battle the
 
 The game is being developed as a true multiplayer experience, allowing players to host and join worlds while maintaining their own account and Digimon progression.
 
-<img width="3840" height="2080" alt="DigimonMMO3D" src="https://github.com/user-attachments/assets/667c5ba3-c123-4a54-b4ba-c816ca73b251" />
+<img width="3820" height="2064" alt="mainnames" src="https://github.com/user-attachments/assets/74d62c49-cbbf-40d1-8d07-e58934f09d73" />
 
 ---
 
