@@ -2,7 +2,7 @@
 
 ### Explore the Digital World. Raise your partner. Build your collection. Fight together.
 
-**Digimon MMO 3D** is an ambitious multiplayer 3D Digimon fan project focused on creating the feeling of living inside a persistent Digital World alongside your own Digimon partners.
+**Digimon MMO 3D** is an ambitious multiplayer 3D Digimon fan project focused on creating the feeling of living inside a persistent Digimon World alongside your own Digimon partners.
 
 Explore, battle wild Digimon, collect Scan Data, materialize new partners, grow your collection, care for your Digimon, and adventure alongside other players in a shared multiplayer experience.
 
