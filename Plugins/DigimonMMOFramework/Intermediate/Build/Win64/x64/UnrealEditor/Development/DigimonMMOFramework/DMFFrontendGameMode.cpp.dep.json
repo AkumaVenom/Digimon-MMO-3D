@@ -1,0 +1,26 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\game\\dmffrontendgamemode.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\digimonmmoframework\\definitions.digimonmmoframework.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\game\\dmffrontendgamemode.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\serverstatreplicator.generated.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gamemodebase.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmffrontendgamemode.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\game\\dmffrontendhud.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\hud.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\hudhitbox.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\debugtextinfo.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\debugtextinfo.generated.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\hud.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmffrontendhud.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

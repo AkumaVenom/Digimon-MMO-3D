@@ -1,0 +1,25 @@
+{
+  "FileVersion": 3,
+  "Version": 701,
+  "VersionName": "0.7.1-alpha",
+  "FriendlyName": "Digimon MMO Framework",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with persistent Scan Data and Materialization, a polished tabbed Digimon menu, scan reward HUD presentation, repeat-safe manual combat, target-facing, polished native UI, late-join avatar possession recovery, passive wild retaliation, deterministic defeated poses, player skins, persistence, and proximity/rarity wild spawning.",
+  "Category": "Gameplay",
+  "CreatedBy": "Akuma / OpenAI",
+  "CanContainContent": true,
+  "IsBetaVersion": true,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "DigimonMMOFramework",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    }
+  ]
+}

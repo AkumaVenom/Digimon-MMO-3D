@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\digimonmmoframework.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\digimonmmoframework\\definitions.digimonmmoframework.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimonmmo3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\digimonmmoframework.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

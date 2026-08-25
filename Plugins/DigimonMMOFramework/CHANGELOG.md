@@ -1,0 +1,441 @@
+# Changelog
+
+## 0.7.1-alpha — UE5.8 Scan Toast Slot Shadow Compile Fix
+
+### Fixed
+- Fixed the UE5.8.1/MSVC `C4458` error in `DMFScanNotificationWidget.cpp`: the native Scan reward toast declared a local `UOverlaySlot* Slot`, which hides inherited `UWidget::Slot` when warnings are treated as errors.
+- Renamed the local variable to `ToastOverlaySlot`; no runtime Scan/Materialization behavior or UI layout was changed.
+- Audited the complete runtime source for additional local `Slot` declarations that could shadow `UWidget::Slot`; no other UI candidates remain.
+
+### Preserved
+- v0.7.0 Scan Data persistence, materialization, tabbed Digimon Menu, scan reward HUD, v0.6.4 combat, multiplayer possession, wild spawning/retaliation and the polished native UI remain intact.
+- UE5.8.1 compile remains the authoritative acceptance gate.
+
+## 0.7.0-alpha — Scan Data, Materialization & Tabbed Digimon Menu
+
+### Added — persistent Scan Data loop
+- Added server-authoritative species Scan Data rewards at the existing battle-victory boundary. By default only victories against `DMFWildDigimonCharacter` award Scan Data.
+- Added per-species data-driven settings: `Scan Data Enabled`, `Battle Scan Percent Reward`, `Scan Percent Cap`, `Materialization Enabled`, and `Materialization Required Scan Percent`. Defaults are 20% per eligible victory, 100% cap, 100% requirement.
+- Activated account persistence for the existing `FDMFAccountRecord::ScanData` field and added owner-only replication to `UDMFPlayerDigimonComponent`. Scan progress is private per account and survives logout/reconnect.
+- Added Blueprint APIs/events for reading scan entries, querying progress/readiness/owned count, materializing, scan changes, reward presentation, and materialization results.
+
+### Added — authoritative materialization
+- Added `Server Materialize Digimon`. The server validates global/species enable state, required Scan Data, active Collection capacity, and a valid partner `WorldActorClass`. Wild actor classes are explicitly rejected as materialized partner classes.
+- Successful materialization creates a new unique persistent `FDMFDigimonInstance` using species Base Stats, Starting Level, HP/SP and Starting Abilities/Basic Auto Attack, adds it to the Collection, subtracts the configured scan requirement, persists immediately, and returns the new instance GUID.
+- Scan consumption is subtractive rather than hard-reset. A species with 200% cap and 100% requirement can therefore bank two materializations.
+
+### Added — AAA-style native Scan/Materialize presentation
+- Reworked the polished Digimon Collection into a shared **DIGIMON MENU** shell with `COLLECTION` and `SCAN & MATERIALIZE` tabs, leaving the presentation architecture ready for future Bank, Party, Digivolution and Care tabs.
+- Added a portrait-card Scan Database with progress readouts, selection states and `READY` badges. Species remain in the database after materialization even when their current Scan Data returns to 0%.
+- Added a selected-species Materialization Terminal with portrait, Stage/Attribute/starting level, progress bar, scan cap, threshold, per-victory reward, owned count, Collection occupancy, description and server-backed Materialize button.
+- Added a polished owner-only native Scan reward toast showing species portrait, `+X%`, new total, progress bar and `MATERIALIZATION READY` callout.
+- Added `Open Scan Materialize UI` plus future-facing `Open/Close/Toggle Digimon Menu UI` Blueprint aliases while preserving the existing Inventory UI calls and default `I` key.
+
+### Preserved
+- v0.6.4 repeat-safe buffered ability execution, v0.6.3 capsule-aware melee reach, v0.6.2 replicated target-facing, v0.6.1 multiplayer possession recovery, v0.6.0 polished native UI, v0.5.5 passive retaliation/death-pose behavior, wild spawning, healer, player skins and account authority remain intact.
+- UE5.8.1 compile and multiplayer runtime testing remain the authoritative acceptance gates.
+
+## 0.6.4-alpha — Repeat-Safe Ability Input Buffer & Cooldown Recovery
+
+### Fixed
+- Fixed the manual ability lifecycle where a quick-slot press made while the previous attack was still `Attacking`, `Recovering`, or cooling down was silently discarded. This was most visible on slot 1/SP-cost attacks as “works once, then stops responding.”
+- Added a server-authoritative latest-command input buffer. A valid ability press is retained while the partner is recovering, cooling down, chasing, or turning and executes automatically once every authoritative gate is legal.
+- Queued commands are no longer deleted merely because cooldown is still active; cooldown is a transient wait state, not a command failure.
+- `FinishRecovery()` now immediately services a buffered command instead of always waiting for another automation interval.
+- Ability execution no longer clears the pending command before `TryExecuteAbilityById()` succeeds, preventing transient facing/state races from losing input.
+- Expired cooldown entries are pruned authoritatively and replicated away, preventing stale cooldown state from accumulating.
+- Server cooldown validation now uses the authoritative world clock directly; clients continue using synchronized GameState server time for HUD countdown presentation.
+- Preserved capsule edge-to-edge reach from v0.6.3, so short-range melee and SP-cost reliability are fixed together rather than by weakening ability data.
+
+### Preserved
+- SP is deducted exactly once and only when an ability actually starts. Insufficient-SP commands are rejected rather than queued because the current framework has no automatic SP regeneration.
+- Latest input wins: issuing another valid slot command while one is buffered intentionally replaces the previous buffered command.
+- v0.6.3 capsule-aware melee reach, v0.6.2 target-facing, v0.6.1 multiplayer possession, v0.6.0 polished native UI, and v0.5.5 passive retaliation/death-pose behavior remain intact.
+- UE5.8.1 compile/runtime testing remains the authoritative acceptance gate.
+
+## 0.6.3-alpha — Reliable Ability Execution & Melee Reach
+
+### Fixed
+- Corrected a combat-range deadlock where short-range abilities could never reach the server execution gate even though longer-range abilities worked.
+- Replaced center-to-center ability range checks with capsule edge-to-edge horizontal range checks across validation, queued commands, auto/retaliation attacks, and impact-time validation.
+- Reworked AI ability move acceptance to account for both Digimon capsule radii and disabled `StopOnOverlap` double-radius behavior.
+- Normalized SP cost validation/deduction through one non-negative server helper; paid and free abilities now use the same path and SP is only deducted after all execution gates pass.
+- Hardened combat-facing against AI controller yaw fighting server turn-in-place rotation.
+
+### Preserved
+- v0.6.2 replicated target-facing and queued command behavior.
+- v0.6.1 late-join avatar possession recovery.
+- v0.6.0 polished native UI.
+- v0.5.5 passive-until-attacked retaliation and deterministic defeated-pose contract.
+
+## 0.6.2-alpha — Replicated Combat Target Facing
+
+### Added / polished
+- Added shared combat target-facing to `DMFDigimonCharacter`, automatically covering player partners, wild Digimon and future framework Digimon subclasses.
+- In-range attackers now stop movement and turn smoothly toward their authoritative combat target before attack execution. By default an attack waits until yaw error is within 8 degrees, so attack Montages no longer fire while the actor is facing sideways or backwards.
+- Facing continues through the attack/recovery window so moving targets remain visually tracked, then the previous CharacterMovement rotation policy is restored. Chasing, following and wild roaming therefore retain their normal movement-driven orientation.
+- Added Blueprint-exposed `Enable Combat Facing`, `Require Facing Before Attack`, `Combat Facing Turn Rate Degrees Per Second`, `Attack Facing Tolerance Degrees`, and advanced `Combat Facing Update Interval` settings.
+- Added `Start Combat Facing Target`, `Stop Combat Facing Target`, `Is Facing Actor`, and `Get Combat Facing Target` Blueprint functions.
+- Manual queued commands now remain queued while the server completes a short turn-in-place; SP and cooldown are not consumed until the facing gate passes.
+- Proactive/retaliation auto combat uses the same gate, so both wild and partner attack presentation follows the same orientation contract.
+- Actor yaw remains server-authoritative and uses normal Character movement replication instead of per-client combat rotation authority.
+
+### Preserved
+- v0.6.1 remote-client possession recovery, v0.6.0 polished UI, v0.5.5 passive retaliation/death pose behavior, spawner, persistence, healer and manual interaction paths remain intact.
+- UE5.8.1 compile and host/client runtime testing remain the authoritative acceptance gate.
+
+## 0.6.1-alpha — Late-Join Client Avatar Possession Recovery
+
+### Fixed — remote clients no longer remain in DefaultPawn after character selection
+- Fixed the multiplayer late-join path where a remote client could successfully select/save a character skin but remain locally controlling Unreal's fallback `DefaultPawn` instead of the configured `DMFPlayerAvatarCharacter` / Blueprint child.
+- `ADMFMMOGameMode` now validates every started player after Unreal's normal restart path. A missing, spectator, DefaultPawn, or other non-framework pawn is authoritatively replaced with the configured DMF avatar class.
+- `GetDefaultPawnClassForController` now enforces a DMF-compatible player pawn. If the OpenWorld GameMode's `DefaultPawnClass` is not derived from `DMFPlayerAvatarCharacter`, the framework logs the configuration error and falls back to the native DMF player avatar rather than allowing a remote player to stay in a flying DefaultPawn.
+- Added a defensive explicit-spawn fallback if a project Blueprint overrides Unreal's pawn-class event and causes `RestartPlayer` to create the wrong pawn anyway. The recovered pawn is possessed by the authoritative PlayerController and uses the PlayerStart transform/collision-safe spawn path.
+- Remote clients receive an explicit `ClientRestart` reassertion for the authoritative avatar even when the server already owns the correct pawn. This repairs stale client-side possession after frontend -> server network travel. The listen-host path is intentionally not forced through this remote-only reassertion.
+- Remote `DMFMMOPlayerController` now runs a bounded late-join possession acknowledgement/retry safety net. It requests server validation until the local controller actually sees a `DMFPlayerAvatarCharacter`, then stops polling.
+- Successful skin selection is now also an authoritative possession checkpoint. If `ApplySelectedSkinToCurrentPawn()` has no valid DMF avatar, the server recovers/possesses the avatar first and then reapplies the selected account skin.
+- Starter confirmation also validates the player avatar before spawning the starter partner, preventing a partner from being anchored to an incorrect fallback pawn.
+
+### Blueprint / diagnostics
+- Added `Ensure Framework Player Avatar` and `Has Framework Player Avatar` on `DMFMMOGameMode`.
+- Added `Server Ensure Framework Player Avatar` and `Is Framework Player Avatar Possessed` on `DMFMMOPlayerController`.
+- Added `BP On Framework Player Avatar Recovered` to the GameMode for project diagnostics/presentation.
+
+### Preserved
+- v0.6.0 polished native UI is unchanged.
+- v0.5.5 death-pose locking/passive retaliation, wild spawner, manual combat, healer, inventory, starter persistence, skin data and Custom Depth behavior are preserved.
+- UE5.8.1 compile plus host/remote-client packaged testing remains the authoritative acceptance gate.
+
+## 0.6.0-alpha — Polished Native MMO UI Suite
+
+### Rebuilt native presentation
+- Rebuilt every framework-native gameplay/frontend widget around one consistent dark MMO presentation language instead of the previous flat debug-style vertical lists. The native defaults now use centered/scaled panels, hierarchy, padding, accent states, status messaging, selection states and responsive down-scaling. Blueprint subclasses remain optional and may still replace presentation without replacing gameplay authority.
+- Added a private shared native style layer (`DMFNativeUIStyle`) so login, roster, starter, player-skin and combat widgets use the same colors, text hierarchy, input treatment and button states.
+
+### Digimon inventory / summon menu
+- Replaced the text-list fallback with a real **6-column portrait slot grid**. Capacity follows `MaxActiveDigimonInventory` (30 by default), and unused capacity is rendered as explicit empty slots instead of disappearing.
+- Occupied slots load `DMFDigimonSpeciesData::Portrait`, show species name + level, selectable highlighting, `SUMMONED` / `ACTIVE` / `KO` badges, and a grayscale defeated portrait treatment. Missing portraits use a clear `PORTRAIT NOT SET` fallback so data setup failures are obvious.
+- Added a selected-Digimon profile panel with large portrait, species name, Stage/Attribute, persistent state, Level/EXP, HP/SP, STR/INT/DEF/SPD, ABI/CAM, species description, `SET ACTIVE / SUMMON`, and `RECALL ACTIVE PARTNER`. Existing server-authoritative summon/recall rules are unchanged.
+- Existing Blueprint widget bindings remain optional for backward compatibility. The native grid uses new optional bindings while legacy `DigimonChoicesBox` remains supported.
+
+### Starter selector
+- Replaced the plain starter-name list with portrait cards showing Digimon name and Stage, selected-card highlighting, a large portrait/details panel, Stage/Attribute/Level metadata, starting stats and roster blurb/description.
+- Confirm remains server-authoritative and preserves the existing one-time starter grant/persistence path.
+
+### Character skin selector
+- Replaced the full-width text rows with a portrait card grid and selected-character profile panel. `DMFPlayerSkinData::Portrait` now drives the native card/preview image automatically.
+- Apply/close validation and persistent server-authoritative skin selection remain unchanged.
+
+### Frontend login / main menu
+- Rebuilt the frontend into a centered panel inspired by the project's polished menu references: title/subtitle hierarchy, styled credential fields, dedicated logged-in Play view, collapsible Admin hosting card, status panel, Join, Host & Play, Logout and Quit controls.
+- Added `UDMFSessionSubsystem::Logout()` to clear staged local credentials/admin unlock cleanly and return the same native widget to login state. The hidden regular-player server target and admin authority/security model are unchanged.
+- Preserved compatibility with older Blueprint children that still bind the pre-v0.6 join/admin controls without the new native section widgets.
+
+### Combat quick bar
+- Rebuilt the native combat HUD as a bottom-center translucent bar with partner vitals, highlighted command target, four framed ability cards, keyboard slot numbers, SP/cooldown state and `DMFDigimonAbilityData::Icon` support.
+
+### Data / setup
+- No new required asset type was introduced. Digimon inventory/starter icons use the existing `DMFDigimonSpeciesData::Portrait`; player skin cards use `DMFPlayerSkinData::Portrait`; ability cards use `DMFDigimonAbilityData::Icon`.
+- Added `Docs/SETUP_POLISHED_NATIVE_UI.md` with exact portrait/icon setup and acceptance checks.
+
+### Preserved / regression contract
+- v0.5.5 deterministic defeated-pose and passive-until-attacked retaliation source is unchanged.
+- Wild spawner, combat authority/damage, interaction/targeting, healer, account persistence, starter grant, player-skin application and Custom Depth gameplay paths are intentionally unchanged.
+- UE5.8.1 compile/runtime verification remains the authoritative acceptance gate.
+
+## 0.5.5-alpha — Deterministic Death Pose + Passive Wild Retaliation
+
+### Fixed
+- Replaced the v0.5.3/v0.5.4 timer-only defeated-pose hold with a deterministic Montage lifecycle lock. The framework now binds to the species Death Montage blend-out callback and freezes the skeletal evaluator **before** the AnimBP can blend back to Idle.
+- Both player-owned and wild Digimon use the same `ADMFDigimonCharacter` defeat presentation, so both remain on the presented death pose while `CombatState == Defeated`; player partners remain until recall/revive and wild actors remain until their spawner corpse timer removes them.
+- Added Montage-ended and normalized-time fallbacks for unusual/looping Death Montage assets. The lock pauses the Montage, pauses skeletal evaluation and sets mesh animation rate to zero; revive restores the pre-defeat animation state.
+- Removed a client replication race from defeated animation startup: the reliable defeat multicast no longer starts the durable Death Montage before `CombatState=Defeated` may have replicated. `SetCombatState`/`OnRep_CombatState` are now the sole durable animation trigger, while the multicast remains cosmetic-only.
+- Corrected wild combat semantics: `Auto Battle` now means **proactive aggression only**. Disabling it no longer makes a wild Digimon unable to defend itself.
+- Added server-authoritative retaliation. With `Proactive Auto Battle (Aggressive)=false` and `Retaliate When Attacked=true`, a wild Digimon does not scan for or initiate combat, but immediately targets the hostile Digimon that actually damaged it and fights back using its normal basic auto attack.
+- Retaliation obeys hostility validation, targetability, death state, cooldowns, range and the same spawn-home combat leash. If the aggressor dies, becomes invalid, or leaves the leash, retaliation ends and the wild Digimon returns to idle/free roaming.
+- Spawner-managed wild Digimon now resolve proactive aggression and retaliation separately. `Allow Proactive Auto Battle` defaults false; `Allow Retaliation When Attacked` defaults true.
+- Added replicated wild AI policy state plus server-authoritative `Set Wild Auto Battle Enabled` and `Set Wild Retaliation Enabled` Blueprint calls.
+
+### Recommended MMO default
+- `BP_Wild_<Species> -> Proactive Auto Battle (Aggressive) = false`
+- `BP_Wild_<Species> -> Retaliate When Attacked = true`
+- `DMFWildDigimonSpawner -> Allow Proactive Auto Battle = false`
+- `DMFWildDigimonSpawner -> Allow Retaliation When Attacked = true`
+
+### Compatibility
+- Existing spawn-table rarity, level, population, roaming, leash, ground emergence and corpse-despawn behavior are preserved.
+- `Hold Defeated Pose Until Revived Or Dismissed` remains serialized for existing Blueprints, but defeated pose holding is now a framework invariant when a valid species Death Montage exists.
+- No intentional changes to player manual targeting/ability commands, healer behavior, Digimon inventory/summoning, persistence, player skins, combat damage balance or Custom Depth.
+- UE5.8.1 compile/runtime verification remains the authoritative acceptance gate.
+
+## 0.5.4-alpha — UE5.8 Death-Pose C4458 Compile Fix
+
+### Fixed
+- Fixed all three UE5.8.1 `C4458` diagnostics reported in `DMFDigimonCharacter.cpp` by renaming local `Mesh` variables to `DigimonMesh`; the local name had been hiding `ACharacter::Mesh` and the project treats that warning as a compile error.
+- The affected functions are the v0.5.3 defeated-presentation apply, held-pose, and clear/revive paths. No death-presentation logic or authority behavior was removed.
+
+### Preserved
+- v0.5.3 persistent defeated-partner pose behavior remains unchanged: player partners stay defeated until recall/dismiss or authoritative revive; wild spawner corpse/despawn timing remains separate.
+- v0.5.2 native no-cast interaction, v0.5.1 incomplete-type compiler fix, v0.5.0 manual combat/balance/healer/roster systems, v0.4.1 wild spawning, account persistence, player skins and Custom Depth remain intact.
+- This is a compiler-feedback maintenance release; a fresh UE5.8.1 compile is the authoritative acceptance gate.
+
+## 0.5.3-alpha — Persistent Defeated Partner Death-Pose Fix
+
+### Fixed
+- Fixed player-owned Digimon playing their species `DeathMontage` once and then blending back to the AnimBP locomotion/reference pose while still at `0 HP`.
+- Defeated Digimon now enter a durable defeated presentation driven by replicated combat state. The Death Montage plays once, is frozen near its final pose, and remains visible until the actor is explicitly recalled/dismissed or the Digimon is revived.
+- Defeat presentation is idempotent and is reapplied for late-joining/relevancy clients if `CombatState` and `SpeciesId` arrive in either replication order.
+- Reviving through the healer/runtime vitals path clears the frozen pose, resumes skeletal animation, restores the cached movement mode/capsule collision state, and returns combat state to Idle.
+
+### Added
+- Added Blueprint-exposed defeated-presentation tuning on every `ADMFDigimonCharacter`: `Hold Defeated Pose Until Revived Or Dismissed`, `Defeated Pose Hold Normalized Time`, `Defeated Montage Play Rate`, `Disable Movement When Defeated`, and `Disable Capsule Collision When Defeated`.
+- Added Blueprint-callable `Apply Defeated Presentation`, `Clear Defeated Presentation`, `Is Defeated Presentation Active`, plus `BP On Defeated Presentation Started/Cleared` cosmetic hooks.
+- Added `Docs/SETUP_DEFEATED_PARTNER_PRESENTATION.md` with exact Death Montage, AnimBP Slot and runtime acceptance checks.
+
+### Preserved
+- Wild Digimon still use the spawner's existing defeated corpse/despawn timer; this release does not change rarity, proximity spawning, roaming, leash or ground emergence.
+- v0.5.2 native interaction/targeting, v0.5.1 compiler fix, manual player combat, healer, roster/summon UI, persistence and Custom Depth behavior are preserved.
+
+## 0.5.2-alpha — Native No-Cast Player Interaction / Digimon Targeting
+
+### Added
+- Added a framework-native interaction layer directly to `ADMFPlayerAvatarCharacter`. A Blueprint derived from the framework player can now call a single inherited `Interact` node; no `Get Controller`, `PlayerState`, Digimon, Wild Digimon or Healer cast chain is required.
+- Added an optional ready-to-use native `E` binding (`bEnableNativeInteractionInput`, default `true`) that is independent from the legacy/native movement-input toggle. Projects using Enhanced Input can disable the native key and call the same `Interact` function from an Input Action.
+- Added camera-forward line/sphere-sweep targeting with Blueprint-exposed interaction distance, sweep radius, trace channel, trace-complex flag, active-partner ignore and debug drawing.
+- Added cast-free Actor-taking Blueprint wrappers: `InteractWithActor`, `InteractWithDigimon`, `InteractWithDigimonAndAttack`, `TargetDigimonFromActor`, `TargetAndAttackDigimonFromActor`, `InteractWithHealer`, `ClearDigimonTarget`, `CommandDigimonAbilitySlot`, `FindInteractionTarget`, `GetCurrentDigimonTarget` and prompt/result helpers.
+- Added `EDMFPlayerInteractionType`, `OnInteractionResult`, `BP_OnDigimonInteracted` and `BP_OnUnhandledInteraction` for reskinnable UI feedback and project-specific interaction extensions without granting gameplay authority.
+- Added a native query-only `InteractionCollision` sphere to `ADMFHealerActor`, with exposed collision radius and trace channel, so the standard player interaction trace can use a basic healer Blueprint even when its cosmetic mesh has no collision. The authoritative healer use radius remains a separate server-side check.
+- Split legacy controller combat input toggles: Left-Mouse target selection now has its own setting and defaults off, while number-key ability slots can remain enabled. This makes the intended default flow `E / Interact -> select target`, then `1-4 -> command ability`.
+
+### Behavior / authority
+- Digimon interaction defaults to **target only** (`bAttackOnDigimonInteract=false`). It never re-enables autonomous player-partner combat. Optional target+attack mode can be enabled per player Blueprint or called explicitly with a zero-based quick-slot index.
+- Local interaction performs discovery/presentation only. Digimon target and attack requests still enter through the owning `DMFMMOPlayerController` / `DMFPlayerDigimonComponent` server RPC path; healer requests still use the owning PlayerController and are revalidated for enabled state, distance and reuse delay on the server.
+- Existing v0.5.1 compiler fix, v0.5.0 balance/manual-combat/healer/roster systems, v0.4.1 spawner placement fix, rarity/roaming/emergence, account persistence, player skins and Custom Depth behavior are preserved.
+
+### Documentation
+- Added `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md` with the exact no-cast Editor/Blueprint workflow and multiplayer acceptance sequence.
+
+
+## 0.5.1-alpha — UE5.8 Incomplete-Type `IsValid` Compile Fix
+
+### Fixed
+- Fixed the UE5.8.1 `C2664` compiler failure in `UDMFPlayerDigimonComponent::IsActivePartnerSummoned`. The inline public-header implementation called `IsValid(ActivePartnerActor.Get())` while `ADMFDigimonCharacter` was only forward-declared, so MSVC could not establish the incomplete type's `UObject` inheritance at that point.
+- Moved the function body into `DMFPlayerDigimonComponent.cpp`, where `Game/DMFDigimonCharacter.h` is fully included, preserving Unreal `IsValid()` semantics without adding a heavy public-header dependency or replacing the check with a weaker raw-null test.
+- The eight compile failures reported across combat UI, inventory UI, healer, GameMode, PlayerController, PlayerState, starter UI and the Digimon component are all downstream appearances of this single header defect.
+
+### Compatibility
+- Compile-only maintenance release over v0.5.0. No intentional changes to partner combat balance, manual targeting/attack commands, healer behavior, Digimon roster/summon/recall UI, account persistence, wild spawning, rarity, roaming/leash, Custom Depth, login, player skins or starter onboarding.
+- UE5.8.1 UHT already completed successfully in the supplied build log; a fresh UE5.8.1 compile remains the authoritative acceptance gate for this corrected source.
+
+## 0.5.0-alpha — Manual Partner Combat / JRPG Battle Tuning / Healer / Roster UI
+
+### Changed
+- Player-owned partners now default to manual combat: no autonomous hostile acquisition or basic attacks unless `bPlayerPartnerAutoBattle` is explicitly enabled. Companion follow remains active while auto battle is disabled.
+- Added global player-partner battle tuning (`PlayerPartnerOutgoingDamageMultiplier=1.50`, `PlayerPartnerIncomingDamageMultiplier=0.50`) without mutating persistent species stats.
+- Wild Digimon expose per-class outgoing/incoming combat multipliers, defaulting to neutral `1.0`.
+
+### Added
+- Blueprint-callable manual command surface on `ADMFMMOPlayerController`, including atomic target+attack command routing through the owner-controlled server RPC path.
+- `ADMFHealerActor`: replicated Blueprintable free healer with server range/reuse/availability validation, configurable HP/SP/defeated/bank restore policy, optional active-partner resummon, text fields and multicast cosmetic hook.
+- Authoritative all-owned-Digimon heal operation with immediate account persistence.
+- `UDMFDigimonInventoryWidget` native fallback plus `UDMFDigimonInventoryEntryButton`; custom Blueprint widgets can reskin the same authority path.
+- Default `I` roster/menu toggle and Blueprint Open/Close/Toggle/Refresh controller calls.
+- Server-authoritative Set Active/Summon and Recall operations. Recalling does not invalidate the selected persistent active-partner ID.
+- Defeated partners are blocked from summoning until healed, with explicit owner feedback.
+
+### Compatibility / architecture
+- Built directly on v0.4.1 and preserves the fixed capsule-ground spawn transform, rarity selection, roaming/leash, synchronized ground emergence/despawn and Custom Depth behavior.
+- No save-schema fields were removed or repurposed. Existing account records remain readable.
+- Full drag/drop party/bank inventory UX remains a later phase; v0.5.0 provides the functional native roster/select/summon/recall surface needed for gameplay now.
+- A fresh UE5.8.1 compile and host/client runtime test remain the authoritative acceptance gate.
+
+## 0.4.1-alpha — Wild Spawner Capsule Placement / Runtime Diagnostics Fix
+
+### Fixed
+- Fixed the v0.4.0 wild-spawner placement bug that used the ground surface as the spawned `ACharacter` origin, which could bury the capsule in terrain and make collision-aware deferred spawning reject the actor.
+- Spawn transforms now account for the selected Wild Blueprint class's actual scaled capsule half-height, so the capsule bottom is placed on the ground/NavMesh surface.
+
+### Diagnostics
+- Added authority-side activation logs with target population and configured-entry count.
+- Added warnings for empty/ineligible weighted spawn pools.
+- Promoted bounded placement failure to a visible warning with ground collision/NavMesh/minimum-player-distance guidance.
+- Added successful-spawn logs containing actor, entry, location, level and rarity.
+
+### Compatibility
+- Preserves the v0.4.0 rarity/population/roaming/leash/emergence architecture and the v0.3.3 Custom Depth contract.
+- No intentional changes to account persistence, frontend/login, player skins, starter selection or combat authority.
+
+## 0.4.0-alpha — Server-Authoritative Proximity / Rarity Wild Digimon Spawner
+
+### Added
+- Added `ADMFWildDigimonSpawner`, a Blueprintable/replicated MMO population actor whose activation, spawn rolls, level rolls, respawn and despawn are authority-only.
+- Added proximity activation/deactivation hysteresis, minimum nearby-player count, configurable timer cadence and unload grace period.
+- Added random inclusive min/max target population and staggered spawn processing.
+- Added `EDMFWildSpawnRarity` (`Common` through `Mythic`) with configurable per-spawner rarity base weights, per-entry multipliers and per-entry live caps.
+- Added replicated wild `SpawnRarity`, `SpawnHomeLocation` and spawner-managed state for future UI/loot/scan/presentation integrations.
+- Added species/class spawn entries with independent min/max level ranges and optional per-entry ground-emergence overrides.
+- Added uniform circular placement, terrain tracing, optional NavMesh projection, minimum player separation, bounded placement retries and collision-aware deferred spawning.
+- Added timer-driven idle free roaming using reachable NavMesh points around each Digimon's individual spawn home.
+- Added synchronized replicated ground emergence and optional ground-sink unload presentation using server world time.
+- Added transition safety: wild Digimon are non-targetable, movement-disabled and collision-suppressed while emerging/sinking; normal combat/roam resumes only after emergence completes.
+- Added defeat-aware corpse lifetime and randomized replacement queue; replacement does not happen immediately on defeat.
+- Added Blueprint spawner controls/events and wild ground-transition cosmetic hooks.
+- Added `NavigationSystem` runtime module dependency.
+- Added `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`.
+
+### Preserved
+- Existing account/login/host/join, player-skin, starter, partner, persistence, combat, native UI and Custom Depth contracts are intentionally unchanged.
+- Existing manually placed `DMFWildDigimonCharacter` actors remain supported; free roaming is opt-in for them and enabled by the new spawner at runtime.
+
+
+## 0.3.3-alpha — Always-On Custom Depth / Cel-Shading Rendering Contract
+
+### Added
+- Framework-wide cel-shading rendering contract for all `ADMFPlayerAvatarCharacter` and `ADMFDigimonCharacter` mesh components. `Render CustomDepth Pass` is now automatically forced on rather than relying on per-Blueprint manual setup.
+- Player avatars reassert Custom Depth during construction, BeginPlay and every skin application, so changing Tai/Matt/Mimi/etc. cannot silently drop the post-process cel-shading mask.
+- Digimon reassert Custom Depth during construction, BeginPlay, authoritative instance initialization and replicated state refresh, covering owned partners, wild Digimon, NPC-derived Digimon and future ranked-combat derivatives.
+- The enforcement scans every `UMeshComponent` owned by the framework actor, so Blueprint-added skeletal/static mesh accessories are included automatically at normal construction/BeginPlay time.
+- Blueprint-callable `RefreshFrameworkCustomDepth()` is exposed on both player-avatar and Digimon bases for runtime-created/replaced mesh components.
+- Blueprint-exposed `CustomDepthStencilValue` (0-255) is available on both framework character bases while Custom Depth rendering itself remains mandatory.
+
+### Compatibility / architecture
+- No account, host/join, player-skin selection, starter, Digimon inventory, combat authority, persistence, movement or UI behavior was intentionally changed.
+- Custom Depth is a local render-state property and is applied independently on server/listen host and clients when their actor/skin presentation is constructed or refreshed; no extra replication bandwidth is required.
+- Projects must still have Unreal's project-level Custom Depth pass enabled for a post-process material to sample it.
+- Based directly on the user's validated v0.3.2 native-UI runtime test and requirement that all player skins and Digimon always participate in cel shading.
+
+## 0.3.2-alpha — Native UI Bootstrap / Black MainMenu Fix
+
+### Fixed
+- Fixed the native frontend login/main-menu rendering as a pure C++ fallback. The framework previously constructed its `WidgetTree` from `NativeConstruct()`, which runs after the underlying Slate widget has already been constructed; the first rendered widget therefore had no native root and could produce a completely black MainMenu viewport.
+- Native fallback UI trees are now created during `RebuildWidget()` before `Super::RebuildWidget()` consumes the tree.
+- Applied the same lifecycle correction to the native Starter Selection, Player Skin Selection and Combat Quick Bar widgets so those screens do not inherit the same latent blank-UI defect.
+- Hardened `ADMFFrontendHUD` startup with local-player resolution fallbacks, a short retry timer when the PlayerController is not ready on the first HUD frame, idempotent viewport insertion, explicit UI input focus/mouse cursor setup, teardown cleanup, and framework log diagnostics.
+
+### Compatibility / architecture
+- No authentication rules, host/join endpoint behavior, account persistence, player-skin authority, starter granting, Digimon inventory, combat math, replication ownership or save schema were intentionally changed.
+- Existing Blueprint widget subclasses with a designer root continue to use their Blueprint widget tree; the native fallback is only synthesized when the widget has no root tree to render.
+- Based directly on the user's runtime symptom after the v0.3.1 UE5.8.1 compile succeeded.
+
+## 0.3.1-alpha — UE5.8 PlayerController Shadowing & Skin Blueprint Event Compile Fix
+
+### Fixed
+- Renamed all seven local `PlayerState` variables in `ADMFMMOPlayerController` to `DMFPlayerState`, resolving UE5.8.1/MSVC `C4458` diagnostics where the locals hid the inherited `AController::PlayerState` member under the project's warnings-as-errors policy.
+- Normalized `UDMFPlayerSkinSelectionWidget::BP_OnPlayerSkinSelectionResult` to `bool, const FText&, UDMFPlayerSkinData*`, matching the signature emitted by UE5.8 UnrealHeaderTool for the BlueprintImplementableEvent.
+- Resolves the downstream generated `C2511` / `C2352` errors in `DMFPlayerSkinSelectionWidget.gen.cpp` caused by the event declaration mismatch.
+
+### Compatibility / architecture
+- No avatar movement, skin authority, replication, account persistence, starter onboarding, Digimon inventory, partner spawning, combat, or UI flow semantics were intentionally changed.
+- This is a compiler-feedback maintenance release based directly on the supplied UE5.8.1 UnrealBuildTool log.
+- A fresh clean UE5.8.1 compile remains the authoritative acceptance gate.
+
+## 0.3.0-alpha — Replicated Third-Person Player Avatar & Skin Framework
+
+### Added
+- Ready-to-use `ADMFPlayerAvatarCharacter` as the default MMO pawn: replicated Character movement, third-person spring-arm camera, follow camera, WASD/mouse/gamepad fallback controls, jump, crouch and server-synchronized sprint state.
+- Blueprint-callable movement/look/sprint functions and exposed camera/movement tuning for derived Blueprint player characters.
+- `UDMFPlayerSkinData` Primary Data Assets containing stable persistent IDs, display metadata, skeletal mesh, Animation Blueprint class, mesh transform, material overrides and optional portrait.
+- Replicated `UDMFPlayerAvatarComponent` on `ADMFPlayerState` for server-authoritative skin selection, persistence, all-client visual replication and admin reset support.
+- `UDMFPlayerSkinSelectionWidget` plus native entry buttons and a complete native fallback UI.
+- Automatic Asset Manager discovery of every enabled `DMFPlayerSkin`; no separate hard-coded player-skin roster is required.
+- First-time avatar selection is configurable and, when required, takes UI priority before Starter Digimon selection.
+- Gameplay wardrobe access through default `F6` plus Blueprint-callable Open/Close/Toggle/Refresh controller functions.
+- Persistent `SelectedPlayerSkinId` in the account record and SaveGame schema v2 migration behavior.
+- Player skin Asset Manager `AlwaysCook` project-config template entry.
+- Dedicated `SETUP_PLAYER_AVATAR_SKINS.md` using the project's seven visible character folders (Izzy, Joe, Matt, Mimi, Sora, Tai, TK) as the setup example.
+
+### Authority / multiplayer contract
+- Skin changes never replace/repossess the authoritative pawn. The client only requests a registered Primary Asset ID; the server resolves and validates enabled state + assigned mesh, persists the accepted ID, and replicates it to all clients.
+- Existing Digimon inventory, active partner, location, controller and combat ownership remain intact while appearance changes.
+- Existing v0.2.x account data remains compatible; accounts without the new field follow the configured skin-onboarding policy.
+
+## 0.2.2-alpha — UE5.8 TObjectPtr / RPC Signature Compile Fix
+
+### Fixed
+- Resolved UE5.8/MSVC `C2445` ambiguity where raw `ADMFDigimonCharacter*` request parameters were combined with replicated `TObjectPtr<ADMFDigimonCharacter>` targets in conditional expressions. The three affected fallback paths now explicitly unwrap the `TObjectPtr` with `.Get()`.
+- Corrected the owner-client starter result RPC declaration and implementation to the UE5.8 UHT-normalized signature: `bool`, `const FText&`, `FGuid`.
+- Resolves the follow-on generated `C2511`/`C2352` errors emitted from `DMFPlayerDigimonComponent.gen.cpp` by the mismatched RPC declaration.
+
+### Compatibility / architecture
+- No gameplay rules, replication ownership, persistence schema, combat math, command queue behavior, starter eligibility, or Blueprint-facing system intent was changed.
+- This is a compile-compatibility maintenance release based directly on the supplied UE5.8.1 compiler output.
+- A fresh UE5.8 rebuild is still required to expose any additional diagnostics that were previously masked by these errors.
+
+## 0.2.1-alpha — UE5.8 Primary Asset Include Compatibility Fix
+
+### Fixed
+- Corrected all framework references from the obsolete `Engine/PrimaryAssetId.h` include path to UE5.8's `UObject/PrimaryAssetId.h`.
+- Fix applied centrally to `DMFTypes.h` and both starter-selection UI headers that directly referenced `FPrimaryAssetId`.
+- Resolves every `fatal error C1083` reported in the supplied UE5.8.1 build log.
+
+### Compatibility / architecture
+- No gameplay behavior, replicated state layout, persistence schema, starter onboarding contract, combat authority model, or Blueprint API was intentionally changed.
+- UE5.8.1 UnrealHeaderTool had already completed successfully in the supplied build; this release targets the subsequent C++ include failure.
+- A new Editor rebuild remains required because the missing include prevented the compiler from reaching later translation-unit diagnostics.
+
+
+## 0.2.0-alpha — Server-Authoritative Real-Time Combat Foundation
+
+### Added
+- `UDMFDigimonAbilityData` Primary Data Asset with SP cost, cooldown, timing, range, damage scaling and presentation inputs.
+- Replicated `UDMFDigimonCombatComponent` shared by owned, wild and NPC Digimon.
+- Server-side target/range/SP/cooldown/damage validation and defeat processing.
+- Auto acquisition, AI chase, basic auto attacks and player-partner follow behavior.
+- Server-authoritative queued player abilities that chase out-of-range targets and revalidate before execution.
+- Configurable server command-rate guard for quick-slot RPC bursts.
+- Configurable queued-command timeout plus self/target leash enforcement for commanded chases.
+- `ADMFWildDigimonCharacter` for ready-to-place 3D real-time encounters.
+- Four-slot native `UDMFCombatQuickBarWidget`, replicated cooldown feedback and cursor target-selection helper.
+- Optional out-of-box Left Mouse target selection plus 1–4 quick-slot input bindings.
+- Framework Digimon capsules explicitly support Visibility target traces so the native target helper does not depend on project collision-preset luck.
+- Owner-routed combat command RPCs through `UDMFPlayerDigimonComponent`.
+- Change-aware persistent battle HP/SP mirroring, periodic account autosave, and immediate persistence on active-partner defeat.
+- Authoritative EXP/money victory rewards with a single owning-client reward notification path (including listen-host duplicate-event protection).
+- Replicated winner and defeated presentation cues, including configured Win/Death montages.
+- Combat delegates and Blueprint presentation hooks.
+- Asset Manager cook rule for `DMFDigimonAbility`.
+
+### Compatibility / architecture
+- Preserves v0.1.0 account, starter, inventory and partner persistence contracts.
+- Existing species Attack1/Attack2 montage + Cascade/Niagara fields remain usable as slot presentation fallbacks.
+- Gameplay state is server authoritative; multicast RPCs are cosmetic only.
+
+
+## 0.1.0-alpha — Starter Replication Foundation
+
+### Added
+- UE5.8 runtime plugin skeleton and module.
+- Multiplayer-only MMO gameplay GameMode.
+- Native frontend login/main-menu UI and frontend HUD/GameMode.
+- Native network/travel failure reporting back into the frontend status UI, with last-status retention across frontend widget reconstruction.
+- Login/admin plaintext entry fields are cleared immediately after credential hashing/validation attempts.
+- Fixed regular-user host routing and admin-only listen-host flow.
+- Server-side account validation/auto-registration and SaveGame-backed account persistence.
+- Server-only credential copy in PlayerState; credential digest is never replicated to clients.
+- Data-asset-driven Digimon species model.
+- Persistent unique Digimon instance model.
+- Cyber Sleuth-style core stat vocabulary and distributable attribute-point storage.
+- Digivolution rule data with level and optional stat gates.
+- Attack/Death/Feeding/Interact/Win montage asset inputs.
+- Attack 1/2 Cascade VFX inputs and optional Niagara counterparts.
+- Voice sound inputs.
+- Owner-only replicated Fast Array Digimon inventory.
+- Active partner state and replicated 3D partner actor base.
+- Starter roster Primary Data Asset.
+- Native starter choice UI and Blueprint preview hook.
+- Server-authoritative one-time starter selection validation.
+- Immediate starter persistence and partner spawning.
+- Returning-account partner spawning moved to `HandleStartingNewPlayer_Implementation` after the normal player-start flow for more deterministic pawn availability.
+- General Primary Asset Manager species resolution with starter-roster fallback.
+- Packaged-build Asset Manager/cook integration template for `DMFDigimonSpecies` and `DMFStarterRoster`.
+- Corrected new-account onboarding event semantics after `PreLogin` auto-registration.
+- Added authoritative starter success/rejection feedback to the owning client so native/custom selection UIs recover cleanly from validation failures.
+- Added a server-only Blueprint starter-onboarding reset hook for administration/support testing.
+- Persistence schema placeholders for banked Digimon, scan data, currency and F→S+ ranked battle progression.
+
+### Architecture contract
+- Gameplay mutations originate on the server.
+- Clients request actions through narrow RPCs; authoritative state is replicated back.
+- Persistent per-Digimon state is instance-based and keyed by GUID.
+- Content tuning lives in Primary Data Assets rather than hard-coded species branches.
+- Native UI is functional by default and may be reskinned/subclassed without replacing gameplay authority.

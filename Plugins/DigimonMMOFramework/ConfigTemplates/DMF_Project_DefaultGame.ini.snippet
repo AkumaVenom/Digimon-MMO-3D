@@ -1,0 +1,10 @@
+; Digimon MMO Framework — UE5.8 project integration snippet
+; MERGE these entries into <YourProject>/Config/DefaultGame.ini.
+; Do NOT replace the project's existing Asset Manager array or clear its existing types.
+; Recommended content layout: /Game/DigimonData/...
+
+[/Script/Engine.AssetManagerSettings]
++PrimaryAssetTypesToScan=(PrimaryAssetType="DMFDigimonSpecies",AssetBaseClass="/Script/DigimonMMOFramework.DMFDigimonSpeciesData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
++PrimaryAssetTypesToScan=(PrimaryAssetType="DMFStarterRoster",AssetBaseClass="/Script/DigimonMMOFramework.DMFStarterRosterData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
++PrimaryAssetTypesToScan=(PrimaryAssetType="DMFDigimonAbility",AssetBaseClass="/Script/DigimonMMOFramework.DMFDigimonAbilityData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
++PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
