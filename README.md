@@ -263,13 +263,42 @@ From the game's frontend you can access the available multiplayer options.
 
 ### Hosting
 
-Create a multiplayer session and enter the Digital World as the host.
+Hosting is handled through the protected Admin Host & Play option on the frontend.
 
-Other players can then connect to your game.
+To host a multiplayer session:
+
+Select Admin from the frontend.
+Enter the configured Admin Hosting Password.
+Unlock the protected hosting controls.
+Select Host & Play.
+The game starts a listen-server session and loads the host into the Digital World using their account and persistent progression.
+
+The Admin hosting password can be changed without editing C++ from:
+
+Project Settings → Game → Digimon MMO Framework → Networking → Admin Hosting
+
+The password is securely converted into a stored credential digest rather than being saved as readable plaintext.
+
+The multiplayer server address and port can also be configured from:
+
+Project Settings → Game → Digimon MMO Framework → Networking → Server Endpoint
+
+This allows developers to configure their hosting environment entirely through Project Settings.
 
 ### Joining
 
-Connect to a host and enter their Digital World with your own player account and progression.
+Players connect using the normal Join Game option on the frontend.
+
+Unlike a traditional direct-IP menu, players do not need to manually enter an address. The framework automatically uses the server endpoint configured by the developer under:
+
+Project Settings → Game → Digimon MMO Framework → Networking → Server Endpoint
+
+The configurable endpoint includes:
+
+Server Public Address / Hostname
+Game Port
+
+When Join Game is selected, the player connects to that configured destination and enters the multiplayer Digital World using their own account and supported persistent progression.
 
 ### Returning Players
 
