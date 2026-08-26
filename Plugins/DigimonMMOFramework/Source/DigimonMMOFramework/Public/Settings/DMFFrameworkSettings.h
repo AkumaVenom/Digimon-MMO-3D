@@ -94,6 +94,51 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Presentation", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="0.25", ClampMax="4.0"))
     float PlayerFootstepPitchMultiplier = 1.0f;
 
+    /** Master switch for the automatic local music-state system. Music is presentation-only and never replicated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music")
+    bool bEnableFrameworkMusic = true;
+
+    /** Music used while the configured FrontendMap is active. Author the cue/wave to loop, or leave automatic replay enabled below. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Tracks", meta=(EditCondition="bEnableFrameworkMusic", DisplayName="Frontend / Main Menu Music"))
+    TSoftObjectPtr<USoundBase> FrontendMusic;
+
+    /** Default exploration music used in the configured OpenWorldMap whenever the local partner is not in combat. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Tracks", meta=(EditCondition="bEnableFrameworkMusic", DisplayName="Open World Music"))
+    TSoftObjectPtr<USoundBase> OpenWorldMusic;
+
+    /** Combat music used while the local active partner is in replicated combat. Falls back to Open World Music when unassigned. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Tracks", meta=(EditCondition="bEnableFrameworkMusic", DisplayName="Battle Music"))
+    TSoftObjectPtr<USoundBase> BattleMusic;
+
+    /** Global music gain applied before the per-state volume multipliers below. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Mix", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="2.0"))
+    float MusicMasterVolume = 1.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Mix", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="2.0"))
+    float FrontendMusicVolume = 1.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Mix", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="2.0"))
+    float OpenWorldMusicVolume = 1.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Mix", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="2.0"))
+    float BattleMusicVolume = 1.0f;
+
+    /** Symmetric crossfade used when switching Frontend/Open World/Battle music. Set to zero for an immediate cut. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Transitions", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="10.0"))
+    float MusicCrossfadeSeconds = 1.25f;
+
+    /** Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Transitions", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="10.0"))
+    float BattleMusicReleaseDelaySeconds = 1.5f;
+
+    /** If a configured track reaches its natural end, restart it automatically. Internally-looped Sound Cues work normally too. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Playback", meta=(EditCondition="bEnableFrameworkMusic"))
+    bool bAutomaticallyLoopMusic = true;
+
+    /** Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category="Audio|Music|Performance", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.05", ClampMax="1.0"))
+    float MusicStateEvaluationInterval = 0.20f;
+
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Account")
     FString AccountSaveSlot = TEXT("DMF_ServerAccounts");
 

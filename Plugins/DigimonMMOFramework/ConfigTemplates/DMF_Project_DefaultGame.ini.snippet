@@ -10,6 +10,23 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+; v0.11.0 automatic Frontend / Open World / Battle music director defaults.
+; Assign the three music assets in Project Settings > Audio > Music. Sound Cues are recommended.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnableFrameworkMusic=True
+; FrontendMusic=/Game/Audio/Music/SC_MenuMusic.SC_MenuMusic
+; OpenWorldMusic=/Game/Audio/Music/SC_OpenWorldMusic.SC_OpenWorldMusic
+; BattleMusic=/Game/Audio/Music/SC_BattleMusic.SC_BattleMusic
+MusicMasterVolume=1.0
+FrontendMusicVolume=1.0
+OpenWorldMusicVolume=1.0
+BattleMusicVolume=1.0
+MusicCrossfadeSeconds=1.25
+BattleMusicReleaseDelaySeconds=1.5
+bAutomaticallyLoopMusic=True
+MusicStateEvaluationInterval=0.20
+
+
 ; v0.10.4 automatic replicated player-footstep defaults.
 ; Assign PlayerFootstepSound in Project Settings > Player Avatar > Footsteps (a spatial Sound Cue is recommended).
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]

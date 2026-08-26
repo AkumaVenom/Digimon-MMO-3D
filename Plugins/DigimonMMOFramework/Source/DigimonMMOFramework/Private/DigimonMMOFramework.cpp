@@ -4,7 +4,7 @@ DEFINE_LOG_CATEGORY(LogDigimonMMOFramework);
 
 void FDigimonMMOFrameworkModule::StartupModule()
 {
-    UE_LOG(LogDigimonMMOFramework, Log, TEXT("Digimon MMO Framework 0.5.2-alpha loaded."));
+    UE_LOG(LogDigimonMMOFramework, Log, TEXT("Digimon MMO Framework 0.11.0-alpha loaded."));
 }
 
 void FDigimonMMOFrameworkModule::ShutdownModule()

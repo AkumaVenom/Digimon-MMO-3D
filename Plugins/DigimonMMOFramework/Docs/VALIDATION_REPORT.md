@@ -1,5 +1,24 @@
 # Validation Report
 
+## v0.11.0-alpha — polished global music director source validation
+
+Static/source validation was performed against the user-runtime-validated v0.10.4 automatic player-footstep baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus Frontend/Open World/listen-host/remote-client runtime test remain the authoritative acceptance gates.
+
+Validated contracts:
+- Added `UDMFMusicSubsystem` as a GameInstance-lifetime local presentation director with semantic `None`, `Frontend`, `OpenWorld` and `Battle` states.
+- `FrontendMap` / `OpenWorldMap` drive the normal map context, with framework GameMode/PlayerController fallbacks for compatible custom map setups and PIE-prefix-safe world-name matching.
+- Battle state is derived only from the local active partner's existing replicated authoritative CombatComponent state (`Chasing`, `Attacking`, `Recovering`). A command target by itself does not trigger Battle music.
+- The configurable Battle release delay de-bounces return-to-exploration transitions; a defeated/no-partner state cannot hold Battle music forever.
+- Frontend/Open World/Battle tracks, master/per-state volumes, crossfade, release delay, automatic replay and evaluation interval are Project Settings exposed. Missing Battle audio gracefully falls back to Open World audio.
+- Music uses persistent 2D AudioComponents with manual lifetime management and crossfades; automatic replay supports non-looping assets while internally-looped Sound Cues remain uninterrupted.
+- Music is client-local presentation only: **zero RPCs and zero replicated properties** were added for music. Dedicated servers transition to `None` and create no local music playback.
+- Blueprint extension surface adds only `GetCurrentMusicState`, `RefreshMusicState`, `SetMusicSuppressed`, `IsMusicSuppressed` and the local `OnMusicStateChanged` delegate.
+- Final static regression gate covers **72 source/header/build files and 17,218 source/build lines**, with **37 UCLASS**, **13 UENUM**, **15 USTRUCT**, **330 UFUNCTION** and **566 UPROPERTY** declarations. All **33 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies.
+- Comparison against v0.10.4 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. Added files are the music subsystem source pair plus `Docs/SETUP_GLOBAL_MUSIC.md`.
+- Generated-header ordering, changed-source delimiter balance and runtime TODO/FIXME checks pass.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **M0** with listen host + remote client, followed by v0.10.4 footsteps and the existing WORLD chat/nameplate/Care/Scan/combat regressions.
+
 ## v0.10.4-alpha — automatic replicated player-footstep source validation
 
 Static/source validation was performed against the v0.10.3 configurable Admin-hosting baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime test remain the authoritative acceptance gates.

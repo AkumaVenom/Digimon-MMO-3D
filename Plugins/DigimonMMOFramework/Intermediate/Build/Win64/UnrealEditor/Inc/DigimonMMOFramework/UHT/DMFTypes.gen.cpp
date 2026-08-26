@@ -38,6 +38,7 @@ DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimon
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonElement(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStage(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity(ETypeConstructPhase);
@@ -1197,6 +1198,68 @@ UScriptStruct* Z_Construct_UScriptStruct_FDMFScanDataEntry(ETypeConstructPhase P
 #undef UHT_STATICS
 // ********** End ScriptStruct FDMFScanDataEntry ***************************************************
 
+// ********** Begin Enum EDMFMusicState ************************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFMusicState>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Battle.Name", "EDMFMusicState::Battle" },
+		{ "BlueprintType", "true" },
+		{ "Frontend.Name", "EDMFMusicState::Frontend" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "None.Name", "EDMFMusicState::None" },
+		{ "OpenWorld.Name", "EDMFMusicState::OpenWorld" },
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFMusicState::None", (int64)EDMFMusicState::None },
+		{ "EDMFMusicState::Frontend", (int64)EDMFMusicState::Frontend },
+		{ "EDMFMusicState::OpenWorld", (int64)EDMFMusicState::OpenWorld },
+		{ "EDMFMusicState::Battle", (int64)EDMFMusicState::Battle },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFMusicState",
+	"EDMFMusicState",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFMusicState;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFMusicState.OuterSingleton)
+		{
+			ZRIE_EDMFMusicState.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFMusicState"));
+		}
+		return ZRIE_EDMFMusicState.OuterSingleton;
+	}
+	if (!ZRIE_EDMFMusicState.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFMusicState.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFMusicState.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFMusicState **************************************************************
+
 // ********** Begin Enum EDMFCombatState ***********************************************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1812,6 +1875,7 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3919447411U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState, TEXT("EDMFMusicState"), &ZRIE_EDMFMusicState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4180201259U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState, TEXT("EDMFCombatState"), &ZRIE_EDMFCombatState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4086388659U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDamageScaling, TEXT("EDMFDamageScaling"), &ZRIE_EDMFDamageScaling, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1045003275U) },
 	};
@@ -1828,7 +1892,7 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 503094528U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_bafbded3989f57c6114c61ecabfc9c4627392291{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_49664d51f5e0b3a957fef6e565d44bf44e37afbb{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

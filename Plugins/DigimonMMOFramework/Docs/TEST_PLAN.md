@@ -1,6 +1,27 @@
-# UE5.8 Validation Plan — 0.10.4-alpha
+# UE5.8 Validation Plan — 0.11.0-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.4 adds automatic replicated player-only footsteps on top of the v0.10.3 configurable Admin hosting/password and v0.10.1 WORLD chat/nameplate/Care baseline while retaining all existing combat, possession, UI, wild spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.11.0 adds the local automatic Frontend/Open World/Battle music director on top of the runtime-working v0.10.4 player-footstep baseline while retaining all existing hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, UI, spawning and persistence regression contracts.
+
+
+## M0. v0.11.0 global music director acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → Audio → Music**. Assign three clearly distinguishable test Sound Cues to **Frontend / Main Menu Music**, **Open World Music**, and **Battle Music**. Keep **Enable Framework Music** and **Automatically Loop Music** enabled.
+2. Compile in UE5.8.1 and launch the normal Frontend. Confirm exactly one Frontend music stream plays; opening login/admin/menu panels must not restart or layer duplicate music.
+3. Host & Play into the configured Open World. Confirm Frontend music survives the travel boundary only long enough to crossfade cleanly into Open World music, with no doubled persistent track afterward.
+4. Join from a remote client. Confirm that client independently transitions from its Frontend music to Open World music and does not inherit the host's AudioComponent/playback position.
+5. Select/Interact with a hostile Digimon as a command target but do **not** attack. Music must remain Open World.
+6. Issue an ability so the active partner enters `Chasing`, `Attacking` or `Recovering`. The fighting local player must crossfade to Battle music.
+7. While Host fights, leave Client out of combat. Client must stay on Open World music. Repeat with Client fighting while Host remains idle. This proves music is local presentation rather than global multicast state.
+8. End the battle. Battle music should remain stable through the configured **Battle Music Release Delay Seconds**, then crossfade back to Open World music exactly once.
+9. Test a defeated partner and a normal victory/target-clear path; neither may leave Battle music stuck indefinitely.
+10. Clear the **Battle Music** asset and repeat a fight. The state may report Battle, but audible playback must gracefully remain/fall back to Open World music instead of becoming silent. Restore the Battle asset afterward.
+11. Use a non-looping test music asset and wait for it to finish. With **Automatically Loop Music** enabled it must restart cleanly. Disable automatic looping and verify the framework does not restart it.
+12. Set **Music Crossfade Seconds** to `0` and verify immediate state cuts; restore the preferred production fade. Test master/per-state volume controls.
+13. Disable **Enable Framework Music** and restart PIE. No framework music should play on Frontend or Open World. Re-enable it.
+14. If using a cinematic, call **Set Music Suppressed(true)** from the Game Instance Subsystem and verify the current track fades/stops; set false and verify automatic state music resumes.
+15. Return to the configured Frontend map and verify Frontend/Main Menu music is restored.
+16. Package host/client and verify all three soft-referenced music assets are cooked and transitions behave the same on two machines.
+17. Run the v0.10.4 footstep section plus WORLD chat, nameplate, Care, Scan/Materialization and combat regressions.
 
 
 ## F0. v0.10.4 automatic replicated player-footstep acceptance

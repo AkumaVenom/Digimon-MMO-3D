@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.11.0-alpha — Polished Global Music Director
+
+### Added
+- Added `UDMFMusicSubsystem`, an automatic GameInstance-lifetime music director for Frontend/Main Menu, Open World exploration and local Battle presentation.
+- Added Project Settings → `Audio → Music` with a global enable switch, Frontend/Open World/Battle `USoundBase` assets, master/per-state volume controls, crossfade duration, battle release delay, automatic replay and a throttled state-evaluation interval.
+- Music assets are normal `USoundBase` references, so projects may assign Sound Cues, MetaSounds exposed as compatible sound assets, or Sound Waves according to their content pipeline.
+- Added Blueprint-accessible current music state, local state-change delegate, immediate refresh and temporary runtime suppression for cinematics/project-owned presentation.
+
+### Automatic state flow / polish
+- The configured `FrontendMap` resolves to Frontend music; `OpenWorldMap` resolves to exploration music, with framework GameMode/PlayerController fallbacks for compatible custom map setups.
+- Battle music is driven from the local active partner's **existing replicated authoritative CombatComponent state** and activates only for `Chasing`, `Attacking` or `Recovering`; simply selecting a command target does not trigger battle music.
+- A configurable battle-release delay keeps the battle mix stable through short replicated state gaps and the final recovery beat before returning to Open World music.
+- State changes crossfade through persistent 2D AudioComponents. Frontend music can therefore remain alive across the map-load boundary and transition into Open World music rather than cutting abruptly.
+- If Battle music is unassigned, the system gracefully keeps/falls back to Open World music instead of forcing silence.
+- `Automatically Loop Music` restarts a configured track at its natural end; internally looping Sound Cues remain continuously playing and require no special handling.
+
+### Networking / preserved systems
+- Music is presentation-only and **adds no RPCs or replicated properties**. Each player chooses their own soundtrack locally from replicated gameplay truth; one player's battle does not force every other client into Battle music.
+- Dedicated servers do not create/render music AudioComponents.
+- v0.10.4 player footsteps, configurable hosting, WORLD chat, nameplates, Care, Scan/Materialization, combat, player skins and persistence are preserved.
+- Added `Docs/SETUP_GLOBAL_MUSIC.md` and updated README, architecture, networking contract, roadmap, test plan, validation report and project config template.
+
 ## 0.10.4-alpha — Automatic Replicated Player Footsteps
 
 ### Added

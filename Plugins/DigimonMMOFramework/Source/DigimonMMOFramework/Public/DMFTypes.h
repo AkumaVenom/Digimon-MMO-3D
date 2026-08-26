@@ -245,6 +245,15 @@ struct DIGIMONMMOFRAMEWORK_API FDMFScanDataEntry
 
 
 UENUM(BlueprintType)
+enum class EDMFMusicState : uint8
+{
+    None,
+    Frontend,
+    OpenWorld,
+    Battle
+};
+
+UENUM(BlueprintType)
 enum class EDMFCombatState : uint8
 {
     Idle,

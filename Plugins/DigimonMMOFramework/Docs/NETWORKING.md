@@ -1,5 +1,14 @@
 # Networking / Host Deployment
 
+## v0.11.0 global music networking contract
+
+- Frontend/Open World/Battle music is **local presentation only** and adds no music RPC, replicated property or persistent account field.
+- The local `UDMFMusicSubsystem` reads the active partner's already-replicated authoritative `CombatState`; it never predicts or changes combat authority.
+- Battle music activates only from replicated `Chasing`, `Attacking` or `Recovering`, so merely selecting a command target does not create a false battle transition.
+- Each player's music state is independent. One client entering combat cannot force unrelated clients to switch soundtrack.
+- Persistent-across-travel 2D AudioComponents and crossfades are local AudioMixer/presentation behavior only. Dedicated servers do not render them.
+- Music settings/assets are deployment/content configuration and do not consume runtime network bandwidth.
+
 ## v0.10.4 replicated player-footstep contract
 
 - Footsteps exist only on `ADMFPlayerAvatarCharacter`; no Digimon actor receives this system.

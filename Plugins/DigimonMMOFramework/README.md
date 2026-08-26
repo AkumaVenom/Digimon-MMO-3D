@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.10.4-alpha — Automatic Replicated Player Footsteps`
+**Version:** `0.11.0-alpha — Polished Global Music Director`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.11.0-alpha — Polished Global Music Director
+
+The framework now includes an automatic **local MMO music-state director** exposed entirely through **Project Settings → Game → Digimon MMO Framework → Audio → Music**. Assign a Frontend/Main Menu music asset, Open World music asset and Battle music asset once; the framework then owns the normal soundtrack flow without Blueprint or C++ switching logic.
+
+- The configured **Frontend Map** automatically plays **Frontend / Main Menu Music**.
+- Entering the configured **Open World Map** crossfades to **Open World Music**.
+- When the local player's active partner enters the existing replicated authoritative `Chasing`, `Attacking` or `Recovering` combat states, the local soundtrack crossfades to **Battle Music**. Merely selecting a target does not start battle music.
+- After combat ends, a configurable release delay prevents rapid soundtrack chatter before the music crossfades back to **Open World Music**.
+- Frontend, Open World and Battle volume multipliers plus a global master volume and crossfade duration are exposed in Project Settings.
+- Framework music can automatically replay a track that naturally ends, so both looping Sound Cues and ordinary non-looping `USoundBase` assets are supported.
+- Battle music gracefully falls back to Open World music if no dedicated Battle asset is assigned.
+- The music director lives in a `GameInstanceSubsystem`, so Frontend audio can persist naturally through map travel and transition cleanly into gameplay music.
+- Music is **client-local presentation only**. No audio track, playback time or music RPC is replicated; each player reacts to their own replicated partner combat state, which is the correct MMO behavior when different players are fighting different encounters. Dedicated servers render no music.
+
+Advanced Blueprint projects can access `DMFMusicSubsystem` through the normal Game Instance Subsystem node, inspect `Current Music State`, listen to `On Music State Changed`, force an immediate refresh, or temporarily suppress framework music for cinematics without modifying the global Project Settings. See `Docs/SETUP_GLOBAL_MUSIC.md`.
 
 ## New in v0.10.4-alpha — Automatic Replicated Player Footsteps
 
@@ -378,7 +394,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2)

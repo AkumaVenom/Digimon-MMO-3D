@@ -24,6 +24,13 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Distance-based walk/sprint/crouch cadence and skeleton-independent capsule-base audio origin.
 - Immediate local-owner prediction plus server-authored Unreliable multicast presentation for other relevant players.
 
+## World audio presentation polish — global music director (implemented in v0.11.0-alpha)
+- Project Settings-driven Frontend/Main Menu, Open World and Battle music assets with a master enable switch.
+- Automatic map-context switching plus replicated active-partner combat-state detection.
+- Polished configurable crossfades, per-state/master volumes, battle-exit de-bounce and automatic replay for non-looping tracks.
+- Local-per-player MMO presentation: no music RPCs or replicated soundtrack state; dedicated servers render no music.
+- Blueprint GameInstanceSubsystem hooks for current state, state changes, immediate refresh and temporary cinematic suppression.
+
 ## Phase 2 — Real-time battle core (implemented in v0.2.0-alpha)
 - Server-authoritative combat state machine.
 - Wild/NPC/owned Digimon combatants.

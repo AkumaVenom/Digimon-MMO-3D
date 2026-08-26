@@ -1,5 +1,13 @@
 # Architecture
 
+## Global music presentation director (v0.11.0)
+
+`UDMFMusicSubsystem` is a GameInstance-lifetime, local presentation subsystem that resolves one semantic state: `Frontend`, `OpenWorld`, `Battle` or `None`. It survives normal frontend/gameplay travel and owns persistent 2D AudioComponents so state changes can crossfade rather than hard-cut.
+
+Map context comes from the configured `FrontendMap` / `OpenWorldMap` with framework GameMode/PlayerController fallbacks. Battle context comes only from the local active partner's existing replicated `UDMFDigimonCombatComponent::CombatState`; `Chasing`, `Attacking` and `Recovering` are active battle states. A selected target alone is not. A short local release delay de-bounces the return to exploration music.
+
+The subsystem never authors combat state and adds no replicated music variable/RPC. Every client derives its own soundtrack from already replicated gameplay truth, allowing nearby players to be in different soundtrack states while preserving one server-authoritative combat simulation. Dedicated servers do not render AudioComponents.
+
 ## Authority model
 
 `ADMFMMOGameMode` is the server authority for authenticated entry. `ADMFPlayerState` owns both replicated player-facing state components: `UDMFPlayerAvatarComponent` for the human avatar skin and `UDMFPlayerDigimonComponent` for Digimon collection/partner state. Keeping both on PlayerState preserves ownership across pawn replacement and gives client requests a connection-owned RPC route.

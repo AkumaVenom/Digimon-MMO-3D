@@ -211,6 +211,136 @@ struct UHT_STATICS
 		{ "ToolTip", "Global pitch multiplier applied after any pitch/randomization authored inside the assigned Sound Cue." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableFrameworkMusic_MetaData[] = {
+		{ "Category", "Audio|Music" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the automatic local music-state system. Music is presentation-only and never replicated. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the automatic local music-state system. Music is presentation-only and never replicated." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendMusic_MetaData[] = {
+		{ "Category", "Audio|Music|Tracks" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Music used while the configured FrontendMap is active. Author the cue/wave to loop, or leave automatic replay enabled below. */" },
+#endif
+		{ "DisplayName", "Frontend / Main Menu Music" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Music used while the configured FrontendMap is active. Author the cue/wave to loop, or leave automatic replay enabled below." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OpenWorldMusic_MetaData[] = {
+		{ "Category", "Audio|Music|Tracks" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Default exploration music used in the configured OpenWorldMap whenever the local partner is not in combat. */" },
+#endif
+		{ "DisplayName", "Open World Music" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Default exploration music used in the configured OpenWorldMap whenever the local partner is not in combat." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BattleMusic_MetaData[] = {
+		{ "Category", "Audio|Music|Tracks" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Combat music used while the local active partner is in replicated combat. Falls back to Open World Music when unassigned. */" },
+#endif
+		{ "DisplayName", "Battle Music" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Combat music used while the local active partner is in replicated combat. Falls back to Open World Music when unassigned." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MusicMasterVolume_MetaData[] = {
+		{ "Category", "Audio|Music|Mix" },
+		{ "ClampMax", "2.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global music gain applied before the per-state volume multipliers below. */" },
+#endif
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global music gain applied before the per-state volume multipliers below." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendMusicVolume_MetaData[] = {
+		{ "Category", "Audio|Music|Mix" },
+		{ "ClampMax", "2.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OpenWorldMusicVolume_MetaData[] = {
+		{ "Category", "Audio|Music|Mix" },
+		{ "ClampMax", "2.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BattleMusicVolume_MetaData[] = {
+		{ "Category", "Audio|Music|Mix" },
+		{ "ClampMax", "2.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MusicCrossfadeSeconds_MetaData[] = {
+		{ "Category", "Audio|Music|Transitions" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Symmetric crossfade used when switching Frontend/Open World/Battle music. Set to zero for an immediate cut. */" },
+#endif
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Symmetric crossfade used when switching Frontend/Open World/Battle music. Set to zero for an immediate cut." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BattleMusicReleaseDelaySeconds_MetaData[] = {
+		{ "Category", "Audio|Music|Transitions" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter. */" },
+#endif
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bAutomaticallyLoopMusic_MetaData[] = {
+		{ "Category", "Audio|Music|Playback" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** If a configured track reaches its natural end, restart it automatically. Internally-looped Sound Cues work normally too. */" },
+#endif
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "If a configured track reaches its natural end, restart it automatically. Internally-looped Sound Cues work normally too." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MusicStateEvaluationInterval_MetaData[] = {
+		{ "Category", "Audio|Music|Performance" },
+		{ "ClampMax", "1.0" },
+		{ "ClampMin", "0.05" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent. */" },
+#endif
+		{ "EditCondition", "bEnableFrameworkMusic" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AccountSaveSlot_MetaData[] = {
 		{ "Category", "Account" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
@@ -835,6 +965,26 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepCrouchStrideDistance;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepVolumeMultiplier;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepPitchMultiplier;
+	static void NewProp_bEnableFrameworkMusic_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableFrameworkMusic = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableFrameworkMusic;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_FrontendMusic;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_OpenWorldMusic;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_BattleMusic;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MusicMasterVolume;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FrontendMusicVolume;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_OpenWorldMusicVolume;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_BattleMusicVolume;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MusicCrossfadeSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_BattleMusicReleaseDelaySeconds;
+	static void NewProp_bAutomaticallyLoopMusic_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bAutomaticallyLoopMusic = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAutomaticallyLoopMusic;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MusicStateEvaluationInterval;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_AccountSaveSlot;
 	static void NewProp_bAutoRegisterUnknownAccounts_SetBit(void* Obj)
 	{
@@ -999,6 +1149,18 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootste
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepCrouchStrideDistance = { "PlayerFootstepCrouchStrideDistance", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepCrouchStrideDistance), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepCrouchStrideDistance_MetaData), NewProp_PlayerFootstepCrouchStrideDistance_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepVolumeMultiplier = { "PlayerFootstepVolumeMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepVolumeMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepVolumeMultiplier_MetaData), NewProp_PlayerFootstepVolumeMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepPitchMultiplier = { "PlayerFootstepPitchMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepPitchMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepPitchMultiplier_MetaData), NewProp_PlayerFootstepPitchMultiplier_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableFrameworkMusic = { "bEnableFrameworkMusic", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableFrameworkMusic_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableFrameworkMusic_MetaData), NewProp_bEnableFrameworkMusic_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_FrontendMusic = { "FrontendMusic", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FrontendMusic), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendMusic_MetaData), NewProp_FrontendMusic_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_OpenWorldMusic = { "OpenWorldMusic", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, OpenWorldMusic), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OpenWorldMusic_MetaData), NewProp_OpenWorldMusic_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_BattleMusic = { "BattleMusic", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, BattleMusic), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BattleMusic_MetaData), NewProp_BattleMusic_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MusicMasterVolume = { "MusicMasterVolume", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MusicMasterVolume), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MusicMasterVolume_MetaData), NewProp_MusicMasterVolume_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_FrontendMusicVolume = { "FrontendMusicVolume", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FrontendMusicVolume), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendMusicVolume_MetaData), NewProp_FrontendMusicVolume_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_OpenWorldMusicVolume = { "OpenWorldMusicVolume", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, OpenWorldMusicVolume), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OpenWorldMusicVolume_MetaData), NewProp_OpenWorldMusicVolume_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_BattleMusicVolume = { "BattleMusicVolume", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, BattleMusicVolume), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BattleMusicVolume_MetaData), NewProp_BattleMusicVolume_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MusicCrossfadeSeconds = { "MusicCrossfadeSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MusicCrossfadeSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MusicCrossfadeSeconds_MetaData), NewProp_MusicCrossfadeSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_BattleMusicReleaseDelaySeconds = { "BattleMusicReleaseDelaySeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, BattleMusicReleaseDelaySeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BattleMusicReleaseDelaySeconds_MetaData), NewProp_BattleMusicReleaseDelaySeconds_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAutomaticallyLoopMusic = { "bAutomaticallyLoopMusic", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAutomaticallyLoopMusic_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAutomaticallyLoopMusic_MetaData), NewProp_bAutomaticallyLoopMusic_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MusicStateEvaluationInterval = { "MusicStateEvaluationInterval", nullptr, (EPropertyFlags)0x0010040000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MusicStateEvaluationInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MusicStateEvaluationInterval_MetaData), NewProp_MusicStateEvaluationInterval_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AccountSaveSlot = { "AccountSaveSlot", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AccountSaveSlot), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccountSaveSlot_MetaData), NewProp_AccountSaveSlot_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts = { "bAutoRegisterUnknownAccounts", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAutoRegisterUnknownAccounts_MetaData), NewProp_bAutoRegisterUnknownAccounts_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxActiveDigimonInventory = { "MaxActiveDigimonInventory", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxActiveDigimonInventory), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxActiveDigimonInventory_MetaData), NewProp_MaxActiveDigimonInventory_MetaData) };
@@ -1078,6 +1240,18 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepCrouchStrideDistance,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepVolumeMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepPitchMultiplier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableFrameworkMusic,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendMusic,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OpenWorldMusic,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BattleMusic,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MusicMasterVolume,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendMusicVolume,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OpenWorldMusicVolume,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BattleMusicVolume,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MusicCrossfadeSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BattleMusicReleaseDelaySeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAutomaticallyLoopMusic,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MusicStateEvaluationInterval,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AccountSaveSlot,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxActiveDigimonInventory,
@@ -1208,10 +1382,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1309244929U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1458410915U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_4fe96fbf9474138007b28fc89e531f6913230102{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_7cac819a19e9487316dd827b9fda7ce7046a067d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,
