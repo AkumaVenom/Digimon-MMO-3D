@@ -107,7 +107,7 @@ With `Attack On Digimon Interact = true`:
 
 ### Healer
 
-If the trace hits `DMFHealerActor`, `Interact` automatically requests use of that healer through the owning PlayerController.
+If the trace hits `DMFHealerActor`, `Interact` automatically requests use of that healer through the owning PlayerController. In v0.12.2 the same server path also enforces the healer's exclusive treatment/busy state; accepted real restores drive the replicated green-light/VFX/audio presentation described in `SETUP_POLISHED_HEALER_PRESENTATION.md`.
 
 The healer still validates on the server:
 

@@ -156,7 +156,7 @@ Owned partners do not need autonomous combat to remain network-correct. Manual t
 
 Roster Set Active/Summon and Recall are owner-only server RPCs. The client supplies only an instance GUID; the server confirms the GUID belongs to that account inventory before changing active-partner state or spawning an actor.
 
-Healer interaction uses the client-owned PlayerController as the RPC ingress because placed healer actors are not owned by arbitrary clients. The server revalidates healer reference, distance, enabled state and reuse delay, then performs the heal and persistence mutation. No healing amount, HP, SP or currency value is trusted from the client. The healer's multicast event is presentation-only.
+Healer interaction uses the client-owned PlayerController as the RPC ingress because placed healer actors are not owned by arbitrary clients. The server revalidates healer reference, distance, enabled state, **exclusive treatment availability** and reuse delay, then performs the Party/Bank heal and persistence mutation. No healing amount, HP, SP or currency value is trusted from the client. v0.12.2 replicates only compact healer presentation state (`bHealingInProgress`, active PlayerState and healed count); each rendering machine locally drives the green light, Niagara/Cascade and audio. The original healer multicast event remains presentation-only and backward-compatible.
 
 ## Native player interaction authority (v0.5.2)
 
@@ -172,7 +172,7 @@ Digimon target+attack flow:
 
 Healer flow:
 
-`Local Interact -> local healer classification -> DMFMMOPlayerController ServerRequestUseHealer -> healer authoritative enabled/range/reuse validation -> HealAllOwnedDigimon -> persistence`
+`Local Interact -> local healer classification -> DMFMMOPlayerController ServerRequestUseHealer -> healer authoritative enabled/range/busy/reuse validation -> HealAllOwnedDigimon(Party + optional all Bank/Boxes) -> persistence -> replicated exclusive treatment presentation`
 
 The interaction trace result itself is never replicated as trusted state. A malicious client can request an actor reference only through the same validated RPC paths that existed before v0.5.2. `OnInteractionResult`, `BP_OnDigimonInteracted` and `BP_OnUnhandledInteraction` are presentation/project-extension surfaces and do not bypass server validation.
 

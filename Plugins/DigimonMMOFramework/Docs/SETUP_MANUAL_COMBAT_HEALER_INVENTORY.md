@@ -121,7 +121,7 @@ Example name:
 
 `BP_DigimonHealer`
 
-Add your own Skeletal Mesh, Static Mesh, Widget Component or NPC presentation in the Blueprint. v0.5.2 already supplies a native interaction collision sphere, so additional collision is optional and should be added only for the project's physical/presentation needs.
+Add your own Skeletal Mesh, Static Mesh, Widget Component or NPC presentation in the Blueprint. v0.5.2 already supplies a native interaction collision sphere, so additional collision is optional and should be added only for the project's physical/presentation needs. **Current v0.12.2 builds also provide a native replicated treatment presentation rig** (green light, Niagara/Cascade VFX and healing audio); see `SETUP_POLISHED_HEALER_PRESENTATION.md`.
 
 ### Healer Class Defaults
 
@@ -146,6 +146,9 @@ Under **Text**, customize:
 - `Already Healthy Message`
 - `Disabled Message`
 - `Too Far Message`
+- `Busy Message`
+
+Under **Sequence / Presentation**, v0.12.2 also exposes the treatment duration, presentation anchor transform, pulsing green light, Niagara/Cascade references and healing Sound Cue. Only one player can own a particular healer actor during its active treatment sequence.
 
 There is intentionally no cost/money property: the healer is free.
 
@@ -162,12 +165,13 @@ If a project already has an Actor reference from some other UI/overlap system, c
 Do not directly modify HP from the client Blueprint. The authoritative healer validates:
 
 - healer is enabled;
+- the healer is not already treating another player;
 - caller has a valid player pawn/state/component;
 - player is inside `Interaction Radius`;
 - reuse delay has elapsed;
 - the account has Digimon to restore.
 
-The server then restores configured HP/SP, optionally revives defeated Digimon, optionally updates bank records, persists immediately, and optionally re-summons the selected active partner.
+The server then restores configured HP/SP, optionally revives defeated Digimon, heals **every Party slot and every Bank/Box record** when Bank inclusion is enabled, persists immediately, and optionally re-summons the selected active partner. When at least one Digimon was actually restored, the station enters its exclusive replicated treatment presentation for `Healing Sequence Duration`.
 
 Controller result event:
 
@@ -176,7 +180,8 @@ Controller result event:
 Healer Blueprint hooks:
 
 - `BP On Player Healed` — authoritative gameplay-side hook.
-- `BP On Heal Presentation` — multicast cosmetic hook for healing VFX/audio/NPC animation on all clients.
+- `BP On Heal Presentation` — legacy multicast cosmetic hook preserved for existing healer Blueprints.
+- `BP On Healing Sequence Started` / `Finished` — durable replicated-state presentation hooks for door/material/custom animation extensions.
 - `BP On Enabled State Changed` — cosmetic/UI reaction when the replicated availability flag changes.
 
 ## 6. Recommended first acceptance test

@@ -160,7 +160,9 @@ The native fallback is usable immediately and can be replaced by a Blueprint chi
 
 ## Healer authority (v0.5.0)
 
-`ADMFHealerActor` is a replicated world interaction endpoint. Because a placed healer is not client-owned, clients do not send a Server RPC directly to it. `RequestHeal` routes through the owning `ADMFMMOPlayerController`; the server controller then asks the healer to validate distance, enable state and reuse timing. The healer invokes `UDMFPlayerDigimonComponent::HealAllOwnedDigimon`, which updates active inventory, optional bank storage, the live partner combat component and account persistence. Healer multicast events are cosmetic only.
+`ADMFHealerActor` is a replicated world interaction endpoint. Because a placed healer is not client-owned, clients do not send a Server RPC directly to it. `RequestHeal` routes through the owning `ADMFMMOPlayerController`; the server controller then asks the healer to validate distance, enable state, exclusive-busy state and reuse timing. The healer invokes `UDMFPlayerDigimonComponent::HealAllOwnedDigimon`, which updates the complete Party, optional all Bank/Box storage, the live partner combat component and account persistence.
+
+In v0.12.2 the station also owns a compact durable treatment state (`bHealingInProgress`, active healing PlayerState, healed count). One station accepts only one player during `HealingSequenceDuration`. Rendering machines reconstruct a native pulsing green point light, Niagara-preferred/Cascade-fallback VFX and attached Sound Cue locally from that state, so the healer gains synchronized presentation without per-frame replicated cosmetic transforms. Dedicated servers do not render the treatment rig. The legacy heal multicast remains cosmetic/backward-compatible.
 
 ### v0.5.3 defeated presentation
 `UDMFDigimonCombatComponent::CombatState` is the replicated durable authority for defeated presentation. `ADMFDigimonCharacter` owns local montage/final-pose holding, movement/collision presentation and revive cleanup. This separates authoritative HP/state from cosmetic animation while still reconstructing correctly for late relevancy.

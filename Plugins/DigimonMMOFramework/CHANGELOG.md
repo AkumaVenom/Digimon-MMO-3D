@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.12.2-alpha — Polished Replicated Healer Treatment Presentation
+
+### Added / changed
+- Upgraded `ADMFHealerActor` with a native Blueprint-positionable treatment rig: `HealingPresentationAnchor`, pulsing green `UPointLightComponent`, Niagara component, Cascade fallback component and attached healing audio component.
+- Added Details-exposed Niagara/Cascade/Sound assets, VFX preference, presentation transform, green-light color/intensity/radius/pulse/fade tuning, audio volume/pitch/fade-out and configurable treatment duration/busy message.
+- Added replicated `bHealingInProgress`, active healing PlayerState and healed-Digimon count. Clients reconstruct the light/VFX/audio locally from that compact durable state; no per-frame cosmetic replication is introduced.
+- One healer actor is exclusive to one accepted player for its treatment duration. Concurrent requests to the same station are server-rejected with the Busy Message. Different healer actors remain independently usable.
+- The accepted heal still restores the complete authoritative Party and, when enabled, every persistent Bank/Box record in one transaction, including defeated revival, immediate persistence and optional active-partner re-summon.
+- Added `IsHealing`, `GetActiveHealingPlayerState`, `RefreshHealingPresentation`, `BP_OnHealingSequenceStarted` and `BP_OnHealingSequenceFinished`. The original `BP_OnHealPresentation` multicast hook is preserved for existing healer Blueprints.
+- Disabling a healer during an active treatment ends the presentation cleanly. Dedicated servers never render light/VFX/audio.
+
+### Documentation
+- Added `Docs/SETUP_POLISHED_HEALER_PRESENTATION.md` and updated README, healer setup, architecture, networking, roadmap, test plan and validation report.
+
 ## 0.12.1-alpha — Polished Native UI Layout Hardening
 
 ### Fixed / polished

@@ -1,5 +1,17 @@
 # Validation Report
 
+## v0.12.2-alpha — polished replicated healer treatment source validation
+
+- Built directly over the accepted v0.12.1 Party/Bank/native-UI baseline. No baseline source file or existing reflected UFUNCTION is removed.
+- `ADMFHealerActor` adds a native presentation anchor, pulsing green point light, Niagara component, Cascade fallback component and attached audio component. All asset/placement/light/audio tuning is Blueprint/Details exposed.
+- Durable healer state is server-owned and replicated: `bHealingInProgress`, `ActiveHealingPlayerState` and `ActiveHealingDigimonCount`. Rendering clients reconstruct cosmetic presentation locally; there is no replicated per-frame light/VFX transform data.
+- One healer actor rejects concurrent treatment requests while its accepted sequence is active. The existing client-owned PlayerController remains the RPC ingress and the server still validates enabled state, range, reuse timing and Digimon ownership before mutation.
+- `HealAllOwnedDigimon` remains the gameplay mutation and continues to restore the complete Party plus all replicated/persistent Bank/Box entries when Bank inclusion is enabled, then persists account state.
+- Existing `BP_OnHealPresentation` and its multicast RPC remain intact. New `BP_OnHealingSequenceStarted/Finished`, `IsHealing`, `GetActiveHealingPlayerState` and `RefreshHealingPresentation` extend presentation only.
+- Dedicated servers skip local light/VFX/audio presentation. Disabling the station during treatment terminates its local/replicated presentation cleanly.
+- Final static counts for this package: **76 source/header/build files, 20,023 source/build lines, 40 UCLASS, 14 UENUM, 15 USTRUCT, 382 UFUNCTION and 636 UPROPERTY declarations**. All **37 Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies.
+
+
 ## v0.12.1-alpha — polished native UI layout-hardening source validation
 
 Static/source validation was performed against the user-runtime-validated v0.12.0 Party/Bank/Boxes baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus visual/runtime acceptance remain authoritative.

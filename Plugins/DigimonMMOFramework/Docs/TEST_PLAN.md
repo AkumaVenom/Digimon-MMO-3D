@@ -1,7 +1,23 @@
-# UE5.8 Validation Plan — 0.12.1-alpha
+# UE5.8 Validation Plan — 0.12.2-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.12.1 is a native UI layout-hardening patch over the runtime-validated v0.12 Party/Bank milestone. It changes presentation only and retains every Party/Bank, camera, music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, spawning and persistence authority contract.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.12.2 adds an exclusive replicated healer treatment presentation over the runtime-validated v0.12.1 Party/Bank/UI baseline while preserving the existing Party/Bank, camera, music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, spawning and persistence authority contracts.
 
+
+
+## H0. v0.12.2 polished healer treatment acceptance
+
+1. Derive/place `BP_DigimonHealer` from `DMFHealerActor` and add the project's medical-capsule mesh under the actor root. Move `Healing Presentation Anchor` (or set `Healing Presentation Relative Transform`) so the rig sits inside the chamber.
+2. Assign a looping green-plus `Healing Niagara System`. Optionally assign a Cascade equivalent and a spatial/attenuated healing Sound Cue. Confirm `Prefer Niagara Healing VFX=true`.
+3. Damage Party Digimon and at least one Digimon stored in a non-current Bank/Box page. Defeat one Party member if revival is enabled.
+4. Use the healer as host. Confirm one authoritative interaction restores HP/SP for every changed Party and Bank/Box Digimon, revives configured defeated Digimon, persists immediately and optionally re-summons the active partner.
+5. While the treatment is active, verify the interior point light fades/pulses green, Niagara activates, the heal sound plays, and the effects stop/fade after `Healing Sequence Duration`.
+6. Repeat with Niagara unassigned and Cascade assigned. Confirm the Cascade fallback activates. Reverse `Prefer Niagara Healing VFX` with both assigned and confirm Cascade is preferred.
+7. During an active treatment, have a second client use the **same healer actor**. The server must reject it with Busy Message. A separate healer actor should remain independently usable.
+8. Observe the treatment from host and remote client. Both must see/hear the same active station. No client may directly alter healer busy state or heal values.
+9. Join/possess a client while the healer is already active. Replicated durable state should cause the late viewer to reconstruct the treatment presentation for the remaining active period/state rather than requiring a one-shot multicast to have been received.
+10. Disable the healer on authority during treatment. Confirm the replicated sequence stops cleanly and new requests fail with Disabled Message. Re-enable and retest.
+11. Leave Niagara/Cascade/Sound unassigned. Confirm the built-in green light still presents a valid healing state and no null-asset error occurs.
+12. Verify dedicated-server/headless execution does not create audible/rendered presentation work; gameplay healing and persistence remain authoritative.
 
 ## U0. v0.12.1 native UI layout-hardening acceptance
 

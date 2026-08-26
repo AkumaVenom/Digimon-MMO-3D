@@ -77,6 +77,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Materialization Party-first / Bank-overflow integration and schema-v4 legacy migration — IMPLEMENTED in v0.12.0.
 - Direct drag/drop gestures, advanced sorting/filtering and stat-spend UX remain future presentation extensions over the authoritative storage API.
 - Native Party/Bank/Scan/Care and Party/combat quickbar layout hardening — IMPLEMENTED in v0.12.1 (scroll-clipped detail bodies, fixed Bank card sizing, compact HUD cards).
+- Polished replicated healer treatment presentation — IMPLEMENTED in v0.12.2 (exclusive one-player station lock, pulsing green interior light, Niagara-preferred/Cascade fallback VFX, spatial heal audio, Party + all Bank/Boxes restoration, Blueprint start/finish hooks).
 
 ## Phase 5 — Player item inventory
 - Data-asset item definitions.

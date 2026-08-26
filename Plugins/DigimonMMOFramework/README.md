@@ -1,8 +1,16 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.12.1-alpha — Polished Native UI Layout Hardening`
+**Version:** `0.12.2-alpha — Polished Replicated Healer Treatment Presentation`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.12.2-alpha — Polished Replicated Healer Treatment Presentation
+
+The free server-authoritative `DMFHealerActor` now includes a complete native treatment presentation rig for static healer props such as futuristic medical capsules. A Blueprint-positionable **Healing Presentation Anchor** drives a pulsing green point light, a preferred Niagara healing VFX with automatic Cascade fallback, and attached spatial healing audio. All presentation is reconstructed from a replicated exclusive healer state, so host, remote clients and late viewers agree when a station is actively treating a player without replicating light/VFX transforms every frame.
+
+A healer station is now **exclusive to one accepted player for the configured Healing Sequence Duration**. While that sequence is active, another player attempting to use the same actor receives the configurable Busy Message. The actual heal remains server-authoritative and still restores the player's complete Party plus every Bank/Box entry in one transaction when `Include Bank Storage` is enabled, persists immediately, revives defeated Digimon when configured, and can re-summon the active partner.
+
+Projects can assign `Healing Niagara System`, `Healing Cascade System`, and `Healing Sound` directly on the healer Blueprint. Niagara is preferred by default; if it is unassigned the actor automatically activates Cascade instead. The built-in light works even when no particle asset is assigned. `BP On Healing Sequence Started/Finished` are available for Blueprint-only door movement, emissive-material animation or other cosmetic extensions, while the original `BP On Heal Presentation` multicast hook remains compatible. See `Docs/SETUP_POLISHED_HEALER_PRESENTATION.md`.
 
 ## New in v0.12.1-alpha — Polished Native UI Layout Hardening
 
