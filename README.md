@@ -8,7 +8,7 @@ Explore, battle wild Digimon, collect Scan Data, materialize new partners, grow 
 
 The project is currently in active development and is being built system-by-system with a strong focus on multiplayer gameplay, persistence, progression, and the bond between the player and their Digimon.
 
-<img width="2172" height="724" alt="Splash" src="https://github.com/user-attachments/assets/5dae9cac-93dc-41d5-ac1c-83530b1a6b6c" />
+<img width="1707" height="724" alt="Splash" src="https://github.com/user-attachments/assets/d7058318-2243-4022-961d-8ed3d2eaf1f8" />
 
 ---
 
@@ -24,7 +24,7 @@ From there, you can enter the Digital World, encounter other Digimon, battle the
 
 The game is being developed as a true multiplayer experience, allowing players to host and join worlds while maintaining their own account and Digimon progression.
 
-<img width="3820" height="2064" alt="mainnames" src="https://github.com/user-attachments/assets/74d62c49-cbbf-40d1-8d07-e58934f09d73" />
+<img width="1920" height="1080" alt="1" src="https://github.com/user-attachments/assets/b4d078db-c0b5-4609-b64a-129b5930e399" />
 
 ---
 
@@ -98,7 +98,7 @@ The materialized Digimon becomes part of your personal collection and can be sel
 
 This system is inspired by the concept of Digimon being composed of digital information and makes building your collection part of the wider progression experience.
 
-<img width="3791" height="1991" alt="DigimonMMO3D3" src="https://github.com/user-attachments/assets/2f1137c9-2e8d-4b20-88d5-c89b2def536b" />
+<img width="1920" height="1080" alt="2" src="https://github.com/user-attachments/assets/3e55dd27-a128-464b-a083-d9e1e44a2831" />
 
 ---
 
@@ -112,7 +112,7 @@ As Digimon MMO 3D continues to develop, these individual partners can form the f
 
 From your collection you can manage your available Digimon and decide which partner you want accompanying you in the Digital World.
 
-<img width="3780" height="2000" alt="DigimonMMO3D4" src="https://github.com/user-attachments/assets/c5453846-7ef8-4c66-9925-e0d0898a3eb9" />
+<img width="1920" height="1080" alt="3" src="https://github.com/user-attachments/assets/80e4cc0d-8520-42b1-9d14-06e63f580bdb" />
 
 ---
 
@@ -165,7 +165,7 @@ Once the eating sequence finishes, the Care interface returns and displays the D
 
 The wider Care System is planned to grow into additional needs, reactions and Digimon behaviours over time.
 
-<img width="2304" height="1470" alt="care" src="https://github.com/user-attachments/assets/32527931-60ff-4300-b972-4ee55b9a5013" />
+<img width="1920" height="1080" alt="4" src="https://github.com/user-attachments/assets/abc407d8-7841-4a48-a08c-e206f602480c" />
 
 ---
 
