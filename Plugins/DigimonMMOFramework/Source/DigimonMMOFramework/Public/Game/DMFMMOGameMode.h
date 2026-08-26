@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "DMFTypes.h"
 #include "DMFMMOGameMode.generated.h"
 
 class ADMFPlayerAvatarCharacter;
+class ADMFMMOPlayerController;
 
 UCLASS(Blueprintable)
 class DIGIMONMMOFRAMEWORK_API ADMFMMOGameMode : public AGameMode
@@ -33,6 +35,14 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Networking|Player Spawn")
     bool HasFrameworkPlayerAvatar(APlayerController* PlayerController) const;
 
+    /** Broadcasts an already-sanitized player message using server-authored identity/timestamp metadata. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
+    bool BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderController, const FString& SanitizedMessage);
+
+    /** Sends the bounded authoritative session history to one owning player controller. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
+    void SendRecentWorldChatHistory(ADMFMMOPlayerController* RecipientController) const;
+
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Account")
     void BP_OnPlayerAccountLoaded(APlayerController* PlayerController, const FString& Username, bool bNewAccount);
@@ -41,9 +51,16 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Networking|Player Spawn")
     void BP_OnFrameworkPlayerAvatarRecovered(APlayerController* PlayerController, ADMFPlayerAvatarCharacter* AvatarPawn);
 
+    /** Server-side hook for logging, analytics or future backend/channel integrations after a world-chat message has been accepted. */
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|World Chat")
+    void BP_OnWorldChatMessageAccepted(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* SenderController);
+
 private:
     bool ValidateCredentialsFromOptions(const FString& Options, FString& OutUsername, FString& OutCredentialDigest, bool& bOutCreatedNew, FString& OutError) const;
     UClass* ResolveFrameworkPlayerAvatarClass() const;
     void ScheduleFrameworkPlayerAvatarValidation(APlayerController* PlayerController);
     void SavePlayerState(class ADMFPlayerState* PlayerState) const;
+
+    UPROPERTY(Transient)
+    TArray<FDMFWorldChatMessage> RecentWorldChatMessages;
 };

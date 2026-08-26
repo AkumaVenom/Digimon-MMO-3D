@@ -167,6 +167,98 @@ bool ADMFMMOGameMode::HasFrameworkPlayerAvatar(APlayerController* PlayerControll
     return PlayerController && IsValid(Cast<ADMFPlayerAvatarCharacter>(PlayerController->GetPawn()));
 }
 
+bool ADMFMMOGameMode::BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderController, const FString& SanitizedMessage)
+{
+    if (!HasAuthority() || !IsValid(SenderController) || SanitizedMessage.IsEmpty())
+    {
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        return false;
+    }
+
+    ADMFPlayerState* SenderPlayerState = SenderController->GetPlayerState<ADMFPlayerState>();
+    if (!SenderPlayerState)
+    {
+        return false;
+    }
+
+    FString PublicSenderName = SenderPlayerState->GetPlayerName();
+    PublicSenderName.TrimStartAndEndInline();
+    if (PublicSenderName.IsEmpty())
+    {
+        PublicSenderName = TEXT("Player");
+    }
+
+    FDMFWorldChatMessage ChatMessage;
+    ChatMessage.SenderName = PublicSenderName;
+    ChatMessage.Message = SanitizedMessage;
+    ChatMessage.SentUtcTicks = FDateTime::UtcNow().GetTicks();
+    ChatMessage.MessageType = EDMFWorldChatMessageType::Player;
+
+    const int32 HistoryLimit = Settings ? FMath::Clamp(Settings->WorldChatServerHistoryLimit, 0, 250) : 50;
+    if (HistoryLimit > 0)
+    {
+        RecentWorldChatMessages.Add(ChatMessage);
+        while (RecentWorldChatMessages.Num() > HistoryLimit)
+        {
+            RecentWorldChatMessages.RemoveAt(0);
+        }
+    }
+    else
+    {
+        RecentWorldChatMessages.Reset();
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+        {
+            if (ADMFMMOPlayerController* Recipient = Cast<ADMFMMOPlayerController>(Iterator->Get()))
+            {
+                Recipient->ClientReceiveWorldChatMessage(ChatMessage);
+            }
+        }
+    }
+
+    BP_OnWorldChatMessageAccepted(ChatMessage, SenderController);
+    return true;
+}
+
+void ADMFMMOGameMode::SendRecentWorldChatHistory(ADMFMMOPlayerController* RecipientController) const
+{
+    if (!HasAuthority() || !IsValid(RecipientController))
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        RecipientController->ClientReceiveWorldChatHistory(TArray<FDMFWorldChatMessage>());
+        return;
+    }
+
+    const int32 HistoryLimit = Settings ? FMath::Clamp(Settings->WorldChatServerHistoryLimit, 0, 250) : 50;
+    if (HistoryLimit <= 0 || RecentWorldChatMessages.IsEmpty())
+    {
+        RecipientController->ClientReceiveWorldChatHistory(TArray<FDMFWorldChatMessage>());
+        return;
+    }
+
+    const int32 StartIndex = FMath::Max(0, RecentWorldChatMessages.Num() - HistoryLimit);
+    TArray<FDMFWorldChatMessage> BoundedHistory;
+    BoundedHistory.Reserve(RecentWorldChatMessages.Num() - StartIndex);
+    for (int32 Index = StartIndex; Index < RecentWorldChatMessages.Num(); ++Index)
+    {
+        BoundedHistory.Add(RecentWorldChatMessages[Index]);
+    }
+    RecipientController->ClientReceiveWorldChatHistory(BoundedHistory);
+}
+
 bool ADMFMMOGameMode::EnsureFrameworkPlayerAvatar(APlayerController* PlayerController)
 {
     if (!HasAuthority() || !IsValid(PlayerController))

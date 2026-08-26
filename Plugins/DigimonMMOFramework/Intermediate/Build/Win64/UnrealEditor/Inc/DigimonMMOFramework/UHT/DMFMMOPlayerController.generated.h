@@ -18,11 +18,18 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
+class UDMFWorldChatWidget;
+struct FDMFWorldChatMessage;
 struct FGuid;
 struct FPrimaryAssetId;
 
 // ********** Begin Class ADMFMMOPlayerController **************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual void ClientWorldChatSendRejected_Implementation(FText const& Reason); \
+	virtual void ClientReceiveWorldChatHistory_Implementation(TArray<FDMFWorldChatMessage> const& ChatMessages); \
+	virtual void ClientReceiveWorldChatMessage_Implementation(FDMFWorldChatMessage const& ChatMessage); \
+	virtual void ServerRequestWorldChatHistory_Implementation(); \
+	virtual void ServerSendWorldChatMessage_Implementation(const FString& Message); \
 	virtual void ClientHealerInteractionResult_Implementation(bool bSuccess, FText const& Message, int32 DigimonHealed); \
 	virtual void ServerRequestUseHealer_Implementation(ADMFHealerActor* Healer); \
 	virtual void ServerEnsureFrameworkPlayerAvatar_Implementation(); \
@@ -31,6 +38,18 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleCareSequenceStarted); \
 	DECLARE_FUNCTION(execHandleScanDataRewardGranted); \
 	DECLARE_FUNCTION(execHandleStarterRequirementChanged); \
+	DECLARE_FUNCTION(execClientWorldChatSendRejected); \
+	DECLARE_FUNCTION(execClientReceiveWorldChatHistory); \
+	DECLARE_FUNCTION(execClientReceiveWorldChatMessage); \
+	DECLARE_FUNCTION(execServerRequestWorldChatHistory); \
+	DECLARE_FUNCTION(execServerSendWorldChatMessage); \
+	DECLARE_FUNCTION(execSendWorldChatMessage); \
+	DECLARE_FUNCTION(execGetWorldChatWidget); \
+	DECLARE_FUNCTION(execIsWorldChatInputActive); \
+	DECLARE_FUNCTION(execToggleWorldChatInput); \
+	DECLARE_FUNCTION(execCloseWorldChatInput); \
+	DECLARE_FUNCTION(execOpenWorldChatInput); \
+	DECLARE_FUNCTION(execRefreshWorldChatUI); \
 	DECLARE_FUNCTION(execRefreshCombatQuickBar); \
 	DECLARE_FUNCTION(execClientHealerInteractionResult); \
 	DECLARE_FUNCTION(execServerRequestUseHealer); \
@@ -61,11 +80,11 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execServerEnsureFrameworkPlayerAvatar);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFMMOPlayerController_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFMMOPlayerController_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase); \
@@ -74,7 +93,7 @@ public: \
 	DECLARE_SERIALIZER(ADMFMMOPlayerController)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API ADMFMMOPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
@@ -86,14 +105,14 @@ public: \
 	NO_API virtual ~ADMFMMOPlayerController();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_21_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_24_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_27_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

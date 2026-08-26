@@ -6,6 +6,7 @@
 #include "UI/DMFDigimonInventoryWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFWorldNameplateWidget.h"
+#include "UI/DMFWorldChatWidget.h"
 
 UDMFFrameworkSettings::UDMFFrameworkSettings()
 {
@@ -14,6 +15,7 @@ UDMFFrameworkSettings::UDMFFrameworkSettings()
     PlayerSkinSelectionWidgetClass = UDMFPlayerSkinSelectionWidget::StaticClass();
     DigimonInventoryWidgetClass = UDMFDigimonInventoryWidget::StaticClass();
     ScanNotificationWidgetClass = UDMFScanNotificationWidget::StaticClass();
+    WorldChatWidgetClass = UDMFWorldChatWidget::StaticClass();
     PlayerNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     DigimonNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     CarePropActorClass = ADMFDigimonCarePropActor::StaticClass();

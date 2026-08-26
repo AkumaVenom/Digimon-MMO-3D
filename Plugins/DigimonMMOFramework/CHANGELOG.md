@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.10.1-alpha — World Chat HUD Safe-Layout Fix
+
+- Fixed the native WORLD chat overlapping the centered partner ability quick-access UI at normal PIE/game viewport sizes.
+- Native chat now reserves a dedicated lower-left HUD lane above the combat quickbar (`176` Slate units by default), with a deliberate visual gutter between the two panels.
+- Added Project Settings → `UI | World Chat | Presentation` → **World Chat Bottom Safe Offset** for projects that resize or replace the combat quickbar.
+- If the native combat quickbar is disabled, the native chat automatically returns to the original compact `30`-unit bottom inset.
+- No chat RPC, authority, history, anti-spam, account, combat, Care, Scan/Materialization or nameplate behavior was changed.
+
+## 0.10.0-alpha — Polished Native MMO World Chat
+
+### Added
+- Added `UDMFWorldChatWidget`, a polished native lower-left WORLD chat HUD with compact bounded history, username-colored message rows, optional timestamps, an Enter-to-chat input row and Blueprint-reskinnable optional bindings/events.
+- Added the default Enter input route plus Blueprint `Open/Close/Toggle World Chat Input`, `Send World Chat Message`, widget access, message-received delegate and local system-feedback path.
+- Added bounded server session history so late joiners receive recent accepted chat without continuously replicating a global chat array.
+- Added global world-chat enable/input/widget/history/presentation settings plus authoritative message-length, interval and burst-rate controls.
+
+### Networking / authority
+- Clients submit text only through their owned `DMFMMOPlayerController`; they cannot supply sender identity, timestamp or message type.
+- The server sanitizes/clamps text, rate-limits each controller, stamps the public `APlayerState::PlayerName`, stores bounded history in `DMFMMOGameMode`, and delivers accepted payloads to connected owning controllers.
+- Private `AuthenticatedUsername` remains owner-only and credential digests remain server-only; neither is exposed as replicated chat data.
+- Chat history is session-only and does not alter account SaveGame schema or persistence.
+
+### UI / integration
+- Chat input temporarily owns keyboard focus and blocks movement/look/combat commands so typing cannot accidentally move the avatar or execute partner abilities.
+- Care eating presentation closes active chat input and temporarily hides the chat panel with the HUD, restoring it afterward with history intact.
+- Added `Docs/SETUP_WORLD_CHAT.md` and updated README, architecture, networking, roadmap, native UI setup, test plan, validation report and project-config template.
+
+### Preserved
+- v0.9.1 world nameplates, v0.8.1 Care/CustomDepth, Scan/Materialization, combat, avatar skins, persistence and existing MMO replication paths are additive and unchanged.
+- UE5.8.1 compile plus host/remote-client PIE remains the authoritative runtime gate.
+
 ## 0.9.1-alpha — UE5.8 World Nameplate Widget-Class Compile Fix
 
 ### Fixed — UE5.8.1/MSVC nameplate fallback compilation

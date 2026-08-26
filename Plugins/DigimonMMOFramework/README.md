@@ -1,8 +1,22 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.9.1-alpha — UE5.8 World Nameplate Widget-Class Compile Fix`
+**Version:** `0.10.1-alpha — World Chat HUD Safe-Layout Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.10.1-alpha — World Chat HUD Safe-Layout Fix
+
+The polished native **WORLD chat** now reserves a dedicated lower-left HUD lane above the centered partner ability quick-access bar. The default native layout uses a `176` Slate-unit bottom safe offset while the native combat quickbar is enabled, leaving a deliberate visual gutter instead of allowing the two persistent HUD panels to overlap. When the native combat quickbar is disabled, chat returns to its original `30`-unit lower-left inset.
+
+Project Settings now exposes **World Chat Bottom Safe Offset** under `UI → World Chat → Presentation`, so projects with a rescaled/replaced quickbar can tune the native chat clearance without editing C++. Chat networking, rate limiting, history, usernames, input focus and all existing gameplay systems are unchanged.
+
+## New in v0.10.0-alpha — Polished Native MMO World Chat
+
+The gameplay HUD now includes a ready-to-use **WORLD chat box** in the lower-left corner. Press **Enter** to focus chat, type, and press Enter again to send; Escape cancels and gameplay focus returns. The native presentation matches the framework's established navy/cyan/gold UI and keeps a compact scrollable message history rather than opening a large modal screen.
+
+Chat is server-authoritative. Clients submit text only; the server sanitizes/clamps it, applies per-player interval and burst rate limits, stamps the sender from the authoritative public PlayerState username, stores a bounded session history for late joiners, and delivers accepted messages to connected framework PlayerControllers. Account credentials/private owner-only account fields never enter the chat payload. The chat history itself stays local/session-scoped and is not persisted to account saves.
+
+Project Settings provides a master **Enable World Chat** switch, default Enter-binding toggle, Blueprint-replaceable chat widget class, message-length/history controls, optional timestamps and server anti-spam tuning. Care feeding temporarily hides the chat with the HUD so the Digimon eating presentation remains unobstructed, then restores the existing chat history. See `Docs/SETUP_WORLD_CHAT.md` for setup, reskinning and the host + remote-client acceptance checklist.
 
 ## New in v0.9.1-alpha — UE5.8 nameplate compile hardening
 

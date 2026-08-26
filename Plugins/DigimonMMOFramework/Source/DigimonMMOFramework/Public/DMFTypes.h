@@ -84,6 +84,36 @@ enum class EDMFRankedTier : uint8
     SPlus UMETA(DisplayName="S+")
 };
 
+/** Presentation category for the native session world-chat stream. */
+UENUM(BlueprintType)
+enum class EDMFWorldChatMessageType : uint8
+{
+    Player,
+    System
+};
+
+/**
+ * Server-stamped world-chat payload delivered to owning PlayerControllers.
+ * Clients submit only raw text; sender identity and timestamp are always authored by the server.
+ */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFWorldChatMessage
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="World Chat")
+    FString SenderName;
+
+    UPROPERTY(BlueprintReadOnly, Category="World Chat")
+    FString Message;
+
+    UPROPERTY(BlueprintReadOnly, Category="World Chat")
+    int64 SentUtcTicks = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="World Chat")
+    EDMFWorldChatMessageType MessageType = EDMFWorldChatMessageType::Player;
+};
+
 /** Current pages in the polished Digimon menu shell. Additional systems can extend this enum later. */
 UENUM(BlueprintType)
 enum class EDMFDigimonMenuTab : uint8

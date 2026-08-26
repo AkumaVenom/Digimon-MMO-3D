@@ -32,6 +32,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinSelectionWidget
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFScanNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterRosterData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterSelectionWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFWorldChatWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFWorldNameplateWidget(ETypeConstructPhase);
 // ********** End Same Module References ***********************************************************
 #define UHT_STRUCT_BASE(INIT) UE::CodeGen::ConstInit::TCompiledInObjectPtr<const FStructBaseChain>(UE::Private::AsStructBaseChain(INIT))
@@ -168,6 +169,140 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativeScanNotifications_MetaData[] = {
 		{ "Category", "UI" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableWorldChat_MetaData[] = {
+		{ "Category", "UI|World Chat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the native server-authoritative MMO world chat system. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the native server-authoritative MMO world chat system." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDefaultWorldChatInput_MetaData[] = {
+		{ "Category", "UI|World Chat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Ready-to-use Enter-key chat focus. Disable when the project owns its own chat input routing. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Ready-to-use Enter-key chat focus. Disable when the project owns its own chat input routing." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatWidgetClass_MetaData[] = {
+		{ "Category", "UI|World Chat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Native fallback is supplied; assign a Blueprint child to reskin chat without replacing validation/networking. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Native fallback is supplied; assign a Blueprint child to reskin chat without replacing validation/networking." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatMaxMessageLength_MetaData[] = {
+		{ "Category", "UI|World Chat|Safety" },
+		{ "ClampMax", "1000" },
+		{ "ClampMin", "32" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum accepted player message length after server sanitation. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum accepted player message length after server sanitation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatClientHistoryLimit_MetaData[] = {
+		{ "Category", "UI|World Chat|History" },
+		{ "ClampMax", "500" },
+		{ "ClampMin", "10" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Local client-side visible history cap. This is presentation state and is not continuously replicated. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Local client-side visible history cap. This is presentation state and is not continuously replicated." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatServerHistoryLimit_MetaData[] = {
+		{ "Category", "UI|World Chat|History" },
+		{ "ClampMax", "250" },
+		{ "ClampMin", "0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Session history retained by the authoritative GameMode and sent once to late joiners. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Session history retained by the authoritative GameMode and sent once to late joiners." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatMinimumSendInterval_MetaData[] = {
+		{ "Category", "UI|World Chat|Safety" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Minimum authoritative interval between accepted messages from one player. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Minimum authoritative interval between accepted messages from one player." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatBurstWindowSeconds_MetaData[] = {
+		{ "Category", "UI|World Chat|Safety" },
+		{ "ClampMax", "60.0" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Sliding server window used by the burst limiter. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Sliding server window used by the burst limiter." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatMaxMessagesPerBurst_MetaData[] = {
+		{ "Category", "UI|World Chat|Safety" },
+		{ "ClampMax", "60" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum accepted messages from one player inside the configured burst window. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum accepted messages from one player inside the configured burst window." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowWorldChatTimestamps_MetaData[] = {
+		{ "Category", "UI|World Chat|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional compact UTC HH:MM prefix. Disabled by default for the cleanest WoW-style presentation. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional compact UTC HH:MM prefix. Disabled by default for the cleanest WoW-style presentation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatBottomSafeOffset_MetaData[] = {
+		{ "Category", "UI|World Chat|Presentation" },
+		{ "ClampMax", "600.0" },
+		{ "ClampMin", "30.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Bottom safe-zone used by the native WORLD chat so it clears the centered combat quick-access HUD. */" },
+#endif
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Bottom safe-zone used by the native WORLD chat so it clears the centered combat quick-access HUD." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableWorldNameplates_MetaData[] = {
 		{ "Category", "UI|World Nameplates" },
@@ -576,6 +711,29 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bShowNativeScanNotifications = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowNativeScanNotifications;
+	static void NewProp_bEnableWorldChat_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableWorldChat = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableWorldChat;
+	static void NewProp_bEnableDefaultWorldChatInput_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableDefaultWorldChatInput = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultWorldChatInput;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_WorldChatWidgetClass;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatMaxMessageLength;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatClientHistoryLimit;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatServerHistoryLimit;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_WorldChatMinimumSendInterval;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_WorldChatBurstWindowSeconds;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatMaxMessagesPerBurst;
+	static void NewProp_bShowWorldChatTimestamps_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowWorldChatTimestamps = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowWorldChatTimestamps;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_WorldChatBottomSafeOffset;
 	static void NewProp_bEnableWorldNameplates_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bEnableWorldNameplates = 1;
@@ -694,6 +852,17 @@ const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_DigimonInvent
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput = { "bEnableDefaultDigimonInventoryMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData), NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ScanNotificationWidgetClass = { "ScanNotificationWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ScanNotificationWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidgetClass_MetaData), NewProp_ScanNotificationWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeScanNotifications = { "bShowNativeScanNotifications", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeScanNotifications_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeScanNotifications_MetaData), NewProp_bShowNativeScanNotifications_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldChat = { "bEnableWorldChat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldChat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldChat_MetaData), NewProp_bEnableWorldChat_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultWorldChatInput = { "bEnableDefaultWorldChatInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultWorldChatInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultWorldChatInput_MetaData), NewProp_bEnableDefaultWorldChatInput_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_WorldChatWidgetClass = { "WorldChatWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFWorldChatWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatWidgetClass_MetaData), NewProp_WorldChatWidgetClass_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatMaxMessageLength = { "WorldChatMaxMessageLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatMaxMessageLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatMaxMessageLength_MetaData), NewProp_WorldChatMaxMessageLength_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatClientHistoryLimit = { "WorldChatClientHistoryLimit", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatClientHistoryLimit), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatClientHistoryLimit_MetaData), NewProp_WorldChatClientHistoryLimit_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatServerHistoryLimit = { "WorldChatServerHistoryLimit", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatServerHistoryLimit), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatServerHistoryLimit_MetaData), NewProp_WorldChatServerHistoryLimit_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WorldChatMinimumSendInterval = { "WorldChatMinimumSendInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatMinimumSendInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatMinimumSendInterval_MetaData), NewProp_WorldChatMinimumSendInterval_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WorldChatBurstWindowSeconds = { "WorldChatBurstWindowSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatBurstWindowSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatBurstWindowSeconds_MetaData), NewProp_WorldChatBurstWindowSeconds_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatMaxMessagesPerBurst = { "WorldChatMaxMessagesPerBurst", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatMaxMessagesPerBurst), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatMaxMessagesPerBurst_MetaData), NewProp_WorldChatMaxMessagesPerBurst_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowWorldChatTimestamps = { "bShowWorldChatTimestamps", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowWorldChatTimestamps_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowWorldChatTimestamps_MetaData), NewProp_bShowWorldChatTimestamps_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WorldChatBottomSafeOffset = { "WorldChatBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatBottomSafeOffset_MetaData), NewProp_WorldChatBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldNameplates = { "bEnableWorldNameplates", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldNameplates_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldNameplates_MetaData), NewProp_bEnableWorldNameplates_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerNameplates = { "bEnablePlayerNameplates", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerNameplates_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerNameplates_MetaData), NewProp_bEnablePlayerNameplates_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowLocalPlayerNameplate = { "bShowLocalPlayerNameplate", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowLocalPlayerNameplate_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowLocalPlayerNameplate_MetaData), NewProp_bShowLocalPlayerNameplate_MetaData) };
@@ -751,6 +920,17 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeScanNotifications,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldChat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultWorldChatInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatMaxMessageLength,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatClientHistoryLimit,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatServerHistoryLimit,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatMinimumSendInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatBurstWindowSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatMaxMessagesPerBurst,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowWorldChatTimestamps,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldNameplates,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerNameplates,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowLocalPlayerNameplate,
@@ -857,10 +1037,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1079031704U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3566620676U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_3927f1f060376ac76cbba719bd779d80727df0d7{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_cc6fedc6094fb6c882bf0d40ebe6b692e7d95578{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -1,6 +1,25 @@
-# UE5.8 Validation Plan — 0.9.1-alpha
+# UE5.8 Validation Plan — 0.10.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.9.1 corrects the UE5.8/MSVC widget-class fallback compile issue in the v0.9.0 automatic Player/Digimon MMO world nameplates on top of the accepted v0.8.1 Care/CustomDepth baseline while retaining all Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.1 retains the polished server-authoritative WORLD chat and adds the HUD-safe native chat/quickbar layout on top of the user-accepted v0.9.1 nameplate baseline while retaining all Care/CustomDepth, Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+
+## W0. v0.10.1 polished world-chat multiplayer + HUD-layout acceptance
+
+0. On both listen host and remote client, verify the lower-left WORLD chat panel sits fully above/clear of the centered partner ability quickbar. Resize each PIE window and confirm neither persistent HUD panel overlaps.
+
+1. Compile against UE5.8.1 with no chat-related UHT/C++ errors or warnings promoted to errors.
+2. Launch listen host + remote client with two authenticated accounts. Confirm both show the compact lower-left WORLD chat panel.
+3. Host presses Enter, types a message and presses Enter again. Both peers must receive exactly one line carrying the host's public username and text.
+4. Repeat from the remote client; both peers must receive exactly one line carrying the client's public username and text.
+5. While the input field owns focus, press WASD/mouse-look/1-4/I/F6 and verify movement, look, abilities and modal menu toggles do not execute from typed/gameplay keys.
+6. Press Escape during an unsent draft; verify no message is broadcast and normal gameplay input resumes.
+7. Send two messages faster than the configured minimum interval. The second must be rejected server-side and only the sender sees the local SYSTEM feedback.
+8. Exceed the sliding burst limit. Excess texts must never appear on other peers.
+9. Send text containing newlines/tabs and text beyond the configured maximum. Verify one sanitized/clamped line is broadcast.
+10. Connect a late third client after several accepted messages. Verify it receives at most `WorldChatServerHistoryLimit` recent session entries once, in order.
+11. Set `WorldChatServerHistoryLimit=0`; verify late joiners do not receive prior chat while new broadcasts still work.
+12. Disable the global **Enable World Chat** setting and restart. Verify no native chat widget/input route is active and the server will not accept chat.
+13. Trigger Care feeding while chat is visible. Verify active chat input closes, the chat panel hides during eating, then returns with local history intact.
+14. Repeat existing world-nameplate, Care, Scan/Materialization, combat and possession regressions to confirm no framework feature was removed or rerouted.
 
 ## C0. v0.9.1 compile-fix acceptance
 

@@ -38,6 +38,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterRequirementChanged__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionFinished__DelegateSignature(ETypeConstructPhase);
 	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionResult__DelegateSignature(ETypeConstructPhase);
+	DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature(ETypeConstructPhase);
 	static FPackageRegistrationInfo Z_Registration_Info_UPackage__Script_DigimonMMOFramework;
 	FORCENOINLINE UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase)
 	{
@@ -74,19 +75,20 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterRequirementChanged__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionFinished__DelegateSignature,
 			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionResult__DelegateSignature,
+			(FTypeConstructFunc*)Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature,
 		};
 		static const UECodeGen_Private::FPackageParams PackageParams = {
 			"/Script/DigimonMMOFramework",
 			SingletonFuncArray,
 			UE_ARRAY_COUNT(SingletonFuncArray),
 			PKG_CompiledIn | 0x00000000,
-			0x3314086A,
-			0xE441D05E,
+			0xFFD2F70A,
+			0x1007A7EC,
 			METADATA_PARAMS(0, nullptr)
 		};
 		UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_DigimonMMOFramework.OuterSingleton, PackageParams);
 	}
 	return Z_Registration_Info_UPackage__Script_DigimonMMOFramework.OuterSingleton;
 }
-static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x3314086A, 0xE441D05E));
+static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xFFD2F70A, 0x1007A7EC));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

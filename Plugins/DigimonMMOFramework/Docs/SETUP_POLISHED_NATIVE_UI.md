@@ -11,8 +11,15 @@ In **Project Settings -> Game -> Digimon MMO Framework -> UI**, the default clas
 - `Player Skin Selection Widget Class` -> `DMFPlayerSkinSelectionWidget`
 - `Digimon Inventory Widget Class` -> `DMFDigimonInventoryWidget`
 - `Combat Quick Bar Widget Class` -> `DMFCombatQuickBarWidget`
+- `World Chat Widget Class` -> `DMFWorldChatWidget`
 
 Leave these native defaults assigned to use the v0.6 presentation. A Blueprint child may still replace any individual presentation while retaining the underlying framework APIs.
+
+## World chat extension — v0.10.1
+
+The native gameplay HUD also creates `DMFWorldChatWidget` when **Enable World Chat** is true. It uses a dedicated lower-left WORLD-chat lane while the partner combat quickbar remains centered at the bottom. In v0.10.1 the native chat reserves a `176`-unit bottom safe offset by default, keeping the two persistent HUD surfaces visually separated even in smaller PIE windows. Press **Enter** to focus its input; sending/canceling restores gameplay focus.
+
+The default chat widget is assigned under **UI → World Chat → World Chat Widget Class**. **World Chat Bottom Safe Offset** can be tuned if a project changes the quickbar's size. A Blueprint child can reskin chat without replacing server sanitation, rate limiting, public username stamping, session history or broadcast authority. See `SETUP_WORLD_CHAT.md` for the full optional binding surface and multiplayer acceptance test.
 
 ## 2. Digimon portraits — inventory + starter menu
 

@@ -17,6 +17,7 @@
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFPlayerSkinSelectionWidget.h"
 #include "UI/DMFStarterSelectionWidget.h"
+#include "UI/DMFWorldChatWidget.h"
 
 void ADMFMMOPlayerController::SetupInputComponent()
 {
@@ -52,6 +53,11 @@ void ADMFMMOPlayerController::SetupInputComponent()
     {
         InputComponent->BindKey(EKeys::I, IE_Pressed, this, &ADMFMMOPlayerController::HandleDigimonInventoryMenuInput);
     }
+
+    if (!Settings || (Settings->bEnableWorldChat && Settings->bEnableDefaultWorldChatInput))
+    {
+        InputComponent->BindKey(EKeys::Enter, IE_Pressed, this, &ADMFMMOPlayerController::HandleWorldChatInput);
+    }
 }
 
 void ADMFMMOPlayerController::BeginPlay()
@@ -67,6 +73,13 @@ void ADMFMMOPlayerController::BeginPlay()
     BindAvatarState();
     GetWorldTimerManager().SetTimer(StarterUIRetryTimer, this, &ADMFMMOPlayerController::BindStarterState, 0.25f, true);
     GetWorldTimerManager().SetTimer(AvatarUIRetryTimer, this, &ADMFMMOPlayerController::BindAvatarState, 0.25f, true);
+
+    RefreshWorldChatUI();
+    const UDMFFrameworkSettings* ChatSettings = GetDefault<UDMFFrameworkSettings>();
+    if (!ChatSettings || ChatSettings->bEnableWorldChat)
+    {
+        ServerRequestWorldChatHistory();
+    }
 
     // Only remote network clients need the late-join possession safety net. The listen-host path is
     // already authoritative/local and is intentionally left alone to avoid duplicate restart work.
@@ -198,6 +211,11 @@ void ADMFMMOPlayerController::HandleCareSequenceStarted(const FGuid DigimonInsta
 {
     if (!IsLocalController()) return;
 
+    if (bWorldChatInputActive)
+    {
+        CloseWorldChatInput();
+    }
+
     bCarePresentationActive = true;
     bReopenCareMenuAfterSequence = DigimonInventoryWidget != nullptr;
     if (DigimonInventoryWidget)
@@ -210,6 +228,10 @@ void ADMFMMOPlayerController::HandleCareSequenceStarted(const FGuid DigimonInsta
         CombatQuickBarWidget->RemoveFromParent();
         CombatQuickBarWidget = nullptr;
     }
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->SetVisibility(ESlateVisibility::Collapsed);
+    }
     // Feeding is an in-world presentation. Remove modal UI/input locks before the server starts the first Montage.
     RestoreGameplayInputMode();
 }
@@ -221,6 +243,7 @@ void ADMFMMOPlayerController::HandleCareSequenceFinished(const bool bSuccess, co
     const bool bShouldReopenCare = bReopenCareMenuAfterSequence;
     bCarePresentationActive = false;
     bReopenCareMenuAfterSequence = false;
+    RefreshWorldChatUI();
     if (bShouldReopenCare)
     {
         OpenCareUI();
@@ -546,6 +569,22 @@ void ADMFMMOPlayerController::OpenCareUI()
 
 void ADMFMMOPlayerController::ApplyFrameworkModalInputMode()
 {
+    if (bWorldChatInputActive)
+    {
+        if (WorldChatWidget)
+        {
+            WorldChatWidget->CloseChatInput();
+            WorldChatWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+        }
+        if (bWorldChatInputLocked)
+        {
+            SetIgnoreMoveInput(false);
+            SetIgnoreLookInput(false);
+            bWorldChatInputLocked = false;
+        }
+        bWorldChatInputActive = false;
+    }
+
     if (ADMFPlayerAvatarCharacter* AvatarPawn = Cast<ADMFPlayerAvatarCharacter>(GetPawn()))
     {
         AvatarPawn->ResetNativeInputState();
@@ -573,6 +612,272 @@ void ADMFMMOPlayerController::RestoreGameplayInputMode()
     }
     SetInputMode(FInputModeGameOnly());
     bShowMouseCursor = false;
+}
+
+void ADMFMMOPlayerController::RefreshWorldChatUI()
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        if (bWorldChatInputActive)
+        {
+            CloseWorldChatInput();
+        }
+        if (WorldChatWidget)
+        {
+            WorldChatWidget->RemoveFromParent();
+            WorldChatWidget = nullptr;
+        }
+        return;
+    }
+
+    if (!WorldChatWidget)
+    {
+        TSubclassOf<UDMFWorldChatWidget> WidgetClass = Settings ? Settings->WorldChatWidgetClass : nullptr;
+        if (!WidgetClass)
+        {
+            WidgetClass = UDMFWorldChatWidget::StaticClass();
+        }
+
+        WorldChatWidget = CreateWidget<UDMFWorldChatWidget>(this, WidgetClass);
+        if (WorldChatWidget)
+        {
+            WorldChatWidget->AddToViewport(140);
+        }
+    }
+
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->SetVisibility(bCarePresentationActive
+            ? ESlateVisibility::Collapsed
+            : (bWorldChatInputActive ? ESlateVisibility::Visible : ESlateVisibility::HitTestInvisible));
+    }
+}
+
+void ADMFMMOPlayerController::OpenWorldChatInput()
+{
+    if (!IsLocalController() || bWorldChatInputActive || bCarePresentationActive
+        || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        return;
+    }
+
+    RefreshWorldChatUI();
+    if (!WorldChatWidget)
+    {
+        return;
+    }
+
+    bWorldChatInputActive = true;
+    ApplyWorldChatInputMode();
+}
+
+void ADMFMMOPlayerController::CloseWorldChatInput()
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->CloseChatInput();
+        WorldChatWidget->SetVisibility(bCarePresentationActive
+            ? ESlateVisibility::Collapsed
+            : ESlateVisibility::HitTestInvisible);
+    }
+
+    bWorldChatInputActive = false;
+    RestoreWorldChatInputMode();
+}
+
+void ADMFMMOPlayerController::ToggleWorldChatInput()
+{
+    if (bWorldChatInputActive)
+    {
+        CloseWorldChatInput();
+    }
+    else
+    {
+        OpenWorldChatInput();
+    }
+}
+
+void ADMFMMOPlayerController::ApplyWorldChatInputMode()
+{
+    if (!IsLocalController() || !WorldChatWidget)
+    {
+        return;
+    }
+
+    if (ADMFPlayerAvatarCharacter* AvatarPawn = Cast<ADMFPlayerAvatarCharacter>(GetPawn()))
+    {
+        AvatarPawn->ResetNativeInputState();
+    }
+
+    if (!bWorldChatInputLocked)
+    {
+        SetIgnoreMoveInput(true);
+        SetIgnoreLookInput(true);
+        bWorldChatInputLocked = true;
+    }
+
+    SetInputMode(FInputModeUIOnly());
+    bShowMouseCursor = false;
+    WorldChatWidget->SetVisibility(ESlateVisibility::Visible);
+    WorldChatWidget->OpenChatInput();
+}
+
+void ADMFMMOPlayerController::RestoreWorldChatInputMode()
+{
+    if (bWorldChatInputLocked)
+    {
+        SetIgnoreMoveInput(false);
+        SetIgnoreLookInput(false);
+        bWorldChatInputLocked = false;
+    }
+
+    if (!bFrameworkModalInputLocked)
+    {
+        SetInputMode(FInputModeGameOnly());
+        bShowMouseCursor = false;
+    }
+}
+
+FString ADMFMMOPlayerController::SanitizeWorldChatMessage(const FString& Message) const
+{
+    FString Sanitized = Message;
+    Sanitized.ReplaceInline(TEXT("\r"), TEXT(" "));
+    Sanitized.ReplaceInline(TEXT("\n"), TEXT(" "));
+    Sanitized.ReplaceInline(TEXT("\t"), TEXT(" "));
+    Sanitized.TrimStartAndEndInline();
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const int32 MaxLength = Settings ? FMath::Clamp(Settings->WorldChatMaxMessageLength, 32, 1000) : 220;
+    if (Sanitized.Len() > MaxLength)
+    {
+        Sanitized = Sanitized.Left(MaxLength);
+        Sanitized.TrimEndInline();
+    }
+
+    return Sanitized;
+}
+
+void ADMFMMOPlayerController::SendWorldChatMessage(const FString& Message)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        return;
+    }
+
+    const FString LocalTrimmed = Message.TrimStartAndEnd();
+    if (!LocalTrimmed.IsEmpty())
+    {
+        ServerSendWorldChatMessage(LocalTrimmed);
+    }
+}
+
+void ADMFMMOPlayerController::ServerSendWorldChatMessage_Implementation(const FString& Message)
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        ClientWorldChatSendRejected(NSLOCTEXT("DMF", "WorldChatDisabled", "World chat is disabled on this server."));
+        return;
+    }
+
+    const FString Sanitized = SanitizeWorldChatMessage(Message);
+    if (Sanitized.IsEmpty())
+    {
+        return;
+    }
+
+    UWorld* World = GetWorld();
+    const double Now = World ? static_cast<double>(World->GetTimeSeconds()) : 0.0;
+    const double MinimumInterval = Settings ? FMath::Clamp(static_cast<double>(Settings->WorldChatMinimumSendInterval), 0.1, 10.0) : 0.65;
+    if ((Now - LastWorldChatAcceptedServerTime) < MinimumInterval)
+    {
+        ClientWorldChatSendRejected(NSLOCTEXT("DMF", "WorldChatSlowDown", "Please wait a moment before sending another message."));
+        return;
+    }
+
+    const double BurstWindow = Settings ? FMath::Clamp(static_cast<double>(Settings->WorldChatBurstWindowSeconds), 1.0, 60.0) : 10.0;
+    const int32 BurstLimit = Settings ? FMath::Clamp(Settings->WorldChatMaxMessagesPerBurst, 1, 60) : 8;
+    const double OldestAllowedTime = Now - BurstWindow;
+    RecentWorldChatAcceptedServerTimes.RemoveAll([OldestAllowedTime](const double AcceptedTime)
+    {
+        return AcceptedTime < OldestAllowedTime;
+    });
+
+    if (RecentWorldChatAcceptedServerTimes.Num() >= BurstLimit)
+    {
+        ClientWorldChatSendRejected(NSLOCTEXT("DMF", "WorldChatRateLimited", "You are sending messages too quickly. Please wait a few seconds."));
+        return;
+    }
+
+    ADMFMMOGameMode* MMOGameMode = World ? World->GetAuthGameMode<ADMFMMOGameMode>() : nullptr;
+    if (!MMOGameMode || !MMOGameMode->BroadcastWorldChatMessage(this, Sanitized))
+    {
+        ClientWorldChatSendRejected(NSLOCTEXT("DMF", "WorldChatUnavailable", "World chat is temporarily unavailable."));
+        return;
+    }
+
+    LastWorldChatAcceptedServerTime = Now;
+    RecentWorldChatAcceptedServerTimes.Add(Now);
+}
+
+void ADMFMMOPlayerController::ServerRequestWorldChatHistory_Implementation()
+{
+    ADMFMMOGameMode* MMOGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<ADMFMMOGameMode>() : nullptr;
+    if (MMOGameMode)
+    {
+        MMOGameMode->SendRecentWorldChatHistory(this);
+    }
+}
+
+void ADMFMMOPlayerController::ClientReceiveWorldChatMessage_Implementation(const FDMFWorldChatMessage& ChatMessage)
+{
+    RefreshWorldChatUI();
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->AddChatMessage(ChatMessage);
+    }
+    OnWorldChatMessageReceived.Broadcast(ChatMessage);
+}
+
+void ADMFMMOPlayerController::ClientReceiveWorldChatHistory_Implementation(const TArray<FDMFWorldChatMessage>& ChatMessages)
+{
+    RefreshWorldChatUI();
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->SetChatHistory(ChatMessages);
+    }
+}
+
+void ADMFMMOPlayerController::ClientWorldChatSendRejected_Implementation(const FText& Reason)
+{
+    RefreshWorldChatUI();
+    if (WorldChatWidget)
+    {
+        WorldChatWidget->AddLocalSystemMessage(Reason);
+    }
 }
 
 void ADMFMMOPlayerController::RefreshCombatQuickBar()
@@ -610,7 +915,7 @@ void ADMFMMOPlayerController::RefreshCombatQuickBar()
 
 void ADMFMMOPlayerController::SetDigimonCommandTarget(ADMFDigimonCharacter* NewTarget)
 {
-    if (bCarePresentationActive) return;
+    if (bCarePresentationActive || bWorldChatInputActive) return;
     ADMFPlayerState* DMFPlayerState = GetPlayerState<ADMFPlayerState>();
     if (DMFPlayerState && DMFPlayerState->DigimonComponent)
     {
@@ -656,7 +961,7 @@ bool ADMFMMOPlayerController::SelectDigimonCommandTargetUnderCursor()
 
 void ADMFMMOPlayerController::CommandPartnerTargetAndAttack(ADMFDigimonCharacter* Target, const int32 SlotIndex)
 {
-    if (bCarePresentationActive || !Target || SlotIndex < 0)
+    if (bCarePresentationActive || bWorldChatInputActive || !Target || SlotIndex < 0)
     {
         return;
     }
@@ -670,7 +975,7 @@ void ADMFMMOPlayerController::CommandPartnerTargetAndAttack(ADMFDigimonCharacter
 
 void ADMFMMOPlayerController::CommandActivePartnerAbilitySlot(const int32 SlotIndex)
 {
-    if (bCarePresentationActive || SlotIndex < 0)
+    if (bCarePresentationActive || bWorldChatInputActive || SlotIndex < 0)
     {
         return;
     }
@@ -713,25 +1018,39 @@ void ADMFMMOPlayerController::ClientHealerInteractionResult_Implementation(const
 
 void ADMFMMOPlayerController::HandleDefaultTargetInput()
 {
-    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !bCarePresentationActive)
+    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !bCarePresentationActive && !bWorldChatInputActive)
     {
         SelectDigimonCommandTargetUnderCursor();
     }
 }
 
+void ADMFMMOPlayerController::HandleWorldChatInput()
+{
+    if (!bWorldChatInputActive)
+    {
+        OpenWorldChatInput();
+    }
+}
+
 void ADMFMMOPlayerController::HandlePlayerSkinMenuInput()
 {
-    TogglePlayerSkinSelectionUI();
+    if (!bWorldChatInputActive)
+    {
+        TogglePlayerSkinSelectionUI();
+    }
 }
 
 void ADMFMMOPlayerController::HandleDigimonInventoryMenuInput()
 {
-    ToggleDigimonInventoryUI();
+    if (!bWorldChatInputActive)
+    {
+        ToggleDigimonInventoryUI();
+    }
 }
 
 void ADMFMMOPlayerController::ExecuteDefaultAbilitySlot(const int32 SlotIndex)
 {
-    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bCarePresentationActive)
+    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bCarePresentationActive || bWorldChatInputActive)
     {
         return;
     }

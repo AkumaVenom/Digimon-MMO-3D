@@ -1,5 +1,37 @@
 # Validation Report
 
+## v0.10.1-alpha — world-chat HUD safe-layout source validation
+
+This patch is presentation-only over the runtime-working v0.10.0 world chat reported by the user. The native WORLD chat no longer shares the combat quickbar's bottom HUD lane: when `bShowNativeCombatQuickBar` is enabled, the chat bottom inset is driven by the new configurable `WorldChatBottomSafeOffset` (`176` by default); when the native quickbar is disabled, chat returns to its original `30`-unit inset.
+
+Validated contracts:
+- Chat authority, RPC payloads, server sanitation/rate limiting, session history, usernames and input focus are unchanged.
+- Combat quickbar dimensions/positioning and combat execution logic are unchanged.
+- The new setting is presentation-only and creates no replicated state or RPC.
+- Previous Care, Scan/Materialization, nameplate, account/persistence and combat systems remain additive and untouched by the layout fix.
+- Final static gate covers **70 source/header/build files and 16,324 source/build lines**, with **36 UCLASS**, **12 UENUM**, **15 USTRUCT**, **324 UFUNCTION** and **538 UPROPERTY** declarations. All **32 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies; comparison against v0.10.0 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+
+Required runtime acceptance: compile in UE5.8.1 and verify on listen host + remote client that WORLD chat remains clear of the centered ability quickbar at the normal viewport and after resizing PIE windows.
+
+## v0.10.0-alpha — polished native world-chat source validation
+
+Static/source validation was performed against the user-accepted v0.9.1 world-nameplate baseline. Unreal Engine/UnrealBuildTool is not available in the assembly environment, so UE5.8.1 compile and host + remote-client PIE remain the authoritative acceptance gates.
+
+Validated contracts:
+- Added only the `UDMFWorldChatWidget` source pair; no v0.9.1 baseline file was removed.
+- World chat uses an owned PlayerController Server RPC for text submission and owner-targeted Client RPCs for accepted message/history/rejection delivery.
+- Client payloads do not contain sender identity or trusted timestamps. Server `APlayerState::PlayerName` supplies public identity.
+- Server sanitation, maximum length, minimum interval and burst-window limits execute before `ADMFMMOGameMode` broadcast/history insertion.
+- Session history is bounded in GameMode and transferred to a late joiner on request rather than continuously replicated.
+- Chat is absent from account persistence and does not change the SaveGame schema.
+- Chat typing locally locks gameplay movement/look and blocks combat/menu hotkeys; Care presentation closes/hides chat without discarding history.
+- Master global enable/input/widget/history/safety/timestamp settings are exposed through `UDMFFrameworkSettings`.
+- Generated-header include ordering, delimiter balance and TODO/FIXME checks pass; all reflected Server/Client/NetMulticast declarations have matching `_Implementation` bodies.
+- Final static gate covers **70 source/header/build files and 16,311 source/build lines**, with **36 UCLASS**, **12 UENUM**, **15 USTRUCT**, **324 UFUNCTION** and **537 UPROPERTY** declarations.
+- All **32 reflected Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies; comparison against v0.9.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+
+Required runtime acceptance: execute the v0.10.0 world-chat section in `TEST_PLAN.md` on listen host + remote client, then the existing nameplate/Care/Scan/combat regression passes.
+
 ## v0.9.1-alpha — UE5.8 nameplate compile-fix validation
 
 The user's UE5.8.1/MSVC build log identified exactly two hard compiler errors in the v0.9.0 nameplate implementation: `C2445` at the player-avatar and Digimon fallback-widget-class conditional expressions. Both expressions mixed `TSubclassOf<UDMFWorldNameplateWidget>` with `UClass*` from `StaticClass()`, allowing multiple common conversions.

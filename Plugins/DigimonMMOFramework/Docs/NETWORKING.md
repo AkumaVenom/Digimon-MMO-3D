@@ -1,5 +1,19 @@
 # Networking / Host Deployment
 
+## v0.10.1 HUD-layout note
+
+The v0.10.1 chat/quickbar separation fix is **presentation-only**. `WorldChatBottomSafeOffset` affects only the native local widget inset and adds no replicated property, RPC, server validation path or chat-history change.
+
+## v0.10.0 world-chat authority contract
+
+- The owning client sends **message text only** through `ServerSendWorldChatMessage`. Sender name, timestamp and message type are never trusted client parameters.
+- The server sanitizes CR/LF/tab characters, trims whitespace and clamps length using `WorldChatMaxMessageLength`.
+- Per-controller authoritative anti-spam uses both `WorldChatMinimumSendInterval` and a sliding `WorldChatBurstWindowSeconds` / `WorldChatMaxMessagesPerBurst` limit. Rejections return only to the sender.
+- Accepted messages are stamped from public `APlayerState::PlayerName`, which is already the safe public username channel used by world nameplates. Private owner-only `AuthenticatedUsername` and server-only credential digests are not sent in chat payloads.
+- `ADMFMMOGameMode` keeps only the configured bounded session history and fans accepted messages out through owner-targeted Client RPCs. There is no continuously replicated chat Fast Array or global replicated transcript.
+- Late joiners explicitly request the recent bounded session history once. Chat is not account-persistent and does not change the SaveGame schema.
+- The widget is presentation-only. Blueprint skins may replace layout/events but do not gain authority to stamp or broadcast messages.
+
 ## v0.6.1 late-join player possession contract
 
 - `ADMFMMOGameMode` remains server-only authority for gameplay pawn creation and possession.

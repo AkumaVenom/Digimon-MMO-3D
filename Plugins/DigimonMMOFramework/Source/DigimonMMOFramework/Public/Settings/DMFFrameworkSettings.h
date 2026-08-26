@@ -12,6 +12,7 @@ class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFWorldNameplateWidget;
+class UDMFWorldChatWidget;
 class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
@@ -89,6 +90,50 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     bool bShowNativeScanNotifications = true;
+
+    /** Master switch for the native server-authoritative MMO world chat system. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat")
+    bool bEnableWorldChat = true;
+
+    /** Ready-to-use Enter-key chat focus. Disable when the project owns its own chat input routing. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat", meta=(EditCondition="bEnableWorldChat"))
+    bool bEnableDefaultWorldChatInput = true;
+
+    /** Native fallback is supplied; assign a Blueprint child to reskin chat without replacing validation/networking. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat", meta=(EditCondition="bEnableWorldChat"))
+    TSubclassOf<UDMFWorldChatWidget> WorldChatWidgetClass;
+
+    /** Maximum accepted player message length after server sanitation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Safety", meta=(EditCondition="bEnableWorldChat", ClampMin="32", ClampMax="1000"))
+    int32 WorldChatMaxMessageLength = 220;
+
+    /** Local client-side visible history cap. This is presentation state and is not continuously replicated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|History", meta=(EditCondition="bEnableWorldChat", ClampMin="10", ClampMax="500"))
+    int32 WorldChatClientHistoryLimit = 100;
+
+    /** Session history retained by the authoritative GameMode and sent once to late joiners. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|History", meta=(EditCondition="bEnableWorldChat", ClampMin="0", ClampMax="250"))
+    int32 WorldChatServerHistoryLimit = 50;
+
+    /** Minimum authoritative interval between accepted messages from one player. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Safety", meta=(EditCondition="bEnableWorldChat", ClampMin="0.1", ClampMax="10.0"))
+    float WorldChatMinimumSendInterval = 0.65f;
+
+    /** Sliding server window used by the burst limiter. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Safety", meta=(EditCondition="bEnableWorldChat", ClampMin="1.0", ClampMax="60.0"))
+    float WorldChatBurstWindowSeconds = 10.0f;
+
+    /** Maximum accepted messages from one player inside the configured burst window. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Safety", meta=(EditCondition="bEnableWorldChat", ClampMin="1", ClampMax="60"))
+    int32 WorldChatMaxMessagesPerBurst = 8;
+
+    /** Optional compact UTC HH:MM prefix. Disabled by default for the cleanest WoW-style presentation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presentation", meta=(EditCondition="bEnableWorldChat"))
+    bool bShowWorldChatTimestamps = false;
+
+    /** Bottom safe-zone used by the native WORLD chat so it clears the centered combat quick-access HUD. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presentation", meta=(EditCondition="bEnableWorldChat", ClampMin="30.0", ClampMax="600.0"))
+    float WorldChatBottomSafeOffset = 176.0f;
 
     /** Master switch for all automatic world-space MMO nameplates. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Nameplates")

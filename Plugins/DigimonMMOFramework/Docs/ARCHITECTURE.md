@@ -10,6 +10,14 @@
 
 The server performs starter validation, constructs the unique Digimon instance, persists it, and spawns the authoritative 3D partner actor. The client never supplies trusted stats or an arbitrary actor class. Partner species resolution prefers UE Asset Manager registration and falls back to the configured starter roster for onboarding.
 
+## World chat architecture
+
+`UDMFWorldChatWidget` is a local presentation surface owned by the local `ADMFMMOPlayerController`. Pressing Enter changes only local input focus; it does not create a client-authoritative chat stream. The client submits raw text to its owned controller Server RPC.
+
+The server controller sanitizes and rate-limits the request, then `ADMFMMOGameMode` resolves the sender's public PlayerState name, stamps server UTC metadata, appends the accepted payload to a bounded in-memory session history, and sends that payload to each framework PlayerController using an owner-targeted Client RPC. This avoids a permanently replicated global transcript and keeps future moderation/channel/backend integrations at an authoritative server boundary.
+
+A late joiner requests history once after local gameplay controller initialization. Client widgets maintain their own bounded display history. No chat data is written into `FDMFAccountRecord`, so chat cannot accidentally become account-save state.
+
 ## Manual ability command lifecycle
 
 `UDMFDigimonCombatComponent` owns the authoritative quick-slot lifecycle. A client-owned request reaches the server through `UDMFPlayerDigimonComponent`, then resolves the equipped ability and validates target, leash and current SP. If the move cannot execute immediately because the Digimon is attacking/recovering, the ability is cooling down, the target is out of range, or target-facing is incomplete, the **latest valid command remains buffered on the server**. Automation revalidates the buffer until execution becomes legal or a bounded timeout/permanent invalidation clears it. SP and cooldown mutation happen only inside the successful authoritative execution path. Expired cooldown records are pruned instead of accumulating indefinitely.

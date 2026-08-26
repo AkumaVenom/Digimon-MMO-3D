@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "DMFTypes.h"
 #include "DMFMMOPlayerController.generated.h"
 
 class UDMFStarterSelectionWidget;
@@ -9,10 +10,12 @@ class UDMFCombatQuickBarWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
+class UDMFWorldChatWidget;
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFWorldChatMessageReceived, FDMFWorldChatMessage, ChatMessage);
 
 /**
  * MMO player controller with ready-to-use onboarding, avatar skin and Digimon combat UI routing.
@@ -122,6 +125,49 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI")
     void RefreshCombatQuickBar();
 
+    /** Creates/refreshes the native persistent world-chat HUD when globally enabled. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
+    void RefreshWorldChatUI();
+
+    /** Focuses the chat entry field. The default Enter binding calls this automatically. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
+    void OpenWorldChatInput();
+
+    /** Cancels text entry and returns keyboard/gameplay focus to the world. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
+    void CloseWorldChatInput();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
+    void ToggleWorldChatInput();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|World Chat|UI")
+    bool IsWorldChatInputActive() const { return bWorldChatInputActive; }
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|World Chat|UI")
+    UDMFWorldChatWidget* GetWorldChatWidget() const { return WorldChatWidget; }
+
+    /** Client-facing entry point. Identity/timestamps are intentionally not accepted from the caller. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat")
+    void SendWorldChatMessage(const FString& Message);
+
+    UFUNCTION(Server, Reliable)
+    void ServerSendWorldChatMessage(const FString& Message);
+
+    UFUNCTION(Server, Reliable)
+    void ServerRequestWorldChatHistory();
+
+    UFUNCTION(Client, Reliable)
+    void ClientReceiveWorldChatMessage(const FDMFWorldChatMessage& ChatMessage);
+
+    UFUNCTION(Client, Reliable)
+    void ClientReceiveWorldChatHistory(const TArray<FDMFWorldChatMessage>& ChatMessages);
+
+    UFUNCTION(Client, Reliable)
+    void ClientWorldChatSendRejected(const FText& Reason);
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|World Chat")
+    FDMFWorldChatMessageReceived OnWorldChatMessageReceived;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFStarterSelectionWidget> StarterWidget;
@@ -138,10 +184,18 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFScanNotificationWidget> ScanNotificationWidget;
 
+    UPROPERTY(Transient)
+    TObjectPtr<UDMFWorldChatWidget> WorldChatWidget;
+
     bool bPlayerSkinMenuOpenedManually = false;
     bool bFrameworkModalInputLocked = false;
     bool bCarePresentationActive = false;
     bool bReopenCareMenuAfterSequence = false;
+    bool bWorldChatInputActive = false;
+    bool bWorldChatInputLocked = false;
+
+    double LastWorldChatAcceptedServerTime = -1000000.0;
+    TArray<double> RecentWorldChatAcceptedServerTimes;
 
     FTimerHandle StarterUIRetryTimer;
     FTimerHandle AvatarUIRetryTimer;
@@ -168,9 +222,13 @@ private:
     void ValidateLocalAvatarPossession();
     void ApplyFrameworkModalInputMode();
     void RestoreGameplayInputMode();
+    void ApplyWorldChatInputMode();
+    void RestoreWorldChatInputMode();
     bool IsMandatoryPlayerSkinSelectionActive() const;
+    FString SanitizeWorldChatMessage(const FString& Message) const;
 
     void HandleDefaultTargetInput();
+    void HandleWorldChatInput();
     void HandlePlayerSkinMenuInput();
     void HandleDigimonInventoryMenuInput();
     void HandleAbilitySlot1();

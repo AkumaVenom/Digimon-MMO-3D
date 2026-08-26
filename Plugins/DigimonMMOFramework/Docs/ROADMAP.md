@@ -40,6 +40,14 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Master + per-category global settings, draw-distance culling, capsule-relative height and native/Blueprint-reskinnable UI.
 - Presentation remains client-side and does not introduce a second gameplay-authority path.
 
+## MMO communication layer — world chat (implemented in v0.10.0-alpha)
+- Native compact lower-left WORLD chat with Enter-to-chat / Enter-to-send / Escape-to-cancel input flow.
+- Server-authored public usernames, sanitation/length validation and per-player anti-spam rate limits.
+- Bounded server session history for late joiners without continuously replicating a global message array.
+- Blueprint-reskinnable widget/events plus a master global enable switch and configurable history/safety limits.
+- v0.10.1 native HUD safe-layout keeps WORLD chat above/clear of the centered partner quick-access bar with a configurable bottom offset.
+- Future channel/guild/private-message/backend routing can extend the accepted-message hook without moving authority into UI.
+
 ## Phase 4 — Digimon collection UX
 - Functional native roster/select/summon/recall menu implemented in v0.5.0.
 - Native drag/drop active Digimon inventory UI.
