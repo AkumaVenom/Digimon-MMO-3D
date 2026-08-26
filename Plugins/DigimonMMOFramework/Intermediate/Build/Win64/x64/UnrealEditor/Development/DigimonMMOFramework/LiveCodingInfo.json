@@ -1,7 +1,7 @@
 {
 	"RemapUnityFiles": 
 	{
-		"Module.DigimonMMOFramework.cpp.obj": [
+		"Module.DigimonMMOFramework.1.cpp.obj": [
 			"DigimonMMOFramework.init.gen.cpp.obj",
 			"DMFAccountDatabaseSaveGame.gen.cpp.obj",
 			"DMFAccountPersistenceSubsystem.gen.cpp.obj",
@@ -45,25 +45,24 @@
 			"PerModuleInline.gen.cpp.obj",
 			"DMFDigimonCombatComponent.cpp.obj",
 			"DMFPlayerAvatarComponent.cpp.obj",
-			"DMFPlayerDigimonComponent.cpp.obj",
 			"DigimonMMOFramework.cpp.obj",
 			"DMFDigimonCarePropActor.cpp.obj",
-			"DMFDigimonCharacter.cpp.obj",
 			"DMFFrontendGameMode.cpp.obj",
 			"DMFFrontendHUD.cpp.obj",
 			"DMFMMOGameMode.cpp.obj",
-			"DMFMMOPlayerController.cpp.obj",
+			"DMFPlayerDigimonComponent.cpp.obj",
+			"DMFDigimonCharacter.cpp.obj",
+			"DMFHealerActor.cpp.obj"
+		],
+		"Module.DigimonMMOFramework.2.cpp.obj": [
 			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
 			"DMFSessionSubsystem.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFAccountPersistenceSubsystem.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
 			"DMFMusicSubsystem.cpp.obj",
 			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
-			"DMFDigimonInventoryWidget.cpp.obj",
 			"DMFLoginMainMenuWidget.cpp.obj",
 			"DMFPartyDestinationButton.cpp.obj",
 			"DMFPartyQuickBarWidget.cpp.obj",
@@ -73,10 +72,15 @@
 			"DMFScanSpeciesEntryButton.cpp.obj",
 			"DMFStarterEntryButton.cpp.obj",
 			"DMFStarterSelectionWidget.cpp.obj",
+			"DMFMMOPlayerController.cpp.obj",
+			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj",
+			"DMFDigimonInventoryWidget.cpp.obj"
+		],
+		"Module.DigimonMMOFramework.3.cpp.obj": [
 			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
-			"DMFCredentialUtility.cpp.obj",
-			"DMFHealerActor.cpp.obj"
+			"DMFCredentialUtility.cpp.obj"
 		]
 	}
 }

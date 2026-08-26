@@ -38,10 +38,15 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleBankPartyDestinationPressed); \
 	DECLARE_FUNCTION(execHandleBankDigimonPressed); \
 	DECLARE_FUNCTION(execHandleMaterializeSelected); \
+	DECLARE_FUNCTION(execHandleDigivolutionResult); \
+	DECLARE_FUNCTION(execHandleDigivolveSelected); \
+	DECLARE_FUNCTION(execHandleDigivolutionTargetPressed); \
+	DECLARE_FUNCTION(execHandleDigivolutionOwnedPressed); \
 	DECLARE_FUNCTION(execHandleScanSpeciesPressed); \
 	DECLARE_FUNCTION(execHandleCareSequenceFinished); \
 	DECLARE_FUNCTION(execHandleCareStateChanged); \
 	DECLARE_FUNCTION(execHandleFeedDigiMeat); \
+	DECLARE_FUNCTION(execHandleDigivolutionTab); \
 	DECLARE_FUNCTION(execHandleCareTab); \
 	DECLARE_FUNCTION(execHandleScanMaterializeTab); \
 	DECLARE_FUNCTION(execHandleBankTab); \
@@ -54,6 +59,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execGetSelectedDigimonInstanceId); \
 	DECLARE_FUNCTION(execGetActiveMenuTab); \
 	DECLARE_FUNCTION(execSetActiveMenuTab); \
+	DECLARE_FUNCTION(execRefreshDigivolutionData); \
 	DECLARE_FUNCTION(execRefreshCareData); \
 	DECLARE_FUNCTION(execRefreshScanData); \
 	DECLARE_FUNCTION(execRefreshBankData); \

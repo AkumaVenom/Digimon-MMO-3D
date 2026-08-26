@@ -20,26 +20,81 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigivolutionRequirement
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution")
+    /** Destination form for this one-way Digivolution path. Cycles are supported only when deliberately authored. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Path")
     TSoftObjectPtr<class UDMFDigimonSpeciesData> TargetSpecies;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution", meta=(ClampMin="1"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(ClampMin="1"))
     int32 RequiredLevel = 1;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(ClampMin="0"))
+    int32 MinimumABI = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(ClampMin="0"))
+    int32 MinimumCAM = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements")
     bool bRequireStats = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution", meta=(EditCondition="bRequireStats", ClampMin="0"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(EditCondition="bRequireStats", ClampMin="0"))
     int32 MinimumStrength = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution", meta=(EditCondition="bRequireStats", ClampMin="0"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(EditCondition="bRequireStats", ClampMin="0"))
     int32 MinimumIntelligence = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution", meta=(EditCondition="bRequireStats", ClampMin="0"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(EditCondition="bRequireStats", ClampMin="0"))
     int32 MinimumDefense = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution", meta=(EditCondition="bRequireStats", ClampMin="0"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(EditCondition="bRequireStats", ClampMin="0"))
     int32 MinimumSpeed = 0;
+
+    /** Optional persistent Care gate for virtual-pet style evolution branches. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements|Care")
+    bool bRequireCare = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements|Care", meta=(EditCondition="bRequireCare", ClampMin="0.0", ClampMax="100.0"))
+    float MinimumHappiness = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements|Care", meta=(EditCondition="bRequireCare", ClampMin="0.0", ClampMax="100.0"))
+    float MinimumDiscipline = 0.0f;
+
+    /** -1 disables the care-mistake ceiling. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements|Care", meta=(EditCondition="bRequireCare", ClampMin="-1"))
+    int32 MaximumCareMistakes = -1;
+
+    /** Optional account-money sink. Zero means no monetary requirement/cost. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Requirements", meta=(ClampMin="0"))
+    int64 MoneyCost = 0;
+
+    /** Allows this path to be executed while the individual is stored in Bank/Boxes. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules")
+    bool bAllowFromBank = true;
+
+    /** Preserve stat investment above the source species BaseStats and apply it to the destination BaseStats. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules")
+    bool bPreserveStatInvestments = true;
+
+    /** Replace the four/equipped move list with target defaults. Disable to retain old moves and add target defaults. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules")
+    bool bReplaceEquippedAbilities = true;
+
+    /** Full HP/SP restoration on successful Digivolution. Disable to preserve the old HP/SP percentage. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules")
+    bool bFullyRestoreVitals = true;
+
+    /** Optional path-specific presentation overrides; blank fields use the global Project Settings defaults. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation")
+    TSoftObjectPtr<UNiagaraSystem> NiagaraSystem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation")
+    TSoftObjectPtr<UParticleSystem> CascadeParticle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation")
+    TSoftObjectPtr<USoundBase> Sound;
+
+    /** Zero uses the global Digivolution Presentation Duration. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation", meta=(ClampMin="0.0", ClampMax="20.0"))
+    float PresentationDurationSeconds = 0.0f;
 };
 
 UCLASS(BlueprintType)
@@ -128,7 +183,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Wild Scaling", meta=(ClampMin="0"))
     int32 SpeedPerLevel = 1;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Evolution")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digivolution")
     TArray<FDMFDigivolutionRequirement> Digivolutions;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="3D Presentation")

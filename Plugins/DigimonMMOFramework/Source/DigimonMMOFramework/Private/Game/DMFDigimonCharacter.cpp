@@ -13,6 +13,8 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Particles/ParticleSystem.h"
 #include "TimerManager.h"
 #include "Settings/DMFFrameworkSettings.h"
 #include "UI/DMFWorldNameplateWidget.h"
@@ -589,6 +591,63 @@ void ADMFDigimonCharacter::MulticastPlayCareWasteCue_Implementation(const int32 
     }
 
     BP_OnCareWasteCue(FartSoundIndex);
+}
+
+void ADMFDigimonCharacter::MulticastPlayDigivolutionCue_Implementation(const FPrimaryAssetId TargetSpeciesId)
+{
+    UDMFDigimonSpeciesData* SourceSpecies = ResolveSpeciesData();
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!SourceSpecies || !TargetSpeciesId.IsValid() || !Settings || !Settings->bEnableDigivolutionSystem)
+    {
+        return;
+    }
+
+    const FDMFDigivolutionRequirement* Path = SourceSpecies->Digivolutions.FindByPredicate([&](const FDMFDigivolutionRequirement& Candidate)
+    {
+        UDMFDigimonSpeciesData* CandidateTarget = Candidate.TargetSpecies.LoadSynchronous();
+        return CandidateTarget && CandidateTarget->GetPrimaryAssetId() == TargetSpeciesId;
+    });
+
+    UNiagaraSystem* Niagara = nullptr;
+    UParticleSystem* Cascade = nullptr;
+    USoundBase* Sound = nullptr;
+
+    if (Path && !Path->NiagaraSystem.IsNull()) Niagara = Path->NiagaraSystem.LoadSynchronous();
+    if (!Niagara && !Settings->DefaultDigivolutionNiagaraSystem.IsNull()) Niagara = Settings->DefaultDigivolutionNiagaraSystem.LoadSynchronous();
+    if (Path && !Path->CascadeParticle.IsNull()) Cascade = Path->CascadeParticle.LoadSynchronous();
+    if (!Cascade && !Settings->DefaultDigivolutionCascadeParticle.IsNull()) Cascade = Settings->DefaultDigivolutionCascadeParticle.LoadSynchronous();
+    if (Path && !Path->Sound.IsNull()) Sound = Path->Sound.LoadSynchronous();
+    if (!Sound && !Settings->DefaultDigivolutionSound.IsNull()) Sound = Settings->DefaultDigivolutionSound.LoadSynchronous();
+
+    if (Settings->bPreferNiagaraDigivolutionVFX)
+    {
+        if (Niagara)
+        {
+            UNiagaraFunctionLibrary::SpawnSystemAttached(Niagara, GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+        }
+        else if (Cascade)
+        {
+            UGameplayStatics::SpawnEmitterAttached(Cascade, GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.0f), EAttachLocation::KeepRelativeOffset, true);
+        }
+    }
+    else
+    {
+        if (Cascade)
+        {
+            UGameplayStatics::SpawnEmitterAttached(Cascade, GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.0f), EAttachLocation::KeepRelativeOffset, true);
+        }
+        else if (Niagara)
+        {
+            UNiagaraFunctionLibrary::SpawnSystemAttached(Niagara, GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+        }
+    }
+
+    if (Sound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation(), FMath::Max(0.0f, Settings->DigivolutionSoundVolumeMultiplier), FMath::Max(0.25f, Settings->DigivolutionSoundPitchMultiplier));
+    }
+
+    BP_OnDigivolutionCue(TargetSpeciesId);
 }
 
 

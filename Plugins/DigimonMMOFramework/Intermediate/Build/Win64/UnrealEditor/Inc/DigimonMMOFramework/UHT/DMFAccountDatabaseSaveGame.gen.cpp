@@ -60,9 +60,9 @@ struct UHT_STATICS
 
 // ********** Begin Class UDMFAccountDatabaseSaveGame Property Definitions *************************
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_SchemaVersion = { "SchemaVersion", nullptr, (EPropertyFlags)0x0010000001000000, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFAccountDatabaseSaveGame, SchemaVersion), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SchemaVersion_MetaData), NewProp_SchemaVersion_MetaData) };
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Accounts_ValueProp = { "Accounts", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 1, Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 0c6bb126aeae0d59bbdbec5b7db6284376b56d73
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Accounts_ValueProp = { "Accounts", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 1, Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Accounts_Key_KeyProp = { "Accounts_Key", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FMapPropertyParams UHT_STATICS::NewProp_Accounts = { "Accounts", nullptr, (EPropertyFlags)0x0010000001000000, UECodeGen_Private::EPropertyGenFlags::Map, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFAccountDatabaseSaveGame, Accounts), EMapPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Accounts_MetaData), NewProp_Accounts_MetaData) }; // 0c6bb126aeae0d59bbdbec5b7db6284376b56d73
+const UECodeGen_Private::FMapPropertyParams UHT_STATICS::NewProp_Accounts = { "Accounts", nullptr, (EPropertyFlags)0x0010000001000000, UECodeGen_Private::EPropertyGenFlags::Map, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFAccountDatabaseSaveGame, Accounts), EMapPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Accounts_MetaData), NewProp_Accounts_MetaData) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SchemaVersion,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Accounts_ValueProp,
@@ -138,10 +138,10 @@ UDMFAccountDatabaseSaveGame::~UDMFAccountDatabaseSaveGame() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFAccountDatabaseSaveGame, TEXT("UDMFAccountDatabaseSaveGame"), &Z_Registration_Info_UClass_UDMFAccountDatabaseSaveGame, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFAccountDatabaseSaveGame), 1196631720U) },
+		{ Z_Construct_UClass_UDMFAccountDatabaseSaveGame, TEXT("UDMFAccountDatabaseSaveGame"), &Z_Registration_Info_UClass_UDMFAccountDatabaseSaveGame, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFAccountDatabaseSaveGame), 750099862U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Persistence_DMFAccountDatabaseSaveGame_h__Script_DigimonMMOFramework_38a246855022c6ddabe303c802958e8149f85a5f{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Persistence_DMFAccountDatabaseSaveGame_h__Script_DigimonMMOFramework_f3d56f19339616666f295f3a2076d4e33a2ad67e{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -94,13 +94,18 @@ The plugin is intentionally being built in dependency order rather than as isola
 - DigiMeat and poo automatically participate in framework CustomDepth/cel-shading presentation with Blueprint-tunable stencil value — IMPLEMENTED in v0.8.1-alpha.
 - Fart presentation + automatic waste cleanup lifetime — IMPLEMENTED.
 - Happiness, Discipline and Care Mistakes are persistent/exposed foundations; gameplay rules that mutate them remain future care expansion.
-- Care-state digivolution requirements/hooks remain Phase 7 integration work.
+- Care-state Happiness/Discipline/Care-Mistake Digivolution requirements are integrated in v0.13.0; future Care work can add richer ways to mutate those values.
 
-## Phase 7 — Growth and digivolution
-- EXP curves and level-up rewards.
-- Attribute point grants/spending.
-- Level + optional stat/care/ABI digivolution requirements.
-- Server-authoritative digivolution with persistent species transition.
+## Phase 7 — Growth and digivolution (Digivolution core implemented in v0.13.0-alpha)
+
+- Digivolution Owned Digimon Party/Bank card aspect-ratio and sparse-row layout hardening — **FIXED in v0.13.1-alpha**.
+- EXP curves and level-up rewards — future expansion.
+- Attribute point grants/spending — future expansion.
+- Level + ABI/CAM + optional stat/Care/economy Digivolution requirements — **IMPLEMENTED in v0.13.0-alpha**.
+- Server-authoritative persistent species transition for Party + Bank — **IMPLEMENTED in v0.13.0-alpha**.
+- Replicated active-partner transformation presentation and target-form actor replacement — **IMPLEMENTED in v0.13.0-alpha**.
+- Persistent Origin Species + Digivolution History schema-v5 provenance — **IMPLEMENTED in v0.13.0-alpha**.
+- More advanced EXP curves, attribute-spend UX and project-specific de-Digivolution rules remain future growth work.
 
 ## Phase 8 — Ranked NPC arena
 - Data-driven ranked teams.
@@ -137,7 +142,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Icon-capable bottom-center combat quick bar.
 - Shared native visual language and backward-compatible optional widget bindings.
 
-v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer. Future UI work can add direct drag/drop gestures, sorting/filtering, item inventory, Digivolution, stat-spend and ranked-battle interfaces without replacing the authoritative storage model.
+v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer; v0.13 adds persistent branching Digivolution into the same shell. Future UI work can add direct drag/drop gestures, sorting/filtering, item inventory, stat-spend and ranked-battle interfaces without replacing the authoritative storage/evolution model.
 
 ## Completed in v0.6.1–v0.6.2 — multiplayer possession and combat-facing polish
 
@@ -151,4 +156,5 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - AI controller yaw hardening for target-facing.
 
 - Scan & Materialization — IMPLEMENTED in v0.7.0-alpha
-- Shared Digimon menu Party + Bank/Boxes tabs — IMPLEMENTED in v0.12.0-alpha; Digivolution remains future Phase 7 work.
+- Shared Digimon menu Party + Bank/Boxes tabs — IMPLEMENTED in v0.12.0-alpha.
+- Persistent Party/Bank Digivolution with native tab and replicated active-partner transformation — IMPLEMENTED in v0.13.0-alpha.

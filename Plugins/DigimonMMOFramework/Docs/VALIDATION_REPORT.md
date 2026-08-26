@@ -1,5 +1,38 @@
 # Validation Report
 
+## v0.13.1-alpha — Digivolution owned-roster UI layout source validation
+
+- Root cause isolated to `DigivolutionOwnedGrid` card slots using horizontal `Fill`, which allowed sparse UniformGrid rows to stretch fixed cards and their `UImage` portraits.
+- Cards now use fixed 132 × 166 SizeBoxes with centered UniformGrid alignment.
+- Roster uses three columns within the 500-unit left panel.
+- Portraits use a dedicated 104 × 104 square `UScaleBox` (`ScaleToFit`, `DownOnly`) viewport before the `UImage`, preventing parent-cell distortion.
+- PARTY/BANK + name/level metadata moved into a separate footer; ACTIVE/KO badges remain isolated in the portrait overlay.
+- No Digivolution RPC/persistence/requirement logic changed.
+- Final static gate: **76 source/header/build files, 21,515 source/build lines, 40 UCLASS, 14 UENUM, 16 USTRUCT, 401 UFUNCTION and 685 UPROPERTY declarations**.
+- All **41 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies.
+- Comparison against v0.13.0 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+- Generated-header ordering, changed-source delimiter balance, runtime TODO/FIXME scan and native-UI `Slot` shadow checks pass.
+
+
+## v0.13.0-alpha — polished replicated Digivolution source validation
+
+Static/source validation was performed against the user-runtime-accepted v0.12.2 replicated-healer baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime validation remain the authoritative acceptance gates.
+
+Validated contracts:
+- Digivolution is authored as one-way data-driven paths on `DMFDigimonSpeciesData`, with target species, Level, ABI, CAM, optional STR/INT/DEF/SPD gates, optional Happiness/Discipline/Care-Mistake gates, optional money cost, Bank permission, stat/ability/vital carry-over policy and per-path presentation overrides.
+- The owning client submits only persistent instance GUID + requested target species ID through `ServerDigivolveOwnedDigimon`. The server resolves the current source species/path and revalidates ownership, storage location, requirements, money, Care state and active-combat policy before any durable mutation. A summoned transformation is revalidated again before commit.
+- Party and Bank remain the single ownership authority and continue using owner-only Fast Arrays. Party Digimon evolve in place; allowed Bank Digimon evolve directly in storage without spawning a temporary world actor.
+- SaveGame schema advances to **v5** with `OriginSpeciesId` and unique `DigivolutionHistory`. Existing GUID, Party/Bank placement, active partner, nickname, Level/EXP, ABI/CAM, Care state, vitals, abilities and progression are preserved during migration and successful form changes according to the authored carry-over policy.
+- A summoned active partner uses a server-owned presentation lock, clears combat intent, reliably multicasts Niagara-preferred/Cascade-fallback VFX + Sound Cue from the old actor, then commits/persists and replaces that actor with the target species `WorldActorClass`. Normal actor replication publishes the resulting public form.
+- Conflicting partner switch/recall, Party/Bank mutation, Care, healer, targeting and ability requests reject while an active world Digivolution sequence is in progress. Active combat blocks transformation by default through Project Settings.
+- The native Digimon Menu adds **DIGIVOLUTION** without shifting the serialized numeric values of existing menu-tab entries. Visual order is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIVOLUTION → CARE** and follows the v0.12.1 hardened scroll/footer layout rules.
+- Fresh/In-Training stage display names were corrected at reflection/display level without changing the underlying stage enum values.
+- Comparison against v0.12.2 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. The only newly added file is `Docs/SETUP_DIGIVOLUTION.md`; all runtime changes are extensions of existing source files.
+- Final static regression gate covers **76 source/header/build files and 21,447 source/build lines**, with **40 UCLASS**, **14 UENUM**, **16 USTRUCT**, **401 UFUNCTION** and **685 UPROPERTY** declarations. All **41 reflected Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies.
+- Generated-header include ordering, changed C++ delimiter balance and runtime TODO/FIXME checks pass. The only rough `Slot` identifier matches are the unchanged persistence SaveGame-slot locals that already existed in v0.12.2; no new native UI `UWidget::Slot` shadowing candidate was introduced.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **G0** on listen host + remote client. Validate active summoned evolution, Bank in-place evolution, READY/LOCKED requirements, one-time money deduction, combat/Care/healer/storage locks, Niagara and Cascade fallback presentation, persistence after reconnect, and the existing Party/Bank/Scan/Care/healer/combat/UI regressions.
+
 ## v0.12.2-alpha — polished replicated healer treatment source validation
 
 - Built directly over the accepted v0.12.1 Party/Bank/native-UI baseline. No baseline source file or existing reflected UFUNCTION is removed.

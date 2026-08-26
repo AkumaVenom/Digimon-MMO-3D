@@ -1,5 +1,16 @@
 # Networking / Host Deployment
 
+## v0.13.0 Digivolution networking contract
+
+- Party/Bank Digivolution is private durable account state. The client sends only `InstanceId + TargetSpeciesId` through reliable `ServerDigivolveOwnedDigimon`; it never sends authoritative target stats, cost, abilities, Care values, World Actor Class or completion timing.
+- The server resolves the current owned record/location, source species and authored path, then validates master settings, Bank permission, current HP, Care lock, configured active-combat restriction, Level/ABI/CAM/stat/Care gates and money.
+- Stored/unsummoned Digivolution mutates only the appropriate owner-only Party/Bank Fast Array item and immediately persists it. No public world actor or broadcast roster is created for a Bank-only change.
+- A summoned active partner uses compact owner sequence state plus a **Reliable NetMulticast cosmetic cue** on the existing Digimon actor. The multicast carries only the target species ID used to choose presentation assets; it cannot commit the form change.
+- The server revalidates the path again when the world presentation timer finishes, deducts money exactly once on successful commit, persists, then replaces the active actor with the destination species `WorldActorClass`. Standard replicated actor/state presentation informs other players of the final form.
+- `bDigivolutionSequenceActive` locks conflicting set-active/recall/Party-Bank/Care/target/ability/healer actions for that owner until the sequence completes.
+- `OriginSpeciesId` / `DigivolutionHistory` are account SaveGame data inside the owner-only Digimon instance. Save schema v5 migration occurs on the authoritative host, not on clients.
+- The owner-only UI hide/reopen state is local presentation and adds no authority. Other clients need only the public multicast cue and replacement actor.
+
 ## v0.12.0 Party / Bank networking contract
 
 - Party and Bank are **private account progression** and each use owner-only Fast Array replication. Complete roster/storage contents are never broadcast to unrelated clients.

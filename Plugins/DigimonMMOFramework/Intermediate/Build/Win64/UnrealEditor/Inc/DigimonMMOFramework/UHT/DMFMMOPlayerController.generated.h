@@ -34,6 +34,8 @@ struct FPrimaryAssetId;
 	virtual void ServerRequestUseHealer_Implementation(ADMFHealerActor* Healer); \
 	virtual void ServerEnsureFrameworkPlayerAvatar_Implementation(); \
 	DECLARE_FUNCTION(execHandlePlayerSkinRequirementChanged); \
+	DECLARE_FUNCTION(execHandleDigivolutionResult); \
+	DECLARE_FUNCTION(execHandleDigivolutionSequenceStarted); \
 	DECLARE_FUNCTION(execHandleCareSequenceFinished); \
 	DECLARE_FUNCTION(execHandleCareSequenceStarted); \
 	DECLARE_FUNCTION(execHandleScanDataRewardGranted); \
@@ -68,7 +70,9 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execCloseDigimonMenuUI); \
 	DECLARE_FUNCTION(execOpenDigimonMenuUI); \
 	DECLARE_FUNCTION(execIsDigimonInventoryUIOpen); \
+	DECLARE_FUNCTION(execIsDigivolutionPresentationActive); \
 	DECLARE_FUNCTION(execIsCarePresentationActive); \
+	DECLARE_FUNCTION(execOpenDigivolutionUI); \
 	DECLARE_FUNCTION(execOpenCareUI); \
 	DECLARE_FUNCTION(execOpenScanMaterializeUI); \
 	DECLARE_FUNCTION(execOpenBankUI); \

@@ -8,8 +8,8 @@
 UENUM(BlueprintType)
 enum class EDMFDigimonStage : uint8
 {
-    BabyI,
-    BabyII,
+    BabyI UMETA(DisplayName="Fresh"),
+    BabyII UMETA(DisplayName="In-Training"),
     Rookie,
     Champion,
     Ultimate,
@@ -126,7 +126,10 @@ enum class EDMFDigimonMenuTab : uint8
     Care,
 
     /** Appended in v0.12 so earlier enum values are never shifted. */
-    Bank UMETA(DisplayName="Bank / Boxes")
+    Bank UMETA(DisplayName="Bank / Boxes"),
+
+    /** Appended in v0.13. Existing serialized tab values remain stable. */
+    Digivolution UMETA(DisplayName="Digivolution")
 };
 
 /** Authoritative owner-storage location used by Party/Bank transfer APIs. */
@@ -135,6 +138,29 @@ enum class EDMFDigimonStorageLocation : uint8
 {
     Party,
     Bank
+};
+
+
+
+/** Local/owner-only evaluation row for one configured Digivolution path. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFDigivolutionEvaluation
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Digivolution")
+    FPrimaryAssetId TargetSpeciesId;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Digivolution")
+    bool bEligible = false;
+
+    /** Compact human-readable requirement summary suitable for native/Blueprint UI. */
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Digivolution")
+    FText RequirementSummary;
+
+    /** Empty when eligible; otherwise the first authoritative requirement that is not currently met. */
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Digivolution")
+    FText FailureReason;
 };
 
 USTRUCT(BlueprintType)
@@ -235,6 +261,14 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigimonInstance
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Care")
     FDMFDigimonCareState Care;
+
+    /** First materialized/starter species for this persistent individual. Added in SaveGame schema v5. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Digivolution")
+    FPrimaryAssetId OriginSpeciesId;
+
+    /** Ordered unique list of species forms reached by this individual. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Digivolution")
+    TArray<FPrimaryAssetId> DigivolutionHistory;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Meta")
     bool bStarterPartner = false;

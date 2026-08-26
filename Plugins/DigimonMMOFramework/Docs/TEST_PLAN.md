@@ -1,8 +1,48 @@
-# UE5.8 Validation Plan — 0.12.2-alpha
+# UE5.8 Validation Plan — 0.13.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.12.2 adds an exclusive replicated healer treatment presentation over the runtime-validated v0.12.1 Party/Bank/UI baseline while preserving the existing Party/Bank, camera, music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, spawning and persistence authority contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.13.1 is a presentation-only hardening patch over the compiling v0.13.0 persistent server-authoritative Digivolution milestone; all gameplay/network authority contracts remain unchanged.
 
 
+## G0 — v0.13.1 Digivolution owned-roster layout acceptance
+
+1. Open `I → DIGIVOLUTION` with exactly **one** Party Digimon. Confirm its card remains compact and centered; it must not fill the complete Owned Digimon panel width.
+2. Add a second Party Digimon. Confirm both cards remain the same fixed size and both portraits preserve their original aspect ratio.
+3. Fill all six Party slots. Confirm the roster forms **two clean rows of three** without portrait squashing, footer overlap or badge overlap.
+4. Add Bank Digimon and scroll the Owned Digimon browser. Confirm Bank cards use the identical card/portrait geometry and scrolling does not compress rows.
+5. Test at 1920×1080 and a smaller PIE window. The outer menu may down-scale, but individual portraits must remain proportional.
+6. Select Party and Bank entries and confirm selection, target path evaluation and Digivolution actions behave exactly as v0.13.0.
+
+## G1 — v0.13.0 Digivolution gameplay acceptance
+
+Run these after a clean UE5.8.1 Editor compile and before promoting the source package to runtime-accepted baseline.
+
+### Data / UI
+1. Configure Agumon with at least two target paths; confirm both appear in **I → DIGIVOLUTION** with correct target portrait/stage/attribute and READY/LOCKED requirement summaries.
+2. Verify Party and Bank Digimon both appear in the Owned Digimon browser and selecting either never changes Party/Bank placement by itself.
+3. Resize PIE to the normal smaller test window and verify owned cards, path cards, requirement text and action button remain within the hardened v0.12.1 layout.
+4. Disable the Digivolution master setting and confirm authoritative attempts are rejected cleanly.
+
+### Authority / persistence
+5. Attempt a path below Required Level, ABI, CAM, stat, Care and money gates; each must remain server-rejected even if the client UI/request is manipulated.
+6. Perform a successful unsummoned Party evolution and confirm GUID, nickname, Level/EXP, ABI/CAM, Care and Party slot persist while species changes.
+7. Perform a successful Bank evolution with Bank allowed; confirm Bank slot remains owned, no world actor spawns, and only the owning account sees the private storage update.
+8. Disable global Bank Digivolution or path `Allow From Bank`; confirm the same Bank request is rejected.
+9. Verify Money Cost is deducted exactly once on successful commit and not on rejection/interruption.
+10. Reconnect and confirm species, Origin Species, Digivolution History, Party/Bank placement and active partner persist under SaveGame schema v5.
+
+### Summoned world transformation — host + remote client
+11. Host summons an eligible partner and Digivolves it. Both host and remote client must see/hear the transformation cue; only the owner UI hides/reopens.
+12. At commit, old actor is replaced by the target species World Actor Class and is correct on both peers.
+13. Repeat with the remote client as owner; listen host must see the same public transformation/result while remaining unable to view the remote client's private Party/Bank arrays.
+14. Confirm active combat blocks the active partner when configured. During an active transformation, attempt Recall, Set Active, Party/Bank move, Care feed, healer use, target change and ability command; all conflicting server actions must remain locked.
+15. Verify Niagara primary, Niagara-missing Cascade fallback, path-specific override and global fallback Sound Cue behavior.
+16. With `Hide UI For Summoned Digivolution` disabled, confirm the transformation still commits/replicates and the menu remains usable as presentation only.
+
+### Regression
+17. Materialize a new Digimon after evolution; Party-first/Bank-overflow routing remains correct.
+18. Heal evolved Party+Bank Digimon; v0.12.2 healer and persistence remain correct.
+19. Feed/care for evolved active partner; species-specific Care data and existing persistent Care state remain coherent.
+20. Run combat, world chat, nameplate, camera zoom, music, footsteps, Party Quick Access and account reconnect regressions.
 
 ## H0. v0.12.2 polished healer treatment acceptance
 

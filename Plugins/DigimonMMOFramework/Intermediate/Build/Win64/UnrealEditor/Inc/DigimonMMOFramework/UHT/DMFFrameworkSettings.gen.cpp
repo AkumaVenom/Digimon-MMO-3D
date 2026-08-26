@@ -15,9 +15,11 @@ void EmptyLinkFunctionForGeneratedCodeDMFFrameworkSettings() {}
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 DEVELOPERSETTINGS_API UClass* Z_Construct_UClass_UDeveloperSettings(ETypeConstructPhase);
 COREUOBJECT_API UClass* Z_Construct_UClass_UClass(ETypeConstructPhase);
+ENGINE_API UClass* Z_Construct_UClass_UParticleSystem(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_USoundBase(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
+NIAGARA_API UClass* Z_Construct_UClass_UNiagaraSystem(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -970,6 +972,114 @@ struct UHT_STATICS
 		{ "ToolTip", "Blueprint-replaceable replicated prop actor used for both attached DigiMeat and no-collision world poo." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDigivolutionSystem_MetaData[] = {
+		{ "Category", "Digivolution" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for persistent server-authoritative Digivolution. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for persistent server-authoritative Digivolution." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bAllowBankDigivolution_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Allows stored Bank/Box Digimon to Digivolve from the world-accessible Digimon Menu. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Allows stored Bank/Box Digimon to Digivolve from the world-accessible Digimon Menu." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bBlockDigivolutionDuringCombat_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Active summoned partners must be idle before a Digivolution sequence can begin. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Active summoned partners must be idle before a Digivolution sequence can begin." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHideUIForSummonedDigivolution_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Hide modal/HUD UI while a summoned partner performs its in-world transformation presentation. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Hide modal/HUD UI while a summoned partner performs its in-world transformation presentation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigivolutionPresentationDurationSeconds_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+		{ "ClampMax", "20.0" },
+		{ "ClampMin", "0.25" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Default duration before an active world partner is replaced by the target form. A path may override this. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Default duration before an active world partner is replaced by the target form. A path may override this." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultDigivolutionNiagaraSystem_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|VFX" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Preferred global transformation VFX. Individual evolution paths can override this. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Preferred global transformation VFX. Individual evolution paths can override this." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultDigivolutionCascadeParticle_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|VFX" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Cascade fallback when no path/global Niagara system is assigned or Niagara preference is disabled. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Cascade fallback when no path/global Niagara system is assigned or Niagara preference is disabled." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bPreferNiagaraDigivolutionVFX_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|VFX" },
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultDigivolutionSound_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global transformation Sound Cue/Wave. Individual paths can override it. */" },
+#endif
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global transformation Sound Cue/Wave. Individual paths can override it." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigivolutionSoundVolumeMultiplier_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|Audio" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigivolutionSoundPitchMultiplier_MetaData[] = {
+		{ "Category", "Digivolution|Presentation|Audio" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.25" },
+		{ "EditCondition", "bEnableDigivolutionSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativeCombatQuickBar_MetaData[] = {
 		{ "Category", "Combat" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
@@ -1311,6 +1421,37 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultDigiMeatMesh;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultPooMesh;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_CarePropActorClass;
+	static void NewProp_bEnableDigivolutionSystem_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableDigivolutionSystem = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDigivolutionSystem;
+	static void NewProp_bAllowBankDigivolution_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bAllowBankDigivolution = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAllowBankDigivolution;
+	static void NewProp_bBlockDigivolutionDuringCombat_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bBlockDigivolutionDuringCombat = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bBlockDigivolutionDuringCombat;
+	static void NewProp_bHideUIForSummonedDigivolution_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bHideUIForSummonedDigivolution = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHideUIForSummonedDigivolution;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DigivolutionPresentationDurationSeconds;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultDigivolutionNiagaraSystem;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultDigivolutionCascadeParticle;
+	static void NewProp_bPreferNiagaraDigivolutionVFX_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bPreferNiagaraDigivolutionVFX = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bPreferNiagaraDigivolutionVFX;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_DefaultDigivolutionSound;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DigivolutionSoundVolumeMultiplier;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DigivolutionSoundPitchMultiplier;
 	static void NewProp_bShowNativeCombatQuickBar_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bShowNativeCombatQuickBar = 1;
@@ -1446,6 +1587,17 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_CareFallbackM
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultDigiMeatMesh = { "DefaultDigiMeatMesh", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultDigiMeatMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultDigiMeatMesh_MetaData), NewProp_DefaultDigiMeatMesh_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultPooMesh = { "DefaultPooMesh", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultPooMesh), Z_Construct_UClass_UStaticMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultPooMesh_MetaData), NewProp_DefaultPooMesh_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CarePropActorClass = { "CarePropActorClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CarePropActorClass), Z_Construct_UClass_UClass, Z_Construct_UClass_ADMFDigimonCarePropActor, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CarePropActorClass_MetaData), NewProp_CarePropActorClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDigivolutionSystem = { "bEnableDigivolutionSystem", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDigivolutionSystem_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDigivolutionSystem_MetaData), NewProp_bEnableDigivolutionSystem_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAllowBankDigivolution = { "bAllowBankDigivolution", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAllowBankDigivolution_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAllowBankDigivolution_MetaData), NewProp_bAllowBankDigivolution_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bBlockDigivolutionDuringCombat = { "bBlockDigivolutionDuringCombat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bBlockDigivolutionDuringCombat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bBlockDigivolutionDuringCombat_MetaData), NewProp_bBlockDigivolutionDuringCombat_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bHideUIForSummonedDigivolution = { "bHideUIForSummonedDigivolution", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bHideUIForSummonedDigivolution_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHideUIForSummonedDigivolution_MetaData), NewProp_bHideUIForSummonedDigivolution_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigivolutionPresentationDurationSeconds = { "DigivolutionPresentationDurationSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigivolutionPresentationDurationSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionPresentationDurationSeconds_MetaData), NewProp_DigivolutionPresentationDurationSeconds_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultDigivolutionNiagaraSystem = { "DefaultDigivolutionNiagaraSystem", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultDigivolutionNiagaraSystem), Z_Construct_UClass_UNiagaraSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultDigivolutionNiagaraSystem_MetaData), NewProp_DefaultDigivolutionNiagaraSystem_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultDigivolutionCascadeParticle = { "DefaultDigivolutionCascadeParticle", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultDigivolutionCascadeParticle), Z_Construct_UClass_UParticleSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultDigivolutionCascadeParticle_MetaData), NewProp_DefaultDigivolutionCascadeParticle_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bPreferNiagaraDigivolutionVFX = { "bPreferNiagaraDigivolutionVFX", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bPreferNiagaraDigivolutionVFX_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bPreferNiagaraDigivolutionVFX_MetaData), NewProp_bPreferNiagaraDigivolutionVFX_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultDigivolutionSound = { "DefaultDigivolutionSound", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultDigivolutionSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultDigivolutionSound_MetaData), NewProp_DefaultDigivolutionSound_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigivolutionSoundVolumeMultiplier = { "DigivolutionSoundVolumeMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigivolutionSoundVolumeMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionSoundVolumeMultiplier_MetaData), NewProp_DigivolutionSoundVolumeMultiplier_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigivolutionSoundPitchMultiplier = { "DigivolutionSoundPitchMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigivolutionSoundPitchMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionSoundPitchMultiplier_MetaData), NewProp_DigivolutionSoundPitchMultiplier_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeCombatQuickBar = { "bShowNativeCombatQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeCombatQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeCombatQuickBar_MetaData), NewProp_bShowNativeCombatQuickBar_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings = { "bEnableDefaultCombatInputBindings", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultCombatInputBindings_MetaData), NewProp_bEnableDefaultCombatInputBindings_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultClickTargetInput = { "bEnableDefaultClickTargetInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultClickTargetInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultClickTargetInput_MetaData), NewProp_bEnableDefaultClickTargetInput_MetaData) };
@@ -1552,6 +1704,17 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultDigiMeatMesh,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultPooMesh,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CarePropActorClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDigivolutionSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAllowBankDigivolution,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bBlockDigivolutionDuringCombat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bHideUIForSummonedDigivolution,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionPresentationDurationSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultDigivolutionNiagaraSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultDigivolutionCascadeParticle,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bPreferNiagaraDigivolutionVFX,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultDigivolutionSound,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionSoundVolumeMultiplier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionSoundPitchMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeCombatQuickBar,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultClickTargetInput,
@@ -1639,10 +1802,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3875928002U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2817851124U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_14180b871ce98fa38f3bcf1d43584cc4449ed7cf{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_83c0adecd3d2670529cb07cfa2e4e440cf13fb55{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -20,9 +20,11 @@ class AActor;
 class ADMFPlayerState;
 class UDMFDigimonSpeciesData;
 struct FDMFDigimonInstance;
+struct FPrimaryAssetId;
 
 // ********** Begin Class ADMFDigimonCharacter *****************************************************
 #define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h_18_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual void MulticastPlayDigivolutionCue_Implementation(FPrimaryAssetId TargetSpeciesId); \
 	virtual void MulticastPlayCareWasteCue_Implementation(int32 FartSoundIndex); \
 	virtual void MulticastPlayCareFeedingCue_Implementation(int32 FeedingVoiceIndex); \
 	DECLARE_FUNCTION(execOnRep_DigimonState); \
@@ -32,6 +34,7 @@ struct FDMFDigimonInstance;
 	DECLARE_FUNCTION(execIsDefeatedPresentationActive); \
 	DECLARE_FUNCTION(execClearDefeatedPresentation); \
 	DECLARE_FUNCTION(execApplyDefeatedPresentation); \
+	DECLARE_FUNCTION(execMulticastPlayDigivolutionCue); \
 	DECLARE_FUNCTION(execMulticastPlayCareWasteCue); \
 	DECLARE_FUNCTION(execMulticastPlayCareFeedingCue); \
 	DECLARE_FUNCTION(execResolveSpeciesData); \

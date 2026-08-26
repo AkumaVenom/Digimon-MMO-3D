@@ -297,6 +297,66 @@ UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigimonStateReady(ETy
 #undef UHT_STATICS
 // ********** End Class ADMFDigimonCharacter Function BP_OnDigimonStateReady ***********************
 
+// ********** Begin Class ADMFDigimonCharacter Function BP_OnDigivolutionCue ***********************
+struct DMFDigimonCharacter_eventBP_OnDigivolutionCue_Parms
+{
+	FPrimaryAssetId TargetSpeciesId;
+};
+static FName NAME_ADMFDigimonCharacter_BP_OnDigivolutionCue = FName(TEXT("BP_OnDigivolutionCue"));
+void ADMFDigimonCharacter::BP_OnDigivolutionCue(FPrimaryAssetId TargetSpeciesId)
+{
+	DMFDigimonCharacter_eventBP_OnDigivolutionCue_Parms Parms;
+	Parms.TargetSpeciesId=TargetSpeciesId;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_BP_OnDigivolutionCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigivolutionCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Digivolution|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional Blueprint-only extension point for lights/material timelines unique to a project Digimon actor. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional Blueprint-only extension point for lights/material timelines unique to a project Digimon actor." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BP_OnDigivolutionCue constinit property declarations ******************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_TargetSpeciesId;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BP_OnDigivolutionCue constinit property declarations ********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BP_OnDigivolutionCue Property Definitions *****************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_TargetSpeciesId = { "TargetSpeciesId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventBP_OnDigivolutionCue_Parms, TargetSpeciesId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(0, nullptr) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetSpeciesId,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BP_OnDigivolutionCue Property Definitions *******************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "BP_OnDigivolutionCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventBP_OnDigivolutionCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x08020800, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventBP_OnDigivolutionCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigivolutionCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Class ADMFDigimonCharacter Function BP_OnDigivolutionCue *************************
+
 // ********** Begin Class ADMFDigimonCharacter Function ClearDefeatedPresentation ******************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -498,7 +558,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromInstance Property Definitions ***************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // f89e6b19c10f6a21938b5f57ba95c3a42497ea5e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InOwningPlayerState = { "InOwningPlayerState", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, InOwningPlayerState), Z_Construct_UClass_ADMFPlayerState, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Instance,
@@ -789,6 +849,74 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execMulticastPlayCareWasteCue)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFDigimonCharacter Function MulticastPlayCareWasteCue ********************
+
+// ********** Begin Class ADMFDigimonCharacter Function MulticastPlayDigivolutionCue ***************
+struct DMFDigimonCharacter_eventMulticastPlayDigivolutionCue_Parms
+{
+	FPrimaryAssetId TargetSpeciesId;
+};
+static FName NAME_ADMFDigimonCharacter_MulticastPlayDigivolutionCue = FName(TEXT("MulticastPlayDigivolutionCue"));
+void ADMFDigimonCharacter::MulticastPlayDigivolutionCue(FPrimaryAssetId TargetSpeciesId)
+{
+	DMFDigimonCharacter_eventMulticastPlayDigivolutionCue_Parms Parms;
+	Parms.TargetSpeciesId=TargetSpeciesId;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFDigimonCharacter_MulticastPlayDigivolutionCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayDigivolutionCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Digivolution|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Replicated high-value transformation presentation. Durable species authority is applied by the owning PlayerState component. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Replicated high-value transformation presentation. Durable species authority is applied by the owning PlayerState component." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function MulticastPlayDigivolutionCue constinit property declarations **********
+	static const UECodeGen_Private::FStructPropertyParams NewProp_TargetSpeciesId;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function MulticastPlayDigivolutionCue constinit property declarations ************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function MulticastPlayDigivolutionCue Property Definitions *********************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_TargetSpeciesId = { "TargetSpeciesId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventMulticastPlayDigivolutionCue_Parms, TargetSpeciesId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(0, nullptr) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetSpeciesId,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function MulticastPlayDigivolutionCue Property Definitions ***********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "MulticastPlayDigivolutionCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCharacter_eventMulticastPlayDigivolutionCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00024CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCharacter_eventMulticastPlayDigivolutionCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayDigivolutionCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execMulticastPlayDigivolutionCue)
+{
+	P_GET_STRUCT(FPrimaryAssetId,Z_Param_TargetSpeciesId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->MulticastPlayDigivolutionCue_Implementation(Z_Param_TargetSpeciesId);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function MulticastPlayDigivolutionCue *****************
 
 // ********** Begin Class ADMFDigimonCharacter Function OnRep_DigimonState *************************
 #ifdef UHT_STATICS
@@ -1437,6 +1565,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("IsFacingActor"), .Pointer = &ADMFDigimonCharacter::execIsFacingActor },
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareFeedingCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareFeedingCue },
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareWasteCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareWasteCue },
+		{ .NameUTF8 = UTF8TEXT("MulticastPlayDigivolutionCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayDigivolutionCue },
 		{ .NameUTF8 = UTF8TEXT("OnRep_DigimonState"), .Pointer = &ADMFDigimonCharacter::execOnRep_DigimonState },
 		{ .NameUTF8 = UTF8TEXT("RefreshCameraCollisionPolicy"), .Pointer = &ADMFDigimonCharacter::execRefreshCameraCollisionPolicy },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFDigimonCharacter::execRefreshFrameworkCustomDepth },
@@ -1454,14 +1583,16 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDefeatedPresentationCleared, "BP_OnDefeatedPresentationCleared" }, // 386e581d68819559cfb5da9571fd30a088bb9f5a
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDefeatedPresentationStarted, "BP_OnDefeatedPresentationStarted" }, // 1920048099d724fb97a8fc1f5970b5bb8500c921
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigimonStateReady, "BP_OnDigimonStateReady" }, // 473067256b97b7e00f27fdb0a97ee167fd77f1a1
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_BP_OnDigivolutionCue, "BP_OnDigivolutionCue" }, // f6ebba3b5d0deaf7df2a01d8ed85bf7302babf78
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ClearDefeatedPresentation, "ClearDefeatedPresentation" }, // b14c38225239b24d0a997c135d0859f12f75d5e9
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ConfigureCombatAutomation, "ConfigureCombatAutomation" }, // 9d9c31dff8b2ca3b69dfcb03e31bd8de62e3d82b
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_GetCombatFacingTarget, "GetCombatFacingTarget" }, // 88fac54dc3269cdadfd3e0457f15e26072aef18c
-		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // 6344f28ebe691a3be9cdce028ede718f835c1a5b
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // 237b7a81ce84964aa91328613346d08c43f30e86
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsDefeatedPresentationActive, "IsDefeatedPresentationActive" }, // c6f3ef436154295f09326cdd11f522bb80a74f73
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsFacingActor, "IsFacingActor" }, // 7668a789a94fa255d97d4f46cba6c0236f4e2153
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue, "MulticastPlayCareFeedingCue" }, // a0e74399d79f72c637f3d96e47a259d85b814675
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue, "MulticastPlayCareWasteCue" }, // 70ef942ca92f2582f5251147291095dfa83edf7e
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayDigivolutionCue, "MulticastPlayDigivolutionCue" }, // d6b40dc7a168e7b2bd5c36ff33b9d3b878b81fdd
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy, "RefreshCameraCollisionPolicy" }, // ab4db5a823f707f593372c460034e9f30c054a58
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
@@ -1621,10 +1752,10 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3720375345U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3322216920U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_6d21fc353a2fdb8634c7862aaff1c41c14aa396f{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_7f6f713d2400e43f4274fa61ff4d21d2b308a090{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

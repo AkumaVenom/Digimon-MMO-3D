@@ -49,6 +49,13 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // so the configured Party size can be honored without discarding older collected Digimon.
             Database->SchemaVersion = 4;
         }
+
+        if (Database->SchemaVersion < 5)
+        {
+            // v5 adds persistent Digivolution provenance/history to each owned Digimon. Existing records are
+            // normalized on authoritative account load so their current species becomes the origin/history seed.
+            Database->SchemaVersion = 5;
+        }
     }
     else
     {

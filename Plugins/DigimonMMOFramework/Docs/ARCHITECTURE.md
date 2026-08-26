@@ -1,5 +1,17 @@
 # Architecture
 
+## Persistent Digivolution architecture (v0.13.0)
+
+`UDMFPlayerDigimonComponent` is the sole durable Digivolution authority for owned Digimon. A path is authored as `FDMFDigivolutionRequirement` on the current `UDMFDigimonSpeciesData`; it references a target species plus progression/Care/economy requirements and mutation/presentation policies. The client may evaluate this data for UI, but the server always resolves the current owned instance and revalidates the path before mutation.
+
+Digivolution preserves the owned individual rather than deleting/recreating its account record. `FDMFDigimonInstance::SpeciesId` changes while the instance GUID, nickname, Level/EXP, ABI/CAM, Care state and other individual progression remain associated with the same persistent record. Save schema v5 adds `OriginSpeciesId` and `DigivolutionHistory`; legacy records are normalized on authoritative hydration.
+
+For a stored/unsummoned Party or Bank individual, the server applies the mutation directly to the correct owner-only Fast Array item, marks that item/array dirty, persists immediately and returns the owner result. For the currently summoned active partner, the mutation is intentionally deferred behind a short server-owned world presentation. The existing actor reliably multicasts VFX/audio, the owner controller may hide modal HUD, and conflicting partner/storage/Care/combat commands remain locked. At completion the server revalidates the same path, commits persistence, then `SpawnOrRefreshActivePartner` destroys the old public actor and spawns the destination species `WorldActorClass` with the same active instance GUID. Normal actor replication—not private Party/Bank replication—publishes the transformed world form to observers.
+
+Species resolution remains Primary Asset Manager-first. v0.13 also walks Digivolution links reachable from configured starter species as a convenience fallback, but production/package configuration should continue scanning all `DMFDigimonSpeciesData` recursively as Primary Assets so evolved/materialized forms are directly resolvable and cooked.
+
+The native `UDMFDigimonInventoryWidget` extends the existing shared shell with `DIGIVOLUTION`. It reads Party+Bank owner state, displays path evaluations and invokes the same server API; no UMG object owns species, stat, cost or persistence authority.
+
 ## Party + Bank / Boxes architecture (v0.12.0)
 
 `UDMFPlayerDigimonComponent` now owns two explicit account-storage tiers while retaining historical field/API names for compatibility:
@@ -203,7 +215,7 @@ Ability range is evaluated by the authoritative combat component as horizontal c
 
 `UDMFPlayerDigimonComponent` owns the authoritative per-account `ReplicatedScanData` array (`COND_OwnerOnly`). `HandleAuthoritativeBattleVictory` is the single mutation boundary for scan rewards. Species tuning comes from `UDMFDigimonSpeciesData`; no client-supplied reward values are accepted. Materialization is a server RPC that resolves the species, re-checks progress and capacity, validates a partner WorldActorClass, builds a unique `FDMFDigimonInstance`, subtracts the requirement, marks Collection replication dirty and persists immediately.
 
-The native `UDMFDigimonInventoryWidget` is now the tabbed Digimon menu shell. Collection, Scan/Materialize and Care are current tabs; future modules should add pages to this shell instead of creating unrelated full-screen menus. `UDMFScanNotificationWidget` is presentation-only and receives owner-client reward events after the server has mutated state.
+The native `UDMFDigimonInventoryWidget` is the shared tabbed Digimon menu shell. Its current native pages are **Party**, **Bank / Boxes**, **Scan & Materialize**, **Digivolution** and **Care**; later modules should extend this shell instead of creating unrelated full-screen menus. `UDMFScanNotificationWidget` is presentation-only and receives owner-client reward events after the server has mutated state.
 
 
 ## v0.8.0 virtual-pet Care authority

@@ -1,4 +1,8 @@
-# Polished Native UI Setup — v0.12.1-alpha
+# Polished Native UI Setup — v0.13.1-alpha
+
+## v0.13.1 — Digivolution owned-roster card hardening
+
+The native DIGIVOLUTION tab uses a fixed three-column Party/Bank browser. Each owned card is **132 × 166** and centered within its `UniformGrid` cell rather than filling the entire cell. Portraits are isolated inside a **104 × 104** `ScaleBox` viewport (`ScaleToFit`, `DownOnly`) so portrait aspect ratio is invariant when a row contains only one or two Digimon. Metadata lives below the portrait and the full roster remains vertically scrollable.
 
 v0.6.0 rebuilds the framework's native fallback presentation. You do **not** need Widget Blueprints to get a usable polished frontend, Digimon collection, starter selector, character selector, or combat bar. Blueprint children remain supported when a project wants a completely custom skin.
 
@@ -160,7 +164,7 @@ The v0.6 native layout adds new **optional** bindings. Legacy optional bindings 
 12. Press Tab, click a healthy Party slot, then Tab/Escape back to gameplay; repeat in a two-client test and confirm only the owning player sees their private roster/storage while the spawned partner change replicates normally.
 
 ## Shared Digimon menu shell — current v0.12 state
-The original v0.6 Collection page evolved into the active **PARTY** page while preserving the historical `Collection` enum/API identity for Blueprint compatibility. The native shell now presents **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE** and **CARE**. Projects using Blueprint children can mirror the same architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Bank Data`, `Refresh Scan Data` and `Refresh Care Data`. Digivolution should extend this same shell later rather than creating a disconnected full-screen menu.
+The original v0.6 Collection page evolved into the active **PARTY** page while preserving the historical `Collection` enum/API identity for Blueprint compatibility. The native shell now presents **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIVOLUTION** and **CARE**. Projects using Blueprint children can mirror the same architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Bank Data`, `Refresh Scan Data`, `Refresh Digivolution Data` and `Refresh Care Data`. Digivolution is therefore part of the same modal shell rather than a disconnected menu.
 
 
 ## v0.8.0 CARE page
@@ -175,3 +179,18 @@ Blueprint children may replace the layout while retaining `RefreshCareData`, `Se
 ## v0.9.0 automatic world nameplates
 
 The polished native UI language now extends into the 3D world through automatic Player and Digimon nameplates. No manual Widget Component is required on framework-derived actors. Configure the master/per-category switches, distance culling and Blueprint widget overrides under **Project Settings → Digimon MMO Framework → UI → World Nameplates**. See `SETUP_WORLD_NAMEPLATES.md` for the complete contract.
+
+
+## v0.13 Digivolution page
+
+The native DIGIVOLUTION page follows the v0.12.1 layout-hardening contract: fixed identity/preview blocks, scrollable owned/path/requirement regions and a pinned action button so long requirements cannot overlap controls.
+
+- Left: current-form summary plus a scrollable four-column Party+Bank browser.
+- Right upper: scrollable branching target-form cards with READY/LOCKED state.
+- Right middle: target portrait/stage/attribute and target World Actor Class readiness.
+- Right lower: scrollable authoritative requirement/status explanation.
+- Footer: `DIGIVOLVE TO SELECTED FORM`.
+
+The UI reads owner-only replicated data and local species assets only. It never applies the species mutation itself. When a summoned partner begins a world transformation, the PlayerController can remove the modal menu/quickbars/chat so the cue is visible, then recreate the menu directly on DIGIVOLUTION after the authoritative result.
+
+For Blueprint replacements, keep the `EDMFDigimonMenuTab` serialized values intact; `Digivolution` was appended after the earlier v0.12 `Bank` value specifically to avoid shifting existing Collection/Scan/Care/Bank enum serialization.

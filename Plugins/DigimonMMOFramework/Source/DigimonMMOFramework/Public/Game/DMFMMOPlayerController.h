@@ -85,8 +85,15 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Care|UI")
     void OpenCareUI();
 
+    /** Opens the shared Digimon menu directly on the persistent Party/Bank Digivolution terminal. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Digivolution|UI")
+    void OpenDigivolutionUI();
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Care|UI")
     bool IsCarePresentationActive() const { return bCarePresentationActive; }
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Digivolution|UI")
+    bool IsDigivolutionPresentationActive() const { return bDigivolutionPresentationActive; }
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Inventory|UI")
     bool IsDigimonInventoryUIOpen() const { return DigimonInventoryWidget != nullptr; }
@@ -218,6 +225,8 @@ private:
     bool bFrameworkModalInputLocked = false;
     bool bCarePresentationActive = false;
     bool bReopenCareMenuAfterSequence = false;
+    bool bDigivolutionPresentationActive = false;
+    bool bReopenDigivolutionMenuAfterSequence = false;
     bool bWorldChatInputActive = false;
     bool bWorldChatInputLocked = false;
     bool bPartyQuickAccessInteractionActive = false;
@@ -244,6 +253,12 @@ private:
     void HandleCareSequenceFinished(bool bSuccess, FText Message, FGuid DigimonInstanceId);
 
     UFUNCTION()
+    void HandleDigivolutionSequenceStarted(FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId TargetSpeciesId);
+
+    UFUNCTION()
+    void HandleDigivolutionResult(bool bSuccess, FText Message, FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId NewSpeciesId);
+
+    UFUNCTION()
     void HandlePlayerSkinRequirementChanged(bool bRequired);
 
     void BindStarterState();
@@ -251,6 +266,7 @@ private:
     void ValidateLocalAvatarPossession();
     void ApplyFrameworkModalInputMode();
     void RestoreGameplayInputMode();
+    bool IsWorldPresentationActive() const { return bCarePresentationActive || bDigivolutionPresentationActive; }
     void ApplyWorldChatInputMode();
     void RestoreWorldChatInputMode();
     bool IsMandatoryPlayerSkinSelectionActive() const;

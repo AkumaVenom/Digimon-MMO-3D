@@ -203,3 +203,9 @@ Healer Blueprint hooks:
 ## v0.6.0 inventory presentation update
 
 The native Digimon inventory no longer uses a vertical text list. It now reads `DMFDigimonSpeciesData::Portrait` for a 6-column slot grid and shows a selected-Digimon profile with summon/recall controls. No gameplay setup changed: `I` still toggles the menu and summon/recall still use `UDMFPlayerDigimonComponent` server RPCs. Assign each species Portrait to get the intended icon presentation. See `SETUP_POLISHED_NATIVE_UI.md`.
+
+## v0.13 Digivolution interaction safety
+
+The v0.13 Digivolution sequence participates in the same authoritative interaction locks as combat, Care and storage. By default, an active summoned partner cannot begin Digivolution while its replicated combat component is non-idle. Once a summoned transformation starts, targeting, ability execution, partner switch/recall, Party/Bank mutation, feeding and healer use are rejected until the server completes or clears the sequence.
+
+`ADMFHealerActor` therefore refuses a player whose owned Digimon component is currently presenting a world Digivolution. The healer's Party+Bank restore behavior is otherwise unchanged. See `SETUP_DIGIVOLUTION.md` and `SETUP_POLISHED_HEALER_PRESENTATION.md` for their respective setup flows.

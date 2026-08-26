@@ -84,3 +84,9 @@ Scan Data is copied to/from `FDMFAccountRecord::ScanData`, replicated `COND_Owne
 
 ## 8. Acceptance test
 Use one Wild Gabumon with reward 20 / cap 100 / requirement 100. Defeat five separate eligible Gabumon and verify the owner sees 20, 40, 60, 80, 100. Materialize once and verify Scan returns to 0, the Gabumon remains listed in the Scan Database, one new unique Gabumon appears in Party when space exists and can be summoned normally. Then fill Party, materialize again, and verify the new instance routes to Bank. Reconnect and verify both the 0% scan record and materialized Digimon persist. Then repeat with host + remote client and confirm only the player whose partner earned the victory receives Scan Data.
+
+## 9. v0.13 Digivolution handoff
+
+A materialized Digimon is an ordinary persistent owned instance and can immediately participate in authored Digivolution paths. Materialization itself still decides only **Party first → Bank overflow**; it does not choose or auto-apply an evolved form.
+
+After creation, the native **DIGIVOLUTION** tab resolves the instance from Party or Bank and evaluates the current species asset's authored paths. The server owns all later species/progression mutation. This keeps Scan acquisition/materialization and Digivolution as separate authoritative progression stages while sharing the same persistent instance GUID.

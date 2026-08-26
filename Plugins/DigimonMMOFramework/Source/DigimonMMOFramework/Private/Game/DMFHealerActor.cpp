@@ -284,6 +284,11 @@ bool ADMFHealerActor::TryHealPlayerAuthoritative(APlayerController* PlayerContro
         OutMessage = NSLOCTEXT("DMF", "HealerNoDigimonComponent", "Your Digimon data is not ready yet.");
         return false;
     }
+    if (DigimonComponent->IsDigivolutionSequenceActive())
+    {
+        OutMessage = NSLOCTEXT("DMF", "HealerDigivolutionBusy", "Wait for the active Digivolution sequence to finish before using the healer.");
+        return false;
+    }
 
     const TArray<FDMFDigimonInstance> Before = DigimonComponent->GetDigimonInventory();
     if (Before.IsEmpty() && !bIncludeBankStorage)

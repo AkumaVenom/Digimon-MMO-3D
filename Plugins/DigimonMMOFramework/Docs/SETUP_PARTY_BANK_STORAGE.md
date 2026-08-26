@@ -11,7 +11,7 @@ v0.12 formalizes the framework's owned Digimon roster into two storage tiers:
 - **Party** — the active field roster, six Digimon by default and never more than six.
 - **Digimon Bank / Boxes** — persistent account storage, 200 slots by default, accessible from the Digimon Menu anywhere in the gameplay world.
 
-The native Digimon Menu now exposes **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, and **CARE** as first-class tabs. The Bank follows the same convenience goal as modern creature-box systems: players can open it from the world without travelling to a physical terminal, inspect stored Digimon, and move/swap them with Party.
+As of v0.13, the shared native Digimon Menu exposes **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIVOLUTION**, and **CARE** as first-class tabs. The Bank follows the same convenience goal as modern creature-box systems: players can open it from the world without travelling to a physical terminal, inspect stored Digimon, and move/swap them with Party.
 
 All ownership and storage mutations are validated by the authoritative server. The client UI never directly edits the Party or Bank arrays.
 
@@ -167,3 +167,15 @@ Use one listen host plus at least one remote client.
 Party and Bank contents are private account progression and replicate with `COND_OwnerOnly`. Other players learn only the public world state they need—such as the currently summoned replicated partner—not another account's complete storage roster.
 
 Storage RPCs are reliable because they mutate durable account state. The server validates ownership, source location, capacities, combat/Care locks and destination indices before changing anything, then persists the account.
+
+## v0.13 Digivolution integration
+
+The Party/Bank storage model is also the ownership source used by Digivolution. The native **DIGIVOLUTION** page can select an owned Digimon from either Party or Bank without creating another inventory or moving the individual into a temporary container.
+
+- Party Digimon evolve in place and retain their Party slot and persistent instance GUID.
+- Bank Digimon evolve in place when both **Project Settings → Digivolution → Allow Bank Digivolution** and that species path's **Allow From Bank** rule permit it.
+- A summoned active partner uses the replicated world transformation sequence; its Party instance is committed only by the server and the public world actor is then replaced with the target form.
+- Party/Bank move/swap commands are rejected while that account has an active world Digivolution sequence, preventing concurrent durable mutations.
+- SaveGame schema v5 preserves the v0.12 Party/Bank layout and adds per-instance Digivolution provenance/history; upgrading does not rebuild or flatten the storage tiers.
+
+See `SETUP_DIGIVOLUTION.md` for path authoring, requirements, presentation and the multiplayer acceptance matrix.

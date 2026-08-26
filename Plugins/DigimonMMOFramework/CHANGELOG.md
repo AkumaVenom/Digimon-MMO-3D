@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.13.1-alpha — Digivolution Owned-Roster Aspect / Card Layout Fix
+
+### Fixed — Digivolution Party/Bank cards no longer stretch portraits
+- Fixed the native **DIGIVOLUTION → OWNED DIGIMON • PARTY + BANK** grid stretching one- and two-card rows across the full left panel. The root cause was `UUniformGridSlot` fill alignment overriding the intended fixed `USizeBox` footprint.
+- Digivolution owned cards now use a fixed **132 × 166** Slate-unit footprint and are centered inside their grid cells, so sparse rows remain compact instead of becoming giant horizontal cards.
+- Reworked the Digivolution owned roster to a polished **three-column** layout sized for the 500-unit left panel. Six Party Digimon therefore remain readable as two clean rows, while Bank entries continue vertically through the existing scroll region.
+- Added a dedicated **104 × 104 square portrait viewport** with `ScaleBox / ScaleToFit / DownOnly`, guaranteeing portrait aspect ratio is preserved even if parent cells or viewport scaling change.
+- Moved location/name metadata into a separate footer below the portrait rather than overlaying it on a stretchable image region. ACTIVE/KO badges remain pinned to the portrait viewport.
+
+### Preserved / regression contract
+- Digivolution authority, requirements, persistence schema v5, transformation VFX/audio, Party/Bank state, Care, healer, Scan/Materialization, combat and all network contracts are unchanged from v0.13.0.
+- No baseline source file or existing reflected function was removed.
+
+### Documentation
+- Updated README, Digivolution setup, polished native UI guide, roadmap, test plan and validation report for the v0.13.1 layout correction.
+
+## 0.13.0-alpha — Polished Replicated Digivolution
+
+### Added — persistent branching Digivolution
+- Expanded each `DMFDigimonSpeciesData::Digivolutions` path into a fully data-driven progression contract with destination species, Level, ABI, CAM, optional STR/INT/DEF/SPD requirements, optional Happiness/Discipline/Care-Mistake gates, optional money cost, Bank permission, stat/ability/vital carry-over policies and path-specific presentation overrides.
+- Added owner-facing Digivolution evaluation APIs and a reliable `ServerDigivolveOwnedDigimon` request. Clients submit only owned instance GUID + target species ID; the server resolves the current source form/path and revalidates every requirement before mutation.
+- Party and Bank are both supported. Stored Digimon evolve directly in Bank when globally/path-allowed; active Party Digimon retain the same instance identity and Party slot.
+- Successful mutation preserves persistent GUID, nickname, Level/EXP, ABI/CAM, Care state and unspent attribute points. Configured positive stat investment can carry to target BaseStats; target abilities/vital restoration are path-controlled.
+
+### Added — replicated active-partner transformation
+- A summoned active partner enters a server-owned Digivolution sequence rather than changing species instantly.
+- Combat targeting/automation and conflicting partner/storage/Care/ability commands are locked for the sequence.
+- `DMFDigimonCharacter::MulticastPlayDigivolutionCue` reliably presents Niagara-preferred/Cascade-fallback VFX and path/global Sound Cue to relevant peers, with `BP_OnDigivolutionCue` available for project cosmetic extensions.
+- After the authoritative presentation duration the server revalidates, commits/persists once, deducts money once, then replaces the old partner with the target species `WorldActorClass`. Normal actor replication publishes the transformed form.
+- Owner UI can hide during the world transformation and automatically return to the DIGIVOLUTION page afterward.
+
+### Added — polished native Digivolution UI
+- Added `DIGIVOLUTION` to the existing Digimon Menu without shifting earlier serialized enum values. Visual order is now **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIVOLUTION → CARE**.
+- Added Party+Bank owned browser, current-form profile, scrollable branching path cards, READY/LOCKED requirements, target-form preview and authoritative Digivolve action.
+- Fresh/In-Training stage display names now appear cleanly in reflected UI while retaining the existing enum values.
+
+### Persistence / configuration
+- Advanced account SaveGame schema to **v5** with persistent `OriginSpeciesId` and unique `DigivolutionHistory`; older instances seed provenance from their current species during authoritative account hydration.
+- Added Project Settings Digivolution master/rule/presentation controls and global Niagara/Cascade/Sound defaults with per-path overrides.
+- Added recursive Digivolution-graph species resolution fallback in addition to Asset Manager resolution, while the supplied Asset Manager template continues to recommend scanning all species recursively for packaged builds.
+
+### Documentation / regression contract
+- Added `Docs/SETUP_DIGIVOLUTION.md` and updated README, architecture, networking, roadmap, native UI guide, test plan, validation report and project config template.
+- Existing Party/Bank, healer, Care, Scan/Materialization, combat, chat/nameplates, camera, music, footsteps, account and frontend systems remain additive regression contracts.
+
 ## 0.12.2-alpha — Polished Replicated Healer Treatment Presentation
 
 ### Added / changed

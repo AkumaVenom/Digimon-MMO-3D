@@ -89,6 +89,14 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Care|Presentation")
     void BP_OnCareWasteCue(int32 FartSoundIndex);
 
+    /** Replicated high-value transformation presentation. Durable species authority is applied by the owning PlayerState component. */
+    UFUNCTION(NetMulticast, Reliable, Category="Digimon MMO|Digivolution|Presentation")
+    void MulticastPlayDigivolutionCue(FPrimaryAssetId TargetSpeciesId);
+
+    /** Optional Blueprint-only extension point for lights/material timelines unique to a project Digimon actor. */
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Digivolution|Presentation")
+    void BP_OnDigivolutionCue(FPrimaryAssetId TargetSpeciesId);
+
     /**
      * Applies the persistent defeated presentation used by both player partners and wild Digimon.
      * The species Death Montage plays once and, by default, freezes near its final pose until the

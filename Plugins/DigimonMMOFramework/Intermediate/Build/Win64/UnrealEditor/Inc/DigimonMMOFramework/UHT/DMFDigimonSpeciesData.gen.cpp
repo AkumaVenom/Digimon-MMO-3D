@@ -55,47 +55,182 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetSpecies_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Path" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Destination form for this one-way Digivolution path. Cycles are supported only when deliberately authored. */" },
+#endif
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Destination form for this one-way Digivolution path. Cycles are supported only when deliberately authored." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_RequiredLevel_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ClampMin", "1" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumABI_MetaData[] = {
+		{ "Category", "Digivolution|Requirements" },
+		{ "ClampMin", "0" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumCAM_MetaData[] = {
+		{ "Category", "Digivolution|Requirements" },
+		{ "ClampMin", "0" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bRequireStats_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumStrength_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ClampMin", "0" },
 		{ "EditCondition", "bRequireStats" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumIntelligence_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ClampMin", "0" },
 		{ "EditCondition", "bRequireStats" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumDefense_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ClampMin", "0" },
 		{ "EditCondition", "bRequireStats" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumSpeed_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution|Requirements" },
 		{ "ClampMin", "0" },
 		{ "EditCondition", "bRequireStats" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bRequireCare_MetaData[] = {
+		{ "Category", "Digivolution|Requirements|Care" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional persistent Care gate for virtual-pet style evolution branches. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional persistent Care gate for virtual-pet style evolution branches." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumHappiness_MetaData[] = {
+		{ "Category", "Digivolution|Requirements|Care" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bRequireCare" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumDiscipline_MetaData[] = {
+		{ "Category", "Digivolution|Requirements|Care" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bRequireCare" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumCareMistakes_MetaData[] = {
+		{ "Category", "Digivolution|Requirements|Care" },
+		{ "ClampMin", "-1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** -1 disables the care-mistake ceiling. */" },
+#endif
+		{ "EditCondition", "bRequireCare" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "-1 disables the care-mistake ceiling." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MoneyCost_MetaData[] = {
+		{ "Category", "Digivolution|Requirements" },
+		{ "ClampMin", "0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional account-money sink. Zero means no monetary requirement/cost. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional account-money sink. Zero means no monetary requirement/cost." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bAllowFromBank_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Allows this path to be executed while the individual is stored in Bank/Boxes. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Allows this path to be executed while the individual is stored in Bank/Boxes." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bPreserveStatInvestments_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Preserve stat investment above the source species BaseStats and apply it to the destination BaseStats. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Preserve stat investment above the source species BaseStats and apply it to the destination BaseStats." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bReplaceEquippedAbilities_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Replace the four/equipped move list with target defaults. Disable to retain old moves and add target defaults. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Replace the four/equipped move list with target defaults. Disable to retain old moves and add target defaults." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bFullyRestoreVitals_MetaData[] = {
+		{ "Category", "Digivolution|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Full HP/SP restoration on successful Digivolution. Disable to preserve the old HP/SP percentage. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Full HP/SP restoration on successful Digivolution. Disable to preserve the old HP/SP percentage." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NiagaraSystem_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional path-specific presentation overrides; blank fields use the global Project Settings defaults. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional path-specific presentation overrides; blank fields use the global Project Settings defaults." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CascadeParticle_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Sound_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PresentationDurationSeconds_MetaData[] = {
+		{ "Category", "Digivolution|Presentation" },
+		{ "ClampMax", "20.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Zero uses the global Digivolution Presentation Duration. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Zero uses the global Digivolution Presentation Duration." },
+#endif
 	};
 #endif // WITH_METADATA
 
 // ********** Begin ScriptStruct FDMFDigivolutionRequirement constinit property declarations *******
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_TargetSpecies;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_RequiredLevel;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumABI;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumCAM;
 	static void NewProp_bRequireStats_SetBit(void* Obj)
 	{
 		((FDMFDigivolutionRequirement*)Obj)->bRequireStats = 1;
@@ -105,6 +240,39 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumIntelligence;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumDefense;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumSpeed;
+	static void NewProp_bRequireCare_SetBit(void* Obj)
+	{
+		((FDMFDigivolutionRequirement*)Obj)->bRequireCare = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bRequireCare;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MinimumHappiness;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MinimumDiscipline;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumCareMistakes;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_MoneyCost;
+	static void NewProp_bAllowFromBank_SetBit(void* Obj)
+	{
+		((FDMFDigivolutionRequirement*)Obj)->bAllowFromBank = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAllowFromBank;
+	static void NewProp_bPreserveStatInvestments_SetBit(void* Obj)
+	{
+		((FDMFDigivolutionRequirement*)Obj)->bPreserveStatInvestments = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bPreserveStatInvestments;
+	static void NewProp_bReplaceEquippedAbilities_SetBit(void* Obj)
+	{
+		((FDMFDigivolutionRequirement*)Obj)->bReplaceEquippedAbilities = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bReplaceEquippedAbilities;
+	static void NewProp_bFullyRestoreVitals_SetBit(void* Obj)
+	{
+		((FDMFDigivolutionRequirement*)Obj)->bFullyRestoreVitals = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bFullyRestoreVitals;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_NiagaraSystem;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_CascadeParticle;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_Sound;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PresentationDurationSeconds;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End ScriptStruct FDMFDigivolutionRequirement constinit property declarations *********
 	static void* NewStructOps()
@@ -117,19 +285,49 @@ struct UHT_STATICS
 // ********** Begin ScriptStruct FDMFDigivolutionRequirement Property Definitions ******************
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_TargetSpecies = { "TargetSpecies", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, TargetSpecies), Z_Construct_UClass_UDMFDigimonSpeciesData, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetSpecies_MetaData), NewProp_TargetSpecies_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_RequiredLevel = { "RequiredLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, RequiredLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RequiredLevel_MetaData), NewProp_RequiredLevel_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumABI = { "MinimumABI", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumABI), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumABI_MetaData), NewProp_MinimumABI_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumCAM = { "MinimumCAM", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumCAM), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumCAM_MetaData), NewProp_MinimumCAM_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRequireStats = { "bRequireStats", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bRequireStats_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRequireStats_MetaData), NewProp_bRequireStats_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumStrength = { "MinimumStrength", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumStrength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumStrength_MetaData), NewProp_MinimumStrength_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumIntelligence = { "MinimumIntelligence", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumIntelligence), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumIntelligence_MetaData), NewProp_MinimumIntelligence_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumDefense = { "MinimumDefense", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumDefense), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumDefense_MetaData), NewProp_MinimumDefense_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumSpeed = { "MinimumSpeed", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumSpeed_MetaData), NewProp_MinimumSpeed_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRequireCare = { "bRequireCare", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bRequireCare_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRequireCare_MetaData), NewProp_bRequireCare_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumHappiness = { "MinimumHappiness", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumHappiness), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumHappiness_MetaData), NewProp_MinimumHappiness_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumDiscipline = { "MinimumDiscipline", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MinimumDiscipline), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumDiscipline_MetaData), NewProp_MinimumDiscipline_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumCareMistakes = { "MaximumCareMistakes", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MaximumCareMistakes), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumCareMistakes_MetaData), NewProp_MaximumCareMistakes_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_MoneyCost = { "MoneyCost", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, MoneyCost), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MoneyCost_MetaData), NewProp_MoneyCost_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAllowFromBank = { "bAllowFromBank", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bAllowFromBank_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAllowFromBank_MetaData), NewProp_bAllowFromBank_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bPreserveStatInvestments = { "bPreserveStatInvestments", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bPreserveStatInvestments_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bPreserveStatInvestments_MetaData), NewProp_bPreserveStatInvestments_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bReplaceEquippedAbilities = { "bReplaceEquippedAbilities", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bReplaceEquippedAbilities_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bReplaceEquippedAbilities_MetaData), NewProp_bReplaceEquippedAbilities_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bFullyRestoreVitals = { "bFullyRestoreVitals", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDigivolutionRequirement), &UHT_STATICS::NewProp_bFullyRestoreVitals_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bFullyRestoreVitals_MetaData), NewProp_bFullyRestoreVitals_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_NiagaraSystem = { "NiagaraSystem", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, NiagaraSystem), Z_Construct_UClass_UNiagaraSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NiagaraSystem_MetaData), NewProp_NiagaraSystem_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_CascadeParticle = { "CascadeParticle", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, CascadeParticle), Z_Construct_UClass_UParticleSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CascadeParticle_MetaData), NewProp_CascadeParticle_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Sound = { "Sound", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, Sound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Sound_MetaData), NewProp_Sound_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PresentationDurationSeconds = { "PresentationDurationSeconds", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigivolutionRequirement, PresentationDurationSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PresentationDurationSeconds_MetaData), NewProp_PresentationDurationSeconds_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetSpecies,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RequiredLevel,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumABI,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumCAM,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRequireStats,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumStrength,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumIntelligence,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumDefense,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumSpeed,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRequireCare,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumHappiness,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumDiscipline,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumCareMistakes,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MoneyCost,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAllowFromBank,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bPreserveStatInvestments,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bReplaceEquippedAbilities,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bFullyRestoreVitals,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NiagaraSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CascadeParticle,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Sound,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PresentationDurationSeconds,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End ScriptStruct FDMFDigivolutionRequirement Property Definitions ********************
@@ -330,7 +528,7 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Digivolutions_MetaData[] = {
-		{ "Category", "Evolution" },
+		{ "Category", "Digivolution" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldActorClass_MetaData[] = {
@@ -677,7 +875,7 @@ const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_SpeciesKey = {
 const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_DisplayName = { "DisplayName", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DisplayName), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DisplayName_MetaData), NewProp_DisplayName_MetaData) };
 const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Description = { "Description", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Description), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Description_MetaData), NewProp_Description_MetaData) };
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Stage_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stage = { "Stage", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Stage), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Stage_MetaData), NewProp_Stage_MetaData) }; // 51dc71f2f1f3ff8aa0ef2920a446be9483564e74
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stage = { "Stage", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Stage), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Stage_MetaData), NewProp_Stage_MetaData) }; // e1b1442ac800f3afd36c160831786178fb89aaf0
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Attribute_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Attribute = { "Attribute", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Attribute), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttribute, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Attribute_MetaData), NewProp_Attribute_MetaData) }; // 9d973b8aedacba9214374b88283b5650f5088c09
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Element_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
@@ -703,8 +901,8 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_StrengthPerLeve
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_IntelligencePerLevel = { "IntelligencePerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, IntelligencePerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_IntelligencePerLevel_MetaData), NewProp_IntelligencePerLevel_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DefensePerLevel = { "DefensePerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DefensePerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefensePerLevel_MetaData), NewProp_DefensePerLevel_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_SpeedPerLevel = { "SpeedPerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, SpeedPerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SpeedPerLevel_MetaData), NewProp_SpeedPerLevel_MetaData) };
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Digivolutions_Inner = { "Digivolutions", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, METADATA_PARAMS(0, nullptr) }; // c123f6c38dbdb7651d256fa0b199a4f9a0aa7728
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_Digivolutions = { "Digivolutions", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Digivolutions), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Digivolutions_MetaData), NewProp_Digivolutions_MetaData) }; // c123f6c38dbdb7651d256fa0b199a4f9a0aa7728
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Digivolutions_Inner = { "Digivolutions", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, METADATA_PARAMS(0, nullptr) }; // 24ac0c23b01f89b5a251337a766dab2c270713d9
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_Digivolutions = { "Digivolutions", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Digivolutions), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Digivolutions_MetaData), NewProp_Digivolutions_MetaData) }; // 24ac0c23b01f89b5a251337a766dab2c270713d9
 const UECodeGen_Private::FSoftClassPropertyParams UHT_STATICS::NewProp_WorldActorClass = { "WorldActorClass", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftClass, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, WorldActorClass), Z_Construct_UClass_ADMFDigimonCharacter, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldActorClass_MetaData), NewProp_WorldActorClass_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_PreviewMesh = { "PreviewMesh", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, PreviewMesh), Z_Construct_UClass_USkeletalMesh, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PreviewMesh_MetaData), NewProp_PreviewMesh_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Portrait = { "Portrait", nullptr, (EPropertyFlags)0x0014000000000015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Portrait), Z_Construct_UClass_UTexture2D, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Portrait_MetaData), NewProp_Portrait_MetaData) };
@@ -878,13 +1076,13 @@ UDMFDigimonSpeciesData::~UDMFDigimonSpeciesData() {}
 struct UHT_STATICS
 {
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement_Statics::NewStructOps, TEXT("DMFDigivolutionRequirement"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionRequirement, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionRequirement), 3240359619U) },
+		{ Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement_Statics::NewStructOps, TEXT("DMFDigivolutionRequirement"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionRequirement, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionRequirement), 615255075U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 1845031583U) },
+		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 150427924U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_5e324b94ea1ecba825662693caf02eef8ed32e67{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_d604842717388725b4aac91fcd3c0fca25deb535{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

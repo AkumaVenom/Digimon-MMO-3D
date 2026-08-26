@@ -1,8 +1,26 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.12.2-alpha — Polished Replicated Healer Treatment Presentation`
+**Version:** `0.13.1-alpha — Digivolution Owned-Roster UI Layout Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.13.1-alpha — Digivolution Owned-Roster UI Layout Fix
+
+v0.13.1 is a focused presentation correction over the compiling v0.13.0 Digivolution milestone. The native **DIGIVOLUTION → OWNED DIGIMON • PARTY + BANK** browser no longer allows sparse `UniformGrid` rows to stretch fixed Party/Bank cards across the entire left panel. Cards are now centered at a consistent **132 × 166** footprint in a three-column roster, so one, two or six owned Digimon remain visually consistent.
+
+Each Digivolution roster portrait now lives in its own **104 × 104 square viewport** behind a `ScaleBox` using `ScaleToFit` + `DownOnly`. Species artwork therefore preserves its source aspect ratio instead of being horizontally squashed when the grid has unused columns. PARTY/BANK identity and name/level presentation is separated into a fixed footer, while ACTIVE/KO badges remain attached to the portrait area. The roster stays inside the existing scroll region, so large Bank collections remain usable without compressing cards.
+
+This patch changes **presentation only**. v0.13.0 Digivolution requirements, server authority, schema-v5 persistence, transformation presentation, Party/Bank ownership, Scan/Materialization, Care, healer, combat and networking behavior are unchanged.
+
+## New in v0.13.0-alpha — Polished Replicated Digivolution
+
+The framework now includes a complete persistent **Digivolution** system integrated directly into Party, Bank/Boxes, Care, combat, persistence and the shared native Digimon Menu. Every `DMFDigimonSpeciesData` can author one or more branching Digivolution paths to other species forms, with independent requirements for Level, ABI, CAM, STR/INT/DEF/SPD, Happiness, Discipline, Care Mistakes and optional account-money cost.
+
+The new native **DIGIVOLUTION** tab browses the owner's Party + Bank, shows the selected current form and every configured outgoing path, presents each path as **READY** or **LOCKED** with its live requirement summary, previews the destination form, and routes confirmation through the owning server-authoritative Digimon component. Bank Digimon can evolve in-place when allowed; Party/Bank remain owner-only replicated and no client supplies trusted stats, cost or final form data.
+
+A currently summoned active partner receives the full in-world treatment. The server locks conflicting combat/Care/storage commands, clears combat intent, sends an owner presentation-start event, and reliably multicasts a Niagara-preferred/Cascade-fallback transformation cue plus Sound Cue from the existing actor. With the default setting enabled the menu/HUD hides so the player can watch the transformation. At the end of the authoritative duration the server revalidates the path, commits the persistent form change, deducts any cost once, immediately saves the account, and replaces the partner actor using the destination species' `WorldActorClass`; normal replication shows the new form to other players.
+
+Persistent Digimon identity is preserved across forms: instance GUID, nickname, Level/EXP, ABI/CAM, Care state and other individual progression remain attached to the same owned Digimon. Save schema is now **v5**, adding `OriginSpeciesId` and `DigivolutionHistory` with compatibility normalization for older accounts. Fresh/In-Training display names are also exposed cleanly in the existing Digimon stage enum. See `Docs/SETUP_DIGIVOLUTION.md` for authoring, presentation and host/client acceptance setup.
 
 ## New in v0.12.2-alpha — Polished Replicated Healer Treatment Presentation
 
@@ -137,7 +155,7 @@ Blueprint projects can reskin/extend all presentation surfaces: care data remain
 
 The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into Party first, or Bank automatically when Party is full.
 
-The Digimon menu began as a tabbed shell in v0.7; in current builds its roster page is the six-slot `PARTY`, with `BANK / BOXES`, `SCAN & MATERIALIZE` and `CARE` implemented alongside it. Digivolution remains a future module. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
+The Digimon menu began as a tabbed shell in v0.7; in current builds its roster page is the six-slot `PARTY`, with `BANK / BOXES`, `SCAN & MATERIALIZE`, `DIGIVOLUTION` and `CARE` implemented alongside it. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
 
 Per species, configure `DMFDigimonSpeciesData -> Scan & Materialization`: `bScanDataEnabled`, `BattleScanPercentReward`, `ScanPercentCap`, `bMaterializationEnabled`, and `MaterializationRequiredScanPercent`. Materializable species must have `WorldActorClass` set to the normal partner Blueprint derived from `DMFDigimonCharacter`, never the `DMFWildDigimonCharacter` Blueprint. Scan Data is owner-only replicated and saved in the account record automatically. See `Docs/SETUP_SCAN_MATERIALIZATION.md`.
 

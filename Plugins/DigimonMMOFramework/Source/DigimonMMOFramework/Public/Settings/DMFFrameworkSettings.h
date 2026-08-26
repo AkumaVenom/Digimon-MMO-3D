@@ -18,6 +18,8 @@ class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
 class USoundBase;
+class UNiagaraSystem;
+class UParticleSystem;
 class UWorld;
 struct FPropertyChangedEvent;
 
@@ -370,6 +372,49 @@ public:
     /** Blueprint-replaceable replicated prop actor used for both attached DigiMeat and no-collision world poo. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Care|Presentation")
     TSubclassOf<ADMFDigimonCarePropActor> CarePropActorClass;
+
+    // -------------------- Digivolution --------------------
+
+    /** Master switch for persistent server-authoritative Digivolution. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution")
+    bool bEnableDigivolutionSystem = true;
+
+    /** Allows stored Bank/Box Digimon to Digivolve from the world-accessible Digimon Menu. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules", meta=(EditCondition="bEnableDigivolutionSystem"))
+    bool bAllowBankDigivolution = true;
+
+    /** Active summoned partners must be idle before a Digivolution sequence can begin. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Rules", meta=(EditCondition="bEnableDigivolutionSystem"))
+    bool bBlockDigivolutionDuringCombat = true;
+
+    /** Hide modal/HUD UI while a summoned partner performs its in-world transformation presentation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation", meta=(EditCondition="bEnableDigivolutionSystem"))
+    bool bHideUIForSummonedDigivolution = true;
+
+    /** Default duration before an active world partner is replaced by the target form. A path may override this. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation", meta=(EditCondition="bEnableDigivolutionSystem", ClampMin="0.25", ClampMax="20.0"))
+    float DigivolutionPresentationDurationSeconds = 3.0f;
+
+    /** Preferred global transformation VFX. Individual evolution paths can override this. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|VFX", meta=(EditCondition="bEnableDigivolutionSystem"))
+    TSoftObjectPtr<UNiagaraSystem> DefaultDigivolutionNiagaraSystem;
+
+    /** Cascade fallback when no path/global Niagara system is assigned or Niagara preference is disabled. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|VFX", meta=(EditCondition="bEnableDigivolutionSystem"))
+    TSoftObjectPtr<UParticleSystem> DefaultDigivolutionCascadeParticle;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|VFX", meta=(EditCondition="bEnableDigivolutionSystem"))
+    bool bPreferNiagaraDigivolutionVFX = true;
+
+    /** Global transformation Sound Cue/Wave. Individual paths can override it. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|Audio", meta=(EditCondition="bEnableDigivolutionSystem"))
+    TSoftObjectPtr<USoundBase> DefaultDigivolutionSound;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|Audio", meta=(EditCondition="bEnableDigivolutionSystem", ClampMin="0.0", ClampMax="4.0"))
+    float DigivolutionSoundVolumeMultiplier = 1.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Digivolution|Presentation|Audio", meta=(EditCondition="bEnableDigivolutionSystem", ClampMin="0.25", ClampMax="4.0"))
+    float DigivolutionSoundPitchMultiplier = 1.0f;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat")
     bool bShowNativeCombatQuickBar = true;

@@ -132,3 +132,11 @@ Run PIE with one listen host + one remote client, then repeat in packaged builds
 13. Reconnect both accounts again and verify Hunger/care state remains account-separated.
 
 After testing, restore production waste-delay/lifetime values.
+
+## v0.13 Digivolution integration
+
+Care state is now a first-class optional Digivolution requirement. An authored path can require minimum **Happiness**, minimum **Discipline**, and a maximum **Care Mistakes** value. These values are evaluated from the same persistent individual stored in Party/Bank and are revalidated by the authoritative server at commit time.
+
+A Digimon cannot begin Digivolution while its account is inside an active feeding/Care presentation, and new Care mutations are blocked during an active summoned-partner Digivolution sequence. This keeps Hunger/digestion/presentation state from racing the species mutation.
+
+Digivolution preserves the persistent `FDMFDigimonCareState`; changing form therefore does not silently reset Hunger, Happiness, Discipline, Care Mistakes or scheduled Care state. See `SETUP_DIGIVOLUTION.md` for the complete progression contract.

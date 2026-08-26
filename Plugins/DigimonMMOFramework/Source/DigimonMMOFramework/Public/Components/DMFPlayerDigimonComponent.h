@@ -10,6 +10,7 @@ class ADMFDigimonCarePropActor;
 class ADMFPlayerState;
 class UDMFDigimonCombatComponent;
 class UDMFDigimonSpeciesData;
+struct FDMFDigivolutionRequirement;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFDigimonInventoryChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFDigimonBankChanged);
@@ -28,6 +29,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFMaterializationResult, bool, b
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFCareStateChanged, FGuid, DigimonInstanceId, FDMFDigimonCareState, CareState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFCareSequenceStarted, FGuid, DigimonInstanceId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFCareSequenceFinished, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FDMFDigivolutionResult, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId, FPrimaryAssetId, PreviousSpeciesId, FPrimaryAssetId, NewSpeciesId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFDigivolutionSequenceStarted, FGuid, DigimonInstanceId, FPrimaryAssetId, PreviousSpeciesId, FPrimaryAssetId, TargetSpeciesId);
 
 UCLASS(ClassGroup=(DigimonMMO), meta=(BlueprintSpawnableComponent))
 class DIGIMONMMOFRAMEWORK_API UDMFPlayerDigimonComponent : public UActorComponent
@@ -94,6 +97,13 @@ public:
     /** Owner-only result. Successful sequences reopen the shared menu directly on CARE. */
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Care")
     FDMFCareSequenceFinished OnCareSequenceFinished;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Digivolution")
+    FDMFDigivolutionResult OnDigivolutionResult;
+
+    /** Owner-only world-presentation signal used to hide modal HUD while the summoned partner transforms. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Digivolution")
+    FDMFDigivolutionSequenceStarted OnDigivolutionSequenceStarted;
 
     /** Backward-compatible alias for GetPartyDigimon(). */
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Party")
@@ -166,6 +176,31 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Scan & Materialization")
     int32 GetOwnedSpeciesCount(FPrimaryAssetId SpeciesId) const;
+
+    /** Resolves a species through Asset Manager, starter roster, or the recursively linked Digivolution graph. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Digivolution|Data")
+    UDMFDigimonSpeciesData* ResolveDigimonSpecies(FPrimaryAssetId SpeciesId) const;
+
+    /** Evaluates every configured path on this individual's current species. No client-authored mutation occurs here. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Digivolution")
+    TArray<FDMFDigivolutionEvaluation> GetDigivolutionOptions(FGuid InstanceId) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Digivolution")
+    bool CanDigivolveOwnedDigimonTo(FGuid InstanceId, FPrimaryAssetId TargetSpeciesId, FText& OutFailureReason) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Digivolution")
+    bool IsDigivolutionSequenceActive() const { return bDigivolutionSequenceActive; }
+
+    /** Server-authoritative one-way Digivolution. Party and Bank instances use the same persistent individual GUID. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Digivolution")
+    void ServerDigivolveOwnedDigimon(FGuid InstanceId, FPrimaryAssetId TargetSpeciesId);
+
+    /** Sent only when a currently summoned active partner needs an in-world transformation presentation. */
+    UFUNCTION(Client, Reliable)
+    void ClientDigivolutionSequenceStarted(FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId TargetSpeciesId);
+
+    UFUNCTION(Client, Reliable)
+    void ClientDigivolutionResult(bool bSuccess, const FText& Message, FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId NewSpeciesId);
 
     UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Scan & Materialization")
     void ServerMaterializeDigimon(FPrimaryAssetId SpeciesId);
@@ -272,12 +307,22 @@ private:
     UPROPERTY(Replicated)
     FGuid CareSequenceInstanceId;
 
+    UPROPERTY(Replicated)
+    bool bDigivolutionSequenceActive = false;
+
+    UPROPERTY(Replicated)
+    FGuid DigivolutionSequenceInstanceId;
+
+    UPROPERTY(Replicated)
+    FPrimaryAssetId DigivolutionSequenceTargetSpeciesId;
+
     UPROPERTY(Transient)
     TObjectPtr<ADMFDigimonCarePropActor> ActiveCareDigiMeatActor;
 
     FTimerHandle AutosaveTimer;
     FTimerHandle CareTickTimer;
     FTimerHandle CareSequenceTimer;
+    FTimerHandle DigivolutionSequenceTimer;
     double LastAbilityCommandServerTime = -1000.0;
     int32 CareMontagePlayIndex = 0;
     int32 CareServingVoiceSoundIndex = INDEX_NONE;
@@ -316,6 +361,11 @@ private:
 
     bool ResolveStarterSpecies(FPrimaryAssetId StarterSpeciesId, class UDMFDigimonSpeciesData*& OutSpecies) const;
     UDMFDigimonSpeciesData* ResolveSpeciesById(FPrimaryAssetId SpeciesId) const;
+    const FDMFDigivolutionRequirement* FindDigivolutionPath(const UDMFDigimonSpeciesData& SourceSpecies, FPrimaryAssetId TargetSpeciesId, UDMFDigimonSpeciesData*& OutTargetSpecies) const;
+    bool EvaluateDigivolutionRequirement(const FDMFDigimonInstance& Digimon, EDMFDigimonStorageLocation Location, const FDMFDigivolutionRequirement& Requirement, const UDMFDigimonSpeciesData& SourceSpecies, const UDMFDigimonSpeciesData& TargetSpecies, FText& OutFailure, FText* OutSummary = nullptr) const;
+    bool ApplyDigivolutionMutation(FDMFReplicatedDigimonEntry& Entry, const UDMFDigimonSpeciesData& SourceSpecies, const UDMFDigimonSpeciesData& TargetSpecies, const FDMFDigivolutionRequirement& Requirement);
+    void CompleteDigivolutionSequence();
+    void NormalizeDigivolutionProvenance(FDMFDigimonInstance& Digimon) const;
     FDMFDigimonInstance BuildStarterInstance(const UDMFDigimonSpeciesData& Species) const;
     FDMFDigimonInstance BuildMaterializedInstance(const UDMFDigimonSpeciesData& Species) const;
     bool AwardScanDataForVictory(const UDMFDigimonSpeciesData& Species, float& OutAddedPercent, float& OutNewPercent, bool& bOutReady);

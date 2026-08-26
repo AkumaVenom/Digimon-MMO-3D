@@ -37,6 +37,10 @@ namespace DMFInventoryUI
     constexpr float SlotSize = 122.0f;
     constexpr float BankSlotSize = 96.0f;
     constexpr float PartyDestinationSlotWidth = 120.0f;
+    constexpr int32 DigivolutionOwnedColumns = 3;
+    constexpr float DigivolutionOwnedCardWidth = 132.0f;
+    constexpr float DigivolutionOwnedCardHeight = 166.0f;
+    constexpr float DigivolutionOwnedPortraitSize = 104.0f;
 
     FText EnumDisplay(const UEnum* EnumType, const int64 Value)
     {
@@ -95,6 +99,10 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     {
         CareTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareTab);
     }
+    if (DigivolutionTabButton)
+    {
+        DigivolutionTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionTab);
+    }
     if (FeedDigiMeatButton)
     {
         FeedDigiMeatButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleFeedDigiMeat);
@@ -102,6 +110,10 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     if (MaterializeDigimonButton)
     {
         MaterializeDigimonButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializeSelected);
+    }
+    if (DigivolveButton)
+    {
+        DigivolveButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolveSelected);
     }
     if (BankPreviousPageButton)
     {
@@ -121,6 +133,7 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     RefreshBankData();
     RefreshScanData();
     RefreshCareData();
+    RefreshDigivolutionData();
     RefreshTabPresentation();
 }
 
@@ -136,6 +149,7 @@ void UDMFDigimonInventoryWidget::NativeDestruct()
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
         BoundDigimonComponent->OnCareStateChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
         BoundDigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
+        BoundDigimonComponent->OnDigivolutionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionResult);
     }
     BoundDigimonComponent = nullptr;
     Super::NativeDestruct();
@@ -197,7 +211,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     HeadingColumn->AddChildToVerticalBox(TitleText);
 
     DigimonStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigimonStatusText"));
-    DigimonStatusText->SetText(NSLOCTEXT("DMF", "DigimonMenuPrompt", "Manage your active Party, Digimon Bank, Scan Database and Care systems from anywhere in the Digital World."));
+    DigimonStatusText->SetText(NSLOCTEXT("DMF", "DigimonMenuPrompt", "Manage your Party, Bank, Scan Database, Digivolution paths and Care systems from anywhere in the Digital World."));
     DMFNativeUI::StyleText(DigimonStatusText, 14, DMFNativeUI::Muted());
     DigimonStatusText->SetAutoWrapText(true);
     HeadingColumn->AddChildToVerticalBox(DigimonStatusText);
@@ -241,6 +255,14 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     ScanMaterializeTabButton->AddChild(ScanTabLabel);
     TabRow->AddChildToHorizontalBox(ScanMaterializeTabButton)->SetPadding(FMargin(0,0,8,0));
 
+    DigivolutionTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigivolutionTabButton"));
+    DMFNativeUI::StyleButton(DigivolutionTabButton);
+    UTextBlock* DigivolutionTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionTabLabel"));
+    DigivolutionTabLabel->SetText(NSLOCTEXT("DMF", "DigivolutionTabLabel", "DIGIVOLUTION"));
+    DMFNativeUI::StyleText(DigivolutionTabLabel, 15, DMFNativeUI::Text(), true);
+    DigivolutionTabButton->AddChild(DigivolutionTabLabel);
+    TabRow->AddChildToHorizontalBox(DigivolutionTabButton)->SetPadding(FMargin(0,0,8,0));
+
     CareTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("CareTabButton"));
     DMFNativeUI::StyleButton(CareTabButton);
     UTextBlock* CareTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("CareTabLabel"));
@@ -250,7 +272,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     TabRow->AddChildToHorizontalBox(CareTabButton);
 
     UTextBlock* FutureTabsLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FutureTabsLabel"));
-    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "DIGIVOLUTION   /   FUTURE MODULES"));
+    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "FUTURE MODULES"));
     DMFNativeUI::StyleText(FutureTabsLabel, 11, DMFNativeUI::Muted(), true);
     if (UHorizontalBoxSlot* FutureSlot = TabRow->AddChildToHorizontalBox(FutureTabsLabel)) { FutureSlot->SetSize(DMFNativeUI::FillSize()); FutureSlot->SetVerticalAlignment(VAlign_Center); FutureSlot->SetHorizontalAlignment(HAlign_Right); }
 
@@ -645,6 +667,152 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     MaterializeDigimonButton->AddChild(MaterializeLabel);
     ScanDetailsColumn->AddChildToVerticalBox(MaterializeDigimonButton)->SetPadding(FMargin(0,4,0,0));
 
+    // DIGIVOLUTION tab: account-owned Party + Bank selection on the left and authoritative path evaluation on the right.
+    DigivolutionContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigivolutionContentRow"));
+    if (UVerticalBoxSlot* DigivolutionContentSlot = WindowColumn->AddChildToVerticalBox(DigivolutionContentRow))
+    {
+        DigivolutionContentSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    USizeBox* DigivolutionOwnedSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigivolutionOwnedSize"));
+    DigivolutionOwnedSize->SetWidthOverride(500.0f);
+    if (UHorizontalBoxSlot* OwnedLayoutSlot = DigivolutionContentRow->AddChildToHorizontalBox(DigivolutionOwnedSize))
+    {
+        OwnedLayoutSlot->SetPadding(FMargin(0.0f, 0.0f, 14.0f, 0.0f));
+        OwnedLayoutSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    UBorder* DigivolutionOwnedBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigivolutionOwnedBorder"));
+    DMFNativeUI::StylePanel(DigivolutionOwnedBorder, DMFNativeUI::PanelRaised(), FMargin(12.0f));
+    DigivolutionOwnedSize->AddChild(DigivolutionOwnedBorder);
+    UVerticalBox* DigivolutionOwnedColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigivolutionOwnedColumn"));
+    DigivolutionOwnedBorder->AddChild(DigivolutionOwnedColumn);
+
+    UTextBlock* DigivolutionOwnedHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionOwnedHeader"));
+    DigivolutionOwnedHeader->SetText(NSLOCTEXT("DMF", "DigivolutionOwnedHeader", "OWNED DIGIMON  •  PARTY + BANK"));
+    DMFNativeUI::StyleText(DigivolutionOwnedHeader, 17, DMFNativeUI::Accent(), true);
+    DigivolutionOwnedColumn->AddChildToVerticalBox(DigivolutionOwnedHeader)->SetPadding(FMargin(2,0,2,8));
+
+    UBorder* CurrentFormBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigivolutionCurrentFormBorder"));
+    DMFNativeUI::StylePanel(CurrentFormBorder, DMFNativeUI::PanelSoft(), FMargin(10.0f));
+    DigivolutionOwnedColumn->AddChildToVerticalBox(CurrentFormBorder)->SetPadding(FMargin(0,0,0,10));
+    UHorizontalBox* CurrentFormRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigivolutionCurrentFormRow"));
+    CurrentFormBorder->AddChild(CurrentFormRow);
+    USizeBox* CurrentPortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigivolutionCurrentPortraitSize"));
+    CurrentPortraitSize->SetWidthOverride(142.0f);
+    CurrentPortraitSize->SetHeightOverride(142.0f);
+    CurrentFormRow->AddChildToHorizontalBox(CurrentPortraitSize)->SetPadding(FMargin(0,0,12,0));
+    DigivolutionCurrentPortraitImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("DigivolutionCurrentPortraitImage"));
+    CurrentPortraitSize->AddChild(DigivolutionCurrentPortraitImage);
+    UVerticalBox* CurrentIdentityColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigivolutionCurrentIdentityColumn"));
+    if (UHorizontalBoxSlot* CurrentIdentitySlot = CurrentFormRow->AddChildToHorizontalBox(CurrentIdentityColumn))
+    {
+        CurrentIdentitySlot->SetSize(DMFNativeUI::FillSize());
+        CurrentIdentitySlot->SetVerticalAlignment(VAlign_Center);
+    }
+    UTextBlock* CurrentFormCaption = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionCurrentFormCaption"));
+    CurrentFormCaption->SetText(NSLOCTEXT("DMF", "DigivolutionCurrentFormCaption", "CURRENT FORM"));
+    DMFNativeUI::StyleText(CurrentFormCaption, 11, DMFNativeUI::Muted(), true);
+    CurrentIdentityColumn->AddChildToVerticalBox(CurrentFormCaption);
+    DigivolutionCurrentNameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionCurrentNameText"));
+    DigivolutionCurrentNameText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolutionCurrentNameText, 23, DMFNativeUI::Text(), true);
+    CurrentIdentityColumn->AddChildToVerticalBox(DigivolutionCurrentNameText)->SetPadding(FMargin(0,3,0,3));
+    DigivolutionCurrentMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionCurrentMetaText"));
+    DigivolutionCurrentMetaText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolutionCurrentMetaText, 12, DMFNativeUI::Gold(), true);
+    CurrentIdentityColumn->AddChildToVerticalBox(DigivolutionCurrentMetaText);
+
+    UTextBlock* OwnedHelpText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionOwnedHelpText"));
+    OwnedHelpText->SetText(NSLOCTEXT("DMF", "DigivolutionOwnedHelp", "Choose any Digimon from Party or Bank. Bank Digivolution can be disabled globally or per path."));
+    OwnedHelpText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(OwnedHelpText, 11, DMFNativeUI::Muted());
+    DigivolutionOwnedColumn->AddChildToVerticalBox(OwnedHelpText)->SetPadding(FMargin(2,0,2,8));
+
+    UScrollBox* DigivolutionOwnedScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("DigivolutionOwnedScroll"));
+    if (UVerticalBoxSlot* OwnedScrollSlot = DigivolutionOwnedColumn->AddChildToVerticalBox(DigivolutionOwnedScroll))
+    {
+        OwnedScrollSlot->SetSize(DMFNativeUI::FillSize());
+    }
+    DigivolutionOwnedGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("DigivolutionOwnedGrid"));
+    DigivolutionOwnedGrid->SetSlotPadding(FMargin(4.0f));
+    DigivolutionOwnedScroll->AddChild(DigivolutionOwnedGrid);
+
+    UBorder* DigivolutionPathsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigivolutionPathsBorder"));
+    DMFNativeUI::StylePanel(DigivolutionPathsBorder, DMFNativeUI::PanelRaised(), FMargin(14.0f));
+    if (UHorizontalBoxSlot* PathLayoutSlot = DigivolutionContentRow->AddChildToHorizontalBox(DigivolutionPathsBorder))
+    {
+        PathLayoutSlot->SetSize(DMFNativeUI::FillSize());
+        PathLayoutSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    UVerticalBox* DigivolutionPathsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigivolutionPathsColumn"));
+    DigivolutionPathsBorder->AddChild(DigivolutionPathsColumn);
+    UTextBlock* DigivolutionPathsHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionPathsHeader"));
+    DigivolutionPathsHeader->SetText(NSLOCTEXT("DMF", "DigivolutionPathsHeader", "AVAILABLE DIGIVOLUTION PATHS"));
+    DMFNativeUI::StyleText(DigivolutionPathsHeader, 16, DMFNativeUI::Gold(), true);
+    DigivolutionPathsColumn->AddChildToVerticalBox(DigivolutionPathsHeader)->SetPadding(FMargin(0,0,0,8));
+
+    USizeBox* PathListViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigivolutionPathListViewport"));
+    PathListViewport->SetHeightOverride(260.0f);
+    UScrollBox* PathListScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("DigivolutionPathListScroll"));
+    PathListViewport->AddChild(PathListScroll);
+    DigivolutionPathList = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigivolutionPathList"));
+    PathListScroll->AddChild(DigivolutionPathList);
+    DigivolutionPathsColumn->AddChildToVerticalBox(PathListViewport)->SetPadding(FMargin(0,0,0,10));
+
+    UBorder* TargetPreviewBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigivolutionTargetPreviewBorder"));
+    DMFNativeUI::StylePanel(TargetPreviewBorder, DMFNativeUI::PanelSoft(), FMargin(10.0f));
+    DigivolutionPathsColumn->AddChildToVerticalBox(TargetPreviewBorder)->SetPadding(FMargin(0,0,0,8));
+    UHorizontalBox* TargetPreviewRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigivolutionTargetPreviewRow"));
+    TargetPreviewBorder->AddChild(TargetPreviewRow);
+    USizeBox* TargetPortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigivolutionTargetPortraitSize"));
+    TargetPortraitSize->SetWidthOverride(145.0f);
+    TargetPortraitSize->SetHeightOverride(145.0f);
+    TargetPreviewRow->AddChildToHorizontalBox(TargetPortraitSize)->SetPadding(FMargin(0,0,12,0));
+    DigivolutionTargetPortraitImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("DigivolutionTargetPortraitImage"));
+    TargetPortraitSize->AddChild(DigivolutionTargetPortraitImage);
+    UVerticalBox* TargetTextColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigivolutionTargetTextColumn"));
+    if (UHorizontalBoxSlot* TargetTextSlot = TargetPreviewRow->AddChildToHorizontalBox(TargetTextColumn))
+    {
+        TargetTextSlot->SetSize(DMFNativeUI::FillSize());
+        TargetTextSlot->SetVerticalAlignment(VAlign_Center);
+    }
+    UTextBlock* TargetCaption = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionTargetCaption"));
+    TargetCaption->SetText(NSLOCTEXT("DMF", "DigivolutionTargetCaption", "TARGET FORM"));
+    DMFNativeUI::StyleText(TargetCaption, 11, DMFNativeUI::Muted(), true);
+    TargetTextColumn->AddChildToVerticalBox(TargetCaption);
+    DigivolutionTargetNameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionTargetNameText"));
+    DigivolutionTargetNameText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolutionTargetNameText, 24, DMFNativeUI::Text(), true);
+    TargetTextColumn->AddChildToVerticalBox(DigivolutionTargetNameText)->SetPadding(FMargin(0,3,0,3));
+    DigivolutionTargetMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionTargetMetaText"));
+    DigivolutionTargetMetaText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolutionTargetMetaText, 13, DMFNativeUI::Gold(), true);
+    TargetTextColumn->AddChildToVerticalBox(DigivolutionTargetMetaText);
+
+    UBorder* RequirementBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigivolutionRequirementBorder"));
+    DMFNativeUI::StylePanel(RequirementBorder, DMFNativeUI::SlotEmpty(), FMargin(10.0f));
+    if (UVerticalBoxSlot* RequirementLayoutSlot = DigivolutionPathsColumn->AddChildToVerticalBox(RequirementBorder))
+    {
+        RequirementLayoutSlot->SetSize(DMFNativeUI::FillSize());
+        RequirementLayoutSlot->SetPadding(FMargin(0,0,0,8));
+    }
+    UScrollBox* RequirementScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("DigivolutionRequirementScroll"));
+    RequirementBorder->AddChild(RequirementScroll);
+    DigivolutionRequirementText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolutionRequirementText"));
+    DigivolutionRequirementText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolutionRequirementText, 12, DMFNativeUI::Text());
+    RequirementScroll->AddChild(DigivolutionRequirementText);
+
+    DigivolveButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigivolveButton"));
+    DMFNativeUI::StyleButton(DigivolveButton, true);
+    UTextBlock* DigivolveLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigivolveLabel"));
+    DigivolveLabel->SetText(NSLOCTEXT("DMF", "DigivolveButtonLabel", "DIGIVOLVE TO SELECTED FORM"));
+    DigivolveLabel->SetJustification(ETextJustify::Center);
+    DigivolveLabel->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigivolveLabel, 15, DMFNativeUI::Text(), true);
+    DigivolveButton->AddChild(DigivolveLabel);
+    DigivolutionPathsColumn->AddChildToVerticalBox(DigivolveButton);
+
     // CARE tab: polished virtual-pet dashboard. All mutation buttons route through the owner component's server RPC.
     CareContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("CareContentRow"));
     if (UVerticalBoxSlot* CareContentLayoutSlot = WindowColumn->AddChildToVerticalBox(CareContentRow))
@@ -773,6 +941,7 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
         BoundDigimonComponent->OnCareStateChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
         BoundDigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
+        BoundDigimonComponent->OnDigivolutionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionResult);
     }
 
     BoundDigimonComponent = NewComponent;
@@ -786,6 +955,7 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnMaterializationResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
         BoundDigimonComponent->OnCareStateChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareStateChanged);
         BoundDigimonComponent->OnCareSequenceFinished.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareSequenceFinished);
+        BoundDigimonComponent->OnDigivolutionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionResult);
     }
 }
 
@@ -794,6 +964,14 @@ UDMFDigimonSpeciesData* UDMFDigimonInventoryWidget::ResolveSpecies(const FPrimar
     if (!SpeciesId.IsValid())
     {
         return nullptr;
+    }
+
+    if (BoundDigimonComponent)
+    {
+        if (UDMFDigimonSpeciesData* Resolved = BoundDigimonComponent->ResolveDigimonSpecies(SpeciesId))
+        {
+            return Resolved;
+        }
     }
 
     UAssetManager& AssetManager = UAssetManager::Get();
@@ -1510,6 +1688,7 @@ void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTa
     if (ActiveMenuTab == EDMFDigimonMenuTab::Collection) RefreshInventory();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Bank) RefreshBankData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) RefreshScanData();
+    else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) RefreshDigivolutionData();
     else RefreshCareData();
 }
 
@@ -1519,15 +1698,18 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
     if (BankContentRow) BankContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Bank ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (ScanContentRow) ScanContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (CareContentRow) CareContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Care ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (DigivolutionContentRow) DigivolutionContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Digivolution ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     DMFNativeUI::StyleButton(CollectionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Collection);
     DMFNativeUI::StyleButton(BankTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Bank);
     DMFNativeUI::StyleButton(ScanMaterializeTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize);
+    DMFNativeUI::StyleButton(DigivolutionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Digivolution);
     DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
     if (DigimonStatusText)
     {
         FText Status = NSLOCTEXT("DMF","PartyTabStatus","Manage the six-Digimon active Party, summon your partner or deposit Party members into Bank.");
         if (ActiveMenuTab == EDMFDigimonMenuTab::Bank) Status = NSLOCTEXT("DMF","BankTabStatus","Browse account-owned Box storage anywhere in the world, then move or atomically swap Digimon with Party.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) Status = NSLOCTEXT("DMF","ScanTabStatus","Battle Wild Digimon to build Scan Data. Materialization fills Party first, then Bank automatically.");
+        else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) Status = NSLOCTEXT("DMF","DigivolutionTabStatus","Inspect branching evolution paths for any Party or Bank Digimon. Requirements and transformation commits are server-authoritative.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Care) Status = NSLOCTEXT("DMF","CareTabStatus","Care for your summoned partner with unlimited DigiMeat and monitor its persistent virtual-pet needs.");
         DigimonStatusText->SetText(Status);
         DigimonStatusText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
@@ -1682,18 +1864,416 @@ void UDMFDigimonInventoryWidget::RefreshCareData()
     if (FeedDigiMeatButton) FeedDigiMeatButton->SetIsEnabled(bReadyToFeed);
 }
 
+void UDMFDigimonInventoryWidget::RefreshDigivolutionData()
+{
+    BindDigimonComponent();
+    if (!WidgetTree || !BoundDigimonComponent || !DigivolutionOwnedGrid)
+    {
+        return;
+    }
+
+    const TArray<FDMFDigimonInstance> Party = BoundDigimonComponent->GetPartyDigimon();
+    const TArray<FDMFDigimonInstance> Bank = BoundDigimonComponent->GetBankDigimon();
+    const FGuid ActiveId = BoundDigimonComponent->GetActivePartnerInstanceId();
+
+    bool bSelectionExists = false;
+    auto ContainsInstance = [&](const TArray<FDMFDigimonInstance>& Source, const FGuid Id)
+    {
+        return Source.ContainsByPredicate([&](const FDMFDigimonInstance& Digimon) { return Digimon.IsValid() && Digimon.InstanceId == Id; });
+    };
+    bSelectionExists = SelectedDigivolutionInstanceId.IsValid()
+        && (ContainsInstance(Party, SelectedDigivolutionInstanceId) || ContainsInstance(Bank, SelectedDigivolutionInstanceId));
+    if (!bSelectionExists)
+    {
+        SelectedDigivolutionInstanceId = ActiveId.IsValid() && ContainsInstance(Party, ActiveId)
+            ? ActiveId
+            : (Party.Num() > 0 ? Party[0].InstanceId : (Bank.Num() > 0 ? Bank[0].InstanceId : FGuid()));
+        SelectedDigivolutionTargetSpeciesId = FPrimaryAssetId();
+    }
+
+    DigivolutionOwnedGrid->ClearChildren();
+    int32 VisualIndex = 0;
+    auto AddOwnedCard = [&](const FDMFDigimonInstance& Digimon, const EDMFDigimonStorageLocation Location)
+    {
+        if (!Digimon.IsValid()) return;
+        UDMFDigimonSpeciesData* Species = ResolveSpecies(Digimon.SpeciesId);
+        const FText SpeciesName = Species && !Species->DisplayName.IsEmpty() ? Species->DisplayName : FText::FromName(Digimon.SpeciesId.PrimaryAssetName);
+        const FText DisplayName = Digimon.Nickname.IsEmpty() ? SpeciesName : FText::FromString(Digimon.Nickname);
+        const bool bSelected = Digimon.InstanceId == SelectedDigivolutionInstanceId;
+        const bool bActive = Location == EDMFDigimonStorageLocation::Party && Digimon.InstanceId == ActiveId;
+
+        // Keep Digivolution-owned cards at a fixed, readable footprint. UniformGrid cells can become
+        // much wider than their content when only one or two Digimon exist; centering the fixed
+        // SizeBox prevents the button/portrait from stretching across the entire left panel.
+        USizeBox* CardSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        CardSize->SetWidthOverride(DMFInventoryUI::DigivolutionOwnedCardWidth);
+        CardSize->SetHeightOverride(DMFInventoryUI::DigivolutionOwnedCardHeight);
+
+        UDMFDigimonInventoryEntryButton* Button = WidgetTree->ConstructWidget<UDMFDigimonInventoryEntryButton>(UDMFDigimonInventoryEntryButton::StaticClass());
+        Button->InitializeDigimonEntry(Digimon.InstanceId);
+        Button->OnDigimonPressed.AddDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionOwnedPressed);
+        DMFNativeUI::StyleCompactButton(Button, false, false, bSelected);
+        CardSize->AddChild(Button);
+
+        UBorder* Back = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(Back, Digimon.CurrentHP <= 0 ? FLinearColor(0.15f,0.025f,0.035f,0.94f) : DMFNativeUI::SlotEmpty(), FMargin(5.0f));
+        Button->AddChild(Back);
+
+        UVerticalBox* CardColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Back->AddChild(CardColumn);
+
+        // Portrait gets its own square viewport and ScaleBox. This guarantees that species portraits
+        // keep their source aspect ratio instead of being distorted by a wide UniformGrid cell.
+        USizeBox* PortraitViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        PortraitViewport->SetWidthOverride(DMFInventoryUI::DigivolutionOwnedPortraitSize);
+        PortraitViewport->SetHeightOverride(DMFInventoryUI::DigivolutionOwnedPortraitSize);
+        if (UVerticalBoxSlot* PortraitViewportSlot = CardColumn->AddChildToVerticalBox(PortraitViewport))
+        {
+            PortraitViewportSlot->SetHorizontalAlignment(HAlign_Center);
+            PortraitViewportSlot->SetPadding(FMargin(0.0f, 1.0f, 0.0f, 4.0f));
+        }
+
+        UOverlay* PortraitOverlay = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        PortraitViewport->AddChild(PortraitOverlay);
+
+        UScaleBox* PortraitScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass());
+        PortraitScale->SetStretch(EStretch::ScaleToFit);
+        PortraitScale->SetStretchDirection(EStretchDirection::DownOnly);
+        if (UOverlaySlot* PortraitScaleSlot = PortraitOverlay->AddChildToOverlay(PortraitScale))
+        {
+            PortraitScaleSlot->SetHorizontalAlignment(HAlign_Center);
+            PortraitScaleSlot->SetVerticalAlignment(VAlign_Center);
+        }
+
+        UImage* Portrait = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        if (UTexture2D* Texture = Species ? Species->Portrait.LoadSynchronous() : nullptr)
+        {
+            Portrait->SetBrushFromTexture(Texture, true);
+            Portrait->SetColorAndOpacity(Digimon.CurrentHP <= 0 ? FLinearColor(0.5f,0.5f,0.5f,1) : FLinearColor::White);
+        }
+        else
+        {
+            Portrait->SetColorAndOpacity(FLinearColor::Transparent);
+        }
+        PortraitScale->AddChild(Portrait);
+
+        if (Digimon.CurrentHP <= 0 || bActive)
+        {
+            UBorder* Badge = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+            DMFNativeUI::StylePanel(Badge, Digimon.CurrentHP <= 0 ? DMFNativeUI::Danger() : DMFNativeUI::Success(), FMargin(4,1));
+            UTextBlock* BadgeText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            BadgeText->SetText(Digimon.CurrentHP <= 0 ? NSLOCTEXT("DMF","DigivolutionKOBadge","KO") : NSLOCTEXT("DMF","DigivolutionActiveBadge","ACTIVE"));
+            DMFNativeUI::StyleText(BadgeText, 8, FLinearColor::White, true);
+            Badge->AddChild(BadgeText);
+            if (UOverlaySlot* BadgeSlot = PortraitOverlay->AddChildToOverlay(Badge))
+            {
+                BadgeSlot->SetPadding(FMargin(2.0f));
+                BadgeSlot->SetHorizontalAlignment(HAlign_Right);
+                BadgeSlot->SetVerticalAlignment(VAlign_Top);
+            }
+        }
+
+        UBorder* Footer = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(Footer, FLinearColor(0.004f,0.012f,0.03f,0.96f), FMargin(4.0f, 3.0f));
+        if (UVerticalBoxSlot* FooterLayoutSlot = CardColumn->AddChildToVerticalBox(Footer))
+        {
+            FooterLayoutSlot->SetSize(DMFNativeUI::FillSize());
+            FooterLayoutSlot->SetVerticalAlignment(VAlign_Fill);
+        }
+
+        UVerticalBox* FooterColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Footer->AddChild(FooterColumn);
+
+        UTextBlock* LocationText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        LocationText->SetText(Location == EDMFDigimonStorageLocation::Party ? NSLOCTEXT("DMF","DigivolutionPartyBadge","PARTY") : NSLOCTEXT("DMF","DigivolutionBankBadge","BANK"));
+        LocationText->SetJustification(ETextJustify::Center);
+        DMFNativeUI::StyleText(LocationText, 8, bActive ? DMFNativeUI::Success() : DMFNativeUI::Gold(), true);
+        FooterColumn->AddChildToVerticalBox(LocationText);
+
+        UTextBlock* NameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        NameText->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionOwnedCardName","{0} • Lv.{1}"), DisplayName, FText::AsNumber(Digimon.Stats.Level)));
+        NameText->SetJustification(ETextJustify::Center);
+        NameText->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(NameText, 9, DMFNativeUI::Text(), true);
+        if (UVerticalBoxSlot* NameLayoutSlot = FooterColumn->AddChildToVerticalBox(NameText))
+        {
+            NameLayoutSlot->SetSize(DMFNativeUI::FillSize());
+            NameLayoutSlot->SetVerticalAlignment(VAlign_Center);
+        }
+
+        const int32 Row = VisualIndex / DMFInventoryUI::DigivolutionOwnedColumns;
+        const int32 Column = VisualIndex % DMFInventoryUI::DigivolutionOwnedColumns;
+        if (UUniformGridSlot* GridSlot = DigivolutionOwnedGrid->AddChildToUniformGrid(CardSize, Row, Column))
+        {
+            // Critical: Fill caused a one-card row to expand to the full panel width, distorting the
+            // portrait. Centering honors the SizeBox overrides regardless of how many cards are present.
+            GridSlot->SetHorizontalAlignment(HAlign_Center);
+            GridSlot->SetVerticalAlignment(VAlign_Top);
+        }
+        ++VisualIndex;
+    };
+
+    for (const FDMFDigimonInstance& Digimon : Party) AddOwnedCard(Digimon, EDMFDigimonStorageLocation::Party);
+    for (const FDMFDigimonInstance& Digimon : Bank) AddOwnedCard(Digimon, EDMFDigimonStorageLocation::Bank);
+
+    // Preserve the three-column geometry even when the account owns only one or two Digimon.
+    // Without these desired-size placeholders UniformGrid collapses to the number of occupied
+    // columns, making sparse rows much wider than full rows.
+    if (VisualIndex < DMFInventoryUI::DigivolutionOwnedColumns)
+    {
+        for (int32 EmptyColumn = VisualIndex; EmptyColumn < DMFInventoryUI::DigivolutionOwnedColumns; ++EmptyColumn)
+        {
+            USizeBox* ColumnPlaceholder = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+            ColumnPlaceholder->SetWidthOverride(DMFInventoryUI::DigivolutionOwnedCardWidth);
+            ColumnPlaceholder->SetHeightOverride(1.0f);
+            ColumnPlaceholder->SetVisibility(ESlateVisibility::HitTestInvisible);
+            if (UUniformGridSlot* PlaceholderSlot = DigivolutionOwnedGrid->AddChildToUniformGrid(ColumnPlaceholder, 0, EmptyColumn))
+            {
+                PlaceholderSlot->SetHorizontalAlignment(HAlign_Center);
+                PlaceholderSlot->SetVerticalAlignment(VAlign_Top);
+            }
+        }
+    }
+
+    RefreshSelectedDigivolutionDetails();
+}
+
+void UDMFDigimonInventoryWidget::RefreshSelectedDigivolutionDetails()
+{
+    if (!BoundDigimonComponent)
+    {
+        return;
+    }
+
+    FDMFDigimonInstance Digimon;
+    EDMFDigimonStorageLocation Location = EDMFDigimonStorageLocation::Party;
+    const bool bHasSelection = SelectedDigivolutionInstanceId.IsValid()
+        && BoundDigimonComponent->GetOwnedDigimonByInstanceId(SelectedDigivolutionInstanceId, Digimon, Location);
+    UDMFDigimonSpeciesData* SourceSpecies = bHasSelection ? ResolveSpecies(Digimon.SpeciesId) : nullptr;
+
+    if (!bHasSelection || !SourceSpecies)
+    {
+        if (DigivolutionCurrentPortraitImage) DigivolutionCurrentPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        if (DigivolutionCurrentNameText) DigivolutionCurrentNameText->SetText(NSLOCTEXT("DMF","DigivolutionNoOwnedSelection","NO DIGIMON SELECTED"));
+        if (DigivolutionCurrentMetaText) DigivolutionCurrentMetaText->SetText(NSLOCTEXT("DMF","DigivolutionNoOwnedMeta","Choose a Digimon from Party or Bank."));
+        if (DigivolutionPathList) DigivolutionPathList->ClearChildren();
+        if (DigivolutionTargetPortraitImage) DigivolutionTargetPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        if (DigivolutionTargetNameText) DigivolutionTargetNameText->SetText(NSLOCTEXT("DMF","DigivolutionNoTarget","NO TARGET FORM"));
+        if (DigivolutionTargetMetaText) DigivolutionTargetMetaText->SetText(FText::GetEmpty());
+        if (DigivolutionRequirementText) DigivolutionRequirementText->SetText(NSLOCTEXT("DMF","DigivolutionSelectOwnedHelp","Select an owned Digimon to inspect its configured Digivolution paths."));
+        if (DigivolveButton) DigivolveButton->SetIsEnabled(false);
+        SelectedDigivolutionTargetSpeciesId = FPrimaryAssetId();
+        return;
+    }
+
+    const FText SpeciesName = SourceSpecies->DisplayName.IsEmpty() ? FText::FromName(Digimon.SpeciesId.PrimaryAssetName) : SourceSpecies->DisplayName;
+    const FText DisplayName = Digimon.Nickname.IsEmpty() ? SpeciesName : FText::FromString(Digimon.Nickname);
+    if (DigivolutionCurrentPortraitImage)
+    {
+        if (UTexture2D* Texture = SourceSpecies->Portrait.LoadSynchronous())
+        {
+            DigivolutionCurrentPortraitImage->SetBrushFromTexture(Texture, true);
+            DigivolutionCurrentPortraitImage->SetColorAndOpacity(Digimon.CurrentHP <= 0 ? FLinearColor(0.55f,0.55f,0.55f,1) : FLinearColor::White);
+            DigivolutionCurrentPortraitImage->SetVisibility(ESlateVisibility::Visible);
+        }
+        else DigivolutionCurrentPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+    }
+    if (DigivolutionCurrentNameText) DigivolutionCurrentNameText->SetText(DisplayName);
+    if (DigivolutionCurrentMetaText)
+    {
+        DigivolutionCurrentMetaText->SetText(FText::Format(
+            NSLOCTEXT("DMF","DigivolutionCurrentMetaFormat","{0}  •  {1}  •  Lv.{2}\n{3}  •  HP {4}/{5}  •  ABI {6}  •  CAM {7}"),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(SourceSpecies->Stage)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(SourceSpecies->Attribute)),
+            FText::AsNumber(Digimon.Stats.Level),
+            Location == EDMFDigimonStorageLocation::Party ? NSLOCTEXT("DMF","DigivolutionLocationParty","PARTY") : NSLOCTEXT("DMF","DigivolutionLocationBank","BANK"),
+            FText::AsNumber(Digimon.CurrentHP), FText::AsNumber(Digimon.Stats.MaxHP), FText::AsNumber(Digimon.Stats.ABI), FText::AsNumber(Digimon.Stats.CAM)));
+    }
+
+    const TArray<FDMFDigivolutionEvaluation> Options = BoundDigimonComponent->GetDigivolutionOptions(SelectedDigivolutionInstanceId);
+    bool bTargetStillExists = Options.ContainsByPredicate([&](const FDMFDigivolutionEvaluation& Evaluation)
+    {
+        return Evaluation.TargetSpeciesId == SelectedDigivolutionTargetSpeciesId;
+    });
+    if (!bTargetStillExists)
+    {
+        SelectedDigivolutionTargetSpeciesId = FPrimaryAssetId();
+        for (const FDMFDigivolutionEvaluation& Evaluation : Options)
+        {
+            if (Evaluation.bEligible) { SelectedDigivolutionTargetSpeciesId = Evaluation.TargetSpeciesId; break; }
+        }
+        if (!SelectedDigivolutionTargetSpeciesId.IsValid() && Options.Num() > 0)
+        {
+            SelectedDigivolutionTargetSpeciesId = Options[0].TargetSpeciesId;
+        }
+    }
+
+    if (DigivolutionPathList)
+    {
+        DigivolutionPathList->ClearChildren();
+        if (Options.IsEmpty())
+        {
+            UBorder* EmptyBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+            DMFNativeUI::StylePanel(EmptyBorder, DMFNativeUI::SlotEmpty(), FMargin(12));
+            UTextBlock* EmptyText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            EmptyText->SetText(NSLOCTEXT("DMF","DigivolutionNoPaths","NO DIGIVOLUTION PATHS CONFIGURED\nAdd one or more target species to this species Data Asset."));
+            EmptyText->SetAutoWrapText(true);
+            EmptyText->SetJustification(ETextJustify::Center);
+            DMFNativeUI::StyleText(EmptyText, 12, DMFNativeUI::Muted(), true);
+            EmptyBorder->AddChild(EmptyText);
+            DigivolutionPathList->AddChildToVerticalBox(EmptyBorder)->SetPadding(FMargin(0,0,0,6));
+        }
+        for (const FDMFDigivolutionEvaluation& Evaluation : Options)
+        {
+            UDMFDigimonSpeciesData* TargetSpecies = ResolveSpecies(Evaluation.TargetSpeciesId);
+            if (!TargetSpecies) continue;
+            UDMFScanSpeciesEntryButton* PathButton = WidgetTree->ConstructWidget<UDMFScanSpeciesEntryButton>(UDMFScanSpeciesEntryButton::StaticClass());
+            PathButton->InitializeScanSpecies(Evaluation.TargetSpeciesId);
+            PathButton->OnSpeciesPressed.AddDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionTargetPressed);
+            DMFNativeUI::StyleCompactButton(PathButton, Evaluation.bEligible, false, Evaluation.TargetSpeciesId == SelectedDigivolutionTargetSpeciesId);
+
+            UBorder* PathBack = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+            DMFNativeUI::StylePanel(PathBack, Evaluation.bEligible ? FLinearColor(0.018f,0.10f,0.08f,0.96f) : DMFNativeUI::SlotEmpty(), FMargin(6));
+            PathButton->AddChild(PathBack);
+            UHorizontalBox* PathRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+            PathBack->AddChild(PathRow);
+            USizeBox* PathPortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+            PathPortraitSize->SetWidthOverride(76.0f); PathPortraitSize->SetHeightOverride(76.0f);
+            PathRow->AddChildToHorizontalBox(PathPortraitSize)->SetPadding(FMargin(0,0,10,0));
+            UImage* PathPortrait = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+            if (UTexture2D* Texture = TargetSpecies->Portrait.LoadSynchronous()) PathPortrait->SetBrushFromTexture(Texture,true); else PathPortrait->SetColorAndOpacity(FLinearColor::Transparent);
+            PathPortraitSize->AddChild(PathPortrait);
+            UVerticalBox* PathTextColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+            if (UHorizontalBoxSlot* PathTextSlot = PathRow->AddChildToHorizontalBox(PathTextColumn)) { PathTextSlot->SetSize(DMFNativeUI::FillSize()); PathTextSlot->SetVerticalAlignment(VAlign_Center); }
+            UTextBlock* PathName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            PathName->SetText(TargetSpecies->DisplayName.IsEmpty() ? FText::FromName(Evaluation.TargetSpeciesId.PrimaryAssetName) : TargetSpecies->DisplayName);
+            DMFNativeUI::StyleText(PathName, 15, Evaluation.bEligible ? DMFNativeUI::Success() : DMFNativeUI::Text(), true);
+            PathTextColumn->AddChildToVerticalBox(PathName);
+            UTextBlock* PathMeta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            PathMeta->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionPathMeta","{0}  •  {1}"),
+                DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(TargetSpecies->Stage)),
+                DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(TargetSpecies->Attribute))));
+            DMFNativeUI::StyleText(PathMeta, 10, DMFNativeUI::Gold(), true);
+            PathTextColumn->AddChildToVerticalBox(PathMeta);
+            UTextBlock* PathRequirements = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            PathRequirements->SetText(Evaluation.RequirementSummary.IsEmpty() ? NSLOCTEXT("DMF","DigivolutionNoRequirements","No additional requirements") : Evaluation.RequirementSummary);
+            PathRequirements->SetAutoWrapText(true);
+            DMFNativeUI::StyleText(PathRequirements, 9, DMFNativeUI::Muted());
+            PathTextColumn->AddChildToVerticalBox(PathRequirements);
+            UTextBlock* PathState = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            PathState->SetText(Evaluation.bEligible ? NSLOCTEXT("DMF","DigivolutionReadyState","READY TO DIGIVOLVE") : FText::Format(NSLOCTEXT("DMF","DigivolutionLockedState","LOCKED • {0}"), Evaluation.FailureReason));
+            PathState->SetAutoWrapText(true);
+            DMFNativeUI::StyleText(PathState, 9, Evaluation.bEligible ? DMFNativeUI::Success() : DMFNativeUI::Danger(), true);
+            PathTextColumn->AddChildToVerticalBox(PathState);
+            DigivolutionPathList->AddChildToVerticalBox(PathButton)->SetPadding(FMargin(0,0,0,6));
+        }
+    }
+
+    UDMFDigimonSpeciesData* TargetSpecies = ResolveSpecies(SelectedDigivolutionTargetSpeciesId);
+    if (!TargetSpecies)
+    {
+        if (DigivolutionTargetPortraitImage) DigivolutionTargetPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        if (DigivolutionTargetNameText) DigivolutionTargetNameText->SetText(NSLOCTEXT("DMF","DigivolutionNoTargetConfigured","NO TARGET FORM"));
+        if (DigivolutionTargetMetaText) DigivolutionTargetMetaText->SetText(Options.IsEmpty() ? NSLOCTEXT("DMF","DigivolutionNoTargetConfiguredMeta","This form has no configured Digivolution paths.") : FText::GetEmpty());
+        if (DigivolutionRequirementText) DigivolutionRequirementText->SetText(NSLOCTEXT("DMF","DigivolutionNoTargetRequirements","Choose a configured target form to inspect its requirements."));
+        if (DigivolveButton) DigivolveButton->SetIsEnabled(false);
+        return;
+    }
+
+    if (DigivolutionTargetPortraitImage)
+    {
+        if (UTexture2D* Texture = TargetSpecies->Portrait.LoadSynchronous()) { DigivolutionTargetPortraitImage->SetBrushFromTexture(Texture,true); DigivolutionTargetPortraitImage->SetVisibility(ESlateVisibility::Visible); }
+        else DigivolutionTargetPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+    }
+    if (DigivolutionTargetNameText) DigivolutionTargetNameText->SetText(TargetSpecies->DisplayName.IsEmpty() ? FText::FromName(SelectedDigivolutionTargetSpeciesId.PrimaryAssetName) : TargetSpecies->DisplayName);
+    if (DigivolutionTargetMetaText)
+    {
+        DigivolutionTargetMetaText->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionTargetMetaFormat","{0}  •  {1}\nWorld class: {2}"),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(TargetSpecies->Stage)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(TargetSpecies->Attribute)),
+            TargetSpecies->WorldActorClass.IsNull() ? NSLOCTEXT("DMF","DigivolutionWorldClassMissing","NOT ASSIGNED") : NSLOCTEXT("DMF","DigivolutionWorldClassReady","READY")));
+    }
+
+    const FDMFDigivolutionEvaluation* SelectedEvaluation = Options.FindByPredicate([&](const FDMFDigivolutionEvaluation& Evaluation)
+    {
+        return Evaluation.TargetSpeciesId == SelectedDigivolutionTargetSpeciesId;
+    });
+    FText Failure;
+    const bool bCanDigivolve = BoundDigimonComponent->CanDigivolveOwnedDigimonTo(SelectedDigivolutionInstanceId, SelectedDigivolutionTargetSpeciesId, Failure);
+    if (DigivolutionRequirementText)
+    {
+        const FText RequirementSummary = SelectedEvaluation && !SelectedEvaluation->RequirementSummary.IsEmpty()
+            ? SelectedEvaluation->RequirementSummary
+            : NSLOCTEXT("DMF","DigivolutionRequirementsNone","No additional progression requirements.");
+        const FText StateText = bCanDigivolve
+            ? NSLOCTEXT("DMF","DigivolutionRequirementsReady","STATUS: READY\nThe server will validate these requirements again when you confirm. The individual GUID, nickname, Care state, Level/EXP and configured stat investment are preserved.")
+            : FText::Format(NSLOCTEXT("DMF","DigivolutionRequirementsLocked","STATUS: LOCKED\n{0}\n\nThe server revalidates every requirement; clients cannot force a form change."), Failure);
+        DigivolutionRequirementText->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionRequirementsPanel","REQUIREMENTS\n{0}\n\n{1}"), RequirementSummary, StateText));
+        DigivolutionRequirementText->SetColorAndOpacity(FSlateColor(bCanDigivolve ? DMFNativeUI::Text() : DMFNativeUI::Muted()));
+    }
+    if (DigivolveButton)
+    {
+        DigivolveButton->SetIsEnabled(bCanDigivolve && !BoundDigimonComponent->IsDigivolutionSequenceActive());
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleDigivolutionOwnedPressed(const FGuid InstanceId)
+{
+    SelectedDigivolutionInstanceId = InstanceId;
+    SelectedDigivolutionTargetSpeciesId = FPrimaryAssetId();
+    RefreshDigivolutionData();
+}
+
+void UDMFDigimonInventoryWidget::HandleDigivolutionTargetPressed(const FPrimaryAssetId SpeciesId)
+{
+    SelectedDigivolutionTargetSpeciesId = SpeciesId;
+    RefreshSelectedDigivolutionDetails();
+}
+
+void UDMFDigimonInventoryWidget::HandleDigivolveSelected()
+{
+    if (BoundDigimonComponent && SelectedDigivolutionInstanceId.IsValid() && SelectedDigivolutionTargetSpeciesId.IsValid())
+    {
+        BoundDigimonComponent->ServerDigivolveOwnedDigimon(SelectedDigivolutionInstanceId, SelectedDigivolutionTargetSpeciesId);
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleDigivolutionResult(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId, const FPrimaryAssetId PreviousSpeciesId, const FPrimaryAssetId NewSpeciesId)
+{
+    if (bSuccess && DigimonInstanceId.IsValid())
+    {
+        SelectedDigivolutionInstanceId = DigimonInstanceId;
+        SelectedDigivolutionTargetSpeciesId = FPrimaryAssetId();
+    }
+    RefreshInventory();
+    RefreshBankData();
+    RefreshDigivolutionData();
+    if (DigimonStatusText && !Message.IsEmpty())
+    {
+        DigimonStatusText->SetText(Message);
+        DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger()));
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleDigivolutionTab()
+{
+    SetActiveMenuTab(EDMFDigimonMenuTab::Digivolution);
+}
+
 void UDMFDigimonInventoryWidget::HandleInventoryChanged()
 {
     RefreshInventory();
     RefreshBankData();
     RefreshSelectedScanDetails();
     RefreshCareData();
+    RefreshDigivolutionData();
 }
 
 void UDMFDigimonInventoryWidget::HandleBankChanged()
 {
     RefreshBankData();
     RefreshSelectedScanDetails();
+    RefreshDigivolutionData();
 }
 
 void UDMFDigimonInventoryWidget::HandleStorageActionResult(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId, const EDMFDigimonStorageLocation NewLocation)
@@ -1757,6 +2337,7 @@ void UDMFDigimonInventoryWidget::HandleMaterializationResult(const bool bSuccess
     RefreshInventory();
     RefreshBankData();
     RefreshScanData();
+    RefreshDigivolutionData();
     RefreshTabPresentation();
     if (DigimonStatusText && !Message.IsEmpty())
     {
