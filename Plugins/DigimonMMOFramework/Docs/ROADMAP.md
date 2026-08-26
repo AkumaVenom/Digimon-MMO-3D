@@ -158,3 +158,8 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Scan & Materialization — IMPLEMENTED in v0.7.0-alpha
 - Shared Digimon menu Party + Bank/Boxes tabs — IMPLEMENTED in v0.12.0-alpha.
 - Persistent Party/Bank Digivolution with native tab and replicated active-partner transformation — IMPLEMENTED in v0.13.0-alpha.
+
+## Completed — v0.14 DigiDex Species Encyclopedia
+- Read-only Asset-Manager-backed implemented-species registry.
+- Search + Stage/Attribute filters, discovery badges, base profile, Scan/ownership status, evolution-family links and species descriptions.
+- No new replication or persistence channel; designed to scale as the project begins mass species population.

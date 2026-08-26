@@ -79,7 +79,7 @@ Default input remains:
 
 `I -> Toggle Digimon Menu UI`
 
-The shared native menu now opens with four first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **CARE**.
+The shared native menu now exposes six first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION**, **CARE**.
 
 **PARTY** renders the active field roster (`MaxPartyDigimon`, six by default) with portrait, species/nickname, level, Active/Summoned/KO state and the existing selected-Digimon profile. `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, and `MOVE TO BANK` route through server-owned state. The final Party member cannot be deposited.
 
@@ -164,7 +164,7 @@ The v0.6 native layout adds new **optional** bindings. Legacy optional bindings 
 12. Press Tab, click a healthy Party slot, then Tab/Escape back to gameplay; repeat in a two-client test and confirm only the owning player sees their private roster/storage while the spawned partner change replicates normally.
 
 ## Shared Digimon menu shell — current v0.12 state
-The original v0.6 Collection page evolved into the active **PARTY** page while preserving the historical `Collection` enum/API identity for Blueprint compatibility. The native shell now presents **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIVOLUTION** and **CARE**. Projects using Blueprint children can mirror the same architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Bank Data`, `Refresh Scan Data`, `Refresh Digivolution Data` and `Refresh Care Data`. Digivolution is therefore part of the same modal shell rather than a disconnected menu.
+The original v0.6 Collection page evolved into the active **PARTY** page while preserving the historical `Collection` enum/API identity for Blueprint compatibility. The native shell now presents **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION** and **CARE**. Projects using Blueprint children can mirror the same architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Bank Data`, `Refresh Scan Data`, `Refresh DigiDex Data`, `Refresh Digivolution Data` and `Refresh Care Data`. Digivolution is therefore part of the same modal shell rather than a disconnected menu.
 
 
 ## v0.8.0 CARE page
@@ -194,3 +194,7 @@ The native DIGIVOLUTION page follows the v0.12.1 layout-hardening contract: fixe
 The UI reads owner-only replicated data and local species assets only. It never applies the species mutation itself. When a summoned partner begins a world transformation, the PlayerController can remove the modal menu/quickbars/chat so the cue is visible, then recreate the menu directly on DIGIVOLUTION after the authoritative result.
 
 For Blueprint replacements, keep the `EDMFDigimonMenuTab` serialized values intact; `Digivolution` was appended after the earlier v0.12 `Bank` value specifically to avoid shifting existing Collection/Scan/Care/Bank enum serialization.
+
+### DigiDex page
+
+The v0.14 native shell includes a read-only **DIGIDEX** page using the same fixed-card/aspect-safe rules established by the v0.13.1 UI fix. The left browser uses four fixed cards per row with `ScaleBox -> ScaleToFit -> DownOnly` portrait presentation, search and Stage/Attribute filters. The right dossier is scroll-protected so long descriptions/move/evolution text cannot draw through the read-only footer. No action button is present on this page.

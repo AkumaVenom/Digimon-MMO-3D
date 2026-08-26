@@ -230,6 +230,10 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFDigimonInventoryWidget> DigimonInventoryWidgetClass;
 
+    /** Master switch for the read-only native DigiDex encyclopedia tab. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|DigiDex")
+    bool bEnableDigiDex = true;
+
     /** Ready-to-use I-key toggle for the tabbed Digimon menu. Disable for project-owned input. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     bool bEnableDefaultDigimonInventoryMenuInput = true;

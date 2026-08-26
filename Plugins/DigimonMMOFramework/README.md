@@ -1,8 +1,18 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.13.1-alpha — Digivolution Owned-Roster UI Layout Fix`
+**Version:** `0.14.0-alpha — Polished Native DigiDex Species Encyclopedia`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.14.0-alpha — Polished Native DigiDex Species Encyclopedia
+
+The shared `I` Digimon Menu now includes a full **DIGIDEX** encyclopedia for every `DMFDigimonSpeciesData` registered with Unreal's Asset Manager. It is designed as the permanent read-only species reference before large roster population begins: add a new species Data Asset under the recursively scanned `/Game/DigimonData` hierarchy and the species automatically becomes eligible to appear in DigiDex without hand-maintaining a second roster.
+
+The native page uses the same navy/cyan/gold visual language as Party, Bank, Scan, Digivolution and Care. A fixed four-column browser presents aspect-safe portraits, registry numbering, Stage/Attribute, and live **OWNED / SCANNED / UNSCANNED** state. Each species can optionally author a stable `DigiDex Number` and can be excluded from the encyclopedia with `Show In DigiDex`; both are exposed directly on `DMFDigimonSpeciesData`, with safe automatic defaults. Players can search by species/stage/attribute/element and cycle Stage/Attribute filters. Selecting an entry opens a detailed dossier with Base Stats, starting level, battle rewards, Scan/Materialization values, starting moves, description, and authored previous/next Digivolution-family links.
+
+DigiDex is intentionally **read-only**. There are no summon, recall, Party/Bank transfer, Care, Materialize or Digivolve buttons on this page, and the client never gains a new mutation path by opening it. Ownership/Scan badges reuse the existing owner-only replicated state; the species registry itself is static project content. No new RPCs, replicated properties or SaveGame fields are required.
+
+The tab enum is appended rather than reordered, preserving all v0.13.1 serialized values. Native visual order is now **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE**. See `Docs/SETUP_DIGIDEX.md` for species-registration and authoring guidance.
 
 ## New in v0.13.1-alpha — Digivolution Owned-Roster UI Layout Fix
 
@@ -38,7 +48,7 @@ The persistent Party Quick Access and combat ability quickbars were polished at 
 
 ## New in v0.12.0-alpha — Polished Party, Digimon Bank / Boxes & Party Quick Access
 
-The owned-Digimon progression layer is now a complete **Party + Bank/Box system**. The shared `I` Digimon Menu exposes `PARTY`, `BANK / BOXES`, `SCAN & MATERIALIZE` and `CARE`. Party is a six-Digimon active field roster by default, while the persistent Bank holds 200 Digimon by default and can be opened **anywhere in the gameplay world**—no physical terminal is required.
+The owned-Digimon progression layer is now a complete **Party + Bank/Box system**. The shared `I` Digimon Menu exposes `PARTY`, `BANK / BOXES`, `SCAN & MATERIALIZE`, `DIGIDEX`, `DIGIVOLUTION` and `CARE`. Party is a six-Digimon active field roster by default, while the persistent Bank holds 200 Digimon by default and can be opened **anywhere in the gameplay world**—no physical terminal is required.
 
 The Bank uses paged six-column Box storage with compact portrait/level cards, KO presentation, full selected-Digimon stats and a live six-slot Party destination strip. If Party has room, a Bank Digimon moves into the first free slot. If Party is full, select an occupied Party slot and the server performs an **atomic swap**, returning the outgoing Party Digimon to Bank. Deposits, swaps and active-partner changes are server-authoritative, owner-only replicated, persisted immediately, and blocked during active combat by default.
 
@@ -155,7 +165,7 @@ Blueprint projects can reskin/extend all presentation surfaces: care data remain
 
 The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into Party first, or Bank automatically when Party is full.
 
-The Digimon menu began as a tabbed shell in v0.7; in current builds its roster page is the six-slot `PARTY`, with `BANK / BOXES`, `SCAN & MATERIALIZE`, `DIGIVOLUTION` and `CARE` implemented alongside it. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
+The Digimon menu began as a tabbed shell in v0.7; in current builds its roster page is the six-slot `PARTY`, with `BANK / BOXES`, `SCAN & MATERIALIZE`, `DIGIDEX`, `DIGIVOLUTION` and `CARE` implemented alongside it. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
 
 Per species, configure `DMFDigimonSpeciesData -> Scan & Materialization`: `bScanDataEnabled`, `BattleScanPercentReward`, `ScanPercentCap`, `bMaterializationEnabled`, and `MaterializationRequiredScanPercent`. Materializable species must have `WorldActorClass` set to the normal partner Blueprint derived from `DMFDigimonCharacter`, never the `DMFWildDigimonCharacter` Blueprint. Scan Data is owner-only replicated and saved in the account record automatically. See `Docs/SETUP_SCAN_MATERIALIZATION.md`.
 

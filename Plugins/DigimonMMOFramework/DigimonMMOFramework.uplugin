@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1310,
-  "VersionName": "0.13.1-alpha",
+  "Version": 1400,
+  "VersionName": "0.14.0-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with persistent branching Digivolution, hardened aspect-safe native Digivolution roster UI, world-accessible Party/Bank storage, replicated healer presentation, camera/music/footsteps, configurable hosting, world chat/nameplates, Care, Scan Data and Materialization, combat, player skins and account persistence.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with a polished read-only DigiDex species encyclopedia, persistent branching Digivolution, Party/Bank storage, replicated healer presentation, camera/music/footsteps, configurable hosting, world chat/nameplates, Care, Scan Data and Materialization, combat, player skins and account persistence.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

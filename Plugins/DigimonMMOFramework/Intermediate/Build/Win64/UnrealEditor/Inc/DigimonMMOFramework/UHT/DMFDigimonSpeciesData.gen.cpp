@@ -402,6 +402,27 @@ struct UHT_STATICS
 		{ "Category", "Identity" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowInDigiDex_MetaData[] = {
+		{ "Category", "DigiDex" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Included in the read-only DigiDex registry by default. Disable only for internal/test species assets. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Included in the read-only DigiDex registry by default. Disable only for internal/test species assets." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiDexNumber_MetaData[] = {
+		{ "Category", "DigiDex" },
+		{ "ClampMin", "0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional stable project-authored DigiDex number. Zero uses the framework's deterministic fallback ordering. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional stable project-authored DigiDex number. Zero uses the framework's deterministic fallback ordering." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StartingLevel_MetaData[] = {
 		{ "Category", "Progression" },
 		{ "ClampMin", "1" },
@@ -787,6 +808,12 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_Attribute;
 	static const UECodeGen_Private::FBytePropertyParams NewProp_Element_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_Element;
+	static void NewProp_bShowInDigiDex_SetBit(void* Obj)
+	{
+		((UDMFDigimonSpeciesData*)Obj)->bShowInDigiDex = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowInDigiDex;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_DigiDexNumber;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_StartingLevel;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_BaseStats;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_AttributePointsPerLevel;
@@ -880,6 +907,8 @@ const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Attribute_Unde
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Attribute = { "Attribute", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Attribute), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttribute, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Attribute_MetaData), NewProp_Attribute_MetaData) }; // 9d973b8aedacba9214374b88283b5650f5088c09
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Element_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Element = { "Element", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, Element), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonElement, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Element_MetaData), NewProp_Element_MetaData) }; // 8769cd2143b061114ef8acd938a8b19bb44c96aa
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowInDigiDex = { "bShowInDigiDex", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFDigimonSpeciesData), &UHT_STATICS::NewProp_bShowInDigiDex_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowInDigiDex_MetaData), NewProp_bShowInDigiDex_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigiDexNumber = { "DigiDexNumber", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, DigiDexNumber), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiDexNumber_MetaData), NewProp_DigiDexNumber_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_StartingLevel = { "StartingLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, StartingLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StartingLevel_MetaData), NewProp_StartingLevel_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_BaseStats = { "BaseStats", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, BaseStats), Z_Construct_UScriptStruct_FDMFDigimonStats, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BaseStats_MetaData), NewProp_BaseStats_MetaData) }; // 520b7c977c816e4f689d80785fbab8bbe48405a6
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_AttributePointsPerLevel = { "AttributePointsPerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, AttributePointsPerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AttributePointsPerLevel_MetaData), NewProp_AttributePointsPerLevel_MetaData) };
@@ -948,6 +977,8 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Attribute,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Element_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Element,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowInDigiDex,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiDexNumber,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingLevel,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BaseStats,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AttributePointsPerLevel,
@@ -1079,10 +1110,10 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement_Statics::NewStructOps, TEXT("DMFDigivolutionRequirement"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionRequirement, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionRequirement), 615255075U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 150427924U) },
+		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 3059787566U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_d604842717388725b4aac91fcd3c0fca25deb535{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_200c1745f1eb221fc3d67b75cde800aa27dbaa37{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

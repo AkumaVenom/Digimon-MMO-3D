@@ -129,7 +129,10 @@ enum class EDMFDigimonMenuTab : uint8
     Bank UMETA(DisplayName="Bank / Boxes"),
 
     /** Appended in v0.13. Existing serialized tab values remain stable. */
-    Digivolution UMETA(DisplayName="Digivolution")
+    Digivolution UMETA(DisplayName="Digivolution"),
+
+    /** Appended in v0.14. Read-only encyclopedia; earlier serialized tab values remain stable. */
+    DigiDex UMETA(DisplayName="DigiDex")
 };
 
 /** Authoritative owner-storage location used by Party/Bank transfer APIs. */

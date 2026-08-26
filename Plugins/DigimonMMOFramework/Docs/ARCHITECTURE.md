@@ -238,3 +238,9 @@ Feeding deliberately crosses UI and world presentation layers: the server accept
 `UDMFWorldNameplateWidget` is deliberately shared so the framework has one compact presentation contract while still exposing separate project-level Player/Digimon widget-class overrides. The native fallback collapses Digimon-only metadata/HP when observing a player, and expands the same small panel for Digimon identity/type/health. It polls presentation at a throttled interval rather than inventing replicated UI state.
 
 Player username display uses `APlayerState::PlayerName`, which is the public display-name channel. Private account fields do not change their ownership contract. Digimon HP remains owned by `UDMFDigimonCombatComponent`; the plate is only a view of replicated combat truth.
+
+## v0.14 DigiDex architecture
+
+The native DigiDex is a **read-only local presentation layer** inside `UDMFDigimonInventoryWidget`. It enumerates `DMFDigimonSpecies` Primary Assets through `UAssetManager`, resolves the same `UDMFDigimonSpeciesData` records already used by combat/Scan/Digivolution, and derives discovery badges from the owning `UDMFPlayerDigimonComponent`'s existing Party, Bank and Scan state. No parallel species database, SaveGame field, server mutation path, or replicated DigiDex state exists.
+
+`EDMFDigimonMenuTab::DigiDex` is appended after the v0.13 values so historical enum serialization remains stable. The native visual row may present tabs in a different order than their serialized enum values.

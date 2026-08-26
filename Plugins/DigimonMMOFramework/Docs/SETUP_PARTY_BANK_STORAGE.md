@@ -11,7 +11,7 @@ v0.12 formalizes the framework's owned Digimon roster into two storage tiers:
 - **Party** — the active field roster, six Digimon by default and never more than six.
 - **Digimon Bank / Boxes** — persistent account storage, 200 slots by default, accessible from the Digimon Menu anywhere in the gameplay world.
 
-As of v0.13, the shared native Digimon Menu exposes **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIVOLUTION**, and **CARE** as first-class tabs. The Bank follows the same convenience goal as modern creature-box systems: players can open it from the world without travelling to a physical terminal, inspect stored Digimon, and move/swap them with Party.
+As of v0.14, the shared native Digimon Menu exposes **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION**, and **CARE** as first-class tabs. The Bank follows the same convenience goal as modern creature-box systems: players can open it from the world without travelling to a physical terminal, inspect stored Digimon, and move/swap them with Party.
 
 All ownership and storage mutations are validated by the authoritative server. The client UI never directly edits the Party or Bank arrays.
 
@@ -179,3 +179,6 @@ The Party/Bank storage model is also the ownership source used by Digivolution. 
 - SaveGame schema v5 preserves the v0.12 Party/Bank layout and adds per-instance Digivolution provenance/history; upgrading does not rebuild or flatten the storage tiers.
 
 See `SETUP_DIGIVOLUTION.md` for path authoring, requirements, presentation and the multiplayer acceptance matrix.
+
+### DigiDex relationship
+DigiDex is informational only. It may show whether a species is owned by checking Party + Bank counts, but it cannot move, summon or mutate those instances.

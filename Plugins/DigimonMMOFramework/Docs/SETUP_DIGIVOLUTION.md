@@ -98,7 +98,7 @@ A path may override the global Niagara, Cascade, Sound and presentation duration
 
 The shared Digimon Menu now presents:
 
-**PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIVOLUTION → CARE**
+**PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE**
 
 The DIGIVOLUTION page contains:
 
@@ -218,3 +218,6 @@ Run a listen host plus second client and verify:
 10. Reconnect both accounts and confirm form/history/Party/Bank placement persist.
 11. Test Niagara primary, then remove it and verify Cascade fallback.
 12. Run existing Party/Bank, Scan/Materialization, Care, healer, combat, chat, nameplate, camera, music and footstep regressions.
+
+## DigiDex family links
+The v0.14 DigiDex reads the same authored `Digivolutions` arrays to show incoming/outgoing family context. These links are informational; eligibility and form mutation remain exclusively on the authoritative Digivolution system.

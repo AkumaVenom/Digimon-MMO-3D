@@ -121,6 +121,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Identity")
     EDMFDigimonElement Element = EDMFDigimonElement::Neutral;
 
+    /** Included in the read-only DigiDex registry by default. Disable only for internal/test species assets. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DigiDex")
+    bool bShowInDigiDex = true;
+
+    /** Optional stable project-authored DigiDex number. Zero uses the framework's deterministic fallback ordering. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DigiDex", meta=(ClampMin="0"))
+    int32 DigiDexNumber = 0;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Progression", meta=(ClampMin="1"))
     int32 StartingLevel = 1;
 

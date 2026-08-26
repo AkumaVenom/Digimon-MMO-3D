@@ -227,3 +227,7 @@ Clients never submit Hunger gain, decay, waste timing, mesh scale authority, sou
 Waste uses persisted server UTC scheduling. At due time, authority traces beneath the currently spawned active partner and creates a replicated `ADMFDigimonCarePropActor`. `SpeciesId` and `PropType` replicate to resolve presentation for current/late viewers; actor movement/attachment or world transform is server-owned. The actor disables collision/overlaps/navigation and server lifespan performs cleanup. DigiMeat/poo CustomDepth and stencil application are local rendering state reasserted by the Care prop on each peer; they add no network payload or client authority.
 
 During `bCareSequenceActive`, the owner component rejects conflicting set-active, recall, auto-battle, target and ability RPCs. The server also disables the partner's combat automation/target and stops AI movement before feeding, then restores the previously allowed auto-battle state on completion.
+
+## DigiDex networking contract (v0.14)
+
+DigiDex introduces **no network RPCs and no replicated properties**. The species catalog is static cooked project content resolved from the Asset Manager. Per-account `OWNED`/`SCANNED` badges are computed locally from the existing owner-only Party, Bank and Scan replication already delivered to that owning client. DigiDex cannot request summon, storage, Care, Materialization or Digivolution mutations.

@@ -12,6 +12,7 @@ class UButton;
 class UImage;
 class UHorizontalBox;
 class UProgressBar;
+class UEditableTextBox;
 class UDMFPlayerDigimonComponent;
 class UDMFDigimonSpeciesData;
 class UDMFPartyDestinationButton;
@@ -46,6 +47,19 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Digivolution")
     void RefreshDigivolutionData();
+
+    /** Refreshes the read-only encyclopedia of every registered DMFDigimonSpecies primary asset. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|DigiDex")
+    void RefreshDigiDexData();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|DigiDex")
+    TArray<FPrimaryAssetId> GetDigiDexSpeciesIds() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|DigiDex")
+    FPrimaryAssetId GetSelectedDigiDexSpeciesId() const { return SelectedDigiDexSpeciesId; }
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|DigiDex")
+    void BP_OnDigiDexSelectionChanged(FPrimaryAssetId SpeciesId, UDMFDigimonSpeciesData* Species);
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI")
     void SetActiveMenuTab(EDMFDigimonMenuTab NewTab);
@@ -120,6 +134,9 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> DigivolutionTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> DigiDexTabButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> BankDigimonGrid;
@@ -221,6 +238,48 @@ protected:
     TObjectPtr<UButton> FeedDigiMeatButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UUniformGridPanel> DigiDexSpeciesGrid;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UEditableTextBox> DigiDexSearchBox;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> DigiDexStageFilterButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> DigiDexAttributeFilterButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexStageFilterText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexAttributeFilterText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexCountText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UImage> DigiDexSelectedPortraitImage;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedNameText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedMetaText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedStatusText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedStatsText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedEvolutionText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> DigiDexSelectedDescriptionText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> DigivolutionOwnedGrid;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
@@ -260,6 +319,10 @@ private:
     FPrimaryAssetId SelectedScanSpeciesId;
     FGuid SelectedDigivolutionInstanceId;
     FPrimaryAssetId SelectedDigivolutionTargetSpeciesId;
+    FPrimaryAssetId SelectedDigiDexSpeciesId;
+    FString DigiDexSearchQuery;
+    int32 DigiDexStageFilterIndex = INDEX_NONE;
+    int32 DigiDexAttributeFilterIndex = INDEX_NONE;
     int32 BankPageIndex = 0;
     int32 SelectedBankPartyDestinationIndex = INDEX_NONE;
     EDMFDigimonMenuTab ActiveMenuTab = EDMFDigimonMenuTab::Collection;
@@ -269,6 +332,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> ScanContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> CareContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigivolutionContentRow;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigiDexContentRow;
 
     void BuildNativeFallbackUI();
     void BindDigimonComponent();
@@ -276,6 +340,8 @@ private:
     void RefreshSelectedBankDetails();
     void RefreshSelectedScanDetails();
     void RefreshSelectedDigivolutionDetails();
+    void RefreshSelectedDigiDexDetails();
+    TArray<UDMFDigimonSpeciesData*> GatherRegisteredDigiDexSpecies() const;
     void RefreshTabPresentation();
     UDMFDigimonSpeciesData* ResolveSpecies(FPrimaryAssetId SpeciesId) const;
 
@@ -308,6 +374,21 @@ private:
 
     UFUNCTION()
     void HandleDigivolutionTab();
+
+    UFUNCTION()
+    void HandleDigiDexTab();
+
+    UFUNCTION()
+    void HandleDigiDexSpeciesPressed(FPrimaryAssetId SpeciesId);
+
+    UFUNCTION()
+    void HandleDigiDexSearchChanged(const FText& SearchText);
+
+    UFUNCTION()
+    void HandleDigiDexStageFilter();
+
+    UFUNCTION()
+    void HandleDigiDexAttributeFilter();
 
     UFUNCTION()
     void HandleFeedDigiMeat();

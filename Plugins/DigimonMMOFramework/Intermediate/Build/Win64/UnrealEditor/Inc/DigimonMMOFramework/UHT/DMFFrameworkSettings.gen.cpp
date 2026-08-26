@@ -567,6 +567,16 @@ struct UHT_STATICS
 		{ "ToolTip", "Native roster/partner menu fallback; assign a Blueprint child to fully reskin it." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDigiDex_MetaData[] = {
+		{ "Category", "UI|DigiDex" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the read-only native DigiDex encyclopedia tab. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the read-only native DigiDex encyclopedia tab." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData[] = {
 		{ "Category", "UI" },
 #if !UE_BUILD_SHIPPING
@@ -1333,6 +1343,11 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultPartyQuickAccessInput;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PartyQuickBarBottomSafeOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_DigimonInventoryWidgetClass;
+	static void NewProp_bEnableDigiDex_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableDigiDex = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDigiDex;
 	static void NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bEnableDefaultDigimonInventoryMenuInput = 1;
@@ -1551,6 +1566,7 @@ const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativePar
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput = { "bEnableDefaultPartyQuickAccessInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPartyQuickAccessInput_MetaData), NewProp_bEnableDefaultPartyQuickAccessInput_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PartyQuickBarBottomSafeOffset = { "PartyQuickBarBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarBottomSafeOffset_MetaData), NewProp_PartyQuickBarBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidgetClass = { "DigimonInventoryWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonInventoryWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidgetClass_MetaData), NewProp_DigimonInventoryWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDigiDex = { "bEnableDigiDex", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDigiDex_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDigiDex_MetaData), NewProp_bEnableDigiDex_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput = { "bEnableDefaultDigimonInventoryMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData), NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ScanNotificationWidgetClass = { "ScanNotificationWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ScanNotificationWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidgetClass_MetaData), NewProp_ScanNotificationWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeScanNotifications = { "bShowNativeScanNotifications", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeScanNotifications_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeScanNotifications_MetaData), NewProp_bShowNativeScanNotifications_MetaData) };
@@ -1668,6 +1684,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDigiDex,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeScanNotifications,
@@ -1802,10 +1819,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2817851124U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2196813048U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_83c0adecd3d2670529cb07cfa2e4e440cf13fb55{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_08ab868e831ccf86745fda057827a79543f30f81{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

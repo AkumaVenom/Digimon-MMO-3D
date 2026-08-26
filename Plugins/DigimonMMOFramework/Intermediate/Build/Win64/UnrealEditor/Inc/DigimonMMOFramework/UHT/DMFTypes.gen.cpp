@@ -672,6 +672,10 @@ struct UHT_STATICS
 #if !UE_BUILD_SHIPPING
 		{ "Comment", "/** Current pages in the polished Digimon menu shell. Additional systems can extend this enum later. */" },
 #endif
+		{ "DigiDex.Comment", "/** Appended in v0.14. Read-only encyclopedia; earlier serialized tab values remain stable. */" },
+		{ "DigiDex.DisplayName", "DigiDex" },
+		{ "DigiDex.Name", "EDMFDigimonMenuTab::DigiDex" },
+		{ "DigiDex.ToolTip", "Appended in v0.14. Read-only encyclopedia; earlier serialized tab values remain stable." },
 		{ "Digivolution.Comment", "/** Appended in v0.13. Existing serialized tab values remain stable. */" },
 		{ "Digivolution.DisplayName", "Digivolution" },
 		{ "Digivolution.Name", "EDMFDigimonMenuTab::Digivolution" },
@@ -692,6 +696,7 @@ struct UHT_STATICS
 		{ "EDMFDigimonMenuTab::Care", (int64)EDMFDigimonMenuTab::Care },
 		{ "EDMFDigimonMenuTab::Bank", (int64)EDMFDigimonMenuTab::Bank },
 		{ "EDMFDigimonMenuTab::Digivolution", (int64)EDMFDigimonMenuTab::Digivolution },
+		{ "EDMFDigimonMenuTab::DigiDex", (int64)EDMFDigimonMenuTab::DigiDex },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct UHT_STATICS 
@@ -2100,7 +2105,7 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 785946822U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
-		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4206871779U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1155505937U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, TEXT("EDMFDigimonStorageLocation"), &ZRIE_EDMFDigimonStorageLocation, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2383950102U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState, TEXT("EDMFMusicState"), &ZRIE_EDMFMusicState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4180201259U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState, TEXT("EDMFCombatState"), &ZRIE_EDMFCombatState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4086388659U) },
@@ -2120,7 +2125,7 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 1241286755U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_be03bb4537c7af3b6c12b3e0683ebad9d6f09fe3{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_4c9c64a5d60035a3833676e537947a37711b3929{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

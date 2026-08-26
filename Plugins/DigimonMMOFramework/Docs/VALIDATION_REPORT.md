@@ -1,3 +1,14 @@
+# v0.14.0-alpha validation summary
+
+- Built directly on the compiling/runtime UI-polished v0.13.1 Digivolution baseline.
+- Final static gate: **76 source/header/build files, 22,294 source/build lines, 40 UCLASS, 14 UENUM, 16 USTRUCT, 410 UFUNCTION and 704 UPROPERTY declarations**.
+- All **41 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies; DigiDex adds no RPC.
+- Comparison against v0.13.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+- New reflected DigiDex surface is additive: `RefreshDigiDexData`, `GetDigiDexSpeciesIds`, `GetSelectedDigiDexSpeciesId`, `BP_OnDigiDexSelectionChanged` plus native UI event handlers.
+- Generated-header include ordering, changed-source delimiter balance, runtime TODO/FIXME scan and the UE5.8 local `Slot` shadowing regression check pass.
+- `EDMFDigimonMenuTab::DigiDex` is appended after v0.13 values so Party/Scan/Care/Bank/Digivolution serialized enum values remain unchanged.
+- DigiDex uses static Asset Manager species content plus existing owner-only Party/Bank/Scan state; no SaveGame schema change, replicated property, or authority mutation path is introduced.
+
 # Validation Report
 
 ## v0.13.1-alpha — Digivolution owned-roster UI layout source validation
@@ -25,7 +36,7 @@ Validated contracts:
 - SaveGame schema advances to **v5** with `OriginSpeciesId` and unique `DigivolutionHistory`. Existing GUID, Party/Bank placement, active partner, nickname, Level/EXP, ABI/CAM, Care state, vitals, abilities and progression are preserved during migration and successful form changes according to the authored carry-over policy.
 - A summoned active partner uses a server-owned presentation lock, clears combat intent, reliably multicasts Niagara-preferred/Cascade-fallback VFX + Sound Cue from the old actor, then commits/persists and replaces that actor with the target species `WorldActorClass`. Normal actor replication publishes the resulting public form.
 - Conflicting partner switch/recall, Party/Bank mutation, Care, healer, targeting and ability requests reject while an active world Digivolution sequence is in progress. Active combat blocks transformation by default through Project Settings.
-- The native Digimon Menu adds **DIGIVOLUTION** without shifting the serialized numeric values of existing menu-tab entries. Visual order is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIVOLUTION → CARE** and follows the v0.12.1 hardened scroll/footer layout rules.
+- The native Digimon Menu adds **DIGIVOLUTION** without shifting the serialized numeric values of existing menu-tab entries. Visual order in v0.14 is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE** and follows the v0.12.1 hardened scroll/footer layout rules.
 - Fresh/In-Training stage display names were corrected at reflection/display level without changing the underlying stage enum values.
 - Comparison against v0.12.2 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. The only newly added file is `Docs/SETUP_DIGIVOLUTION.md`; all runtime changes are extensions of existing source files.
 - Final static regression gate covers **76 source/header/build files and 21,447 source/build lines**, with **40 UCLASS**, **14 UENUM**, **16 USTRUCT**, **401 UFUNCTION** and **685 UPROPERTY** declarations. All **41 reflected Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies.
@@ -676,3 +687,10 @@ This maintenance release replaces all three obsolete include occurrences in the 
 - Positive-SP deduction occurs only in the final authoritative execution path.
 - No new combat RPCs were introduced; existing ownership/authority path is preserved.
 - UE5.8.1 compilation and runtime host/client testing remain the authoritative acceptance gates.
+
+## v0.14.0-alpha DigiDex validation
+- DigiDex tab enum was appended after all existing serialized menu values; no historical value was reordered.
+- DigiDex species data comes from the existing `DMFDigimonSpecies` Asset Manager registry; no duplicate persistence model was introduced.
+- DigiDex has no mutation button/API path and adds no RPC/replicated state. Owner discovery badges reuse existing owner-only Party/Bank/Scan data.
+- Native portraits use fixed viewports with aspect-preserving ScaleBox presentation. Search and Stage/Attribute filters rebuild only local UI.
+- Final source/API/archive counts are recorded at packaging time below.

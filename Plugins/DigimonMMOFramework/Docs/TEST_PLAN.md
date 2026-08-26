@@ -61,7 +61,7 @@ Run these after a clean UE5.8.1 Editor compile and before promoting the source p
 
 ## U0. v0.12.1 native UI layout-hardening acceptance
 
-1. Run 1920x1080 and a smaller PIE viewport (for example ~1600x900). Open PARTY, BANK / BOXES, SCAN & MATERIALIZE and CARE and verify no text draws outside its panel or through an action button.
+1. Run 1920x1080 and a smaller PIE viewport (for example ~1600x900). Open PARTY, BANK / BOXES, SCAN & MATERIALIZE, DIGIDEX, DIGIVOLUTION and CARE and verify no text draws outside its panel or through an action button.
 2. Select Digimon with long species descriptions. Verify Party/Scan description regions scroll/clip inside the right panel while **SET ACTIVE / SUMMON**, **RECALL**, **MOVE TO BANK** and **MATERIALIZE DIGIMON** remain fully visible.
 3. Open BANK / BOXES with 30 slots per page. Verify all six columns keep uniform card dimensions; resize to a shorter viewport and confirm the Box grid scrolls rather than vertically compressing rows.
 4. Temporarily raise `DigimonBankSlotsPerPage` above 30 and verify additional rows remain accessible through the Bank grid scroll region without moving the Party Destination strip out of bounds.
@@ -75,7 +75,7 @@ Run these after a clean UE5.8.1 Editor compile and before promoting the source p
 
 1. Open Project Settings and confirm **Party & Bank** exposes Max Party Digimon, Max Digimon Bank Storage, Bank Slots Per Page and the combat-switch rule; confirm **UI → Party Quick Access** exposes widget class, native visibility, default Tab input and bottom safe offset.
 2. Compile in UE5.8.1, then run a listen host + remote client with different accounts. Confirm each peer sees only its own Party/Bank contents.
-3. Open `I` from the world and confirm visual tab order is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → CARE** with the existing polished style intact.
+3. Open `I` from the world and confirm visual tab order is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE** with the existing polished style intact.
 4. Deposit a non-active Party member into Bank. Verify Party and Bank update once, account persistence occurs, and the final Party member cannot be deposited.
 5. Withdraw a Bank Digimon while Party has free capacity. Verify it enters Party and the Bank entry disappears exactly once.
 6. Fill Party to six, choose a Bank Digimon and an occupied Party destination, then execute **MOVE / SWAP TO PARTY**. Verify the two instances exchange storage atomically with no duplicate/lost GUID.
@@ -524,3 +524,13 @@ The baseline should not be treated as networking-accepted until it passes a pack
 8. Fill Collection to capacity and verify materialization is rejected without consuming Scan Data.
 9. Assign a Wild class to Species WorldActorClass and verify server rejection without consuming Scan Data.
 10. Regression: target-facing, passive retaliation, death pose, late-join possession, polished menus, starter selection and healer still function.
+
+## v0.14 DigiDex acceptance
+1. Open the shared Digimon Menu and verify native visual order **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE**.
+2. Verify every registered `DMFDigimonSpecies` Primary Asset appears in DigiDex with fixed, non-distorted portrait cards.
+3. Verify search matches Display Name, Species Key, Stage, Attribute and Element; verify Stage and Attribute filter cycling.
+4. Verify selected entry shows portrait, Stage/Attribute/Element, Base Stats, rewards, Scan/Materialization values, starting moves, description and previous/next authored Digivolution forms.
+5. Verify OWNED/SCANNED/UNSCANNED status updates from the local account's existing Party/Bank/Scan state.
+6. Confirm there are no summon, recall, storage, materialize, care or digivolve actions on DigiDex.
+7. Host + remote client: implemented species list is identical, while private ownership/Scan badges reflect only each client's own account.
+8. Disable `UI|DigiDex -> Enable DigiDex`; verify the native tab hides and no account/species data changes.

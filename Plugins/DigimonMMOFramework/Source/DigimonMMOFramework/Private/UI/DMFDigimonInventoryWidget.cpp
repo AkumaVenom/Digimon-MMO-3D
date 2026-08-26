@@ -3,6 +3,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
@@ -19,6 +20,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/DMFPlayerDigimonComponent.h"
+#include "Data/DMFDigimonAbilityData.h"
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Data/DMFStarterRosterData.h"
 #include "Engine/AssetManager.h"
@@ -41,6 +43,10 @@ namespace DMFInventoryUI
     constexpr float DigivolutionOwnedCardWidth = 132.0f;
     constexpr float DigivolutionOwnedCardHeight = 166.0f;
     constexpr float DigivolutionOwnedPortraitSize = 104.0f;
+    constexpr int32 DigiDexColumns = 4;
+    constexpr float DigiDexCardWidth = 174.0f;
+    constexpr float DigiDexCardHeight = 196.0f;
+    constexpr float DigiDexPortraitSize = 128.0f;
 
     FText EnumDisplay(const UEnum* EnumType, const int64 Value)
     {
@@ -103,6 +109,22 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     {
         DigivolutionTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionTab);
     }
+    if (DigiDexTabButton)
+    {
+        DigiDexTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigiDexTab);
+    }
+    if (DigiDexSearchBox)
+    {
+        DigiDexSearchBox->OnTextChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigiDexSearchChanged);
+    }
+    if (DigiDexStageFilterButton)
+    {
+        DigiDexStageFilterButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigiDexStageFilter);
+    }
+    if (DigiDexAttributeFilterButton)
+    {
+        DigiDexAttributeFilterButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigiDexAttributeFilter);
+    }
     if (FeedDigiMeatButton)
     {
         FeedDigiMeatButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleFeedDigiMeat);
@@ -134,6 +156,7 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     RefreshScanData();
     RefreshCareData();
     RefreshDigivolutionData();
+    RefreshDigiDexData();
     RefreshTabPresentation();
 }
 
@@ -211,7 +234,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     HeadingColumn->AddChildToVerticalBox(TitleText);
 
     DigimonStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigimonStatusText"));
-    DigimonStatusText->SetText(NSLOCTEXT("DMF", "DigimonMenuPrompt", "Manage your Party, Bank, Scan Database, Digivolution paths and Care systems from anywhere in the Digital World."));
+    DigimonStatusText->SetText(NSLOCTEXT("DMF", "DigimonMenuPrompt", "Manage your Party, Bank, Scan Database, DigiDex, Digivolution paths and Care systems from anywhere in the Digital World."));
     DMFNativeUI::StyleText(DigimonStatusText, 14, DMFNativeUI::Muted());
     DigimonStatusText->SetAutoWrapText(true);
     HeadingColumn->AddChildToVerticalBox(DigimonStatusText);
@@ -254,6 +277,14 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     DMFNativeUI::StyleText(ScanTabLabel, 15, DMFNativeUI::Text(), true);
     ScanMaterializeTabButton->AddChild(ScanTabLabel);
     TabRow->AddChildToHorizontalBox(ScanMaterializeTabButton)->SetPadding(FMargin(0,0,8,0));
+
+    DigiDexTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigiDexTabButton"));
+    DMFNativeUI::StyleButton(DigiDexTabButton);
+    UTextBlock* DigiDexTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexTabLabel"));
+    DigiDexTabLabel->SetText(NSLOCTEXT("DMF", "DigiDexTabLabel", "DIGIDEX"));
+    DMFNativeUI::StyleText(DigiDexTabLabel, 15, DMFNativeUI::Text(), true);
+    DigiDexTabButton->AddChild(DigiDexTabLabel);
+    TabRow->AddChildToHorizontalBox(DigiDexTabButton)->SetPadding(FMargin(0,0,8,0));
 
     DigivolutionTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigivolutionTabButton"));
     DMFNativeUI::StyleButton(DigivolutionTabButton);
@@ -666,6 +697,162 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     MaterializeLabel->SetText(NSLOCTEXT("DMF","MaterializeDigimonButtonLabel","MATERIALIZE DIGIMON")); MaterializeLabel->SetJustification(ETextJustify::Center); MaterializeLabel->SetAutoWrapText(true); DMFNativeUI::StyleText(MaterializeLabel,15,DMFNativeUI::Text(),true);
     MaterializeDigimonButton->AddChild(MaterializeLabel);
     ScanDetailsColumn->AddChildToVerticalBox(MaterializeDigimonButton)->SetPadding(FMargin(0,4,0,0));
+
+    // DIGIDEX tab: read-only encyclopedia of every registered Digimon species primary asset.
+    // It deliberately exposes no summon/storage/mutation actions; owner state is used only for Scan/Owned status badges.
+    DigiDexContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigiDexContentRow"));
+    if (UVerticalBoxSlot* DigiDexContentSlot = WindowColumn->AddChildToVerticalBox(DigiDexContentRow))
+    {
+        DigiDexContentSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    USizeBox* DigiDexBrowserSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigiDexBrowserSize"));
+    DigiDexBrowserSize->SetWidthOverride(835.0f);
+    if (UHorizontalBoxSlot* DigiDexBrowserLayout = DigiDexContentRow->AddChildToHorizontalBox(DigiDexBrowserSize))
+    {
+        DigiDexBrowserLayout->SetPadding(FMargin(0.0f, 0.0f, 14.0f, 0.0f));
+        DigiDexBrowserLayout->SetVerticalAlignment(VAlign_Fill);
+    }
+    UBorder* DigiDexBrowserBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexBrowserBorder"));
+    DMFNativeUI::StylePanel(DigiDexBrowserBorder, DMFNativeUI::PanelRaised(), FMargin(12.0f));
+    DigiDexBrowserSize->AddChild(DigiDexBrowserBorder);
+    UVerticalBox* DigiDexBrowserColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigiDexBrowserColumn"));
+    DigiDexBrowserBorder->AddChild(DigiDexBrowserColumn);
+
+    UHorizontalBox* DigiDexHeaderRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigiDexHeaderRow"));
+    DigiDexBrowserColumn->AddChildToVerticalBox(DigiDexHeaderRow)->SetPadding(FMargin(2,0,2,8));
+    UTextBlock* DigiDexHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexHeader"));
+    DigiDexHeader->SetText(NSLOCTEXT("DMF", "DigiDexHeader", "DIGIDEX  •  SPECIES DATABASE"));
+    DMFNativeUI::StyleText(DigiDexHeader, 17, DMFNativeUI::Accent(), true);
+    DigiDexHeaderRow->AddChildToHorizontalBox(DigiDexHeader)->SetSize(DMFNativeUI::FillSize());
+    DigiDexCountText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexCountText"));
+    DMFNativeUI::StyleText(DigiDexCountText, 12, DMFNativeUI::Muted(), true);
+    DigiDexHeaderRow->AddChildToHorizontalBox(DigiDexCountText)->SetHorizontalAlignment(HAlign_Right);
+
+    UTextBlock* DigiDexHelp = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexHelp"));
+    DigiDexHelp->SetText(NSLOCTEXT("DMF", "DigiDexHelp", "Browse every Digimon species implemented in the project. Search and filter the registry, then inspect species data, Scan/ownership status and evolution links."));
+    DigiDexHelp->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexHelp, 12, DMFNativeUI::Muted());
+    DigiDexBrowserColumn->AddChildToVerticalBox(DigiDexHelp)->SetPadding(FMargin(2,0,2,10));
+
+    UHorizontalBox* DigiDexFilterRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigiDexFilterRow"));
+    DigiDexBrowserColumn->AddChildToVerticalBox(DigiDexFilterRow)->SetPadding(FMargin(0,0,0,10));
+    USizeBox* DigiDexSearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigiDexSearchSize"));
+    DigiDexSearchSize->SetWidthOverride(330.0f);
+    DigiDexSearchBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass(), TEXT("DigiDexSearchBox"));
+    DigiDexSearchBox->SetHintText(NSLOCTEXT("DMF", "DigiDexSearchHint", "Search species, stage, attribute or element..."));
+    DigiDexSearchSize->AddChild(DigiDexSearchBox);
+    DigiDexFilterRow->AddChildToHorizontalBox(DigiDexSearchSize)->SetPadding(FMargin(0,0,8,0));
+
+    DigiDexStageFilterButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigiDexStageFilterButton"));
+    DMFNativeUI::StyleButton(DigiDexStageFilterButton);
+    DigiDexStageFilterText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexStageFilterText"));
+    DigiDexStageFilterText->SetText(NSLOCTEXT("DMF", "DigiDexAllStages", "ALL STAGES"));
+    DMFNativeUI::StyleText(DigiDexStageFilterText, 11, DMFNativeUI::Text(), true);
+    DigiDexStageFilterButton->AddChild(DigiDexStageFilterText);
+    DigiDexFilterRow->AddChildToHorizontalBox(DigiDexStageFilterButton)->SetPadding(FMargin(0,0,8,0));
+
+    DigiDexAttributeFilterButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("DigiDexAttributeFilterButton"));
+    DMFNativeUI::StyleButton(DigiDexAttributeFilterButton);
+    DigiDexAttributeFilterText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexAttributeFilterText"));
+    DigiDexAttributeFilterText->SetText(NSLOCTEXT("DMF", "DigiDexAllAttributes", "ALL ATTRIBUTES"));
+    DMFNativeUI::StyleText(DigiDexAttributeFilterText, 11, DMFNativeUI::Text(), true);
+    DigiDexAttributeFilterButton->AddChild(DigiDexAttributeFilterText);
+    DigiDexFilterRow->AddChildToHorizontalBox(DigiDexAttributeFilterButton);
+
+    UScrollBox* DigiDexScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("DigiDexSpeciesScroll"));
+    if (UVerticalBoxSlot* DigiDexScrollSlot = DigiDexBrowserColumn->AddChildToVerticalBox(DigiDexScroll))
+    {
+        DigiDexScrollSlot->SetSize(DMFNativeUI::FillSize());
+    }
+    DigiDexSpeciesGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("DigiDexSpeciesGrid"));
+    DigiDexSpeciesGrid->SetSlotPadding(FMargin(5.0f));
+    DigiDexScroll->AddChild(DigiDexSpeciesGrid);
+
+    USizeBox* DigiDexDetailsSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigiDexDetailsSize"));
+    DigiDexDetailsSize->SetWidthOverride(355.0f);
+    DigiDexContentRow->AddChildToHorizontalBox(DigiDexDetailsSize)->SetVerticalAlignment(VAlign_Fill);
+    UBorder* DigiDexDetailsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexDetailsBorder"));
+    DMFNativeUI::StylePanel(DigiDexDetailsBorder, DMFNativeUI::PanelRaised(), FMargin(14.0f));
+    DigiDexDetailsSize->AddChild(DigiDexDetailsBorder);
+    UVerticalBox* DigiDexDetailsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigiDexDetailsColumn"));
+    DigiDexDetailsBorder->AddChild(DigiDexDetailsColumn);
+
+    UTextBlock* DigiDexProfileHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexProfileHeader"));
+    DigiDexProfileHeader->SetText(NSLOCTEXT("DMF", "DigiDexProfileHeader", "DIGIDEX ENTRY"));
+    DMFNativeUI::StyleText(DigiDexProfileHeader, 14, DMFNativeUI::Gold(), true);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexProfileHeader)->SetPadding(FMargin(0,0,0,8));
+
+    USizeBox* DigiDexPortraitViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigiDexPortraitViewport"));
+    DigiDexPortraitViewport->SetWidthOverride(300.0f);
+    DigiDexPortraitViewport->SetHeightOverride(210.0f);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexPortraitViewport)->SetHorizontalAlignment(HAlign_Center);
+    UBorder* DigiDexPortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexPortraitBorder"));
+    DMFNativeUI::StylePanel(DigiDexPortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(5.0f));
+    DigiDexPortraitViewport->AddChild(DigiDexPortraitBorder);
+    UScaleBox* DigiDexPortraitScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass(), TEXT("DigiDexPortraitScale"));
+    DigiDexPortraitScale->SetStretch(EStretch::ScaleToFit);
+    DigiDexPortraitScale->SetStretchDirection(EStretchDirection::DownOnly);
+    DigiDexPortraitBorder->AddChild(DigiDexPortraitScale);
+    DigiDexSelectedPortraitImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("DigiDexSelectedPortraitImage"));
+    DigiDexPortraitScale->AddChild(DigiDexSelectedPortraitImage);
+
+    DigiDexSelectedNameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedNameText"));
+    DigiDexSelectedNameText->SetJustification(ETextJustify::Center);
+    DigiDexSelectedNameText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexSelectedNameText, 24, DMFNativeUI::Text(), true);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexSelectedNameText)->SetPadding(FMargin(0,8,0,0));
+    DigiDexSelectedMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedMetaText"));
+    DigiDexSelectedMetaText->SetJustification(ETextJustify::Center);
+    DigiDexSelectedMetaText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexSelectedMetaText, 12, DMFNativeUI::Gold(), true);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexSelectedMetaText)->SetPadding(FMargin(0,0,0,4));
+    DigiDexSelectedStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedStatusText"));
+    DigiDexSelectedStatusText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(DigiDexSelectedStatusText, 12, DMFNativeUI::Accent(), true);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexSelectedStatusText)->SetPadding(FMargin(0,0,0,8));
+
+    UScrollBox* DigiDexInfoScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("DigiDexInfoScroll"));
+    if (UVerticalBoxSlot* DigiDexInfoScrollSlot = DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexInfoScroll))
+    {
+        DigiDexInfoScrollSlot->SetSize(DMFNativeUI::FillSize());
+    }
+    UVerticalBox* DigiDexInfoColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("DigiDexInfoColumn"));
+    DigiDexInfoScroll->AddChild(DigiDexInfoColumn);
+
+    UBorder* DigiDexStatsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexStatsBorder"));
+    DMFNativeUI::StylePanel(DigiDexStatsBorder, DMFNativeUI::PanelSoft(), FMargin(10.0f));
+    DigiDexInfoColumn->AddChildToVerticalBox(DigiDexStatsBorder)->SetPadding(FMargin(0,0,0,8));
+    DigiDexSelectedStatsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedStatsText"));
+    DigiDexSelectedStatsText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexSelectedStatsText, 12, DMFNativeUI::Text());
+    DigiDexStatsBorder->AddChild(DigiDexSelectedStatsText);
+
+    UBorder* DigiDexEvolutionBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexEvolutionBorder"));
+    DMFNativeUI::StylePanel(DigiDexEvolutionBorder, DMFNativeUI::PanelSoft(), FMargin(10.0f));
+    DigiDexInfoColumn->AddChildToVerticalBox(DigiDexEvolutionBorder)->SetPadding(FMargin(0,0,0,8));
+    DigiDexSelectedEvolutionText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedEvolutionText"));
+    DigiDexSelectedEvolutionText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexSelectedEvolutionText, 12, DMFNativeUI::Text());
+    DigiDexEvolutionBorder->AddChild(DigiDexSelectedEvolutionText);
+
+    UTextBlock* DigiDexDescriptionLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexDescriptionLabel"));
+    DigiDexDescriptionLabel->SetText(NSLOCTEXT("DMF", "DigiDexDescriptionLabel", "SPECIES NOTES"));
+    DMFNativeUI::StyleText(DigiDexDescriptionLabel, 11, DMFNativeUI::Muted(), true);
+    DigiDexInfoColumn->AddChildToVerticalBox(DigiDexDescriptionLabel)->SetPadding(FMargin(2,0,2,4));
+    DigiDexSelectedDescriptionText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexSelectedDescriptionText"));
+    DigiDexSelectedDescriptionText->SetAutoWrapText(true);
+    DMFNativeUI::StyleText(DigiDexSelectedDescriptionText, 12, DMFNativeUI::Muted());
+    DigiDexInfoColumn->AddChildToVerticalBox(DigiDexSelectedDescriptionText)->SetPadding(FMargin(2,0,2,10));
+
+    UBorder* DigiDexReadOnlyBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexReadOnlyBorder"));
+    DMFNativeUI::StylePanel(DigiDexReadOnlyBorder, FLinearColor(0.015f,0.12f,0.14f,0.98f), FMargin(8.0f,6.0f));
+    UTextBlock* DigiDexReadOnlyText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigiDexReadOnlyText"));
+    DigiDexReadOnlyText->SetText(NSLOCTEXT("DMF", "DigiDexReadOnlyText", "ENCYCLOPEDIA ONLY  •  NO SUMMON / STORAGE ACTIONS"));
+    DigiDexReadOnlyText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(DigiDexReadOnlyText, 10, DMFNativeUI::Accent(), true);
+    DigiDexReadOnlyBorder->AddChild(DigiDexReadOnlyText);
+    DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexReadOnlyBorder)->SetPadding(FMargin(0,8,0,0));
 
     // DIGIVOLUTION tab: account-owned Party + Bank selection on the left and authoritative path evaluation on the right.
     DigivolutionContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("DigivolutionContentRow"));
@@ -1683,11 +1870,15 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
 
 void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTab)
 {
-    ActiveMenuTab = NewTab;
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    ActiveMenuTab = (NewTab == EDMFDigimonMenuTab::DigiDex && Settings && !Settings->bEnableDigiDex)
+        ? EDMFDigimonMenuTab::Collection
+        : NewTab;
     RefreshTabPresentation();
     if (ActiveMenuTab == EDMFDigimonMenuTab::Collection) RefreshInventory();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Bank) RefreshBankData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) RefreshScanData();
+    else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) RefreshDigivolutionData();
     else RefreshCareData();
 }
@@ -1699,16 +1890,24 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
     if (ScanContentRow) ScanContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (CareContentRow) CareContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Care ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (DigivolutionContentRow) DigivolutionContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Digivolution ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (DigiDexContentRow) DigiDexContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::DigiDex ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     DMFNativeUI::StyleButton(CollectionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Collection);
     DMFNativeUI::StyleButton(BankTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Bank);
     DMFNativeUI::StyleButton(ScanMaterializeTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize);
     DMFNativeUI::StyleButton(DigivolutionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Digivolution);
+    DMFNativeUI::StyleButton(DigiDexTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::DigiDex);
+    if (DigiDexTabButton)
+    {
+        const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+        DigiDexTabButton->SetVisibility(!Settings || Settings->bEnableDigiDex ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    }
     DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
     if (DigimonStatusText)
     {
         FText Status = NSLOCTEXT("DMF","PartyTabStatus","Manage the six-Digimon active Party, summon your partner or deposit Party members into Bank.");
         if (ActiveMenuTab == EDMFDigimonMenuTab::Bank) Status = NSLOCTEXT("DMF","BankTabStatus","Browse account-owned Box storage anywhere in the world, then move or atomically swap Digimon with Party.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) Status = NSLOCTEXT("DMF","ScanTabStatus","Battle Wild Digimon to build Scan Data. Materialization fills Party first, then Bank automatically.");
+        else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) Status = NSLOCTEXT("DMF","DigiDexTabStatus","Browse the complete implemented-species encyclopedia. DigiDex is read-only and never summons, moves or mutates Digimon.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) Status = NSLOCTEXT("DMF","DigivolutionTabStatus","Inspect branching evolution paths for any Party or Bank Digimon. Requirements and transformation commits are server-authoritative.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Care) Status = NSLOCTEXT("DMF","CareTabStatus","Care for your summoned partner with unlimited DigiMeat and monitor its persistent virtual-pet needs.");
         DigimonStatusText->SetText(Status);
@@ -1862,6 +2061,427 @@ void UDMFDigimonInventoryWidget::RefreshCareData()
 
     const bool bReadyToFeed = bCareEnabled && bSummoned && Instance.CurrentHP > 0 && Hunger < 99.99f && !BoundDigimonComponent->IsCareSequenceActive();
     if (FeedDigiMeatButton) FeedDigiMeatButton->SetIsEnabled(bReadyToFeed);
+}
+
+TArray<UDMFDigimonSpeciesData*> UDMFDigimonInventoryWidget::GatherRegisteredDigiDexSpecies() const
+{
+    TArray<UDMFDigimonSpeciesData*> Result;
+    TSet<FPrimaryAssetId> AddedIds;
+
+    UAssetManager& AssetManager = UAssetManager::Get();
+    TArray<FPrimaryAssetId> SpeciesIds;
+    AssetManager.GetPrimaryAssetIdList(FPrimaryAssetType(TEXT("DMFDigimonSpecies")), SpeciesIds, EAssetManagerFilter::Default);
+    for (const FPrimaryAssetId& SpeciesId : SpeciesIds)
+    {
+        if (!SpeciesId.IsValid() || AddedIds.Contains(SpeciesId))
+        {
+            continue;
+        }
+        if (UDMFDigimonSpeciesData* Species = ResolveSpecies(SpeciesId))
+        {
+            AddedIds.Add(SpeciesId);
+            Result.Add(Species);
+        }
+    }
+
+    // Compatibility fallback for projects that have not yet copied the supplied Asset Manager scan
+    // config: include the starter roster and walk its authored Digivolution graph. Packaged projects
+    // should still register /Game/DigimonData recursively so every implemented species appears.
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    UDMFStarterRosterData* Roster = Settings ? Settings->StarterRoster.LoadSynchronous() : nullptr;
+    TArray<UDMFDigimonSpeciesData*> Pending;
+    if (Roster)
+    {
+        for (const FDMFStarterRosterEntry& Entry : Roster->Starters)
+        {
+            if (UDMFDigimonSpeciesData* StarterSpecies = Entry.Species.LoadSynchronous())
+            {
+                Pending.Add(StarterSpecies);
+            }
+        }
+    }
+    while (!Pending.IsEmpty())
+    {
+        UDMFDigimonSpeciesData* Species = Pending.Pop(EAllowShrinking::No);
+        if (!Species)
+        {
+            continue;
+        }
+        const FPrimaryAssetId SpeciesId = Species->GetPrimaryAssetId();
+        if (!AddedIds.Contains(SpeciesId))
+        {
+            AddedIds.Add(SpeciesId);
+            Result.Add(Species);
+        }
+        for (const FDMFDigivolutionRequirement& Path : Species->Digivolutions)
+        {
+            if (UDMFDigimonSpeciesData* Target = Path.TargetSpecies.LoadSynchronous())
+            {
+                const FPrimaryAssetId TargetId = Target->GetPrimaryAssetId();
+                if (!AddedIds.Contains(TargetId))
+                {
+                    Pending.Add(Target);
+                }
+            }
+        }
+    }
+
+    Result.RemoveAll([](const UDMFDigimonSpeciesData* Species)
+    {
+        return !Species || !Species->bShowInDigiDex;
+    });
+    Result.Sort([](const UDMFDigimonSpeciesData& A, const UDMFDigimonSpeciesData& B)
+    {
+        const bool bANumbered = A.DigiDexNumber > 0;
+        const bool bBNumbered = B.DigiDexNumber > 0;
+        if (bANumbered != bBNumbered) return bANumbered;
+        if (bANumbered && A.DigiDexNumber != B.DigiDexNumber) return A.DigiDexNumber < B.DigiDexNumber;
+        if (A.Stage != B.Stage) return static_cast<uint8>(A.Stage) < static_cast<uint8>(B.Stage);
+        const FString AName = A.DisplayName.IsEmpty() ? A.GetPrimaryAssetId().PrimaryAssetName.ToString() : A.DisplayName.ToString();
+        const FString BName = B.DisplayName.IsEmpty() ? B.GetPrimaryAssetId().PrimaryAssetName.ToString() : B.DisplayName.ToString();
+        return AName.Compare(BName, ESearchCase::IgnoreCase) < 0;
+    });
+    return Result;
+}
+
+TArray<FPrimaryAssetId> UDMFDigimonInventoryWidget::GetDigiDexSpeciesIds() const
+{
+    TArray<FPrimaryAssetId> Result;
+    for (UDMFDigimonSpeciesData* Species : GatherRegisteredDigiDexSpecies())
+    {
+        if (Species) Result.Add(Species->GetPrimaryAssetId());
+    }
+    return Result;
+}
+
+void UDMFDigimonInventoryWidget::RefreshDigiDexData()
+{
+    BindDigimonComponent();
+    if (!WidgetTree || !DigiDexSpeciesGrid)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableDigiDex)
+    {
+        DigiDexSpeciesGrid->ClearChildren();
+        return;
+    }
+
+    const TArray<UDMFDigimonSpeciesData*> AllSpecies = GatherRegisteredDigiDexSpecies();
+    TArray<UDMFDigimonSpeciesData*> VisibleSpecies;
+    int32 OwnedSpeciesCount = 0;
+    int32 ScannedSpeciesCount = 0;
+
+    for (UDMFDigimonSpeciesData* Species : AllSpecies)
+    {
+        if (!Species)
+        {
+            continue;
+        }
+        const FPrimaryAssetId SpeciesId = Species->GetPrimaryAssetId();
+        const int32 OwnedCount = BoundDigimonComponent ? BoundDigimonComponent->GetOwnedSpeciesCount(SpeciesId) : 0;
+        const float ScanPercent = BoundDigimonComponent ? BoundDigimonComponent->GetScanPercent(SpeciesId) : 0.0f;
+        OwnedSpeciesCount += OwnedCount > 0 ? 1 : 0;
+        ScannedSpeciesCount += ScanPercent > KINDA_SMALL_NUMBER ? 1 : 0;
+
+        if (DigiDexStageFilterIndex != INDEX_NONE && static_cast<int32>(Species->Stage) != DigiDexStageFilterIndex)
+        {
+            continue;
+        }
+        if (DigiDexAttributeFilterIndex != INDEX_NONE && static_cast<int32>(Species->Attribute) != DigiDexAttributeFilterIndex)
+        {
+            continue;
+        }
+        if (!DigiDexSearchQuery.IsEmpty())
+        {
+            const FString StageName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)).ToString();
+            const FString AttributeName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)).ToString();
+            const FString ElementName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonElement>(), static_cast<int64>(Species->Element)).ToString();
+            const FString DisplayName = Species->DisplayName.IsEmpty() ? SpeciesId.PrimaryAssetName.ToString() : Species->DisplayName.ToString();
+            const bool bMatches = DisplayName.Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase)
+                || Species->SpeciesKey.ToString().Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase)
+                || (Species->DigiDexNumber > 0 && FString::FromInt(Species->DigiDexNumber).Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase))
+                || StageName.Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase)
+                || AttributeName.Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase)
+                || ElementName.Contains(DigiDexSearchQuery, ESearchCase::IgnoreCase);
+            if (!bMatches)
+            {
+                continue;
+            }
+        }
+        VisibleSpecies.Add(Species);
+    }
+
+    if (DigiDexCountText)
+    {
+        DigiDexCountText->SetText(FText::Format(
+            NSLOCTEXT("DMF", "DigiDexCountFormat", "{0} / {1} SHOWN  •  {2} OWNED  •  {3} SCANNED"),
+            FText::AsNumber(VisibleSpecies.Num()), FText::AsNumber(AllSpecies.Num()),
+            FText::AsNumber(OwnedSpeciesCount), FText::AsNumber(ScannedSpeciesCount)));
+    }
+    if (DigiDexStageFilterText)
+    {
+        DigiDexStageFilterText->SetText(DigiDexStageFilterIndex == INDEX_NONE
+            ? NSLOCTEXT("DMF", "DigiDexAllStages", "ALL STAGES")
+            : DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), DigiDexStageFilterIndex));
+    }
+    if (DigiDexAttributeFilterText)
+    {
+        DigiDexAttributeFilterText->SetText(DigiDexAttributeFilterIndex == INDEX_NONE
+            ? NSLOCTEXT("DMF", "DigiDexAllAttributes", "ALL ATTRIBUTES")
+            : DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), DigiDexAttributeFilterIndex));
+    }
+
+    const bool bSelectedVisible = SelectedDigiDexSpeciesId.IsValid() && VisibleSpecies.ContainsByPredicate([&](const UDMFDigimonSpeciesData* Species)
+    {
+        return Species && Species->GetPrimaryAssetId() == SelectedDigiDexSpeciesId;
+    });
+    if (!bSelectedVisible)
+    {
+        SelectedDigiDexSpeciesId = VisibleSpecies.Num() > 0 ? VisibleSpecies[0]->GetPrimaryAssetId() : FPrimaryAssetId();
+    }
+
+    DigiDexSpeciesGrid->ClearChildren();
+    for (int32 Index = 0; Index < VisibleSpecies.Num(); ++Index)
+    {
+        UDMFDigimonSpeciesData* Species = VisibleSpecies[Index];
+        if (!Species)
+        {
+            continue;
+        }
+        const FPrimaryAssetId SpeciesId = Species->GetPrimaryAssetId();
+        const int32 RegistryIndex = Species->DigiDexNumber > 0 ? Species->DigiDexNumber : (AllSpecies.IndexOfByKey(Species) + 1);
+        const int32 OwnedCount = BoundDigimonComponent ? BoundDigimonComponent->GetOwnedSpeciesCount(SpeciesId) : 0;
+        const float ScanPercent = BoundDigimonComponent ? BoundDigimonComponent->GetScanPercent(SpeciesId) : 0.0f;
+        const bool bOwned = OwnedCount > 0;
+        const bool bScanned = ScanPercent > KINDA_SMALL_NUMBER;
+
+        USizeBox* CardSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        CardSize->SetWidthOverride(DMFInventoryUI::DigiDexCardWidth);
+        CardSize->SetHeightOverride(DMFInventoryUI::DigiDexCardHeight);
+        UDMFScanSpeciesEntryButton* Card = WidgetTree->ConstructWidget<UDMFScanSpeciesEntryButton>(UDMFScanSpeciesEntryButton::StaticClass());
+        Card->InitializeScanSpecies(SpeciesId);
+        Card->OnSpeciesPressed.AddDynamic(this, &UDMFDigimonInventoryWidget::HandleDigiDexSpeciesPressed);
+        DMFNativeUI::StyleCompactButton(Card, false, false, SpeciesId == SelectedDigiDexSpeciesId);
+        CardSize->AddChild(Card);
+
+        UBorder* CardBack = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(CardBack, bOwned ? FLinearColor(0.018f,0.105f,0.085f,0.98f) : DMFNativeUI::SlotEmpty(), FMargin(5.0f));
+        Card->AddChild(CardBack);
+        UVerticalBox* CardColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        CardBack->AddChild(CardColumn);
+
+        USizeBox* PortraitViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        PortraitViewport->SetWidthOverride(DMFInventoryUI::DigiDexPortraitSize);
+        PortraitViewport->SetHeightOverride(DMFInventoryUI::DigiDexPortraitSize);
+        if (UVerticalBoxSlot* PortraitViewportSlot = CardColumn->AddChildToVerticalBox(PortraitViewport))
+        {
+            PortraitViewportSlot->SetHorizontalAlignment(HAlign_Center);
+        }
+        UOverlay* PortraitOverlay = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        PortraitViewport->AddChild(PortraitOverlay);
+        UScaleBox* PortraitScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass());
+        PortraitScale->SetStretch(EStretch::ScaleToFit);
+        PortraitScale->SetStretchDirection(EStretchDirection::DownOnly);
+        if (UOverlaySlot* PortraitScaleSlot = PortraitOverlay->AddChildToOverlay(PortraitScale))
+        {
+            PortraitScaleSlot->SetHorizontalAlignment(HAlign_Center);
+            PortraitScaleSlot->SetVerticalAlignment(VAlign_Center);
+        }
+        UImage* Portrait = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        if (UTexture2D* Texture = Species->Portrait.LoadSynchronous())
+        {
+            Portrait->SetBrushFromTexture(Texture, true);
+        }
+        else
+        {
+            Portrait->SetColorAndOpacity(FLinearColor::Transparent);
+        }
+        PortraitScale->AddChild(Portrait);
+
+        UBorder* NumberBadge = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(NumberBadge, FLinearColor(0.01f,0.03f,0.07f,0.94f), FMargin(4,2));
+        UTextBlock* NumberText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        NumberText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexNumberBadge", "#{0}"), FText::AsNumber(RegistryIndex)));
+        DMFNativeUI::StyleText(NumberText, 9, DMFNativeUI::Muted(), true);
+        NumberBadge->AddChild(NumberText);
+        if (UOverlaySlot* NumberSlot = PortraitOverlay->AddChildToOverlay(NumberBadge))
+        {
+            NumberSlot->SetPadding(FMargin(2));
+            NumberSlot->SetHorizontalAlignment(HAlign_Left);
+            NumberSlot->SetVerticalAlignment(VAlign_Top);
+        }
+
+        UBorder* StateBadge = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        const FLinearColor StateColor = bOwned ? DMFNativeUI::Success() : (bScanned ? DMFNativeUI::AccentSoft() : FLinearColor(0.17f,0.20f,0.24f,0.96f));
+        DMFNativeUI::StylePanel(StateBadge, StateColor, FMargin(4,2));
+        UTextBlock* StateText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        StateText->SetText(bOwned ? NSLOCTEXT("DMF", "DigiDexOwnedBadge", "OWNED") : (bScanned ? NSLOCTEXT("DMF", "DigiDexScannedBadge", "SCANNED") : NSLOCTEXT("DMF", "DigiDexUnscannedBadge", "UNSCANNED")));
+        DMFNativeUI::StyleText(StateText, 8, FLinearColor::White, true);
+        StateBadge->AddChild(StateText);
+        if (UOverlaySlot* StateSlot = PortraitOverlay->AddChildToOverlay(StateBadge))
+        {
+            StateSlot->SetPadding(FMargin(2));
+            StateSlot->SetHorizontalAlignment(HAlign_Right);
+            StateSlot->SetVerticalAlignment(VAlign_Top);
+        }
+
+        UBorder* Footer = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(Footer, FLinearColor(0.004f,0.012f,0.03f,0.96f), FMargin(4,3));
+        if (UVerticalBoxSlot* FooterSlot = CardColumn->AddChildToVerticalBox(Footer))
+        {
+            FooterSlot->SetSize(DMFNativeUI::FillSize());
+        }
+        UVerticalBox* FooterColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Footer->AddChild(FooterColumn);
+        UTextBlock* NameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        NameText->SetText(Species->DisplayName.IsEmpty() ? FText::FromName(SpeciesId.PrimaryAssetName) : Species->DisplayName);
+        NameText->SetJustification(ETextJustify::Center);
+        NameText->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(NameText, 11, DMFNativeUI::Text(), true);
+        FooterColumn->AddChildToVerticalBox(NameText);
+        UTextBlock* MetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        MetaText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexCardMeta", "{0}  •  {1}"),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute))));
+        MetaText->SetJustification(ETextJustify::Center);
+        DMFNativeUI::StyleText(MetaText, 9, DMFNativeUI::Gold(), true);
+        FooterColumn->AddChildToVerticalBox(MetaText);
+
+        const int32 Row = Index / DMFInventoryUI::DigiDexColumns;
+        const int32 Column = Index % DMFInventoryUI::DigiDexColumns;
+        if (UUniformGridSlot* GridSlot = DigiDexSpeciesGrid->AddChildToUniformGrid(CardSize, Row, Column))
+        {
+            GridSlot->SetHorizontalAlignment(HAlign_Center);
+            GridSlot->SetVerticalAlignment(VAlign_Top);
+        }
+    }
+
+    RefreshSelectedDigiDexDetails();
+}
+
+void UDMFDigimonInventoryWidget::RefreshSelectedDigiDexDetails()
+{
+    const TArray<UDMFDigimonSpeciesData*> AllSpecies = GatherRegisteredDigiDexSpecies();
+    UDMFDigimonSpeciesData* Species = ResolveSpecies(SelectedDigiDexSpeciesId);
+    if (!Species)
+    {
+        if (DigiDexSelectedPortraitImage) DigiDexSelectedPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        if (DigiDexSelectedNameText) DigiDexSelectedNameText->SetText(NSLOCTEXT("DMF", "DigiDexNoSelection", "NO SPECIES SELECTED"));
+        if (DigiDexSelectedMetaText) DigiDexSelectedMetaText->SetText(NSLOCTEXT("DMF", "DigiDexNoSelectionMeta", "Choose an entry from the species database."));
+        if (DigiDexSelectedStatusText) DigiDexSelectedStatusText->SetText(FText::GetEmpty());
+        if (DigiDexSelectedStatsText) DigiDexSelectedStatsText->SetText(FText::GetEmpty());
+        if (DigiDexSelectedEvolutionText) DigiDexSelectedEvolutionText->SetText(FText::GetEmpty());
+        if (DigiDexSelectedDescriptionText) DigiDexSelectedDescriptionText->SetText(FText::GetEmpty());
+        BP_OnDigiDexSelectionChanged(FPrimaryAssetId(), nullptr);
+        return;
+    }
+
+    const FPrimaryAssetId SpeciesId = Species->GetPrimaryAssetId();
+    const int32 RegistryIndex = Species->DigiDexNumber > 0 ? Species->DigiDexNumber : (AllSpecies.IndexOfByKey(Species) + 1);
+    const int32 OwnedCount = BoundDigimonComponent ? BoundDigimonComponent->GetOwnedSpeciesCount(SpeciesId) : 0;
+    const float ScanPercent = BoundDigimonComponent ? BoundDigimonComponent->GetScanPercent(SpeciesId) : 0.0f;
+
+    if (DigiDexSelectedPortraitImage)
+    {
+        if (UTexture2D* Texture = Species->Portrait.LoadSynchronous())
+        {
+            DigiDexSelectedPortraitImage->SetBrushFromTexture(Texture, true);
+            DigiDexSelectedPortraitImage->SetColorAndOpacity(FLinearColor::White);
+            DigiDexSelectedPortraitImage->SetVisibility(ESlateVisibility::Visible);
+        }
+        else
+        {
+            DigiDexSelectedPortraitImage->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+    const FText SpeciesName = Species->DisplayName.IsEmpty() ? FText::FromName(SpeciesId.PrimaryAssetName) : Species->DisplayName;
+    if (DigiDexSelectedNameText) DigiDexSelectedNameText->SetText(SpeciesName);
+    if (DigiDexSelectedMetaText)
+    {
+        DigiDexSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexSelectedMeta", "#{0}  •  {1}  •  {2}  •  {3}"),
+            FText::AsNumber(FMath::Max(1, RegistryIndex)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)),
+            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonElement>(), static_cast<int64>(Species->Element))));
+    }
+    if (DigiDexSelectedStatusText)
+    {
+        const FText Status = OwnedCount > 0
+            ? FText::Format(NSLOCTEXT("DMF", "DigiDexOwnedStatus", "OWNED ×{0}  •  SCAN {1}%"), FText::AsNumber(OwnedCount), FText::AsNumber(FMath::RoundToInt(ScanPercent)))
+            : (ScanPercent > KINDA_SMALL_NUMBER
+                ? FText::Format(NSLOCTEXT("DMF", "DigiDexScannedStatus", "SCANNED  •  {0}% DATA"), FText::AsNumber(FMath::RoundToInt(ScanPercent)))
+                : NSLOCTEXT("DMF", "DigiDexUnscannedStatus", "UNSCANNED  •  NOT YET OWNED"));
+        DigiDexSelectedStatusText->SetText(Status);
+        DigiDexSelectedStatusText->SetColorAndOpacity(FSlateColor(OwnedCount > 0 ? DMFNativeUI::Success() : (ScanPercent > KINDA_SMALL_NUMBER ? DMFNativeUI::Accent() : DMFNativeUI::Muted())));
+    }
+
+    TArray<FString> AbilityNames;
+    for (const FName AbilityId : Species->StartingAbilityIds)
+    {
+        if (!AbilityId.IsNone()) AbilityNames.AddUnique(AbilityId.ToString());
+    }
+    for (const TSoftObjectPtr<UDMFDigimonAbilityData>& Ability : Species->StartingAbilities)
+    {
+        const FString AssetName = Ability.ToSoftObjectPath().GetAssetName();
+        if (!AssetName.IsEmpty()) AbilityNames.AddUnique(AssetName);
+    }
+    if (!Species->BasicAutoAttack.IsNull())
+    {
+        const FString AssetName = Species->BasicAutoAttack.ToSoftObjectPath().GetAssetName();
+        if (!AssetName.IsEmpty()) AbilityNames.AddUnique(FString::Printf(TEXT("%s (Basic)"), *AssetName));
+    }
+    const FString AbilityList = AbilityNames.IsEmpty() ? TEXT("None configured") : FString::Join(AbilityNames, TEXT(", "));
+
+    if (DigiDexSelectedStatsText)
+    {
+        DigiDexSelectedStatsText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexStatsFormat",
+            "BASE PROFILE\nSTART LEVEL  {0}\nHP  {1}     SP  {2}\nSTR {3}     INT {4}\nDEF {5}     SPD {6}\nATTR PTS / LV  {7}\n\nBATTLE REWARD\nEXP  {8}     MONEY  {9}\n\nSCAN / MATERIALIZE\nVICTORY  +{10}%\nREQUIRED  {11}%\n\nSTARTING MOVES\n{12}"),
+            FText::AsNumber(Species->StartingLevel), FText::AsNumber(Species->BaseStats.MaxHP), FText::AsNumber(Species->BaseStats.MaxSP),
+            FText::AsNumber(Species->BaseStats.Strength), FText::AsNumber(Species->BaseStats.Intelligence),
+            FText::AsNumber(Species->BaseStats.Defense), FText::AsNumber(Species->BaseStats.Speed),
+            FText::AsNumber(Species->AttributePointsPerLevel), FText::AsNumber(Species->BattleExperienceReward), FText::AsNumber(Species->BattleMoneyReward),
+            FText::AsNumber(FMath::RoundToInt(Species->BattleScanPercentReward)), FText::AsNumber(FMath::RoundToInt(Species->MaterializationRequiredScanPercent)),
+            FText::FromString(AbilityList)));
+    }
+
+    TArray<FString> PreviousForms;
+    for (UDMFDigimonSpeciesData* Candidate : AllSpecies)
+    {
+        if (!Candidate || Candidate == Species) continue;
+        for (const FDMFDigivolutionRequirement& Path : Candidate->Digivolutions)
+        {
+            UDMFDigimonSpeciesData* Target = Path.TargetSpecies.LoadSynchronous();
+            if (Target && Target->GetPrimaryAssetId() == SpeciesId)
+            {
+                PreviousForms.AddUnique(Candidate->DisplayName.IsEmpty() ? Candidate->GetPrimaryAssetId().PrimaryAssetName.ToString() : Candidate->DisplayName.ToString());
+            }
+        }
+    }
+    TArray<FString> NextForms;
+    for (const FDMFDigivolutionRequirement& Path : Species->Digivolutions)
+    {
+        if (UDMFDigimonSpeciesData* Target = Path.TargetSpecies.LoadSynchronous())
+        {
+            NextForms.AddUnique(Target->DisplayName.IsEmpty() ? Target->GetPrimaryAssetId().PrimaryAssetName.ToString() : Target->DisplayName.ToString());
+        }
+    }
+    if (DigiDexSelectedEvolutionText)
+    {
+        DigiDexSelectedEvolutionText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexEvolutionLinks",
+            "EVOLUTION FAMILY\nFROM  {0}\nTO      {1}"),
+            FText::FromString(PreviousForms.IsEmpty() ? TEXT("—") : FString::Join(PreviousForms, TEXT(", "))),
+            FText::FromString(NextForms.IsEmpty() ? TEXT("—") : FString::Join(NextForms, TEXT(", ")))));
+    }
+    if (DigiDexSelectedDescriptionText)
+    {
+        DigiDexSelectedDescriptionText->SetText(Species->Description.IsEmpty()
+            ? NSLOCTEXT("DMF", "DigiDexNoDescription", "No species description has been assigned yet.")
+            : Species->Description);
+    }
+    BP_OnDigiDexSelectionChanged(SpeciesId, Species);
 }
 
 void UDMFDigimonInventoryWidget::RefreshDigivolutionData()
@@ -2248,6 +2868,7 @@ void UDMFDigimonInventoryWidget::HandleDigivolutionResult(const bool bSuccess, c
     RefreshInventory();
     RefreshBankData();
     RefreshDigivolutionData();
+    RefreshDigiDexData();
     if (DigimonStatusText && !Message.IsEmpty())
     {
         DigimonStatusText->SetText(Message);
@@ -2260,6 +2881,64 @@ void UDMFDigimonInventoryWidget::HandleDigivolutionTab()
     SetActiveMenuTab(EDMFDigimonMenuTab::Digivolution);
 }
 
+
+void UDMFDigimonInventoryWidget::HandleDigiDexTab()
+{
+    SetActiveMenuTab(EDMFDigimonMenuTab::DigiDex);
+}
+
+void UDMFDigimonInventoryWidget::HandleDigiDexSpeciesPressed(const FPrimaryAssetId SpeciesId)
+{
+    SelectedDigiDexSpeciesId = SpeciesId;
+    RefreshDigiDexData();
+}
+
+void UDMFDigimonInventoryWidget::HandleDigiDexSearchChanged(const FText& SearchText)
+{
+    DigiDexSearchQuery = SearchText.ToString().TrimStartAndEnd();
+    RefreshDigiDexData();
+}
+
+void UDMFDigimonInventoryWidget::HandleDigiDexStageFilter()
+{
+    const UEnum* StageEnum = StaticEnum<EDMFDigimonStage>();
+    const int32 RealStageCount = StageEnum ? FMath::Max(0, StageEnum->NumEnums() - 1) : 0;
+    if (RealStageCount <= 0)
+    {
+        DigiDexStageFilterIndex = INDEX_NONE;
+    }
+    else if (DigiDexStageFilterIndex == INDEX_NONE)
+    {
+        DigiDexStageFilterIndex = 0;
+    }
+    else
+    {
+        ++DigiDexStageFilterIndex;
+        if (DigiDexStageFilterIndex >= RealStageCount) DigiDexStageFilterIndex = INDEX_NONE;
+    }
+    RefreshDigiDexData();
+}
+
+void UDMFDigimonInventoryWidget::HandleDigiDexAttributeFilter()
+{
+    const UEnum* AttributeEnum = StaticEnum<EDMFDigimonAttribute>();
+    const int32 RealAttributeCount = AttributeEnum ? FMath::Max(0, AttributeEnum->NumEnums() - 1) : 0;
+    if (RealAttributeCount <= 0)
+    {
+        DigiDexAttributeFilterIndex = INDEX_NONE;
+    }
+    else if (DigiDexAttributeFilterIndex == INDEX_NONE)
+    {
+        DigiDexAttributeFilterIndex = 0;
+    }
+    else
+    {
+        ++DigiDexAttributeFilterIndex;
+        if (DigiDexAttributeFilterIndex >= RealAttributeCount) DigiDexAttributeFilterIndex = INDEX_NONE;
+    }
+    RefreshDigiDexData();
+}
+
 void UDMFDigimonInventoryWidget::HandleInventoryChanged()
 {
     RefreshInventory();
@@ -2267,6 +2946,7 @@ void UDMFDigimonInventoryWidget::HandleInventoryChanged()
     RefreshSelectedScanDetails();
     RefreshCareData();
     RefreshDigivolutionData();
+    if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
 }
 
 void UDMFDigimonInventoryWidget::HandleBankChanged()
@@ -2274,6 +2954,7 @@ void UDMFDigimonInventoryWidget::HandleBankChanged()
     RefreshBankData();
     RefreshSelectedScanDetails();
     RefreshDigivolutionData();
+    if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
 }
 
 void UDMFDigimonInventoryWidget::HandleStorageActionResult(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId, const EDMFDigimonStorageLocation NewLocation)
@@ -2322,6 +3003,7 @@ void UDMFDigimonInventoryWidget::HandleStorageActionResult(const bool bSuccess, 
 void UDMFDigimonInventoryWidget::HandleScanDataChanged(const FPrimaryAssetId SpeciesId, const float ScanPercent, const bool bMaterializationReady)
 {
     RefreshScanData();
+    if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
 }
 
 void UDMFDigimonInventoryWidget::HandleMaterializationResult(const bool bSuccess, const FText Message, const FPrimaryAssetId SpeciesId, const FGuid NewDigimonInstanceId)
@@ -2338,6 +3020,7 @@ void UDMFDigimonInventoryWidget::HandleMaterializationResult(const bool bSuccess
     RefreshBankData();
     RefreshScanData();
     RefreshDigivolutionData();
+    RefreshDigiDexData();
     RefreshTabPresentation();
     if (DigimonStatusText && !Message.IsEmpty())
     {

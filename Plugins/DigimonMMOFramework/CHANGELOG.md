@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.14.0-alpha — Polished Native DigiDex Species Encyclopedia
+
+### Added — read-only implemented-species encyclopedia
+- Added a first-class **DIGIDEX** tab to the shared native Digimon Menu without shifting any previously serialized tab enum value. Visual order is now **PARTY → BANK / BOXES → SCAN & MATERIALIZE → DIGIDEX → DIGIVOLUTION → CARE**.
+- DigiDex enumerates every registered `DMFDigimonSpecies` Primary Asset with `Show In DigiDex` enabled (default), so newly implemented species appear automatically when their `DMFDigimonSpeciesData` asset is placed under the recursively scanned species directory. Species may optionally author a stable `DigiDex Number`; zero uses deterministic Stage/name fallback ordering.
+- Added a polished four-column species browser with fixed aspect-safe portrait cards, deterministic Stage/name ordering, registry numbers, OWNED / SCANNED / UNSCANNED badges, live result counts, text search, Stage filtering and Attribute filtering.
+- Added a read-only selected-species dossier with portrait, Stage/Attribute/Element, ownership + Scan status, base stats, starting level, battle rewards, Scan/Materialization values, starting move references, species description, and authored previous/next Digivolution-family links.
+- DigiDex intentionally exposes **no summon, recall, Party, Bank, Care, Materialization, Digivolution, or other mutation action**. It is encyclopedia presentation only.
+- Discovery status is derived from existing owner-only Scan Data and Party/Bank ownership; no duplicate discovery persistence or replication channel was introduced.
+- Added Blueprint-facing `RefreshDigiDexData`, `GetDigiDexSpeciesIds`, `GetSelectedDigiDexSpeciesId`, and `BP_OnDigiDexSelectionChanged` hooks for custom reskins.
+- Added `UI|DigiDex -> Enable DigiDex` Project Setting.
+
+### Performance / compatibility
+- Species enumeration uses the existing Asset Manager `DMFDigimonSpecies` registry and falls back to starter/evolution graph traversal for editor compatibility when the project scan config has not yet been copied. Packaged builds should continue scanning `/Game/DigimonData` recursively as supplied in the framework config template.
+- DigiDex is fully local/read-only UI. It adds **no RPCs, no replicated properties and no SaveGame schema change**.
+- v0.13.1 Digivolution, Party/Bank, Scan/Materialization, Care, healer, combat and all existing authority contracts remain unchanged.
+
+### Documentation
+- Added `Docs/SETUP_DIGIDEX.md` and updated README, architecture, networking, native UI guide, Party/Bank/Digivolution cross-references, roadmap, test plan, validation report and config template.
+
 ## 0.13.1-alpha — Digivolution Owned-Roster Aspect / Card Layout Fix
 
 ### Fixed — Digivolution Party/Bank cards no longer stretch portraits
