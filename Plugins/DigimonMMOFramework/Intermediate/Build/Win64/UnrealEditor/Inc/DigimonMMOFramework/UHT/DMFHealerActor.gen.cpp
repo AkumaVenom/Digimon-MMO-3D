@@ -684,11 +684,11 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIncludeBankStorage_MetaData[] = {
 		{ "Category", "Digimon MMO|Healer|Restore" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Heals server-side bank records as well as the replicated active Digimon inventory. */" },
+		{ "Comment", "/** Heals server-side bank records as well as the replicated Party. */" },
 #endif
 		{ "ModuleRelativePath", "Public/Game/DMFHealerActor.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Heals server-side bank records as well as the replicated active Digimon inventory." },
+		{ "ToolTip", "Heals server-side bank records as well as the replicated Party." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bSummonActivePartnerAfterHeal_MetaData[] = {
@@ -913,10 +913,10 @@ ADMFHealerActor::~ADMFHealerActor() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFHealerActor, TEXT("ADMFHealerActor"), &Z_Registration_Info_UClass_ADMFHealerActor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFHealerActor), 166647808U) },
+		{ Z_Construct_UClass_ADMFHealerActor, TEXT("ADMFHealerActor"), &Z_Registration_Info_UClass_ADMFHealerActor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFHealerActor), 2744786969U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFHealerActor_h__Script_DigimonMMOFramework_cafcf875c66666fe70ac459c9570f35a7058c94a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFHealerActor_h__Script_DigimonMMOFramework_5999e42b0a4b4a723ef22ce5a6646e3c1cc91f1e{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

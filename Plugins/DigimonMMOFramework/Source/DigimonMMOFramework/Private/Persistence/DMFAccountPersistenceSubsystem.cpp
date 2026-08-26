@@ -41,6 +41,14 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // legacy Hunger/Fullness semantic migration when each account is initialized.
             Database->SchemaVersion = 3;
         }
+
+        if (Database->SchemaVersion < 4)
+        {
+            // v4 formalizes DigimonInventory as the active Party and DigimonBank as world-accessible Box storage.
+            // Slot/capacity migration is performed authoritatively by UDMFPlayerDigimonComponent on account load
+            // so the configured Party size can be honored without discarding older collected Digimon.
+            Database->SchemaVersion = 4;
+        }
     }
     else
     {

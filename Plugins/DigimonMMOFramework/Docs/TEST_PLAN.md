@@ -1,7 +1,37 @@
-# UE5.8 Validation Plan — 0.11.1-alpha
+# UE5.8 Validation Plan — 0.12.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.11.1 adds local camera boom zoom and character-safe camera collision on top of the runtime-working v0.11.0 global-music baseline while retaining all existing music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, UI, spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.12.1 is a native UI layout-hardening patch over the runtime-validated v0.12 Party/Bank milestone. It changes presentation only and retains every Party/Bank, camera, music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, spawning and persistence authority contract.
 
+
+## U0. v0.12.1 native UI layout-hardening acceptance
+
+1. Run 1920x1080 and a smaller PIE viewport (for example ~1600x900). Open PARTY, BANK / BOXES, SCAN & MATERIALIZE and CARE and verify no text draws outside its panel or through an action button.
+2. Select Digimon with long species descriptions. Verify Party/Scan description regions scroll/clip inside the right panel while **SET ACTIVE / SUMMON**, **RECALL**, **MOVE TO BANK** and **MATERIALIZE DIGIMON** remain fully visible.
+3. Open BANK / BOXES with 30 slots per page. Verify all six columns keep uniform card dimensions; resize to a shorter viewport and confirm the Box grid scrolls rather than vertically compressing rows.
+4. Temporarily raise `DigimonBankSlotsPerPage` above 30 and verify additional rows remain accessible through the Bank grid scroll region without moving the Party Destination strip out of bounds.
+5. Select a Bank Digimon and exercise no-destination, free-Party-slot and full-Party destination messages. Verify the guidance stays inside the scroll body and **MOVE / SWAP TO PARTY** remains pinned below it.
+6. Inspect the persistent Party Quick Access HUD. Verify every slot has a readable portrait plus two-line state/name/level layout and HP bar; no `ACTIVE`, Digimon name or level text is squeezed beside the portrait.
+7. Inspect the combat quickbar with abilities that have no icon assigned. Verify the empty icon square is collapsed and the ability name/SP/READY text uses the full card width. Assign an icon to one ability and verify only that card restores its icon frame.
+8. Press Tab and confirm the Party action row remains clean/readable, then perform a partner switch and confirm authority/replication is unchanged.
+9. Repeat v0.12.0 section **P0** storage/materialization/persistence tests to prove this patch did not alter gameplay state.
+
+## P0. v0.12.0 Party + Bank / Boxes + Party Quick Access acceptance
+
+1. Open Project Settings and confirm **Party & Bank** exposes Max Party Digimon, Max Digimon Bank Storage, Bank Slots Per Page and the combat-switch rule; confirm **UI → Party Quick Access** exposes widget class, native visibility, default Tab input and bottom safe offset.
+2. Compile in UE5.8.1, then run a listen host + remote client with different accounts. Confirm each peer sees only its own Party/Bank contents.
+3. Open `I` from the world and confirm visual tab order is **PARTY → BANK / BOXES → SCAN & MATERIALIZE → CARE** with the existing polished style intact.
+4. Deposit a non-active Party member into Bank. Verify Party and Bank update once, account persistence occurs, and the final Party member cannot be deposited.
+5. Withdraw a Bank Digimon while Party has free capacity. Verify it enters Party and the Bank entry disappears exactly once.
+6. Fill Party to six, choose a Bank Digimon and an occupied Party destination, then execute **MOVE / SWAP TO PARTY**. Verify the two instances exchange storage atomically with no duplicate/lost GUID.
+7. Repeat the swap against the active/summoned Party slot. Verify the incoming instance becomes active and the authoritative world partner refreshes for host and remote observer.
+8. Enter Chasing/Attacking/Recovering combat with the default combat lock. Verify Party/Bank transfer and changing active partner are rejected. End combat and verify they work again.
+9. Materialize with Party space and verify the new instance enters Party. Fill Party, materialize with Bank space and verify it routes to Bank. Confirm owned-species count includes both tiers.
+10. Press **Tab** independently on host/client. Only that local viewport should show cursor/release movement+look; the other client must remain in normal gameplay input.
+11. In Party Quick Access mode click a healthy Party slot and verify the authoritative partner switch. Test **RECALL**, **OPEN PARTY** and **OPEN BANK**, then Tab/Escape back to gameplay.
+12. Confirm Party Quick Access remains visible in normal gameplay, does not overlap the combat quickbar, and hides/restores correctly around modal Digimon UI and Care feeding presentation.
+13. Load a copied pre-v0.12 account containing more than six legacy `DigimonInventory` entries. Verify previous active partner is in Party, remaining Party positions retain order, overflow appears in Bank, existing Bank entries are preserved/de-duplicated, and no valid instance GUID is intentionally lost.
+14. Restart/relogin both accounts and verify Party order, Bank contents, active partner, Care/Scan data and all earlier progression persist.
+15. Run packaged host + second PC and repeat transfer, active-slot swap and Tab Quick Access tests before accepting the milestone.
 
 ## C0. v0.11.1 camera boom zoom & collision acceptance
 

@@ -7,6 +7,7 @@
 
 class UDMFStarterSelectionWidget;
 class UDMFCombatQuickBarWidget;
+class UDMFPartyQuickBarWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
@@ -68,6 +69,14 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Inventory|UI")
     void RefreshDigimonInventoryUI();
 
+    /** Opens the shared Digimon menu directly on the six-slot Party page. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party & Bank|UI")
+    void OpenPartyUI();
+
+    /** Opens the shared Digimon menu directly on world-accessible Bank/Box storage. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party & Bank|UI")
+    void OpenBankUI();
+
     /** Opens the shared Digimon menu directly on Scan & Materialize. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Scan & Materialization|UI")
     void OpenScanMaterializeUI();
@@ -125,6 +134,21 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI")
     void RefreshCombatQuickBar();
 
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party Quick Access|UI")
+    void RefreshPartyQuickBar();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party Quick Access|UI")
+    void OpenPartyQuickAccessInteraction();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party Quick Access|UI")
+    void ClosePartyQuickAccessInteraction();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party Quick Access|UI")
+    void TogglePartyQuickAccessInteraction();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party Quick Access|UI")
+    bool IsPartyQuickAccessInteractionActive() const { return bPartyQuickAccessInteractionActive; }
+
     /** Creates/refreshes the native persistent world-chat HUD when globally enabled. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
     void RefreshWorldChatUI();
@@ -176,6 +200,9 @@ private:
     TObjectPtr<UDMFCombatQuickBarWidget> CombatQuickBarWidget;
 
     UPROPERTY(Transient)
+    TObjectPtr<UDMFPartyQuickBarWidget> PartyQuickBarWidget;
+
+    UPROPERTY(Transient)
     TObjectPtr<UDMFPlayerSkinSelectionWidget> PlayerSkinWidget;
 
     UPROPERTY(Transient)
@@ -193,6 +220,8 @@ private:
     bool bReopenCareMenuAfterSequence = false;
     bool bWorldChatInputActive = false;
     bool bWorldChatInputLocked = false;
+    bool bPartyQuickAccessInteractionActive = false;
+    bool bPartyQuickAccessInputLocked = false;
 
     double LastWorldChatAcceptedServerTime = -1000000.0;
     TArray<double> RecentWorldChatAcceptedServerTimes;
@@ -229,6 +258,8 @@ private:
 
     void HandleDefaultTargetInput();
     void HandleWorldChatInput();
+    void HandlePartyQuickAccessInput();
+    void HandlePartyQuickAccessCancelInput();
     void HandlePlayerSkinMenuInput();
     void HandleDigimonInventoryMenuInput();
     void HandleAbilitySlot1();

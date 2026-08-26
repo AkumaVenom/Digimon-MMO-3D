@@ -1,5 +1,22 @@
 # Architecture
 
+## Party + Bank / Boxes architecture (v0.12.0)
+
+`UDMFPlayerDigimonComponent` now owns two explicit account-storage tiers while retaining historical field/API names for compatibility:
+
+- **Party** — `ReplicatedInventory` / serialized `DigimonInventory`, now the active field roster and capped to `MaxPartyDigimon` (six by default).
+- **Bank / Boxes** — `ReplicatedBank` / serialized `DigimonBank`, persistent account storage with configurable capacity and native paging.
+
+Both replicated containers use Fast Array replication with `COND_OwnerOnly`; another player never receives a peer's complete Party or Bank contents. The public replicated world representation remains the currently spawned Digimon actor and its combat/nameplate state.
+
+All durable storage mutations enter through the owning PlayerState component's reliable Server RPCs. Authority validates source membership, instance GUIDs, Party/Bank capacities, destination indices, Care sequence state and the default combat-switch lock before committing a transfer. Full-Party Bank withdrawals use one atomic server transaction: the selected Bank instance replaces the chosen Party slot and the outgoing Party instance is returned to Bank. The final Party member cannot be deposited.
+
+The active partner GUID is reconciled inside the same authoritative mutation. Swapping the active slot promotes the incoming instance and refreshes the spawned partner safely; normal world replication then presents that actor change to observers. Materialization uses the same storage contract: Party first, Bank overflow, reject only when both tiers have no legal capacity.
+
+Save schema v4 migrates legacy pre-v0.12 `DigimonInventory` collections without intentional ownership loss: the previous active partner is promoted first, remaining legacy entries fill Party in order, overflow is merged into `DigimonBank`, and instance GUIDs are de-duplicated. Existing oversized legacy Bank data is preserved rather than truncated.
+
+`UDMFPartyQuickBarWidget` is local owner presentation over the same Party Fast Array. Normal mode is hit-test transparent; Tab interaction mode changes only the local PlayerController input/cursor state. Clicking a Party member still calls the authoritative partner-selection RPC. The quick bar therefore adds no parallel inventory authority or replicated HUD state.
+
 ## Player camera boom architecture (v0.11.1)
 
 `ADMFPlayerAvatarCharacter` owns the framework camera boom and the local requested zoom distance. The default mouse-wheel bindings only update that local requested distance; `Tick` interpolates `USpringArmComponent::TargetArmLength` toward it after clamping against the Project Settings minimum/maximum. No camera distance, zoom input or interpolation state enters replication or persistence.
@@ -28,7 +45,7 @@ The subsystem never authors combat state and adds no replicated music variable/R
 
 A remote owning client predicts only its own local audio for responsiveness. The server performs the same movement-derived cadence independently and sends an Unreliable NetMulticast cosmetic event to observers. The owning remote client ignores that returned multicast, so it never hears a doubled step. This event is presentation-only: movement replication remains Unreal CharacterMovement authority and no durable footstep property or account state is introduced. Digimon classes do not execute this path.
 
-`UDMFPlayerDigimonComponent` owns the active Digimon inventory and active partner state. Inventory replication uses `FFastArraySerializer` with `COND_OwnerOnly` to avoid broadcasting private collection data to every connected player.
+`UDMFPlayerDigimonComponent` owns Party, Bank and active-partner state. Both private storage tiers use `FFastArraySerializer` with `COND_OwnerOnly`; see the v0.12 Party/Bank contract above.
 
 The server performs starter validation, constructs the unique Digimon instance, persists it, and spawns the authoritative 3D partner actor. The client never supplies trusted stats or an arbitrary actor class. Partner species resolution prefers UE Asset Manager registration and falls back to the configured starter roster for onboarding.
 
@@ -54,7 +71,7 @@ This separation is mandatory for:
 - current HP/SP;
 - hunger/care state;
 - learned/equipped abilities;
-- active inventory vs bank storage;
+- Party/Bank storage location and active-partner identity;
 - evolution history and later individuality systems.
 
 ## Account storage
@@ -78,7 +95,7 @@ Admin flow uses the same frontend but requires the additional admin unlock befor
 
 ## Expansion points already reserved
 
-The account record contains Digimon bank storage, scan progress, money, ranked points and F→S+ tier. These are deliberately part of the initial schema so later components can extend the existing record instead of inventing parallel saves.
+The account record now actively uses Digimon Bank storage alongside Party state and Scan progress, while money, ranked points and F→S+ tier remain reserved expansion fields. Keeping these systems in the same account schema lets later components extend the authoritative record instead of inventing parallel saves.
 
 ## Primary Asset discovery and packaged builds
 
@@ -139,7 +156,7 @@ Combat role tuning is stored only in the server combat component (`OutgoingDamag
 
 `UDMFDigimonInventoryWidget` is an owner-only presentation surface over the existing Fast Array inventory. It never owns collection authority. Selecting/summoning/recalling calls server RPCs on `UDMFPlayerDigimonComponent`; the server validates that the GUID exists in that player's replicated inventory. Recall destroys only the world actor and deliberately retains `ActivePartnerInstanceId`.
 
-The native fallback is usable immediately and can be replaced by a Blueprint child through framework settings. Full drag/drop party/bank transactions remain separate future work.
+The native fallback is usable immediately and can be replaced by a Blueprint child through framework settings. v0.12 adds authoritative Party/Bank move and atomic-swap transactions plus the persistent Party Quick Access HUD; future work may layer drag/drop gestures, sorting and filtering over the same transaction API.
 
 ## Healer authority (v0.5.0)
 

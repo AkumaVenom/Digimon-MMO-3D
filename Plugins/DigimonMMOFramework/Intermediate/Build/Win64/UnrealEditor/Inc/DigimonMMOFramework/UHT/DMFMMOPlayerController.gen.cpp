@@ -30,6 +30,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCharacter(ETypeCon
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFHealerActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPartyQuickBarWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinSelectionWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFScanNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterSelectionWidget(ETypeConstructPhase);
@@ -489,6 +490,44 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execCloseDigimonMenuUI)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function CloseDigimonMenuUI ************************
+
+// ********** Begin Class ADMFMMOPlayerController Function ClosePartyQuickAccessInteraction ********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_ClosePartyQuickAccessInteraction_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party Quick Access|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ClosePartyQuickAccessInteraction constinit property declarations ******
+// ********** End Function ClosePartyQuickAccessInteraction constinit property declarations ********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "ClosePartyQuickAccessInteraction", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_ClosePartyQuickAccessInteraction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execClosePartyQuickAccessInteraction)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ClosePartyQuickAccessInteraction();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function ClosePartyQuickAccessInteraction **********
 
 // ********** Begin Class ADMFMMOPlayerController Function ClosePlayerSkinSelectionUI **************
 #ifdef UHT_STATICS
@@ -1294,6 +1333,63 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execIsFrameworkPlayerAvatarPossessed)
 }
 // ********** End Class ADMFMMOPlayerController Function IsFrameworkPlayerAvatarPossessed **********
 
+// ********** Begin Class ADMFMMOPlayerController Function IsPartyQuickAccessInteractionActive *****
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_IsPartyQuickAccessInteractionActive_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventIsPartyQuickAccessInteractionActive_Parms
+	{
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party Quick Access|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function IsPartyQuickAccessInteractionActive constinit property declarations ***
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOPlayerController_eventIsPartyQuickAccessInteractionActive_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function IsPartyQuickAccessInteractionActive constinit property declarations *****
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function IsPartyQuickAccessInteractionActive Property Definitions **************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOPlayerController_eventIsPartyQuickAccessInteractionActive_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function IsPartyQuickAccessInteractionActive Property Definitions ****************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "IsPartyQuickAccessInteractionActive", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventIsPartyQuickAccessInteractionActive_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventIsPartyQuickAccessInteractionActive_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_IsPartyQuickAccessInteractionActive(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execIsPartyQuickAccessInteractionActive)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->IsPartyQuickAccessInteractionActive();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function IsPartyQuickAccessInteractionActive *******
+
 // ********** Begin Class ADMFMMOPlayerController Function IsPlayerSkinSelectionUIOpen *************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1407,6 +1503,50 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execIsWorldChatInputActive)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function IsWorldChatInputActive ********************
+
+// ********** Begin Class ADMFMMOPlayerController Function OpenBankUI ******************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_OpenBankUI_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party & Bank|UI" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opens the shared Digimon menu directly on world-accessible Bank/Box storage. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opens the shared Digimon menu directly on world-accessible Bank/Box storage." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OpenBankUI constinit property declarations ****************************
+// ********** End Function OpenBankUI constinit property declarations ******************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "OpenBankUI", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_OpenBankUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenBankUI)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OpenBankUI();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function OpenBankUI ********************************
 
 // ********** Begin Class ADMFMMOPlayerController Function OpenCareUI ******************************
 #ifdef UHT_STATICS
@@ -1533,6 +1673,88 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenDigimonMenuUI)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function OpenDigimonMenuUI *************************
+
+// ********** Begin Class ADMFMMOPlayerController Function OpenPartyQuickAccessInteraction *********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyQuickAccessInteraction_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party Quick Access|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OpenPartyQuickAccessInteraction constinit property declarations *******
+// ********** End Function OpenPartyQuickAccessInteraction constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "OpenPartyQuickAccessInteraction", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyQuickAccessInteraction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenPartyQuickAccessInteraction)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OpenPartyQuickAccessInteraction();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function OpenPartyQuickAccessInteraction ***********
+
+// ********** Begin Class ADMFMMOPlayerController Function OpenPartyUI *****************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyUI_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party & Bank|UI" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opens the shared Digimon menu directly on the six-slot Party page. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opens the shared Digimon menu directly on the six-slot Party page." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OpenPartyUI constinit property declarations ***************************
+// ********** End Function OpenPartyUI constinit property declarations *****************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "OpenPartyUI", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenPartyUI)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OpenPartyUI();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function OpenPartyUI *******************************
 
 // ********** Begin Class ADMFMMOPlayerController Function OpenPlayerSkinSelectionUI ***************
 #ifdef UHT_STATICS
@@ -1735,6 +1957,44 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshDigimonInventoryUI)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function RefreshDigimonInventoryUI *****************
+
+// ********** Begin Class ADMFMMOPlayerController Function RefreshPartyQuickBar ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPartyQuickBar_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party Quick Access|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshPartyQuickBar constinit property declarations ******************
+// ********** End Function RefreshPartyQuickBar constinit property declarations ********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "RefreshPartyQuickBar", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPartyQuickBar(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshPartyQuickBar)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshPartyQuickBar();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function RefreshPartyQuickBar **********************
 
 // ********** Begin Class ADMFMMOPlayerController Function RefreshPlayerSkinSelectionUI ************
 #ifdef UHT_STATICS
@@ -2384,6 +2644,44 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execToggleDigimonMenuUI)
 }
 // ********** End Class ADMFMMOPlayerController Function ToggleDigimonMenuUI ***********************
 
+// ********** Begin Class ADMFMMOPlayerController Function TogglePartyQuickAccessInteraction *******
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_TogglePartyQuickAccessInteraction_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Party Quick Access|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function TogglePartyQuickAccessInteraction constinit property declarations *****
+// ********** End Function TogglePartyQuickAccessInteraction constinit property declarations *******
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "TogglePartyQuickAccessInteraction", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_TogglePartyQuickAccessInteraction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execTogglePartyQuickAccessInteraction)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->TogglePartyQuickAccessInteraction();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function TogglePartyQuickAccessInteraction *********
+
 // ********** Begin Class ADMFMMOPlayerController Function TogglePlayerSkinSelectionUI *************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2497,6 +2795,10 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartyQuickBarWidget_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerSkinWidget_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
@@ -2520,6 +2822,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnWorldChatMessageReceived;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_StarterWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CombatQuickBarWidget;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_PartyQuickBarWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerSkinWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigimonInventoryWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanNotificationWidget;
@@ -2533,6 +2836,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("ClientWorldChatSendRejected"), .Pointer = &ADMFMMOPlayerController::execClientWorldChatSendRejected },
 		{ .NameUTF8 = UTF8TEXT("CloseDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execCloseDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("CloseDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execCloseDigimonMenuUI },
+		{ .NameUTF8 = UTF8TEXT("ClosePartyQuickAccessInteraction"), .Pointer = &ADMFMMOPlayerController::execClosePartyQuickAccessInteraction },
 		{ .NameUTF8 = UTF8TEXT("ClosePlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execClosePlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("CloseWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execCloseWorldChatInput },
 		{ .NameUTF8 = UTF8TEXT("CommandActivePartnerAbilitySlot"), .Pointer = &ADMFMMOPlayerController::execCommandActivePartnerAbilitySlot },
@@ -2547,16 +2851,21 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("IsDigimonInventoryUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonInventoryUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsDigimonMenuUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonMenuUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsFrameworkPlayerAvatarPossessed"), .Pointer = &ADMFMMOPlayerController::execIsFrameworkPlayerAvatarPossessed },
+		{ .NameUTF8 = UTF8TEXT("IsPartyQuickAccessInteractionActive"), .Pointer = &ADMFMMOPlayerController::execIsPartyQuickAccessInteractionActive },
 		{ .NameUTF8 = UTF8TEXT("IsPlayerSkinSelectionUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsPlayerSkinSelectionUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsWorldChatInputActive"), .Pointer = &ADMFMMOPlayerController::execIsWorldChatInputActive },
+		{ .NameUTF8 = UTF8TEXT("OpenBankUI"), .Pointer = &ADMFMMOPlayerController::execOpenBankUI },
 		{ .NameUTF8 = UTF8TEXT("OpenCareUI"), .Pointer = &ADMFMMOPlayerController::execOpenCareUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonMenuUI },
+		{ .NameUTF8 = UTF8TEXT("OpenPartyQuickAccessInteraction"), .Pointer = &ADMFMMOPlayerController::execOpenPartyQuickAccessInteraction },
+		{ .NameUTF8 = UTF8TEXT("OpenPartyUI"), .Pointer = &ADMFMMOPlayerController::execOpenPartyUI },
 		{ .NameUTF8 = UTF8TEXT("OpenPlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execOpenPlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("OpenScanMaterializeUI"), .Pointer = &ADMFMMOPlayerController::execOpenScanMaterializeUI },
 		{ .NameUTF8 = UTF8TEXT("OpenWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execOpenWorldChatInput },
 		{ .NameUTF8 = UTF8TEXT("RefreshCombatQuickBar"), .Pointer = &ADMFMMOPlayerController::execRefreshCombatQuickBar },
 		{ .NameUTF8 = UTF8TEXT("RefreshDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execRefreshDigimonInventoryUI },
+		{ .NameUTF8 = UTF8TEXT("RefreshPartyQuickBar"), .Pointer = &ADMFMMOPlayerController::execRefreshPartyQuickBar },
 		{ .NameUTF8 = UTF8TEXT("RefreshPlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshPlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshStarterSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshStarterSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldChatUI"), .Pointer = &ADMFMMOPlayerController::execRefreshWorldChatUI },
@@ -2570,6 +2879,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("SetDigimonCommandTarget"), .Pointer = &ADMFMMOPlayerController::execSetDigimonCommandTarget },
 		{ .NameUTF8 = UTF8TEXT("ToggleDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execToggleDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("ToggleDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execToggleDigimonMenuUI },
+		{ .NameUTF8 = UTF8TEXT("TogglePartyQuickAccessInteraction"), .Pointer = &ADMFMMOPlayerController::execTogglePartyQuickAccessInteraction },
 		{ .NameUTF8 = UTF8TEXT("TogglePlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execTogglePlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("ToggleWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execToggleWorldChatInput },
 	};
@@ -2581,6 +2891,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientWorldChatSendRejected, "ClientWorldChatSendRejected" }, // fe92f9e1dfd43bc01b0516e4be75a84702aa5424
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonInventoryUI, "CloseDigimonInventoryUI" }, // 9bdf8979d95ee2d0690ca274ebd92aeebb491e59
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonMenuUI, "CloseDigimonMenuUI" }, // 2d4c0431c81fb1351a38ec9b84d9cdca2104fc31
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClosePartyQuickAccessInteraction, "ClosePartyQuickAccessInteraction" }, // 7e9ac10edacaeb3e4890cd5d0ab7eecc582d7532
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClosePlayerSkinSelectionUI, "ClosePlayerSkinSelectionUI" }, // aea3717f1069c904491fb40ceb6a641c4744099b
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseWorldChatInput, "CloseWorldChatInput" }, // adcedc494f95685c5079b99a417855a026a22121
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandActivePartnerAbilitySlot, "CommandActivePartnerAbilitySlot" }, // 23e8ffa3a886714910a4020728670525fc575c67
@@ -2595,16 +2906,21 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonInventoryUIOpen, "IsDigimonInventoryUIOpen" }, // 30dca46d49345b134256374d71d946aaaaf02902
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonMenuUIOpen, "IsDigimonMenuUIOpen" }, // 28782c7ad6876aac2319228f063dafa4993ac8ce
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsFrameworkPlayerAvatarPossessed, "IsFrameworkPlayerAvatarPossessed" }, // 137e1d5c5a9b74264ed1d4818e7daa146901353f
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsPartyQuickAccessInteractionActive, "IsPartyQuickAccessInteractionActive" }, // bdaee1622d563d8bf327794fc948c4307f5eb54f
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsPlayerSkinSelectionUIOpen, "IsPlayerSkinSelectionUIOpen" }, // 1dff57173550fa8c99970326a60d43d1f9750f57
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsWorldChatInputActive, "IsWorldChatInputActive" }, // 18b449baf58622a8bfb58d9b7d2c6bea168c2d7b
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenBankUI, "OpenBankUI" }, // 44a801ff5192e40ab547959e8bcf6bad7b49a6c2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenCareUI, "OpenCareUI" }, // 4dbc31bd7c13010e3254b6d69f91cd5480fb52f2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonInventoryUI, "OpenDigimonInventoryUI" }, // 3947e5ecc7643b8a10541f4dc0cb64fdc929fe37
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonMenuUI, "OpenDigimonMenuUI" }, // 787480e966b131e71ec312ab075f06312bab1600
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyQuickAccessInteraction, "OpenPartyQuickAccessInteraction" }, // 4fa78b4a8cc9ecb28451bd69f43c6fe9dac2a7e0
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyUI, "OpenPartyUI" }, // b78a5dde0f669370c4a793d5dc3199c7bf16f888
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPlayerSkinSelectionUI, "OpenPlayerSkinSelectionUI" }, // d2bef495faf2ebf66a36702e48fbd948f57318c2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenScanMaterializeUI, "OpenScanMaterializeUI" }, // 76471492722ae85e4c2db7c6646ad7c0c4ae5980
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenWorldChatInput, "OpenWorldChatInput" }, // 7233eb813566faabfa52b52afa89630fe4ccb76d
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshCombatQuickBar, "RefreshCombatQuickBar" }, // 55dfa403a03ba1802f9cdfed6954fe8855a9a3c9
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshDigimonInventoryUI, "RefreshDigimonInventoryUI" }, // 2eb6bbbfb19e039f95fba79d2ad9df2b035f7d97
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPartyQuickBar, "RefreshPartyQuickBar" }, // 26d49dc08a1e05ec8c762195c40ad5fe60d7fa72
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPlayerSkinSelectionUI, "RefreshPlayerSkinSelectionUI" }, // 63c4b16d73d5d5b889759ffda68ec30442000bb2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshStarterSelectionUI, "RefreshStarterSelectionUI" }, // d7dbaa478809f0e8e263917c1869d4d1e4c66543
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshWorldChatUI, "RefreshWorldChatUI" }, // c7bea9fe9f25e72e3aee0396d97947d4a2f4b521
@@ -2618,6 +2934,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_SetDigimonCommandTarget, "SetDigimonCommandTarget" }, // e0e3f11fd4a59ce242ae4fac227e26c71cc4db0d
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ToggleDigimonInventoryUI, "ToggleDigimonInventoryUI" }, // 1893494b5ab3226eb58563a9dbb3d33d79a25fa8
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ToggleDigimonMenuUI, "ToggleDigimonMenuUI" }, // cf7e83b5f6bd46871bb374f8b3bb2c379433b0de
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_TogglePartyQuickAccessInteraction, "TogglePartyQuickAccessInteraction" }, // 222071190aaf3e9e4e4101a2e9bb8f782e83f4d5
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_TogglePlayerSkinSelectionUI, "TogglePlayerSkinSelectionUI" }, // 3abbb90440e9197880dc01d7101f3abee696245b
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ToggleWorldChatInput, "ToggleWorldChatInput" }, // 91b16854e010f48ade3f494c125b431f65460318
 	};
@@ -2633,6 +2950,7 @@ const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_O
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnWorldChatMessageReceived = { "OnWorldChatMessageReceived", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnWorldChatMessageReceived), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnWorldChatMessageReceived_MetaData), NewProp_OnWorldChatMessageReceived_MetaData) }; // 94761aafd38e174865aca0bf93f8a0402e5c870a
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_StarterWidget = { "StarterWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, StarterWidget), Z_Construct_UClass_UDMFStarterSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StarterWidget_MetaData), NewProp_StarterWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidget = { "CombatQuickBarWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, CombatQuickBarWidget), Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidget_MetaData), NewProp_CombatQuickBarWidget_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidget = { "PartyQuickBarWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, PartyQuickBarWidget), Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidget_MetaData), NewProp_PartyQuickBarWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerSkinWidget = { "PlayerSkinWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, PlayerSkinWidget), Z_Construct_UClass_UDMFPlayerSkinSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerSkinWidget_MetaData), NewProp_PlayerSkinWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidget = { "DigimonInventoryWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, DigimonInventoryWidget), Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidget_MetaData), NewProp_DigimonInventoryWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanNotificationWidget = { "ScanNotificationWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, ScanNotificationWidget), Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidget_MetaData), NewProp_ScanNotificationWidget_MetaData) };
@@ -2642,6 +2960,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnWorldChatMessageReceived,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StarterWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidget,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerSkinWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidget,
@@ -2721,10 +3040,10 @@ ADMFMMOPlayerController::~ADMFMMOPlayerController() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 543973456U) },
+		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 1955491578U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_ae0d47ec9871e97788ab88ed97569bcc1ed9f593{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_f228a8d6b98270d3ced51c0ff092f13dd37c6868{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

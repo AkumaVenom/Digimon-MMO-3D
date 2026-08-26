@@ -1,6 +1,15 @@
-# Polished Native UI Setup — v0.6.0-alpha
+# Polished Native UI Setup — v0.12.1-alpha
 
 v0.6.0 rebuilds the framework's native fallback presentation. You do **not** need Widget Blueprints to get a usable polished frontend, Digimon collection, starter selector, character selector, or combat bar. Blueprint children remain supported when a project wants a completely custom skin.
+
+
+## v0.12.1 responsive layout hardening
+
+The native fallback Digimon Menu now uses a larger 1240x820 design canvas inside its existing **Scale To Fit / Down Only** wrapper. On normal desktop viewports it therefore has enough vertical room for Party/Bank/Scan/Care content without forcing the profile footer into body text; on smaller viewports the complete menu still scales down as one unit.
+
+Party and Scan descriptions, Bank detail guidance and Care rules are clipped/scrollable regions. Action buttons remain outside those regions, so authored species descriptions or longer localized strings cannot draw through the buttons. The Bank six-column card grid is itself scrollable, which preserves fixed card dimensions even when `DigimonBankSlotsPerPage` is increased.
+
+Dense Party/Bank/Party-destination and HUD cards use compact internal button padding. The Party Quick Access bar stacks each portrait over a two-line state/name/level label, and the combat quickbar collapses a missing ability-icon frame instead of reserving an empty square. These changes are native fallback presentation only and do not alter the Blueprint replacement classes or server authority.
 
 ## 1. Native widget classes
 
@@ -11,9 +20,10 @@ In **Project Settings -> Game -> Digimon MMO Framework -> UI**, the default clas
 - `Player Skin Selection Widget Class` -> `DMFPlayerSkinSelectionWidget`
 - `Digimon Inventory Widget Class` -> `DMFDigimonInventoryWidget`
 - `Combat Quick Bar Widget Class` -> `DMFCombatQuickBarWidget`
+- `Party Quick Bar Widget Class` -> `DMFPartyQuickBarWidget`
 - `World Chat Widget Class` -> `DMFWorldChatWidget`
 
-Leave these native defaults assigned to use the v0.6 presentation. A Blueprint child may still replace any individual presentation while retaining the underlying framework APIs.
+Leave these native defaults assigned to use the current framework presentation. A Blueprint child may still replace any individual presentation while retaining the underlying framework APIs.
 
 ## Player footstep presentation — v0.10.4
 
@@ -25,7 +35,7 @@ The native gameplay HUD also creates `DMFWorldChatWidget` when **Enable World Ch
 
 The default chat widget is assigned under **UI → World Chat → World Chat Widget Class**. **World Chat Bottom Safe Offset** can be tuned if a project changes the quickbar's size. A Blueprint child can reskin chat without replacing server sanitation, rate limiting, public username stamping, session history or broadcast authority. See `SETUP_WORLD_CHAT.md` for the full optional binding surface and multiplayer acceptance test.
 
-## 2. Digimon portraits — inventory + starter menu
+## 2. Digimon portraits — Party, Bank, quick access + starter menu
 
 Open each `DMFDigimonSpeciesData`, for example:
 
@@ -33,10 +43,11 @@ Open each `DMFDigimonSpeciesData`, for example:
 
 Assign a square or near-square `Texture2D` portrait/icon. The same existing field is used by:
 
-- occupied Digimon inventory slots;
-- the large selected-Digimon portrait;
-- starter selection cards;
-- starter selected-species preview.
+- the PARTY roster and active-partner profile;
+- BANK / BOXES storage cards and selection details;
+- the persistent Party Quick Access HUD;
+- the starter-selection presentation.
+
 
 If Portrait is empty, the native UI deliberately displays `PORTRAIT NOT SET` / `ASSIGN PORTRAIT` rather than silently producing an apparently broken blank slot.
 
@@ -56,35 +67,21 @@ Open each `DMFDigimonAbilityData` and assign:
 
 `Identity -> Icon`
 
-The native combat quick bar uses the icon automatically. Missing icons do not affect gameplay; the framed icon space remains empty while the ability name/SP/cooldown text still works.
+The native combat quick bar uses the icon automatically. Missing icons do not affect gameplay; v0.12.1 collapses the unused icon frame automatically so the ability name/SP/cooldown text receives the full card width.
 
-## 5. Digimon collection / summon UI
+## 5. Digimon Party + Bank / Boxes UI — v0.12
 
 Default input remains:
 
-`I -> Toggle Digimon Inventory UI`
+`I -> Toggle Digimon Menu UI`
 
-The native collection renders up to `MaxActiveDigimonInventory` slots (30 by default) in a 6-column grid. Occupied slots show portrait, species name, level and state badge. Empty capacity is shown as actual empty slots.
+The shared native menu now opens with four first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **CARE**.
 
-Select an occupied slot to inspect:
+**PARTY** renders the active field roster (`MaxPartyDigimon`, six by default) with portrait, species/nickname, level, Active/Summoned/KO state and the existing selected-Digimon profile. `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, and `MOVE TO BANK` route through server-owned state. The final Party member cannot be deposited.
 
-- portrait;
-- species name;
-- Stage + Attribute;
-- Active / Summoned / Recalled / Defeated state;
-- Level and EXP;
-- current/max HP and SP;
-- STR / INT / DEF / SPD;
-- ABI / CAM;
-- species description.
+**BANK / BOXES** renders persistent account storage in a paged six-column grid (`DigimonBankSlotsPerPage`, 30 by default). Selecting a stored Digimon shows its profile and a live six-slot Party destination strip. If Party has space the server moves it into Party; if Party is full, select an occupied Party destination and **MOVE / SWAP TO PARTY** performs an atomic authoritative swap.
 
-Actions remain:
-
-- `SET ACTIVE / SUMMON` -> server validates ownership, defeated state, Species and WorldActorClass, then persists/spawns the active partner.
-- `RECALL ACTIVE PARTNER` -> server recalls the world actor while retaining the active partner identity.
-- `CLOSE [I]` -> closes the roster menu.
-
-A defeated (`HP <= 0`) Digimon is marked `KO` and cannot be summoned until authoritative healing/revival.
+A defeated (`HP <= 0`) Digimon is marked `KO` and cannot be summoned until authoritative healing/revival. Bank access is available anywhere in the gameplay world; no physical storage terminal is required by the framework. See `SETUP_PARTY_BANK_STORAGE.md`.
 
 ## 6. Starter selection
 
@@ -118,7 +115,15 @@ The native frontend now has two clear states:
 
 The regular-player destination remains absent from the runtime login UI, but v0.10.2 makes it safely editable by developers under **Project Settings → Digimon MMO Framework → Networking → Server Endpoint**. v0.10.3 likewise exposes **Networking → Admin Hosting → Set Admin Hosting Password**; the editor hashes and clears the setter value so plaintext is not retained in project config. Server authentication remains handled by the existing gated frontend/server flow.
 
-## 9. Combat quick bar
+## 9. Party Quick Access HUD — v0.12
+
+The gameplay HUD now includes a compact persistent six-slot Party strip when **Show Native Party Quick Bar** is enabled. It displays Party portraits, names/levels, HP state and the active-partner highlight while remaining hit-test transparent during ordinary gameplay.
+
+Press **Tab** with the default input enabled to enter Party interaction mode. The local cursor appears and gameplay movement/look are temporarily released; healthy Party slots become clickable and the expanded controls provide **RECALL**, **OPEN PARTY** and **OPEN BANK**. Tab again or Escape returns to normal gameplay. All partner changes still use the server-authoritative Party component.
+
+The bar occupies its own configurable HUD safe lane through `Party Quick Bar Bottom Safe Offset` and automatically hides during framework modal UI/Care presentation. Blueprint children can replace `DMFPartyQuickBarWidget` without replacing storage authority.
+
+## 10. Combat quick bar
 
 The native quick bar is bottom-center and shows:
 
@@ -133,13 +138,13 @@ The native quick bar is bottom-center and shows:
 
 The bar is presentation only. Ability execution still routes through the existing owning-player/server command path.
 
-## 10. Blueprint reskinning remains supported
+## 11. Blueprint reskinning remains supported
 
 All major native widgets remain `Blueprintable`. You can assign a Blueprint child in Project Settings and replace the visual hierarchy while calling the same server-backed functions/events.
 
 The v0.6 native layout adds new **optional** bindings. Legacy optional bindings remain so existing project Widget Blueprints are not intentionally broken by the polish pass.
 
-## 11. First acceptance test
+## 12. First acceptance test
 
 1. Compile the plugin in UE5.8.1.
 2. Open MainMenu and press Play.
@@ -148,14 +153,14 @@ The v0.6 native layout adds new **optional** bindings. Legacy optional bindings 
 5. Complete skin selection and verify assigned skin portraits render.
 6. Complete starter selection and verify assigned Digimon portraits render.
 7. In gameplay press `I`.
-8. Confirm a 6-column Digimon slot grid appears with empty capacity slots.
-9. Select Agumon and confirm portrait + full stats populate on the right.
-10. Recall and summon from the action buttons.
-11. Close the menu and confirm the bottom-center combat bar displays ability cards/icons.
-12. Repeat in a two-client network test and confirm all UI reflects replicated/server-authoritative state rather than creating local gameplay state.
+8. Confirm the PARTY page shows the six-slot roster and select a Digimon to inspect its full profile.
+9. Open BANK / BOXES and confirm paged account storage plus the Party destination strip render correctly.
+10. Move one Digimon Party → Bank → Party, then test a full-Party atomic swap.
+11. Close the menu and confirm the Party Quick Access strip and bottom-center combat bar both render without overlap.
+12. Press Tab, click a healthy Party slot, then Tab/Escape back to gameplay; repeat in a two-client test and confirm only the owning player sees their private roster/storage while the spawned partner change replicates normally.
 
-## v0.7.0 shared Digimon menu shell
-The v0.6 Collection presentation is now page one of the shared **DIGIMON MENU**. The native fallback adds `COLLECTION`, `SCAN & MATERIALIZE` and `CARE` tabs without removing any existing Collection slot/detail bindings. Use `Species -> Portrait` for both pages. Projects using a Blueprint child can mirror the same tab architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Scan Data`, and `Refresh Care Data`. Future Bank/Party/Digivolution work should extend this shell rather than creating disconnected full-screen menus.
+## Shared Digimon menu shell — current v0.12 state
+The original v0.6 Collection page evolved into the active **PARTY** page while preserving the historical `Collection` enum/API identity for Blueprint compatibility. The native shell now presents **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE** and **CARE**. Projects using Blueprint children can mirror the same architecture and drive it with `Set Active Menu Tab`, `Refresh Inventory`, `Refresh Bank Data`, `Refresh Scan Data` and `Refresh Care Data`. Digivolution should extend this same shell later rather than creating a disconnected full-screen menu.
 
 
 ## v0.8.0 CARE page

@@ -28,6 +28,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCarePropActor(ETyp
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFLoginMainMenuWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPartyQuickBarWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinSelectionWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFScanNotificationWidget(ETypeConstructPhase);
@@ -448,12 +449,59 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxActiveDigimonInventory_MetaData[] = {
 		{ "Category", "Inventory" },
 		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Legacy pre-v0.12 active-collection capacity retained for config compatibility. Party capacity is controlled below. */" },
+#endif
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Legacy pre-v0.12 active-collection capacity retained for config compatibility. Party capacity is controlled below." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxPartyDigimon_MetaData[] = {
+		{ "Category", "Party & Bank|Party" },
+		{ "ClampMax", "6" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Active field roster size. Six matches the classic creature-party convention and the native Party UI. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Active field roster size. Six matches the classic creature-party convention and the native Party UI." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxDigimonBankStorage_MetaData[] = {
-		{ "Category", "Inventory" },
+		{ "Category", "Party & Bank|Bank" },
+		{ "ClampMax", "5000" },
 		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum persistent Digimon stored in the account Bank/Boxes. Existing oversized saves are never truncated. */" },
+#endif
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum persistent Digimon stored in the account Bank/Boxes. Existing oversized saves are never truncated." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonBankSlotsPerPage_MetaData[] = {
+		{ "Category", "Party & Bank|Bank" },
+		{ "ClampMax", "60" },
+		{ "ClampMin", "6" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Number of visible Bank slots per native Box page. The polished fallback uses a 6-column grid. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Number of visible Bank slots per native Box page. The polished fallback uses a 6-column grid." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bAllowPartySwitchingDuringCombat_MetaData[] = {
+		{ "Category", "Party & Bank|Rules" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Default safety policy. Disable only if the project intentionally supports mid-combat partner/Bank swaps. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Default safety policy. Disable only if the project intentionally supports mid-combat partner/Bank swaps." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartnerSpawnOffset_MetaData[] = {
 		{ "Category", "Partner" },
@@ -462,6 +510,50 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CombatQuickBarWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartyQuickBarWidgetClass_MetaData[] = {
+		{ "Category", "UI|Party Quick Access" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent six-slot Party HUD. Assign a Blueprint child to reskin it without replacing Party authority. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent six-slot Party HUD. Assign a Blueprint child to reskin it without replacing Party authority." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativePartyQuickBar_MetaData[] = {
+		{ "Category", "UI|Party Quick Access" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the persistent native Party quick-access HUD. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the persistent native Party quick-access HUD." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDefaultPartyQuickAccessInput_MetaData[] = {
+		{ "Category", "UI|Party Quick Access" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Ready-to-use Tab interaction toggle. Disable when Enhanced Input/project UI owns the Party cursor mode. */" },
+#endif
+		{ "EditCondition", "bShowNativePartyQuickBar" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Ready-to-use Tab interaction toggle. Disable when Enhanced Input/project UI owns the Party cursor mode." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartyQuickBarBottomSafeOffset_MetaData[] = {
+		{ "Category", "UI|Party Quick Access|Presentation" },
+		{ "ClampMax", "1000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Bottom safe-lane offset so Party Quick Access sits above the centered combat quickbar by default. */" },
+#endif
+		{ "EditCondition", "bShowNativePartyQuickBar" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Bottom safe-lane offset so Party Quick Access sits above the centered combat quickbar by default." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonInventoryWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
@@ -1108,9 +1200,28 @@ struct UHT_STATICS
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAutoRegisterUnknownAccounts;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxActiveDigimonInventory;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxPartyDigimon;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxDigimonBankStorage;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_DigimonBankSlotsPerPage;
+	static void NewProp_bAllowPartySwitchingDuringCombat_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bAllowPartySwitchingDuringCombat = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAllowPartySwitchingDuringCombat;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_PartnerSpawnOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_CombatQuickBarWidgetClass;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_PartyQuickBarWidgetClass;
+	static void NewProp_bShowNativePartyQuickBar_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowNativePartyQuickBar = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowNativePartyQuickBar;
+	static void NewProp_bEnableDefaultPartyQuickAccessInput_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableDefaultPartyQuickAccessInput = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultPartyQuickAccessInput;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PartyQuickBarBottomSafeOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_DigimonInventoryWidgetClass;
 	static void NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit(void* Obj)
 	{
@@ -1287,10 +1398,17 @@ const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAutomatically
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MusicStateEvaluationInterval = { "MusicStateEvaluationInterval", nullptr, (EPropertyFlags)0x0010040000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MusicStateEvaluationInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MusicStateEvaluationInterval_MetaData), NewProp_MusicStateEvaluationInterval_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AccountSaveSlot = { "AccountSaveSlot", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AccountSaveSlot), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccountSaveSlot_MetaData), NewProp_AccountSaveSlot_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts = { "bAutoRegisterUnknownAccounts", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAutoRegisterUnknownAccounts_MetaData), NewProp_bAutoRegisterUnknownAccounts_MetaData) };
-const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxActiveDigimonInventory = { "MaxActiveDigimonInventory", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxActiveDigimonInventory), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxActiveDigimonInventory_MetaData), NewProp_MaxActiveDigimonInventory_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxActiveDigimonInventory = { "MaxActiveDigimonInventory", nullptr, (EPropertyFlags)0x0010040000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxActiveDigimonInventory), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxActiveDigimonInventory_MetaData), NewProp_MaxActiveDigimonInventory_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxPartyDigimon = { "MaxPartyDigimon", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxPartyDigimon), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxPartyDigimon_MetaData), NewProp_MaxPartyDigimon_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxDigimonBankStorage = { "MaxDigimonBankStorage", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxDigimonBankStorage), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxDigimonBankStorage_MetaData), NewProp_MaxDigimonBankStorage_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonBankSlotsPerPage = { "DigimonBankSlotsPerPage", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonBankSlotsPerPage), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonBankSlotsPerPage_MetaData), NewProp_DigimonBankSlotsPerPage_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat = { "bAllowPartySwitchingDuringCombat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAllowPartySwitchingDuringCombat_MetaData), NewProp_bAllowPartySwitchingDuringCombat_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PartnerSpawnOffset = { "PartnerSpawnOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartnerSpawnOffset), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartnerSpawnOffset_MetaData), NewProp_PartnerSpawnOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidgetClass = { "CombatQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CombatQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidgetClass_MetaData), NewProp_CombatQuickBarWidgetClass_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidgetClass = { "PartyQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidgetClass_MetaData), NewProp_PartyQuickBarWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativePartyQuickBar = { "bShowNativePartyQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativePartyQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativePartyQuickBar_MetaData), NewProp_bShowNativePartyQuickBar_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput = { "bEnableDefaultPartyQuickAccessInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPartyQuickAccessInput_MetaData), NewProp_bEnableDefaultPartyQuickAccessInput_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PartyQuickBarBottomSafeOffset = { "PartyQuickBarBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarBottomSafeOffset_MetaData), NewProp_PartyQuickBarBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidgetClass = { "DigimonInventoryWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonInventoryWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidgetClass_MetaData), NewProp_DigimonInventoryWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput = { "bEnableDefaultDigimonInventoryMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData), NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ScanNotificationWidgetClass = { "ScanNotificationWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ScanNotificationWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidgetClass_MetaData), NewProp_ScanNotificationWidgetClass_MetaData) };
@@ -1387,9 +1505,16 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AccountSaveSlot,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxActiveDigimonInventory,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxPartyDigimon,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxDigimonBankStorage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonBankSlotsPerPage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartnerSpawnOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativePartyQuickBar,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidgetClass,
@@ -1514,10 +1639,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3584586684U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3875928002U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_e6c20f9805251ba10aa3b9bb4da73a7b842920ee{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_14180b871ce98fa38f3bcf1d43584cc4449ed7cf{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -8,6 +8,7 @@ class UDMFStarterRosterData;
 class UDMFLoginMainMenuWidget;
 class UDMFStarterSelectionWidget;
 class UDMFCombatQuickBarWidget;
+class UDMFPartyQuickBarWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
@@ -180,11 +181,25 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Account")
     bool bAutoRegisterUnknownAccounts = true;
 
-    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Inventory", meta=(ClampMin="1"))
+    /** Legacy pre-v0.12 active-collection capacity retained for config compatibility. Party capacity is controlled below. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category="Inventory", meta=(ClampMin="1"))
     int32 MaxActiveDigimonInventory = 30;
 
-    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Inventory", meta=(ClampMin="1"))
+    /** Active field roster size. Six matches the classic creature-party convention and the native Party UI. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Party & Bank|Party", meta=(ClampMin="1", ClampMax="6"))
+    int32 MaxPartyDigimon = 6;
+
+    /** Maximum persistent Digimon stored in the account Bank/Boxes. Existing oversized saves are never truncated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Party & Bank|Bank", meta=(ClampMin="1", ClampMax="5000"))
     int32 MaxDigimonBankStorage = 200;
+
+    /** Number of visible Bank slots per native Box page. The polished fallback uses a 6-column grid. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Party & Bank|Bank", meta=(ClampMin="6", ClampMax="60"))
+    int32 DigimonBankSlotsPerPage = 30;
+
+    /** Default safety policy. Disable only if the project intentionally supports mid-combat partner/Bank swaps. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Party & Bank|Rules")
+    bool bAllowPartySwitchingDuringCombat = false;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Partner")
     FVector PartnerSpawnOffset = FVector(150.0, 120.0, 0.0);
@@ -192,6 +207,22 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFCombatQuickBarWidget> CombatQuickBarWidgetClass;
+
+    /** Persistent six-slot Party HUD. Assign a Blueprint child to reskin it without replacing Party authority. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access")
+    TSubclassOf<UDMFPartyQuickBarWidget> PartyQuickBarWidgetClass;
+
+    /** Master switch for the persistent native Party quick-access HUD. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access")
+    bool bShowNativePartyQuickBar = true;
+
+    /** Ready-to-use Tab interaction toggle. Disable when Enhanced Input/project UI owns the Party cursor mode. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access", meta=(EditCondition="bShowNativePartyQuickBar"))
+    bool bEnableDefaultPartyQuickAccessInput = true;
+
+    /** Bottom safe-lane offset so Party Quick Access sits above the centered combat quickbar by default. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Presentation", meta=(EditCondition="bShowNativePartyQuickBar", ClampMin="0.0", ClampMax="1000.0"))
+    float PartyQuickBarBottomSafeOffset = 176.0f;
 
     /** Native roster/partner menu fallback; assign a Blueprint child to fully reskin it. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")

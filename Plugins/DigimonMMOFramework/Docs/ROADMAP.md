@@ -50,7 +50,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Species scan-data ledger.
 - Battle victory scan rewards.
 - 100% materialization eligibility.
-- Server-authoritative materialization into the active Digimon inventory.
+- Server-authoritative materialization; v0.12 routes new Digimon to Party first and Bank automatically when Party is full.
 - Duplicate materialization rules and configurable scan caps.
 
 ## MMO presentation layer — world nameplates (implemented in v0.9.0-alpha)
@@ -68,13 +68,15 @@ The plugin is intentionally being built in dependency order rather than as isola
 - v0.10.2 centralizes the admin-host/player-join public endpoint in Project Settings; v0.10.3 also makes the Admin Host & Play password Project Settings-configurable with digest-only persistence, removing the remaining source edit from frontend deployment setup while preserving the authoritative listen-server flow.
 - Future channel/guild/private-message/backend routing can extend the accepted-message hook without moving authority into UI.
 
-## Phase 4 — Digimon collection UX
-- Functional native roster/select/summon/recall menu implemented in v0.5.0.
-- Native drag/drop active Digimon inventory UI.
-- Quick-access party/summon slots.
-- Native Digimon Bank storage UI.
-- Server-validated inventory ↔ bank drag/drop transactions.
-- Sorting/filtering/inspection/stat-spend UI.
+## Phase 4 — Digimon Party & collection UX (major storage milestone implemented in v0.12.0-alpha)
+- Functional native roster/select/summon/recall foundation — IMPLEMENTED in v0.5.0.
+- Six-Digimon server-authoritative Party with account persistence — IMPLEMENTED in v0.12.0.
+- Anywhere-access persistent Digimon Bank / paged Boxes — IMPLEMENTED in v0.12.0.
+- Server-validated Party ↔ Bank moves plus full-Party atomic swaps — IMPLEMENTED in v0.12.0.
+- Persistent six-slot Party Quick Access HUD with Tab mouse-interaction mode — IMPLEMENTED in v0.12.0.
+- Materialization Party-first / Bank-overflow integration and schema-v4 legacy migration — IMPLEMENTED in v0.12.0.
+- Direct drag/drop gestures, advanced sorting/filtering and stat-spend UX remain future presentation extensions over the authoritative storage API.
+- Native Party/Bank/Scan/Care and Party/combat quickbar layout hardening — IMPLEMENTED in v0.12.1 (scroll-clipped detail bodies, fixed Bank card sizing, compact HUD cards).
 
 ## Phase 5 — Player item inventory
 - Data-asset item definitions.
@@ -134,7 +136,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Icon-capable bottom-center combat quick bar.
 - Shared native visual language and backward-compatible optional widget bindings.
 
-Future UI work can build on this presentation layer for full drag/drop party slots, bank storage, item inventory, Digivolution screens, scan/materialization, care and ranked-battle interfaces.
+v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer. Future UI work can add direct drag/drop gestures, sorting/filtering, item inventory, Digivolution, stat-spend and ranked-battle interfaces without replacing the authoritative storage model.
 
 ## Completed in v0.6.1–v0.6.2 — multiplayer possession and combat-facing polish
 
@@ -148,4 +150,4 @@ Future UI work can build on this presentation layer for full drag/drop party slo
 - AI controller yaw hardening for target-facing.
 
 - Scan & Materialization — IMPLEMENTED in v0.7.0-alpha
-- Future shared Digimon menu tabs: Bank, Party, Digivolution
+- Shared Digimon menu Party + Bank/Boxes tabs — IMPLEMENTED in v0.12.0-alpha; Digivolution remains future Phase 7 work.

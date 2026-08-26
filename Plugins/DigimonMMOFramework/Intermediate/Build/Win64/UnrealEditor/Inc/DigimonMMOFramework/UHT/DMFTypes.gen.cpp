@@ -38,6 +38,7 @@ DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimon
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonElement(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStage(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier(ETypeConstructPhase);
@@ -655,15 +656,24 @@ struct UHT_STATICS
 {
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Bank.Comment", "/** Appended in v0.12 so earlier enum values are never shifted. */" },
+		{ "Bank.DisplayName", "Bank / Boxes" },
+		{ "Bank.Name", "EDMFDigimonMenuTab::Bank" },
+		{ "Bank.ToolTip", "Appended in v0.12 so earlier enum values are never shifted." },
 		{ "BlueprintType", "true" },
 		{ "Care.Name", "EDMFDigimonMenuTab::Care" },
+		{ "Collection.Comment", "/** Backward-compatible API name/value for the active six-Digimon Party page. */" },
+		{ "Collection.DisplayName", "Party" },
 		{ "Collection.Name", "EDMFDigimonMenuTab::Collection" },
+		{ "Collection.ToolTip", "Backward-compatible API name/value for the active six-Digimon Party page." },
 #if !UE_BUILD_SHIPPING
 		{ "Comment", "/** Current pages in the polished Digimon menu shell. Additional systems can extend this enum later. */" },
 #endif
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "ScanAndMaterialize.Comment", "/** Existing serialized values remain in their pre-v0.12 order for Blueprint/save compatibility. */" },
 		{ "ScanAndMaterialize.DisplayName", "Scan & Materialize" },
 		{ "ScanAndMaterialize.Name", "EDMFDigimonMenuTab::ScanAndMaterialize" },
+		{ "ScanAndMaterialize.ToolTip", "Existing serialized values remain in their pre-v0.12 order for Blueprint/save compatibility." },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Current pages in the polished Digimon menu shell. Additional systems can extend this enum later." },
 #endif
@@ -673,6 +683,7 @@ struct UHT_STATICS
 		{ "EDMFDigimonMenuTab::Collection", (int64)EDMFDigimonMenuTab::Collection },
 		{ "EDMFDigimonMenuTab::ScanAndMaterialize", (int64)EDMFDigimonMenuTab::ScanAndMaterialize },
 		{ "EDMFDigimonMenuTab::Care", (int64)EDMFDigimonMenuTab::Care },
+		{ "EDMFDigimonMenuTab::Bank", (int64)EDMFDigimonMenuTab::Bank },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct UHT_STATICS 
@@ -708,6 +719,70 @@ UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPh
 }
 #undef UHT_STATICS
 // ********** End Enum EDMFDigimonMenuTab **********************************************************
+
+// ********** Begin Enum EDMFDigimonStorageLocation ************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDigimonStorageLocation>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Bank.Name", "EDMFDigimonStorageLocation::Bank" },
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Authoritative owner-storage location used by Party/Bank transfer APIs. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "Party.Name", "EDMFDigimonStorageLocation::Party" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Authoritative owner-storage location used by Party/Bank transfer APIs." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFDigimonStorageLocation::Party", (int64)EDMFDigimonStorageLocation::Party },
+		{ "EDMFDigimonStorageLocation::Bank", (int64)EDMFDigimonStorageLocation::Bank },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFDigimonStorageLocation",
+	"EDMFDigimonStorageLocation",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFDigimonStorageLocation;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFDigimonStorageLocation.OuterSingleton)
+		{
+			ZRIE_EDMFDigimonStorageLocation.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFDigimonStorageLocation"));
+		}
+		return ZRIE_EDMFDigimonStorageLocation.OuterSingleton;
+	}
+	if (!ZRIE_EDMFDigimonStorageLocation.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFDigimonStorageLocation.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFDigimonStorageLocation.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFDigimonStorageLocation **************************************************
 
 // ********** Begin ScriptStruct FDMFDigimonStats **************************************************
 #ifdef UHT_STATICS
@@ -1874,7 +1949,8 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 785946822U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
-		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3919447411U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 691583900U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, TEXT("EDMFDigimonStorageLocation"), &ZRIE_EDMFDigimonStorageLocation, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2383950102U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState, TEXT("EDMFMusicState"), &ZRIE_EDMFMusicState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4180201259U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState, TEXT("EDMFCombatState"), &ZRIE_EDMFCombatState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4086388659U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDamageScaling, TEXT("EDMFDamageScaling"), &ZRIE_EDMFDamageScaling, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1045003275U) },
@@ -1892,7 +1968,7 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 503094528U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_49664d51f5e0b3a957fef6e565d44bf44e37afbb{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_bbca338238af8c171cf98a734df21ff80a23fc45{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

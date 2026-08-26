@@ -12,6 +12,8 @@ class UDMFDigimonCombatComponent;
 class UDMFDigimonSpeciesData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFDigimonInventoryChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFDigimonBankChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFDigimonStorageActionResult, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId, EDMFDigimonStorageLocation, NewLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFStarterRequirementChanged, bool, bStarterRequired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFStarterSelectionFinished, FGuid, NewPartnerInstanceId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFStarterSelectionResult, bool, bSuccess, FText, Message, FGuid, PartnerInstanceId);
@@ -39,8 +41,15 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Inventory")
+    /** Backward-compatible active-roster delegate. In v0.12+ the active inventory is the Party. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Party")
     FDMFDigimonInventoryChanged OnDigimonInventoryChanged;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Bank")
+    FDMFDigimonBankChanged OnDigimonBankChanged;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Party & Bank")
+    FDMFDigimonStorageActionResult OnDigimonStorageActionResult;
 
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Onboarding")
     FDMFStarterRequirementChanged OnStarterRequirementChanged;
@@ -86,11 +95,44 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Care")
     FDMFCareSequenceFinished OnCareSequenceFinished;
 
-    UFUNCTION(BlueprintPure, Category="Digimon MMO|Inventory")
+    /** Backward-compatible alias for GetPartyDigimon(). */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party")
     TArray<FDMFDigimonInstance> GetDigimonInventory() const;
 
-    UFUNCTION(BlueprintPure, Category="Digimon MMO|Inventory")
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party")
+    TArray<FDMFDigimonInstance> GetPartyDigimon() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Bank")
+    TArray<FDMFDigimonInstance> GetBankDigimon() const;
+
+    /** Party-only compatibility lookup used by existing combat/partner code. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party")
     bool GetDigimonByInstanceId(FGuid InstanceId, FDMFDigimonInstance& OutDigimon) const;
+
+    /** Searches both Party and Bank and reports the authoritative owner-storage location. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party & Bank")
+    bool GetOwnedDigimonByInstanceId(FGuid InstanceId, FDMFDigimonInstance& OutDigimon, EDMFDigimonStorageLocation& OutLocation) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Party")
+    int32 GetPartyCapacity() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Bank")
+    int32 GetBankCapacity() const;
+
+    /** Moves a Bank Digimon into a Party slot. Occupied slots swap atomically back into Bank. INDEX_NONE uses the first free slot. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Party & Bank")
+    void ServerMoveBankDigimonToParty(FGuid InstanceId, int32 PartySlotIndex = -1, bool bSummonIfBecomesActive = true);
+
+    /** Deposits a Party Digimon into Bank. The final remaining Party member cannot be deposited. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Party & Bank")
+    void ServerMovePartyDigimonToBank(FGuid InstanceId);
+
+    /** Reorders two Party slots without changing ownership/storage. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Party & Bank")
+    void ServerSwapPartySlots(int32 FirstPartySlotIndex, int32 SecondPartySlotIndex);
+
+    UFUNCTION(Client, Reliable)
+    void ClientDigimonStorageActionResult(bool bSuccess, const FText& Message, FGuid DigimonInstanceId, EDMFDigimonStorageLocation NewLocation);
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Partner")
     FGuid GetActivePartnerInstanceId() const { return ActivePartnerInstanceId; }
@@ -201,8 +243,13 @@ public:
     TObjectPtr<ADMFDigimonCharacter> ActivePartnerActor;
 
 private:
+    /** Owner-only active Party. Kept under the historical ReplicatedInventory name for source/API compatibility. */
     UPROPERTY(ReplicatedUsing=OnRep_Inventory)
     FDMFReplicatedDigimonList ReplicatedInventory;
+
+    /** Owner-only persistent Bank/Box storage. */
+    UPROPERTY(ReplicatedUsing=OnRep_Bank)
+    FDMFReplicatedDigimonList ReplicatedBank;
 
     UPROPERTY(ReplicatedUsing=OnRep_ActivePartnerInstanceId)
     FGuid ActivePartnerInstanceId;
@@ -253,6 +300,9 @@ private:
     void OnRep_Inventory();
 
     UFUNCTION()
+    void OnRep_Bank();
+
+    UFUNCTION()
     void OnRep_ActivePartnerInstanceId();
 
     UFUNCTION()
@@ -273,6 +323,11 @@ private:
 
     FDMFReplicatedDigimonEntry* FindInventoryEntry(FGuid InstanceId);
     const FDMFReplicatedDigimonEntry* FindInventoryEntry(FGuid InstanceId) const;
+    FDMFReplicatedDigimonEntry* FindBankEntry(FGuid InstanceId);
+    const FDMFReplicatedDigimonEntry* FindBankEntry(FGuid InstanceId) const;
+    bool IsPartyMutationAllowed(FText& OutFailure) const;
+    void ReconcileActivePartnerAfterPartyMutation(FGuid PreviousActivePartnerId, bool bWasSummoned);
+    void MarkPartyAndBankChanged(bool bPartyChanged, bool bBankChanged);
     bool NormalizeAndApplyCareDecay(FDMFReplicatedDigimonEntry& Entry, const UDMFDigimonSpeciesData& Species, int64 NowUtcTicks);
     void BroadcastCareState(const FDMFReplicatedDigimonEntry& Entry);
     void CareTick();

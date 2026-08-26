@@ -8,6 +8,7 @@
 class UHorizontalBox;
 class UTextBlock;
 class UImage;
+class USizeBox;
 class UDMFCombatQuickSlotButton;
 class UDMFPlayerDigimonComponent;
 class ADMFDigimonCharacter;
@@ -70,6 +71,8 @@ private:
 
     UPROPERTY(Transient)
     TArray<TObjectPtr<UImage>> NativeSlotIcons;
+
+    TArray<TWeakObjectPtr<USizeBox>> NativeSlotIconContainers;
 
     FTimerHandle RefreshTimer;
 

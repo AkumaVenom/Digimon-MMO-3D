@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision`
+**Version:** `0.12.1-alpha — Polished Native UI Layout Hardening`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.12.1-alpha — Polished Native UI Layout Hardening
+
+v0.12.1 is a focused presentation hardening release over the runtime-validated v0.12 Party/Bank milestone. The native Digimon Menu has been rebalanced so Party, Bank/Boxes, Scan & Materialize and Care retain clean spacing at ordinary PIE/game viewport sizes: fixed-size Bank cards scroll instead of being compressed, long profile/description text is clipped into dedicated scroll regions, and right-side action buttons stay pinned below their content instead of being overdrawn.
+
+The persistent Party Quick Access and combat ability quickbars were polished at the same time. Dense card buttons now use compact internal padding, Party cards stack the portrait above a readable two-line identity/state label, and the combat bar automatically collapses an unassigned ability-icon frame so the ability name/SP/READY text can use the full card width. No gameplay, storage, persistence, combat or network authority path was changed.
+
+## New in v0.12.0-alpha — Polished Party, Digimon Bank / Boxes & Party Quick Access
+
+The owned-Digimon progression layer is now a complete **Party + Bank/Box system**. The shared `I` Digimon Menu exposes `PARTY`, `BANK / BOXES`, `SCAN & MATERIALIZE` and `CARE`. Party is a six-Digimon active field roster by default, while the persistent Bank holds 200 Digimon by default and can be opened **anywhere in the gameplay world**—no physical terminal is required.
+
+The Bank uses paged six-column Box storage with compact portrait/level cards, KO presentation, full selected-Digimon stats and a live six-slot Party destination strip. If Party has room, a Bank Digimon moves into the first free slot. If Party is full, select an occupied Party slot and the server performs an **atomic swap**, returning the outgoing Party Digimon to Bank. Deposits, swaps and active-partner changes are server-authoritative, owner-only replicated, persisted immediately, and blocked during active combat by default.
+
+The HUD also gains a persistent native **Party Quick Access** bar. Press **Tab** to enter interaction mode: gameplay look/movement is temporarily released, the mouse cursor appears, healthy Party slots become clickable, and `RECALL`, `OPEN PARTY` and `OPEN BANK` actions expand below the roster. Tab again or Escape returns cleanly to gameplay. The bar remains owner-only presentation and all actual switching still goes through the normal server RPC path.
+
+Save schema is now **v4**. Existing pre-v0.12 accounts migrate without intentionally losing a collected Digimon: the previous active partner is guaranteed to remain in Party, older collection entries fill Party in stable order, and overflow spills into the existing Bank field with GUID de-duplication. Current six-slot Party order is preserved on later loads. Scan Materialization now fills Party first and automatically routes to Bank when Party is full. See `Docs/SETUP_PARTY_BANK_STORAGE.md`.
 
 ## New in v0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision
 
@@ -111,9 +127,9 @@ Blueprint projects can reskin/extend all presentation surfaces: care data remain
 
 ## New in v0.7.0-alpha — Scan Data & Materialization
 
-The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into the active Collection.
+The framework now includes a persistent, server-authoritative Scan Data capture loop integrated directly into the polished native Digimon menu. Eligible wild victories award species-specific Scan Data, normally 20% per win. At the configured threshold (100% by default), the player can open `I -> SCAN & MATERIALIZE`, select the analyzed species and materialize a new permanent Digimon into Party first, or Bank automatically when Party is full.
 
-The Digimon menu is now a tabbed shell: `COLLECTION` and `SCAN & MATERIALIZE` are implemented today, while the layout intentionally reserves the same menu architecture for future Bank, Party and Digivolution modules. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
+The Digimon menu began as a tabbed shell in v0.7; in current builds its roster page is the six-slot `PARTY`, with `BANK / BOXES`, `SCAN & MATERIALIZE` and `CARE` implemented alongside it. Digivolution remains a future module. The Scan page uses species portraits, progress cards, readiness badges, a large selected-species terminal, collection-capacity checks and a server-backed Materialize action. Battle rewards also produce a native owner-only Scan toast with `+X%`, total progress and `MATERIALIZATION READY`.
 
 Per species, configure `DMFDigimonSpeciesData -> Scan & Materialization`: `bScanDataEnabled`, `BattleScanPercentReward`, `ScanPercentCap`, `bMaterializationEnabled`, and `MaterializationRequiredScanPercent`. Materializable species must have `WorldActorClass` set to the normal partner Blueprint derived from `DMFDigimonCharacter`, never the `DMFWildDigimonCharacter` Blueprint. Scan Data is owner-only replicated and saved in the account record automatically. See `Docs/SETUP_SCAN_MATERIALIZATION.md`.
 
@@ -168,7 +184,7 @@ The framework no longer ships programmer-style gray-list fallback menus. The nat
 - `DMFPlayerSkinData -> Portrait` = character skin card/preview.
 - `DMFDigimonAbilityData -> Icon` = combat quick-slot icon.
 
-The native Digimon collection renders the configured `MaxActiveDigimonInventory` as a 6-column slot grid, including empty slots. Occupied slots show name, level and Active/Summoned/KO state; selecting one opens a profile with Stage/Attribute, Level/EXP, HP/SP, STR/INT/DEF/SPD, ABI/CAM and the species description. Summon/recall remains server-authoritative.
+The current native Digimon Menu formalizes the owned roster as a six-slot **PARTY** (`MaxPartyDigimon`) plus persistent paged **BANK / BOXES** (`MaxDigimonBankStorage`). Party cards expose Active/Summoned/KO state and full selected stats; Bank cards use the same portrait/stat language with a live Party destination strip for authoritative move/swap operations. Summon/recall and every storage mutation remain server-authoritative.
 
 All polished widgets remain Blueprintable/reskinnable. Existing Blueprint subclasses are not required to migrate to the native layout, and legacy optional binding names remain supported where practical. See `Docs/SETUP_POLISHED_NATIVE_UI.md`.
 

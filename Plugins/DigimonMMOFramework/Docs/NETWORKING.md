@@ -1,5 +1,16 @@
 # Networking / Host Deployment
 
+## v0.12.0 Party / Bank networking contract
+
+- Party and Bank are **private account progression** and each use owner-only Fast Array replication. Complete roster/storage contents are never broadcast to unrelated clients.
+- `ServerMoveBankDigimonToParty`, `ServerMovePartyDigimonToBank` and `ServerSwapPartySlots` are reliable durable-state requests on the connection-owned `UDMFPlayerDigimonComponent`.
+- The server validates instance ownership/source location, destination index, Party/Bank capacity, Care state and the configured combat-switch policy before mutation. Clients never submit trusted stats or an arbitrary Digimon object.
+- A full-Party Bank withdrawal is an atomic authoritative swap; there is no intermediate frame where a Digimon is duplicated or lost between containers.
+- Active-partner reconciliation is server-owned. Observer clients learn the result through the normal replicated partner world actor, not by receiving the owner's private Party/Bank arrays.
+- Materialization is storage-aware on authority: Party first, then Bank. Owned-species counts include both tiers.
+- The Party Quick Access HUD and Tab cursor mode are local presentation/input state only. Clicking a slot routes through the existing authoritative partner-selection path; no HUD state is replicated.
+- Save schema v4 is host-side persistence. Legacy collection-to-Party/Bank migration and GUID de-duplication occur on authoritative account hydration, never independently on clients.
+
 ## v0.11.1 player camera networking contract
 
 Player camera zoom is **client-local presentation only**. Mouse-wheel input, desired boom length, interpolation and spring-arm compression are not replicated and do not enter PlayerState/account persistence. Two players can therefore use different camera distances while sharing the same authoritative world simulation.
@@ -94,7 +105,7 @@ This baseline is intentionally **multiplayer gameplay only**:
 
 ## Replication policy
 
-Private collection state is replicated owner-only. World partner actors are ordinary replicated actors so other players can see them. Gameplay-changing client requests are expected to use server RPCs and be validated server-side.
+Private Party and Bank state is replicated owner-only. World partner actors are ordinary replicated actors so other players can see the currently presented partner. Gameplay-changing client requests use server RPCs and are validated server-side.
 
 
 Player avatar skin selection follows the same authority boundary:

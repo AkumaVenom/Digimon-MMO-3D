@@ -14,6 +14,7 @@ class UHorizontalBox;
 class UProgressBar;
 class UDMFPlayerDigimonComponent;
 class UDMFDigimonSpeciesData;
+class UDMFPartyDestinationButton;
 
 /**
  * Polished native Digimon roster/partner menu.
@@ -33,6 +34,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Inventory")
     void RefreshInventory();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Bank")
+    void RefreshBankData();
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Scan & Materialization")
     void RefreshScanData();
@@ -94,16 +98,58 @@ protected:
     TObjectPtr<UButton> RecallDigimonButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> MoveSelectedToBankButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> CloseDigimonInventoryButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> CollectionTabButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> BankTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> ScanMaterializeTabButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> CareTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UUniformGridPanel> BankDigimonGrid;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankCountText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankPageText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankSelectionText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UImage> BankSelectedPortraitImage;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankSelectedNameText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankSelectedMetaText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BankSelectedStatsText;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UUniformGridPanel> BankPartyDestinationGrid;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> BankPreviousPageButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> BankNextPageButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> MoveSelectedBankToPartyButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> ScanSpeciesGrid;
@@ -173,23 +219,34 @@ private:
     TObjectPtr<UDMFPlayerDigimonComponent> BoundDigimonComponent;
 
     FGuid SelectedInstanceId;
-    FGuid PendingMaterializationSelectionId;
+    FGuid SelectedBankInstanceId;
+    FGuid PendingStorageSelectionId;
     FPrimaryAssetId SelectedScanSpeciesId;
+    int32 BankPageIndex = 0;
+    int32 SelectedBankPartyDestinationIndex = INDEX_NONE;
     EDMFDigimonMenuTab ActiveMenuTab = EDMFDigimonMenuTab::Collection;
 
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> InventoryContentRow;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> BankContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> ScanContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> CareContentRow;
 
     void BuildNativeFallbackUI();
     void BindDigimonComponent();
     void RefreshSelectedDetails();
+    void RefreshSelectedBankDetails();
     void RefreshSelectedScanDetails();
     void RefreshTabPresentation();
     UDMFDigimonSpeciesData* ResolveSpecies(FPrimaryAssetId SpeciesId) const;
 
     UFUNCTION()
     void HandleInventoryChanged();
+
+    UFUNCTION()
+    void HandleBankChanged();
+
+    UFUNCTION()
+    void HandleStorageActionResult(bool bSuccess, FText Message, FGuid DigimonInstanceId, EDMFDigimonStorageLocation NewLocation);
 
     UFUNCTION()
     void HandleScanDataChanged(FPrimaryAssetId SpeciesId, float ScanPercent, bool bMaterializationReady);
@@ -199,6 +256,9 @@ private:
 
     UFUNCTION()
     void HandleCollectionTab();
+
+    UFUNCTION()
+    void HandleBankTab();
 
     UFUNCTION()
     void HandleScanMaterializeTab();
@@ -220,6 +280,24 @@ private:
 
     UFUNCTION()
     void HandleMaterializeSelected();
+
+    UFUNCTION()
+    void HandleBankDigimonPressed(FGuid InstanceId);
+
+    UFUNCTION()
+    void HandleBankPartyDestinationPressed(int32 PartySlotIndex);
+
+    UFUNCTION()
+    void HandleMoveSelectedToBank();
+
+    UFUNCTION()
+    void HandleMoveSelectedBankToParty();
+
+    UFUNCTION()
+    void HandleBankPreviousPage();
+
+    UFUNCTION()
+    void HandleBankNextPage();
 
     UFUNCTION()
     void HandleDigimonPressed(FGuid InstanceId);

@@ -79,6 +79,24 @@ namespace DMFNativeUI
         }
     }
 
+    // Compact card/tile buttons keep the same visual language while reserving more of a small
+    // fixed slot for portraits, labels and status bars. Use this for dense HUD/storage tiles only.
+    inline FButtonStyle MakeCompactButtonStyle(const bool bPrimary = false, const bool bDanger = false, const bool bSelected = false)
+    {
+        FButtonStyle ButtonStyle = MakeButtonStyle(bPrimary, bDanger, bSelected);
+        ButtonStyle.SetNormalPadding(FMargin(4.0f, 3.0f));
+        ButtonStyle.SetPressedPadding(FMargin(5.0f, 4.0f, 3.0f, 2.0f));
+        return ButtonStyle;
+    }
+
+    inline void StyleCompactButton(UButton* Button, const bool bPrimary = false, const bool bDanger = false, const bool bSelected = false)
+    {
+        if (Button)
+        {
+            Button->SetStyle(MakeCompactButtonStyle(bPrimary, bDanger, bSelected));
+        }
+    }
+
     inline void StyleInput(UEditableTextBox* Input)
     {
         if (!Input)

@@ -91,8 +91,8 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
     WidgetTree->RootWidget = RootOverlay;
 
     USizeBox* BarSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("CombatBarSize"));
-    BarSize->SetWidthOverride(900.0f);
-    BarSize->SetHeightOverride(128.0f);
+    BarSize->SetWidthOverride(960.0f);
+    BarSize->SetHeightOverride(140.0f);
     if (UOverlaySlot* BarRootSlot = RootOverlay->AddChildToOverlay(BarSize))
     {
         BarRootSlot->SetHorizontalAlignment(HAlign_Center);
@@ -132,15 +132,16 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
 
     NativeSlotLabels.Reset();
     NativeSlotIcons.Reset();
+    NativeSlotIconContainers.Reset();
     for (int32 Index = 0; Index < 4; ++Index)
     {
         USizeBox* SlotSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        SlotSize->SetWidthOverride(212.0f);
-        SlotSize->SetHeightOverride(72.0f);
+        SlotSize->SetWidthOverride(224.0f);
+        SlotSize->SetHeightOverride(82.0f);
 
         UDMFCombatQuickSlotButton* AbilityButton = WidgetTree->ConstructWidget<UDMFCombatQuickSlotButton>(UDMFCombatQuickSlotButton::StaticClass());
         AbilityButton->ConfigureSlot(Index, this);
-        DMFNativeUI::StyleButton(AbilityButton, Index == 0);
+        DMFNativeUI::StyleCompactButton(AbilityButton, Index == 0);
         SlotSize->AddChild(AbilityButton);
 
         UHorizontalBox* AbilityContent = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -149,7 +150,9 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
         USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         IconSize->SetWidthOverride(52.0f);
         IconSize->SetHeightOverride(52.0f);
+        IconSize->SetVisibility(ESlateVisibility::Collapsed);
         AbilityContent->AddChildToHorizontalBox(IconSize)->SetVerticalAlignment(VAlign_Center);
+        NativeSlotIconContainers.Add(IconSize);
 
         UBorder* IconBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
         DMFNativeUI::StylePanel(IconBorder, DMFNativeUI::SlotEmpty(), FMargin(3.0f));
@@ -163,7 +166,7 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
         UTextBlock* SlotLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
         SlotLabel->SetText(FText::Format(NSLOCTEXT("DMF", "EmptyAbilitySlotPolished", "[{0}]  EMPTY"), FText::AsNumber(Index + 1)));
         SlotLabel->SetAutoWrapText(true);
-        DMFNativeUI::StyleText(SlotLabel, 12, DMFNativeUI::Text(), true);
+        DMFNativeUI::StyleText(SlotLabel, 11, DMFNativeUI::Text(), true);
         if (UHorizontalBoxSlot* LabelSlot = AbilityContent->AddChildToHorizontalBox(SlotLabel))
         {
             LabelSlot->SetSize(DMFNativeUI::FillSize());
@@ -227,6 +230,7 @@ void UDMFCombatQuickBarWidget::RefreshFromPartner()
         {
             UTextBlock* SlotLabel = NativeSlotLabels[Index];
             UImage* AbilityIcon = NativeSlotIcons.IsValidIndex(Index) ? NativeSlotIcons[Index] : nullptr;
+            USizeBox* AbilityIconContainer = NativeSlotIconContainers.IsValidIndex(Index) ? NativeSlotIconContainers[Index].Get() : nullptr;
             if (!SlotLabel)
             {
                 continue;
@@ -238,6 +242,10 @@ void UDMFCombatQuickBarWidget::RefreshFromPartner()
                 if (AbilityIcon)
                 {
                     AbilityIcon->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
+                }
+                if (AbilityIconContainer)
+                {
+                    AbilityIconContainer->SetVisibility(ESlateVisibility::Collapsed);
                 }
                 continue;
             }
@@ -258,10 +266,18 @@ void UDMFCombatQuickBarWidget::RefreshFromPartner()
                 {
                     AbilityIcon->SetBrushFromTexture(IconTexture, true);
                     AbilityIcon->SetColorAndOpacity(Remaining > 0.01f ? FLinearColor(0.45f, 0.45f, 0.45f, 1.0f) : FLinearColor::White);
+                    if (AbilityIconContainer)
+                    {
+                        AbilityIconContainer->SetVisibility(ESlateVisibility::Visible);
+                    }
                 }
                 else
                 {
                     AbilityIcon->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
+                    if (AbilityIconContainer)
+                    {
+                        AbilityIconContainer->SetVisibility(ESlateVisibility::Collapsed);
+                    }
                 }
             }
         }

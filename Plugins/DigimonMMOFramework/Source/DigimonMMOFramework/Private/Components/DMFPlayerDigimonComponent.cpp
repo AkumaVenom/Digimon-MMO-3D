@@ -62,6 +62,7 @@ void UDMFPlayerDigimonComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ReplicatedInventory, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ReplicatedBank, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ActivePartnerInstanceId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, bStarterSelectionRequired, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ActivePartnerActor, COND_OwnerOnly);
@@ -74,13 +75,47 @@ void UDMFPlayerDigimonComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 TArray<FDMFDigimonInstance> UDMFPlayerDigimonComponent::GetDigimonInventory() const
 {
+    return GetPartyDigimon();
+}
+
+TArray<FDMFDigimonInstance> UDMFPlayerDigimonComponent::GetPartyDigimon() const
+{
     TArray<FDMFDigimonInstance> Result;
     Result.Reserve(ReplicatedInventory.Items.Num());
     for (const FDMFReplicatedDigimonEntry& Entry : ReplicatedInventory.Items)
     {
-        Result.Add(Entry.Digimon);
+        if (Entry.Digimon.IsValid())
+        {
+            Result.Add(Entry.Digimon);
+        }
     }
     return Result;
+}
+
+TArray<FDMFDigimonInstance> UDMFPlayerDigimonComponent::GetBankDigimon() const
+{
+    TArray<FDMFDigimonInstance> Result;
+    Result.Reserve(ReplicatedBank.Items.Num());
+    for (const FDMFReplicatedDigimonEntry& Entry : ReplicatedBank.Items)
+    {
+        if (Entry.Digimon.IsValid())
+        {
+            Result.Add(Entry.Digimon);
+        }
+    }
+    return Result;
+}
+
+int32 UDMFPlayerDigimonComponent::GetPartyCapacity() const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    return FMath::Clamp(Settings ? Settings->MaxPartyDigimon : 6, 1, 6);
+}
+
+int32 UDMFPlayerDigimonComponent::GetBankCapacity() const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    return FMath::Max(1, Settings ? Settings->MaxDigimonBankStorage : 200);
 }
 
 bool UDMFPlayerDigimonComponent::IsActivePartnerSummoned() const
@@ -90,13 +125,27 @@ bool UDMFPlayerDigimonComponent::IsActivePartnerSummoned() const
 
 bool UDMFPlayerDigimonComponent::GetDigimonByInstanceId(const FGuid InstanceId, FDMFDigimonInstance& OutDigimon) const
 {
-    for (const FDMFReplicatedDigimonEntry& Entry : ReplicatedInventory.Items)
+    if (const FDMFReplicatedDigimonEntry* Entry = FindInventoryEntry(InstanceId))
     {
-        if (Entry.Digimon.InstanceId == InstanceId)
-        {
-            OutDigimon = Entry.Digimon;
-            return true;
-        }
+        OutDigimon = Entry->Digimon;
+        return true;
+    }
+    return false;
+}
+
+bool UDMFPlayerDigimonComponent::GetOwnedDigimonByInstanceId(const FGuid InstanceId, FDMFDigimonInstance& OutDigimon, EDMFDigimonStorageLocation& OutLocation) const
+{
+    if (const FDMFReplicatedDigimonEntry* PartyEntry = FindInventoryEntry(InstanceId))
+    {
+        OutDigimon = PartyEntry->Digimon;
+        OutLocation = EDMFDigimonStorageLocation::Party;
+        return true;
+    }
+    if (const FDMFReplicatedDigimonEntry* BankEntry = FindBankEntry(InstanceId))
+    {
+        OutDigimon = BankEntry->Digimon;
+        OutLocation = EDMFDigimonStorageLocation::Bank;
+        return true;
     }
     return false;
 }
@@ -109,24 +158,113 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     }
 
     ReplicatedInventory.Items.Reset();
+    ReplicatedBank.Items.Reset();
+
+    const int32 PartyCapacity = GetPartyCapacity();
     const int64 NowUtcTicks = FDateTime::UtcNow().GetTicks();
     const UDMFFrameworkSettings* CareSettings = GetDefault<UDMFFrameworkSettings>();
-    for (const FDMFDigimonInstance& Digimon : Record.DigimonInventory)
+
+    // v0.12 migration: DigimonInventory was historically the entire active collection. It is now the Party.
+    // Preserve saved Party order; only promote the previous active partner when a legacy collection would otherwise overflow it into Bank.
+    TArray<FDMFDigimonInstance> LegacyParty = Record.DigimonInventory;
+    TArray<FDMFDigimonInstance> DesiredParty;
+    TArray<FDMFDigimonInstance> DesiredBank;
+    TSet<FGuid> SeenIds;
+
+    auto AddUniqueValid = [&SeenIds](TArray<FDMFDigimonInstance>& Target, const FDMFDigimonInstance& Digimon)
     {
-        FDMFReplicatedDigimonEntry& NewEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
-        NewEntry.Digimon = Digimon;
+        if (Digimon.IsValid() && !SeenIds.Contains(Digimon.InstanceId))
+        {
+            SeenIds.Add(Digimon.InstanceId);
+            Target.Add(Digimon);
+        }
+    };
+
+    // Preserve saved Party order on all current v0.12+ records. Promotion is needed only for a legacy
+    // collection where the active partner would otherwise fall outside the new Party capacity (or was
+    // already present only in the dormant Bank field). This keeps the migration one-way in semantics
+    // without reordering a player's six-slot Party every time the account is loaded.
+    const int32 LegacyActiveIndex = LegacyParty.IndexOfByPredicate([&](const FDMFDigimonInstance& D)
+    {
+        return D.InstanceId == Record.ActivePartnerInstanceId;
+    });
+    const bool bActiveWouldOverflowLegacyParty = Record.ActivePartnerInstanceId.IsValid()
+        && LegacyActiveIndex != INDEX_NONE
+        && LegacyActiveIndex >= PartyCapacity;
+    const bool bActiveExistsOnlyInLegacyBank = Record.ActivePartnerInstanceId.IsValid()
+        && LegacyActiveIndex == INDEX_NONE
+        && Record.DigimonBank.ContainsByPredicate([&](const FDMFDigimonInstance& D)
+        {
+            return D.InstanceId == Record.ActivePartnerInstanceId;
+        });
+
+    if (bActiveWouldOverflowLegacyParty || bActiveExistsOnlyInLegacyBank)
+    {
+        const FDMFDigimonInstance* Active = LegacyActiveIndex != INDEX_NONE
+            ? &LegacyParty[LegacyActiveIndex]
+            : Record.DigimonBank.FindByPredicate([&](const FDMFDigimonInstance& D)
+            {
+                return D.InstanceId == Record.ActivePartnerInstanceId;
+            });
+        if (Active)
+        {
+            AddUniqueValid(DesiredParty, *Active);
+        }
+    }
+
+    for (const FDMFDigimonInstance& Digimon : LegacyParty)
+    {
+        if (DesiredParty.Num() < PartyCapacity)
+        {
+            AddUniqueValid(DesiredParty, Digimon);
+        }
+        else
+        {
+            AddUniqueValid(DesiredBank, Digimon);
+        }
+    }
+    for (const FDMFDigimonInstance& Digimon : Record.DigimonBank)
+    {
+        AddUniqueValid(DesiredBank, Digimon);
+    }
+
+    auto NormalizeForLoad = [&](FDMFDigimonInstance& Digimon)
+    {
         if (CareSettings && CareSettings->bEnableCareSystem)
         {
-            if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(NewEntry.Digimon.SpeciesId))
+            if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(Digimon.SpeciesId))
             {
-                NormalizeAndApplyCareDecay(NewEntry, *Species, NowUtcTicks);
+                FDMFReplicatedDigimonEntry Temp;
+                Temp.Digimon = Digimon;
+                NormalizeAndApplyCareDecay(Temp, *Species, NowUtcTicks);
+                Digimon = Temp.Digimon;
             }
         }
+    };
+
+    for (FDMFDigimonInstance& Digimon : DesiredParty)
+    {
+        NormalizeForLoad(Digimon);
+        FDMFReplicatedDigimonEntry& NewEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
+        NewEntry.Digimon = Digimon;
         ReplicatedInventory.MarkItemDirty(NewEntry);
     }
+    for (FDMFDigimonInstance& Digimon : DesiredBank)
+    {
+        NormalizeForLoad(Digimon);
+        FDMFReplicatedDigimonEntry& NewEntry = ReplicatedBank.Items.AddDefaulted_GetRef();
+        NewEntry.Digimon = Digimon;
+        ReplicatedBank.MarkItemDirty(NewEntry);
+    }
     ReplicatedInventory.MarkArrayDirty();
+    ReplicatedBank.MarkArrayDirty();
 
     ActivePartnerInstanceId = Record.ActivePartnerInstanceId;
+    if (!FindInventoryEntry(ActivePartnerInstanceId))
+    {
+        ActivePartnerInstanceId = ReplicatedInventory.Items.IsEmpty() ? FGuid() : ReplicatedInventory.Items[0].Digimon.InstanceId;
+    }
+
     Money = Record.Money;
     ReplicatedScanData = Record.ScanData;
     bCareSequenceActive = false;
@@ -134,6 +272,7 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     bStarterSelectionRequired = !Record.bStarterSelected || !ActivePartnerInstanceId.IsValid();
 
     OnDigimonInventoryChanged.Broadcast();
+    OnDigimonBankChanged.Broadcast();
     OnStarterRequirementChanged.Broadcast(bStarterSelectionRequired);
     for (const FDMFScanDataEntry& ScanEntry : ReplicatedScanData)
     {
@@ -147,7 +286,8 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
 
 void UDMFPlayerDigimonComponent::ApplyToAccountRecord(FDMFAccountRecord& Record) const
 {
-    Record.DigimonInventory = GetDigimonInventory();
+    Record.DigimonInventory = GetPartyDigimon();
+    Record.DigimonBank = GetBankDigimon();
     Record.ActivePartnerInstanceId = ActivePartnerInstanceId;
     Record.bStarterSelected = !bStarterSelectionRequired && ActivePartnerInstanceId.IsValid();
     Record.Money = Money;
@@ -298,6 +438,10 @@ int32 UDMFPlayerDigimonComponent::GetOwnedSpeciesCount(const FPrimaryAssetId Spe
     {
         Count += Entry.Digimon.SpeciesId == SpeciesId ? 1 : 0;
     }
+    for (const FDMFReplicatedDigimonEntry& Entry : ReplicatedBank.Items)
+    {
+        Count += Entry.Digimon.SpeciesId == SpeciesId ? 1 : 0;
+    }
     return Count;
 }
 
@@ -386,9 +530,11 @@ void UDMFPlayerDigimonComponent::ServerMaterializeDigimon_Implementation(const F
         return;
     }
 
-    if (ReplicatedInventory.Items.Num() >= FMath::Max(1, Settings->MaxActiveDigimonInventory))
+    const bool bPartyHasRoom = ReplicatedInventory.Items.Num() < GetPartyCapacity();
+    const bool bBankHasRoom = ReplicatedBank.Items.Num() < GetBankCapacity();
+    if (!bPartyHasRoom && !bBankHasRoom)
     {
-        ClientMaterializationResult(false, NSLOCTEXT("DMF", "MaterializationInventoryFull", "The active Digimon Collection is full. Free a slot before materializing."), SpeciesId, FGuid());
+        ClientMaterializationResult(false, NSLOCTEXT("DMF", "MaterializationStorageFull", "Your Party and Digimon Bank are both full. Free a storage slot before materializing."), SpeciesId, FGuid());
         return;
     }
 
@@ -410,16 +556,30 @@ void UDMFPlayerDigimonComponent::ServerMaterializeDigimon_Implementation(const F
     }
 
     const FDMFDigimonInstance NewDigimon = BuildMaterializedInstance(*Species);
-    FDMFReplicatedDigimonEntry& NewInventoryEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
-    NewInventoryEntry.Digimon = NewDigimon;
-    ReplicatedInventory.MarkItemDirty(NewInventoryEntry);
-    ReplicatedInventory.MarkArrayDirty();
+    if (bPartyHasRoom)
+    {
+        FDMFReplicatedDigimonEntry& NewPartyEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
+        NewPartyEntry.Digimon = NewDigimon;
+        ReplicatedInventory.MarkItemDirty(NewPartyEntry);
+        ReplicatedInventory.MarkArrayDirty();
+        OnDigimonInventoryChanged.Broadcast();
+    }
+    else
+    {
+        FDMFReplicatedDigimonEntry& NewBankEntry = ReplicatedBank.Items.AddDefaulted_GetRef();
+        NewBankEntry.Digimon = NewDigimon;
+        ReplicatedBank.MarkItemDirty(NewBankEntry);
+        ReplicatedBank.MarkArrayDirty();
+        OnDigimonBankChanged.Broadcast();
+    }
 
     ScanEntry->ScanPercent = FMath::Max(0.0f, ScanEntry->ScanPercent - Required);
-    OnDigimonInventoryChanged.Broadcast();
     BroadcastScanState(SpeciesId);
     PersistOwningPlayer();
-    ClientMaterializationResult(true, NSLOCTEXT("DMF", "MaterializationSucceeded", "Materialization complete. The new Digimon has been added to your Collection."), SpeciesId, NewDigimon.InstanceId);
+    ClientMaterializationResult(true,
+        bPartyHasRoom ? NSLOCTEXT("DMF", "MaterializationSucceededParty", "Materialization complete. The new Digimon has been added to your Party.")
+                      : NSLOCTEXT("DMF", "MaterializationSucceededBank", "Materialization complete. Your Party was full, so the new Digimon was sent to the Digimon Bank."),
+        SpeciesId, NewDigimon.InstanceId);
 }
 
 void UDMFPlayerDigimonComponent::ClientScanDataRewardGranted_Implementation(const FPrimaryAssetId SpeciesId, const float AddedPercent, const float NewPercent, const bool bMaterializationReady)
@@ -446,11 +606,10 @@ void UDMFPlayerDigimonComponent::ServerSelectStarter_Implementation(const FPrima
         return;
     }
 
-    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
-    if (Settings && ReplicatedInventory.Items.Num() >= Settings->MaxActiveDigimonInventory)
+    if (ReplicatedInventory.Items.Num() >= GetPartyCapacity())
     {
-        UE_LOG(LogDigimonMMOFramework, Warning, TEXT("Starter selection rejected: active Digimon inventory is full."));
-        ClientStarterSelectionResult(false, NSLOCTEXT("DMF", "StarterInventoryFull", "Starter selection failed because the active Digimon inventory is full."), FGuid());
+        UE_LOG(LogDigimonMMOFramework, Warning, TEXT("Starter selection rejected: Party is full."));
+        ClientStarterSelectionResult(false, NSLOCTEXT("DMF", "StarterPartyFull", "Starter selection failed because the Party is full."), FGuid());
         return;
     }
 
@@ -503,6 +662,7 @@ bool UDMFPlayerDigimonComponent::ResetStarterOnboarding(const bool bRemoveStarte
     }
 
     bool bChangedInventory = false;
+    bool bChangedBank = false;
     if (bRemoveStarterDigimon)
     {
         for (int32 Index = ReplicatedInventory.Items.Num() - 1; Index >= 0; --Index)
@@ -514,9 +674,22 @@ bool UDMFPlayerDigimonComponent::ResetStarterOnboarding(const bool bRemoveStarte
             }
         }
 
+        for (int32 Index = ReplicatedBank.Items.Num() - 1; Index >= 0; --Index)
+        {
+            if (ReplicatedBank.Items[Index].Digimon.bStarterPartner)
+            {
+                ReplicatedBank.Items.RemoveAt(Index);
+                bChangedBank = true;
+            }
+        }
+
         if (bChangedInventory)
         {
             ReplicatedInventory.MarkArrayDirty();
+        }
+        if (bChangedBank)
+        {
+            ReplicatedBank.MarkArrayDirty();
         }
     }
 
@@ -535,6 +708,10 @@ bool UDMFPlayerDigimonComponent::ResetStarterOnboarding(const bool bRemoveStarte
     if (bChangedInventory)
     {
         OnDigimonInventoryChanged.Broadcast();
+    }
+    if (bChangedBank)
+    {
+        OnDigimonBankChanged.Broadcast();
     }
     OnStarterRequirementChanged.Broadcast(true);
     return true;
@@ -583,6 +760,16 @@ void UDMFPlayerDigimonComponent::PersistOwningPlayer()
             {
                 ReplicatedInventory.MarkItemDirty(Entry);
                 BroadcastCareState(Entry);
+            }
+        }
+        for (FDMFReplicatedDigimonEntry& Entry : ReplicatedBank.Items)
+        {
+            if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(Entry.Digimon.SpeciesId))
+            {
+                if (Species->bCareEnabled)
+                {
+                    NormalizeAndApplyCareDecay(Entry, *Species, NowUtcTicks);
+                }
             }
         }
     }
@@ -679,7 +866,7 @@ void UDMFPlayerDigimonComponent::ServerSetActivePartner_Implementation(const FGu
     FDMFDigimonInstance Instance;
     if (!GetDigimonByInstanceId(InstanceId, Instance) || !Instance.IsValid())
     {
-        ClientPartnerActionResult(false, NSLOCTEXT("DMF", "PartnerNotOwned", "That Digimon is not available in your active Digimon inventory."), InstanceId);
+        ClientPartnerActionResult(false, NSLOCTEXT("DMF", "PartnerNotOwned", "That Digimon is not available in your Party."), InstanceId);
         return;
     }
 
@@ -687,6 +874,16 @@ void UDMFPlayerDigimonComponent::ServerSetActivePartner_Implementation(const FGu
     {
         ClientPartnerActionResult(false, NSLOCTEXT("DMF", "PartnerDefeated", "That Digimon is defeated. Heal it before summoning."), InstanceId);
         return;
+    }
+
+    if (InstanceId != ActivePartnerInstanceId)
+    {
+        FText PartyFailure;
+        if (!IsPartyMutationAllowed(PartyFailure))
+        {
+            ClientPartnerActionResult(false, PartyFailure, InstanceId);
+            return;
+        }
     }
 
     ActivePartnerInstanceId = InstanceId;
@@ -792,6 +989,233 @@ void UDMFPlayerDigimonComponent::ClientPartnerActionResult_Implementation(const 
     OnPartnerActionResult.Broadcast(bSuccess, Message, PartnerInstanceId);
 }
 
+void UDMFPlayerDigimonComponent::ClientDigimonStorageActionResult_Implementation(const bool bSuccess, const FText& Message, const FGuid DigimonInstanceId, const EDMFDigimonStorageLocation NewLocation)
+{
+    OnDigimonStorageActionResult.Broadcast(bSuccess, Message, DigimonInstanceId, NewLocation);
+}
+
+bool UDMFPlayerDigimonComponent::IsPartyMutationAllowed(FText& OutFailure) const
+{
+    OutFailure = FText::GetEmpty();
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        OutFailure = NSLOCTEXT("DMF", "PartyBankAuthorityRequired", "Party and Bank changes must be validated by the server.");
+        return false;
+    }
+    if (bCareSequenceActive)
+    {
+        OutFailure = NSLOCTEXT("DMF", "PartyBankCareBusy", "Wait for the current Care sequence to finish before changing the Party.");
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if ((!Settings || !Settings->bAllowPartySwitchingDuringCombat) && IsValid(ActivePartnerActor) && ActivePartnerActor->CombatComponent)
+    {
+        const EDMFCombatState State = ActivePartnerActor->CombatComponent->GetCombatState();
+        if (State == EDMFCombatState::Chasing || State == EDMFCombatState::Attacking || State == EDMFCombatState::Recovering)
+        {
+            OutFailure = NSLOCTEXT("DMF", "PartyBankCombatLocked", "Party and Bank changes are locked while your active partner is in combat.");
+            return false;
+        }
+    }
+    return true;
+}
+
+void UDMFPlayerDigimonComponent::MarkPartyAndBankChanged(const bool bPartyChanged, const bool bBankChanged)
+{
+    if (bPartyChanged)
+    {
+        ReplicatedInventory.MarkArrayDirty();
+        OnDigimonInventoryChanged.Broadcast();
+    }
+    if (bBankChanged)
+    {
+        ReplicatedBank.MarkArrayDirty();
+        OnDigimonBankChanged.Broadcast();
+    }
+}
+
+void UDMFPlayerDigimonComponent::ReconcileActivePartnerAfterPartyMutation(const FGuid PreviousActivePartnerId, const bool bWasSummoned)
+{
+    const bool bActiveChanged = PreviousActivePartnerId != ActivePartnerInstanceId;
+    if (!FindInventoryEntry(ActivePartnerInstanceId))
+    {
+        ActivePartnerInstanceId.Invalidate();
+        for (const FDMFReplicatedDigimonEntry& Entry : ReplicatedInventory.Items)
+        {
+            if (Entry.Digimon.IsValid() && Entry.Digimon.CurrentHP > 0)
+            {
+                ActivePartnerInstanceId = Entry.Digimon.InstanceId;
+                break;
+            }
+        }
+        if (!ActivePartnerInstanceId.IsValid() && !ReplicatedInventory.Items.IsEmpty())
+        {
+            ActivePartnerInstanceId = ReplicatedInventory.Items[0].Digimon.InstanceId;
+        }
+    }
+
+    const bool bNeedsActorRefresh = bActiveChanged || (IsValid(ActivePartnerActor) && ActivePartnerActor->DigimonInstanceId != ActivePartnerInstanceId);
+    if (bNeedsActorRefresh && IsValid(ActivePartnerActor))
+    {
+        if (ActivePartnerActor->CombatComponent)
+        {
+            ActivePartnerActor->CombatComponent->OnVitalsChanged.RemoveDynamic(this, &UDMFPlayerDigimonComponent::HandleActivePartnerVitalsChanged);
+        }
+        ActivePartnerActor->Destroy();
+        ActivePartnerActor = nullptr;
+    }
+
+    CommandTarget = nullptr;
+    OnCommandTargetChanged.Broadcast(nullptr);
+
+    if (bWasSummoned && ActivePartnerInstanceId.IsValid() && (!IsValid(ActivePartnerActor) || bNeedsActorRefresh))
+    {
+        ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
+        APlayerController* PC = PS ? Cast<APlayerController>(PS->GetOwner()) : nullptr;
+        if (PC)
+        {
+            SpawnOrRefreshActivePartner(PC->GetPawn());
+        }
+    }
+}
+
+void UDMFPlayerDigimonComponent::ServerMovePartyDigimonToBank_Implementation(const FGuid InstanceId)
+{
+    FText Failure;
+    if (!InstanceId.IsValid() || !IsPartyMutationAllowed(Failure))
+    {
+        ClientDigimonStorageActionResult(false, Failure.IsEmpty() ? NSLOCTEXT("DMF", "PartyBankInvalidMove", "That Party move is invalid.") : Failure, InstanceId, EDMFDigimonStorageLocation::Party);
+        return;
+    }
+
+    const int32 PartyIndex = ReplicatedInventory.Items.IndexOfByPredicate([&](const FDMFReplicatedDigimonEntry& Entry)
+    {
+        return Entry.Digimon.InstanceId == InstanceId;
+    });
+    if (PartyIndex == INDEX_NONE)
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankNotInParty", "That Digimon is not currently in your Party."), InstanceId, EDMFDigimonStorageLocation::Party);
+        return;
+    }
+    if (ReplicatedInventory.Items.Num() <= 1)
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankKeepOne", "Your Party must keep at least one Digimon."), InstanceId, EDMFDigimonStorageLocation::Party);
+        return;
+    }
+    if (ReplicatedBank.Items.Num() >= GetBankCapacity())
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankBankFull", "The Digimon Bank is full."), InstanceId, EDMFDigimonStorageLocation::Party);
+        return;
+    }
+
+    const FGuid PreviousActive = ActivePartnerInstanceId;
+    const bool bWasSummoned = IsActivePartnerSummoned();
+    const FDMFDigimonInstance Moving = ReplicatedInventory.Items[PartyIndex].Digimon;
+    ReplicatedInventory.Items.RemoveAt(PartyIndex);
+    FDMFReplicatedDigimonEntry& BankEntry = ReplicatedBank.Items.AddDefaulted_GetRef();
+    BankEntry.Digimon = Moving;
+    ReplicatedBank.MarkItemDirty(BankEntry);
+
+    if (Moving.InstanceId == PreviousActive)
+    {
+        ActivePartnerInstanceId.Invalidate();
+    }
+    ReconcileActivePartnerAfterPartyMutation(PreviousActive, bWasSummoned);
+    MarkPartyAndBankChanged(true, true);
+    PersistOwningPlayer();
+    ClientDigimonStorageActionResult(true, NSLOCTEXT("DMF", "PartyBankMovedToBank", "Digimon moved from Party to Bank."), InstanceId, EDMFDigimonStorageLocation::Bank);
+}
+
+void UDMFPlayerDigimonComponent::ServerMoveBankDigimonToParty_Implementation(const FGuid InstanceId, const int32 PartySlotIndex, const bool bSummonIfBecomesActive)
+{
+    FText Failure;
+    if (!InstanceId.IsValid() || !IsPartyMutationAllowed(Failure))
+    {
+        ClientDigimonStorageActionResult(false, Failure.IsEmpty() ? NSLOCTEXT("DMF", "PartyBankInvalidBankMove", "That Bank move is invalid.") : Failure, InstanceId, EDMFDigimonStorageLocation::Bank);
+        return;
+    }
+
+    const int32 BankIndex = ReplicatedBank.Items.IndexOfByPredicate([&](const FDMFReplicatedDigimonEntry& Entry)
+    {
+        return Entry.Digimon.InstanceId == InstanceId;
+    });
+    if (BankIndex == INDEX_NONE)
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankNotInBank", "That Digimon is not currently in your Bank."), InstanceId, EDMFDigimonStorageLocation::Bank);
+        return;
+    }
+
+    const int32 PartyCapacity = GetPartyCapacity();
+    int32 DestinationIndex = PartySlotIndex;
+    if (DestinationIndex == INDEX_NONE)
+    {
+        DestinationIndex = ReplicatedInventory.Items.Num() < PartyCapacity ? ReplicatedInventory.Items.Num() : INDEX_NONE;
+    }
+    if (DestinationIndex < 0 || DestinationIndex >= PartyCapacity)
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankSelectPartySlot", "Your Party is full. Select a Party destination slot to swap with."), InstanceId, EDMFDigimonStorageLocation::Bank);
+        return;
+    }
+
+    const FGuid PreviousActive = ActivePartnerInstanceId;
+    const bool bWasSummoned = IsActivePartnerSummoned();
+    const FDMFDigimonInstance Incoming = ReplicatedBank.Items[BankIndex].Digimon;
+    ReplicatedBank.Items.RemoveAt(BankIndex);
+
+    bool bSwapped = false;
+    if (DestinationIndex < ReplicatedInventory.Items.Num())
+    {
+        const FDMFDigimonInstance Outgoing = ReplicatedInventory.Items[DestinationIndex].Digimon;
+        ReplicatedInventory.Items[DestinationIndex].Digimon = Incoming;
+        ReplicatedInventory.MarkItemDirty(ReplicatedInventory.Items[DestinationIndex]);
+
+        FDMFReplicatedDigimonEntry& NewBankEntry = ReplicatedBank.Items.AddDefaulted_GetRef();
+        NewBankEntry.Digimon = Outgoing;
+        ReplicatedBank.MarkItemDirty(NewBankEntry);
+        bSwapped = true;
+
+        if (Outgoing.InstanceId == PreviousActive)
+        {
+            ActivePartnerInstanceId = Incoming.InstanceId;
+        }
+    }
+    else
+    {
+        FDMFReplicatedDigimonEntry& NewPartyEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
+        NewPartyEntry.Digimon = Incoming;
+        ReplicatedInventory.MarkItemDirty(NewPartyEntry);
+    }
+
+    ReconcileActivePartnerAfterPartyMutation(PreviousActive, bWasSummoned && (bSummonIfBecomesActive || PreviousActive == ActivePartnerInstanceId));
+    MarkPartyAndBankChanged(true, true);
+    PersistOwningPlayer();
+    ClientDigimonStorageActionResult(true,
+        bSwapped ? NSLOCTEXT("DMF", "PartyBankSwapped", "Party and Bank Digimon swapped successfully.")
+                 : NSLOCTEXT("DMF", "PartyBankMovedToParty", "Digimon moved from Bank to Party."),
+        InstanceId, EDMFDigimonStorageLocation::Party);
+}
+
+void UDMFPlayerDigimonComponent::ServerSwapPartySlots_Implementation(const int32 FirstPartySlotIndex, const int32 SecondPartySlotIndex)
+{
+    FText Failure;
+    if (!IsPartyMutationAllowed(Failure))
+    {
+        ClientDigimonStorageActionResult(false, Failure, FGuid(), EDMFDigimonStorageLocation::Party);
+        return;
+    }
+    if (!ReplicatedInventory.Items.IsValidIndex(FirstPartySlotIndex) || !ReplicatedInventory.Items.IsValidIndex(SecondPartySlotIndex) || FirstPartySlotIndex == SecondPartySlotIndex)
+    {
+        ClientDigimonStorageActionResult(false, NSLOCTEXT("DMF", "PartyBankInvalidPartySwap", "Choose two occupied Party slots to reorder."), FGuid(), EDMFDigimonStorageLocation::Party);
+        return;
+    }
+
+    ReplicatedInventory.Items.Swap(FirstPartySlotIndex, SecondPartySlotIndex);
+    MarkPartyAndBankChanged(true, false);
+    PersistOwningPlayer();
+    ClientDigimonStorageActionResult(true, NSLOCTEXT("DMF", "PartyBankPartyReordered", "Party slots reordered."), FGuid(), EDMFDigimonStorageLocation::Party);
+}
+
 int32 UDMFPlayerDigimonComponent::HealAllOwnedDigimon(const bool bHealHP, const bool bHealSP, const bool bRestoreDefeated, const bool bIncludeBankStorage)
 {
     ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
@@ -832,10 +1256,12 @@ int32 UDMFPlayerDigimonComponent::HealAllOwnedDigimon(const bool bHealHP, const 
     FDMFAccountRecord Record;
     const bool bHaveRecord = Persistence && Persistence->GetAccount(PS->GetAuthenticatedUsername(), Record);
 
-    if (bIncludeBankStorage && bHaveRecord)
+    bool bBankHealed = false;
+    if (bIncludeBankStorage)
     {
-        for (FDMFDigimonInstance& Digimon : Record.DigimonBank)
+        for (FDMFReplicatedDigimonEntry& Entry : ReplicatedBank.Items)
         {
+            FDMFDigimonInstance& Digimon = Entry.Digimon;
             const bool bDefeated = Digimon.CurrentHP <= 0;
             bool bChanged = false;
             if (bHealHP && (!bDefeated || bRestoreDefeated))
@@ -852,8 +1278,15 @@ int32 UDMFPlayerDigimonComponent::HealAllOwnedDigimon(const bool bHealHP, const 
             }
             if (bChanged)
             {
+                ReplicatedBank.MarkItemDirty(Entry);
+                bBankHealed = true;
                 ++HealedCount;
             }
+        }
+        if (bBankHealed)
+        {
+            ReplicatedBank.MarkArrayDirty();
+            OnDigimonBankChanged.Broadcast();
         }
     }
 
@@ -1072,6 +1505,11 @@ void UDMFPlayerDigimonComponent::OnRep_Inventory()
     }
 }
 
+void UDMFPlayerDigimonComponent::OnRep_Bank()
+{
+    OnDigimonBankChanged.Broadcast();
+}
+
 
 bool UDMFPlayerDigimonComponent::GetActivePartnerCareState(FDMFDigimonCareState& OutCareState) const
 {
@@ -1107,6 +1545,22 @@ FDMFReplicatedDigimonEntry* UDMFPlayerDigimonComponent::FindInventoryEntry(const
 const FDMFReplicatedDigimonEntry* UDMFPlayerDigimonComponent::FindInventoryEntry(const FGuid InstanceId) const
 {
     return ReplicatedInventory.Items.FindByPredicate([&](const FDMFReplicatedDigimonEntry& Entry)
+    {
+        return Entry.Digimon.InstanceId == InstanceId;
+    });
+}
+
+FDMFReplicatedDigimonEntry* UDMFPlayerDigimonComponent::FindBankEntry(const FGuid InstanceId)
+{
+    return ReplicatedBank.Items.FindByPredicate([&](const FDMFReplicatedDigimonEntry& Entry)
+    {
+        return Entry.Digimon.InstanceId == InstanceId;
+    });
+}
+
+const FDMFReplicatedDigimonEntry* UDMFPlayerDigimonComponent::FindBankEntry(const FGuid InstanceId) const
+{
+    return ReplicatedBank.Items.FindByPredicate([&](const FDMFReplicatedDigimonEntry& Entry)
     {
         return Entry.Digimon.InstanceId == InstanceId;
     });

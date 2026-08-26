@@ -109,7 +109,7 @@ Blueprint presentation events:
 - `BP On Digimon Preview Changed`
 - `BP On Partner Action Result`
 
-This v0.5.0 UI is the functional roster/select/summon/recall layer. Full drag/drop active inventory ↔ party ↔ bank management remains a later collection-UX phase.
+This v0.5.0 section documents the original roster/select/summon/recall foundation. **Current v0.12 builds now implement the authoritative six-Digimon Party, anywhere-access Bank/Boxes, Party ↔ Bank move/atomic-swap transactions and Party Quick Access HUD; see `SETUP_PARTY_BANK_STORAGE.md`.** Direct drag/drop gesture polish remains a future UI extension.
 
 ## 4. Create a free Digimon healer
 

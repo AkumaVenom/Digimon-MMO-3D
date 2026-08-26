@@ -34,7 +34,7 @@ struct FDMFWorldChatMessage;
 struct Z_Construct_UScriptStruct_FDMFDigimonStats_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonStats(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_129_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_143_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFDigimonStats_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFDigimonStats(ETypeConstructPhase::Inner); }
 
@@ -46,7 +46,7 @@ struct FDMFDigimonStats;
 struct Z_Construct_UScriptStruct_FDMFDigimonCareState_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonCareState(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_165_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_179_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFDigimonCareState_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFDigimonCareState(ETypeConstructPhase::Inner); }
 
@@ -58,7 +58,7 @@ struct FDMFDigimonCareState;
 struct Z_Construct_UScriptStruct_FDMFDigimonInstance_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_196_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_210_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFDigimonInstance_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase::Inner); }
 
@@ -70,7 +70,7 @@ struct FDMFDigimonInstance;
 struct Z_Construct_UScriptStruct_FDMFScanDataEntry_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFScanDataEntry(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_237_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_251_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFScanDataEntry_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFScanDataEntry(ETypeConstructPhase::Inner); }
 
@@ -82,7 +82,7 @@ struct FDMFScanDataEntry;
 struct Z_Construct_UScriptStruct_FDMFAbilityCooldownState_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFAbilityCooldownState(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_276_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_290_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFAbilityCooldownState_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFAbilityCooldownState(ETypeConstructPhase::Inner); }
 
@@ -94,7 +94,7 @@ struct FDMFAbilityCooldownState;
 struct Z_Construct_UScriptStruct_FDMFBattleReward_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFBattleReward(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_289_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_303_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFBattleReward_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFBattleReward(ETypeConstructPhase::Inner); }
 
@@ -106,7 +106,7 @@ struct FDMFBattleReward;
 struct Z_Construct_UScriptStruct_FDMFAccountRecord_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFAccountRecord(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_301_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_315_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFAccountRecord_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFAccountRecord(ETypeConstructPhase::Inner); }
 
@@ -118,7 +118,7 @@ struct FDMFAccountRecord;
 struct Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_341_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_355_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry(ETypeConstructPhase::Inner); } \
 	typedef FFastArraySerializerItem Super;
@@ -131,7 +131,7 @@ struct FDMFReplicatedDigimonEntry;
 struct Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics;
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonList(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_350_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h_364_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics; \
 	UE_NODEBUG static UScriptStruct* StaticStruct() { return Z_Construct_UScriptStruct_FDMFReplicatedDigimonList(ETypeConstructPhase::Inner); } \
 	typedef FFastArraySerializer Super; \
@@ -253,12 +253,23 @@ template<> UE_NODEBUG DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<E
 #define FOREACH_ENUM_EDMFDIGIMONMENUTAB(op) \
 	op(EDMFDigimonMenuTab::Collection) \
 	op(EDMFDigimonMenuTab::ScanAndMaterialize) \
-	op(EDMFDigimonMenuTab::Care) 
+	op(EDMFDigimonMenuTab::Care) \
+	op(EDMFDigimonMenuTab::Bank) 
 
 enum class EDMFDigimonMenuTab : uint8;
 template<> struct TIsUEnumClass<EDMFDigimonMenuTab> { enum { Value = true }; };
 template<> UE_NODEBUG DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDigimonMenuTab>();
 // ********** End Enum EDMFDigimonMenuTab **********************************************************
+
+// ********** Begin Enum EDMFDigimonStorageLocation ************************************************
+#define FOREACH_ENUM_EDMFDIGIMONSTORAGELOCATION(op) \
+	op(EDMFDigimonStorageLocation::Party) \
+	op(EDMFDigimonStorageLocation::Bank) 
+
+enum class EDMFDigimonStorageLocation : uint8;
+template<> struct TIsUEnumClass<EDMFDigimonStorageLocation> { enum { Value = true }; };
+template<> UE_NODEBUG DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDigimonStorageLocation>();
+// ********** End Enum EDMFDigimonStorageLocation **************************************************
 
 // ********** Begin Enum EDMFMusicState ************************************************************
 #define FOREACH_ENUM_EDMFMUSICSTATE(op) \

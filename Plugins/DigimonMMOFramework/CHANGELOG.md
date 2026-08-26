@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.12.1-alpha — Polished Native UI Layout Hardening
+
+### Fixed / polished
+- Hardened the native Digimon Menu against text/button overlap and out-of-bounds presentation at normal PIE/game viewport sizes. The fallback window is taller/wider with rebalanced Party/Bank/Scan/Care content lanes and more room for the right-side profile/action panels.
+- Party and Scan species descriptions now live in clipped scroll regions so long descriptions can never draw through the pinned action buttons. Bank stats/destination guidance use a dedicated scroll body above the fixed **MOVE / SWAP TO PARTY** footer; Care safety rules use the same protected layout pattern.
+- Bank/Box storage now places the fixed-size six-column card grid inside its own scroll region. Configured page sizes no longer compress the card rows; the Party Destination strip remains pinned and readable below the Box grid.
+- Added a compact native button style for dense Party/Bank/Party-destination/quickbar cards, removing wasted inner padding that previously squeezed portraits and labels.
+- Reworked the six-slot Party Quick Access cards so portraits and two-line identity/state text use the full slot width rather than competing side-by-side.
+- Polished the combat quickbar with wider/taller ability cards, compact card padding and automatic collapse of unassigned icon frames. Ability names/SP/READY text therefore receives the full card width when an ability has no icon.
+- Increased fixed Party/Bank card and destination-slot sizing, enabled safe wrapping on detail identities/action labels, and retained ScaleBox down-scaling for genuinely small viewports.
+
+### Preserved
+- No Party, Bank, Materialization, Care, combat, chat, nameplate, camera, audio, persistence or networking authority behavior changed. No existing reflected UFUNCTION was removed and all existing RPC contracts remain intact.
+
+### Documentation
+- Updated README, Party/Bank setup, polished native UI setup, roadmap, test plan and validation report with the v0.12.1 layout-hardening acceptance checks.
+
+## 0.12.0-alpha — Polished Party, Digimon Bank / Boxes & Party Quick Access
+
+### Added / changed
+- Formalized the account-owned roster into a server-authoritative **Party + Digimon Bank** model. Party is six Digimon by default; Bank/Box storage is 200 slots by default and remains accessible from the shared Digimon Menu anywhere in the gameplay world.
+- Added owner-only replicated Bank FastArray state plus `GetPartyDigimon`, `GetBankDigimon`, combined ownership lookup/capacity APIs, Bank change/result delegates, and reliable server RPCs for Party→Bank deposit, Bank→Party move/atomic swap and Party-slot reorder.
+- Added a polished native **BANK / BOXES** page with paged six-column storage, portraits/levels/KO state, selected Digimon stats, Party destination strip and atomic full-Party swaps. The existing Collection page is now presented as **PARTY** while the legacy enum/API name remains compatible. `Bank` is appended to the menu enum so existing serialized Scan/Care enum values are not shifted.
+- Added a persistent polished six-slot **Party Quick Access** HUD. Press **Tab** to reveal the mouse and click Party slots/actions; Tab/Escape returns to gameplay. RECALL, OPEN PARTY and OPEN BANK are available directly from the interaction row.
+- Added global Project Settings for Party capacity, Bank capacity, Bank page size, combat-switch policy, Party Quick Access widget/default input/master visibility and HUD safe offset.
+- Party/Bank mutations are server-validated and locked during active partner combat by default. Selecting a different active partner follows the same policy; projects can explicitly allow mid-combat switching.
+- Scan & Materialization is storage-aware: new Digimon fill Party first and automatically go to Bank when Party is full; only a completely full Party+Bank rejects materialization. Owned-species counts include both tiers.
+
+### Persistence / migration
+- Advanced account SaveGame schema to **v4**. Older active collections migrate without truncation: the previous active partner is retained/promoted when needed, remaining legacy Digimon fill Party up to capacity, and overflow is moved into persistent Bank storage with GUID de-duplication. Current six-slot Party order is preserved on subsequent loads and existing Bank contents remain intact.
+- Party and Bank remain private account state and use owner-only replication. Other players see only normal public world presentation such as the summoned partner actor.
+
+### Documentation
+- Added `Docs/SETUP_PARTY_BANK_STORAGE.md` and updated README, architecture, networking, roadmap, native UI setup, test plan, validation report and project config template.
+
 ## 0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision
 
 ### Added / changed

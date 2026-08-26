@@ -64,7 +64,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digimon MMO|Healer|Restore")
     bool bRestoreDefeatedDigimon = true;
 
-    /** Heals server-side bank records as well as the replicated active Digimon inventory. */
+    /** Heals server-side bank records as well as the replicated Party. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Digimon MMO|Healer|Restore")
     bool bIncludeBankStorage = true;
 

@@ -32,6 +32,7 @@ DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonCare
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonSpeciesData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerDigimonComponent(ETypeConstructPhase);
@@ -196,7 +197,7 @@ struct UHT_STATICS
 
 // ********** Begin Function GetActiveMenuTab Property Definitions *********************************
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ReturnValue_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventGetActiveMenuTab_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // e99e05732f2acc3727ad15084757e76c46513536
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventGetActiveMenuTab_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 2938bb9c1fa8459f9512c9c154550606a4e047d2
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
@@ -276,6 +277,260 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execGetSelectedDigimonInstanceId)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFDigimonInventoryWidget Function GetSelectedDigimonInstanceId ***********
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankChanged ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankChanged_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankChanged constinit property declarations *********************
+// ********** End Function HandleBankChanged constinit property declarations ***********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankChanged", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankChanged(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankChanged)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankChanged();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankChanged **********************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankDigimonPressed *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankDigimonPressed_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleBankDigimonPressed_Parms
+	{
+		FGuid InstanceId;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankDigimonPressed constinit property declarations **************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_InstanceId;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleBankDigimonPressed constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleBankDigimonPressed Property Definitions *************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_InstanceId = { "InstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleBankDigimonPressed_Parms, InstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InstanceId,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleBankDigimonPressed Property Definitions ***************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankDigimonPressed", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleBankDigimonPressed_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00840401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleBankDigimonPressed_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankDigimonPressed(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankDigimonPressed)
+{
+	P_GET_STRUCT(FGuid,Z_Param_InstanceId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankDigimonPressed(Z_Param_InstanceId);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankDigimonPressed ***************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankNextPage *******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankNextPage_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankNextPage constinit property declarations ********************
+// ********** End Function HandleBankNextPage constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankNextPage", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankNextPage(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankNextPage)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankNextPage();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankNextPage *********************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankPartyDestinationPressed ****
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPartyDestinationPressed_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleBankPartyDestinationPressed_Parms
+	{
+		int32 PartySlotIndex;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankPartyDestinationPressed constinit property declarations *****
+	static const UECodeGen_Private::FIntPropertyParams NewProp_PartySlotIndex;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleBankPartyDestinationPressed constinit property declarations *******
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleBankPartyDestinationPressed Property Definitions ****************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_PartySlotIndex = { "PartySlotIndex", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleBankPartyDestinationPressed_Parms, PartySlotIndex), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartySlotIndex,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleBankPartyDestinationPressed Property Definitions ******************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankPartyDestinationPressed", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleBankPartyDestinationPressed_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleBankPartyDestinationPressed_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPartyDestinationPressed(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankPartyDestinationPressed)
+{
+	P_GET_PROPERTY(FIntProperty,Z_Param_PartySlotIndex);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankPartyDestinationPressed(Z_Param_PartySlotIndex);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankPartyDestinationPressed ******
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankPreviousPage ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPreviousPage_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankPreviousPage constinit property declarations ****************
+// ********** End Function HandleBankPreviousPage constinit property declarations ******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankPreviousPage", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPreviousPage(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankPreviousPage)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankPreviousPage();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankPreviousPage *****************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleBankTab ************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankTab_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleBankTab constinit property declarations *************************
+// ********** End Function HandleBankTab constinit property declarations ***************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleBankTab", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleBankTab)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleBankTab();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleBankTab **************************
 
 // ********** Begin Class UDMFDigimonInventoryWidget Function HandleCareSequenceFinished ***********
 #ifdef UHT_STATICS
@@ -749,6 +1004,80 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleMaterializeSelected)
 }
 // ********** End Class UDMFDigimonInventoryWidget Function HandleMaterializeSelected **************
 
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleMoveSelectedBankToParty ********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedBankToParty_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleMoveSelectedBankToParty constinit property declarations *********
+// ********** End Function HandleMoveSelectedBankToParty constinit property declarations ***********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleMoveSelectedBankToParty", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedBankToParty(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleMoveSelectedBankToParty)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleMoveSelectedBankToParty();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleMoveSelectedBankToParty **********
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleMoveSelectedToBank *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedToBank_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleMoveSelectedToBank constinit property declarations **************
+// ********** End Function HandleMoveSelectedToBank constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleMoveSelectedToBank", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedToBank(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleMoveSelectedToBank)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleMoveSelectedToBank();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleMoveSelectedToBank ***************
+
 // ********** Begin Class UDMFDigimonInventoryWidget Function HandlePartnerActionResult ************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1010,6 +1339,81 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleScanSpeciesPressed)
 }
 // ********** End Class UDMFDigimonInventoryWidget Function HandleScanSpeciesPressed ***************
 
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleStorageActionResult ************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleStorageActionResult_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms
+	{
+		bool bSuccess;
+		FText Message;
+		FGuid DigimonInstanceId;
+		EDMFDigimonStorageLocation NewLocation;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleStorageActionResult constinit property declarations *************
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_NewLocation_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_NewLocation;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleStorageActionResult constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleStorageActionResult Property Definitions ************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms, Message), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_NewLocation_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewLocation = { "NewLocation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms, NewLocation), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, METADATA_PARAMS(0, nullptr) }; // 8e1831166ad9bffb34f8008359e4dfa18eac358f
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewLocation_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewLocation,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleStorageActionResult Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleStorageActionResult", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00840401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleStorageActionResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleStorageActionResult(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleStorageActionResult)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY(FTextProperty,Z_Param_Message);
+	P_GET_STRUCT(FGuid,Z_Param_DigimonInstanceId);
+	P_GET_ENUM(EDMFDigimonStorageLocation,Z_Param_NewLocation);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleStorageActionResult(Z_Param_bSuccess,Z_Param_Message,Z_Param_DigimonInstanceId,EDMFDigimonStorageLocation(Z_Param_NewLocation));
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleStorageActionResult **************
+
 // ********** Begin Class UDMFDigimonInventoryWidget Function HandleSummonSelected *****************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1046,6 +1450,44 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSummonSelected)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFDigimonInventoryWidget Function HandleSummonSelected *******************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function RefreshBankData **********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshBankData_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Bank" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshBankData constinit property declarations ***********************
+// ********** End Function RefreshBankData constinit property declarations *************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "RefreshBankData", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshBankData(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execRefreshBankData)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshBankData();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function RefreshBankData ************************
 
 // ********** Begin Class UDMFDigimonInventoryWidget Function RefreshCareData **********************
 #ifdef UHT_STATICS
@@ -1189,7 +1631,7 @@ struct UHT_STATICS
 
 // ********** Begin Function SetActiveMenuTab Property Definitions *********************************
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_NewTab_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewTab = { "NewTab", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventSetActiveMenuTab_Parms, NewTab), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // e99e05732f2acc3727ad15084757e76c46513536
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewTab = { "NewTab", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventSetActiveMenuTab_Parms, NewTab), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 2938bb9c1fa8459f9512c9c154550606a4e047d2
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab,
@@ -1316,6 +1758,12 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MoveSelectedToBankButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CloseDigimonInventoryButton_MetaData[] = {
 		{ "BindWidgetOptional", "" },
 		{ "Category", "DMFDigimonInventoryWidget" },
@@ -1328,6 +1776,12 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankTabButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ScanMaterializeTabButton_MetaData[] = {
 		{ "BindWidgetOptional", "" },
 		{ "Category", "DMFDigimonInventoryWidget" },
@@ -1335,6 +1789,78 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CareTabButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankDigimonGrid_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankCountText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankPageText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankSelectionText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankSelectedPortraitImage_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankSelectedNameText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankSelectedMetaText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankSelectedStatsText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankPartyDestinationGrid_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankPreviousPageButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankNextPageButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MoveSelectedBankToPartyButton_MetaData[] = {
 		{ "BindWidgetOptional", "" },
 		{ "Category", "DMFDigimonInventoryWidget" },
 		{ "EditInline", "true" },
@@ -1474,6 +2000,10 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BankContentRow_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ScanContentRow_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
@@ -1497,10 +2027,24 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_SelectedPortraitImage;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_SummonDigimonButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_RecallDigimonButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_MoveSelectedToBankButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CloseDigimonInventoryButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CollectionTabButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankTabButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanMaterializeTabButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CareTabButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankDigimonGrid;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankCountText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankPageText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankSelectionText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankSelectedPortraitImage;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankSelectedNameText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankSelectedMetaText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankSelectedStatsText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankPartyDestinationGrid;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankPreviousPageButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankNextPageButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_MoveSelectedBankToPartyButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanSpeciesGrid;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanDatabaseCountText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanSelectedPortraitImage;
@@ -1524,6 +2068,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_FeedDigiMeatButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BoundDigimonComponent;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_InventoryContentRow;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankContentRow;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanContentRow;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CareContentRow;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
@@ -1531,6 +2076,12 @@ struct UHT_STATICS
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("GetActiveMenuTab"), .Pointer = &UDMFDigimonInventoryWidget::execGetActiveMenuTab },
 		{ .NameUTF8 = UTF8TEXT("GetSelectedDigimonInstanceId"), .Pointer = &UDMFDigimonInventoryWidget::execGetSelectedDigimonInstanceId },
+		{ .NameUTF8 = UTF8TEXT("HandleBankChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankChanged },
+		{ .NameUTF8 = UTF8TEXT("HandleBankDigimonPressed"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankDigimonPressed },
+		{ .NameUTF8 = UTF8TEXT("HandleBankNextPage"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankNextPage },
+		{ .NameUTF8 = UTF8TEXT("HandleBankPartyDestinationPressed"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankPartyDestinationPressed },
+		{ .NameUTF8 = UTF8TEXT("HandleBankPreviousPage"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankPreviousPage },
+		{ .NameUTF8 = UTF8TEXT("HandleBankTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleBankTab },
 		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceFinished"), .Pointer = &UDMFDigimonInventoryWidget::execHandleCareSequenceFinished },
 		{ .NameUTF8 = UTF8TEXT("HandleCareStateChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleCareStateChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleCareTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleCareTab },
@@ -1541,12 +2092,16 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("HandleInventoryChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleInventoryChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleMaterializationResult"), .Pointer = &UDMFDigimonInventoryWidget::execHandleMaterializationResult },
 		{ .NameUTF8 = UTF8TEXT("HandleMaterializeSelected"), .Pointer = &UDMFDigimonInventoryWidget::execHandleMaterializeSelected },
+		{ .NameUTF8 = UTF8TEXT("HandleMoveSelectedBankToParty"), .Pointer = &UDMFDigimonInventoryWidget::execHandleMoveSelectedBankToParty },
+		{ .NameUTF8 = UTF8TEXT("HandleMoveSelectedToBank"), .Pointer = &UDMFDigimonInventoryWidget::execHandleMoveSelectedToBank },
 		{ .NameUTF8 = UTF8TEXT("HandlePartnerActionResult"), .Pointer = &UDMFDigimonInventoryWidget::execHandlePartnerActionResult },
 		{ .NameUTF8 = UTF8TEXT("HandleRecallPartner"), .Pointer = &UDMFDigimonInventoryWidget::execHandleRecallPartner },
 		{ .NameUTF8 = UTF8TEXT("HandleScanDataChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanDataChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleScanMaterializeTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanMaterializeTab },
 		{ .NameUTF8 = UTF8TEXT("HandleScanSpeciesPressed"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanSpeciesPressed },
+		{ .NameUTF8 = UTF8TEXT("HandleStorageActionResult"), .Pointer = &UDMFDigimonInventoryWidget::execHandleStorageActionResult },
 		{ .NameUTF8 = UTF8TEXT("HandleSummonSelected"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSummonSelected },
+		{ .NameUTF8 = UTF8TEXT("RefreshBankData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshBankData },
 		{ .NameUTF8 = UTF8TEXT("RefreshCareData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshCareData },
 		{ .NameUTF8 = UTF8TEXT("RefreshInventory"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshInventory },
 		{ .NameUTF8 = UTF8TEXT("RefreshScanData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshScanData },
@@ -1556,8 +2111,14 @@ struct UHT_STATICS
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_BP_OnDigimonPreviewChanged, "BP_OnDigimonPreviewChanged" }, // f80b51d6b6a292b7b5ac5d086fc5ce948a8f5006
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_BP_OnPartnerActionResult, "BP_OnPartnerActionResult" }, // 53795b8dddaa4fd76ff5279e629c6e336fc6fcc3
-		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveMenuTab, "GetActiveMenuTab" }, // 0636116a53a45e903ed6374e38d0248fa74256b0
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveMenuTab, "GetActiveMenuTab" }, // 06a377f5f4383d5f489e5447504d135520a96676
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetSelectedDigimonInstanceId, "GetSelectedDigimonInstanceId" }, // 14399957d0996c285444e28d739eb535c4f017d5
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankChanged, "HandleBankChanged" }, // 055cb0d6a464758fdcc09d831b69741658f7e821
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankDigimonPressed, "HandleBankDigimonPressed" }, // 83491ce8edb248d61fec40dd4d53d72c3139b987
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankNextPage, "HandleBankNextPage" }, // 71bee5309d83ad408a0f5423a949e4616a64f02d
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPartyDestinationPressed, "HandleBankPartyDestinationPressed" }, // 7cd6822e92a30ec439f2afd8b10009ee16ee2537
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankPreviousPage, "HandleBankPreviousPage" }, // cacc2b2978e855c5c6532a0a7b21ddbe4614467a
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleBankTab, "HandleBankTab" }, // 2924892787dedbe62111483e614794e7ed42ec31
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleCareSequenceFinished, "HandleCareSequenceFinished" }, // 4ffef4be4951ff7cf57b38cc881e1ffc749b706f
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleCareStateChanged, "HandleCareStateChanged" }, // fa00c1e6a5ec452257bc42ad13a3e125e021447d
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleCareTab, "HandleCareTab" }, // 61c68b8017cd34309a27c15c82b8aca609997b83
@@ -1568,16 +2129,20 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleInventoryChanged, "HandleInventoryChanged" }, // 47863412eb4064cb03b7006c9243f38bd14a55c9
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMaterializationResult, "HandleMaterializationResult" }, // a5d7360d613759370ae18d7d0419fb287eb7cfdf
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMaterializeSelected, "HandleMaterializeSelected" }, // 1563989724bf7ad8e90d861bcace62b74f73c888
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedBankToParty, "HandleMoveSelectedBankToParty" }, // 1c24536727e62f6f6cf975b79a37430c4471ea0f
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleMoveSelectedToBank, "HandleMoveSelectedToBank" }, // 588ec1d5e1c830e6288dcd0a9f58aa32cf9c9341
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandlePartnerActionResult, "HandlePartnerActionResult" }, // 0efd23cd585f884ca5e8dd298ad5e3d0c00c14d2
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleRecallPartner, "HandleRecallPartner" }, // f859e2899dd9c2a359bb1c0943389bbbb430ec37
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanDataChanged, "HandleScanDataChanged" }, // cbfd164ed6547fdd9fd7e1724f1538877399a940
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanMaterializeTab, "HandleScanMaterializeTab" }, // 6f3f6687566a6bad859cdaac7c69535b64fb9ffa
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanSpeciesPressed, "HandleScanSpeciesPressed" }, // 9513951e9f84b4f85b6d0e96f949d819d5fddc84
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleStorageActionResult, "HandleStorageActionResult" }, // c356cb4ee6e9fb64ff889e24f38d46dc513c5864
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSummonSelected, "HandleSummonSelected" }, // 40cb7ef02b2bcae9bfa80dd86b418c1a716bcd21
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshBankData, "RefreshBankData" }, // f6e1600b9b02af5cd9f1a0e9ddb334f17e9e30af
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshCareData, "RefreshCareData" }, // 37e7257c4acc6b5130c3c487290f2503640a8bc3
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshInventory, "RefreshInventory" }, // 8a93754174372b52bfea8109b1c82af35e69dc4b
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshScanData, "RefreshScanData" }, // bd4d62282ee4dfeeb547d4063c5d339c485984b3
-		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveMenuTab, "SetActiveMenuTab" }, // 7613ac68f5367a29b69dda6548326e6ad7b102c4
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveMenuTab, "SetActiveMenuTab" }, // 760a6a6d1c9388a4ec0e832bee87b6718eefc35a
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -1599,10 +2164,24 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SelectedDesc
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SelectedPortraitImage = { "SelectedPortraitImage", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SelectedPortraitImage), Z_Construct_UClass_UImage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SelectedPortraitImage_MetaData), NewProp_SelectedPortraitImage_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SummonDigimonButton = { "SummonDigimonButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SummonDigimonButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SummonDigimonButton_MetaData), NewProp_SummonDigimonButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_RecallDigimonButton = { "RecallDigimonButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, RecallDigimonButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RecallDigimonButton_MetaData), NewProp_RecallDigimonButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_MoveSelectedToBankButton = { "MoveSelectedToBankButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, MoveSelectedToBankButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MoveSelectedToBankButton_MetaData), NewProp_MoveSelectedToBankButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CloseDigimonInventoryButton = { "CloseDigimonInventoryButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CloseDigimonInventoryButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CloseDigimonInventoryButton_MetaData), NewProp_CloseDigimonInventoryButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CollectionTabButton = { "CollectionTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CollectionTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CollectionTabButton_MetaData), NewProp_CollectionTabButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankTabButton = { "BankTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankTabButton_MetaData), NewProp_BankTabButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanMaterializeTabButton = { "ScanMaterializeTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, ScanMaterializeTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanMaterializeTabButton_MetaData), NewProp_ScanMaterializeTabButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CareTabButton = { "CareTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CareTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareTabButton_MetaData), NewProp_CareTabButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankDigimonGrid = { "BankDigimonGrid", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankDigimonGrid), Z_Construct_UClass_UUniformGridPanel, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankDigimonGrid_MetaData), NewProp_BankDigimonGrid_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankCountText = { "BankCountText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankCountText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankCountText_MetaData), NewProp_BankCountText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankPageText = { "BankPageText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankPageText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankPageText_MetaData), NewProp_BankPageText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankSelectionText = { "BankSelectionText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankSelectionText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankSelectionText_MetaData), NewProp_BankSelectionText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankSelectedPortraitImage = { "BankSelectedPortraitImage", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankSelectedPortraitImage), Z_Construct_UClass_UImage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankSelectedPortraitImage_MetaData), NewProp_BankSelectedPortraitImage_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankSelectedNameText = { "BankSelectedNameText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankSelectedNameText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankSelectedNameText_MetaData), NewProp_BankSelectedNameText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankSelectedMetaText = { "BankSelectedMetaText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankSelectedMetaText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankSelectedMetaText_MetaData), NewProp_BankSelectedMetaText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankSelectedStatsText = { "BankSelectedStatsText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankSelectedStatsText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankSelectedStatsText_MetaData), NewProp_BankSelectedStatsText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankPartyDestinationGrid = { "BankPartyDestinationGrid", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankPartyDestinationGrid), Z_Construct_UClass_UUniformGridPanel, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankPartyDestinationGrid_MetaData), NewProp_BankPartyDestinationGrid_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankPreviousPageButton = { "BankPreviousPageButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankPreviousPageButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankPreviousPageButton_MetaData), NewProp_BankPreviousPageButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankNextPageButton = { "BankNextPageButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankNextPageButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankNextPageButton_MetaData), NewProp_BankNextPageButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_MoveSelectedBankToPartyButton = { "MoveSelectedBankToPartyButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, MoveSelectedBankToPartyButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MoveSelectedBankToPartyButton_MetaData), NewProp_MoveSelectedBankToPartyButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanSpeciesGrid = { "ScanSpeciesGrid", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, ScanSpeciesGrid), Z_Construct_UClass_UUniformGridPanel, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanSpeciesGrid_MetaData), NewProp_ScanSpeciesGrid_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanDatabaseCountText = { "ScanDatabaseCountText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, ScanDatabaseCountText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanDatabaseCountText_MetaData), NewProp_ScanDatabaseCountText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanSelectedPortraitImage = { "ScanSelectedPortraitImage", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, ScanSelectedPortraitImage), Z_Construct_UClass_UImage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanSelectedPortraitImage_MetaData), NewProp_ScanSelectedPortraitImage_MetaData) };
@@ -1626,6 +2205,7 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CareFeedingR
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_FeedDigiMeatButton = { "FeedDigiMeatButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, FeedDigiMeatButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FeedDigiMeatButton_MetaData), NewProp_FeedDigiMeatButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BoundDigimonComponent = { "BoundDigimonComponent", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BoundDigimonComponent), Z_Construct_UClass_UDMFPlayerDigimonComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BoundDigimonComponent_MetaData), NewProp_BoundDigimonComponent_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InventoryContentRow = { "InventoryContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, InventoryContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InventoryContentRow_MetaData), NewProp_InventoryContentRow_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankContentRow = { "BankContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankContentRow_MetaData), NewProp_BankContentRow_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanContentRow = { "ScanContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, ScanContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanContentRow_MetaData), NewProp_ScanContentRow_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CareContentRow = { "CareContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CareContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareContentRow_MetaData), NewProp_CareContentRow_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
@@ -1641,10 +2221,24 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SelectedPortraitImage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SummonDigimonButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RecallDigimonButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MoveSelectedToBankButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CloseDigimonInventoryButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CollectionTabButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankTabButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanMaterializeTabButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareTabButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankDigimonGrid,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankCountText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankPageText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankSelectionText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankSelectedPortraitImage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankSelectedNameText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankSelectedMetaText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankSelectedStatsText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankPartyDestinationGrid,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankPreviousPageButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankNextPageButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MoveSelectedBankToPartyButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanSpeciesGrid,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanDatabaseCountText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanSelectedPortraitImage,
@@ -1668,6 +2262,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FeedDigiMeatButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BoundDigimonComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InventoryContentRow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankContentRow,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanContentRow,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareContentRow,
 };
@@ -1745,10 +2340,10 @@ UDMFDigimonInventoryWidget::~UDMFDigimonInventoryWidget() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonInventoryWidget, TEXT("UDMFDigimonInventoryWidget"), &Z_Registration_Info_UClass_UDMFDigimonInventoryWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonInventoryWidget), 3067738187U) },
+		{ Z_Construct_UClass_UDMFDigimonInventoryWidget, TEXT("UDMFDigimonInventoryWidget"), &Z_Registration_Info_UClass_UDMFDigimonInventoryWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonInventoryWidget), 64258237U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h__Script_DigimonMMOFramework_9ad32b5e7f98c46e7f814f5795be5d4636f44e0f{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h__Script_DigimonMMOFramework_8607913f85abf0cb2ed26b4360b91dbda1b2a91c{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

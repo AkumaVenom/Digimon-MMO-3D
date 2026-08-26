@@ -1,5 +1,41 @@
 # Validation Report
 
+## v0.12.1-alpha — polished native UI layout-hardening source validation
+
+Static/source validation was performed against the user-runtime-validated v0.12.0 Party/Bank/Boxes baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus visual/runtime acceptance remain authoritative.
+
+Validated contracts:
+- The Digimon Menu fallback design canvas is rebalanced to 1240x820 while retaining the existing Down-Only ScaleBox wrapper for smaller viewports. Party/Bank/Scan/Care left/right lanes were widened without changing any gameplay widget class or RPC path.
+- Party and Scan description bodies are clipped by dedicated ScrollBoxes above fixed action footers; Bank stats/destination guidance use a scroll body above **MOVE / SWAP TO PARTY**; Care rules use the same protected pattern. Long authored/localized text therefore cannot draw through the action controls.
+- Bank Box cards retain explicit fixed size inside a dedicated grid ScrollBox. Page sizes above the default 30 add scrollable rows instead of compressing the six-column card grid, while the Party Destination strip remains outside/pinned below the grid.
+- Dense tile/HUD buttons use a compact native style with reduced internal padding. Party Quick Access now gives each portrait and two-line identity/state label the full card width. The combat quickbar collapses the icon container when an ability has no icon, eliminating the empty-square width penalty visible in v0.12.0.
+- This is presentation-only: comparison against v0.12.0 finds **zero files removed**, **zero files added**, **zero reflected UFUNCTION names removed**, and **zero reflected UFUNCTION names added**. Party/Bank persistence, SaveGame v4, Materialization routing, combat, Care, chat, nameplates, camera and audio code paths remain intact.
+- Final static regression gate covers **76 source/header/build files and 19,532 source/build lines**, with **40 UCLASS**, **14 UENUM**, **15 USTRUCT**, **376 UFUNCTION** and **610 UPROPERTY** declarations. All **37** reflected Server/Client/NetMulticast RPC declarations still have matching `_Implementation` bodies.
+- Generated-header ordering, changed-source delimiter balance, runtime TODO/FIXME checks and the v0.12.0 reflected API preservation audit pass.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **U0** at 1920x1080 and a smaller PIE viewport, followed by the existing **P0** Party/Bank/Materialization/storage regression suite.
+
+## v0.12.0-alpha — Party, Digimon Bank / Boxes & Party Quick Access source validation
+
+Static/source validation was performed against the user-runtime-accepted v0.11.1 camera baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime test remain the authoritative acceptance gates.
+
+Validated contracts:
+- The historical `ReplicatedInventory` / `DigimonInventory` path is preserved as the active **Party** for API/save compatibility; a second owner-only `ReplicatedBank` Fast Array mirrors persistent `DigimonBank` storage. Both use `COND_OwnerOnly`.
+- Project Settings exposes Party capacity (six maximum), Bank capacity/page size, default combat mutation lock, Party Quick Access widget/default input/master visibility and safe-layout offset.
+- Durable Party/Bank mutations use three reliable Server RPCs plus one owner Client result RPC. The server validates source membership, capacities, destination slots, Care state and combat policy; all **37** total Server/Client/NetMulticast RPC declarations in the complete framework have matching `_Implementation` bodies.
+- Full-Party Bank withdrawal uses one authoritative atomic swap. Party-to-Bank deposit cannot remove the final Party member. Active-slot swaps reconcile the active GUID and refresh the summoned authoritative partner when required.
+- Materialization fills Party first, routes to Bank when Party is full, and rejects only when both storage tiers lack legal capacity. Owned-species counts cover both tiers.
+- Save schema is v4. Legacy collection migration de-duplicates instance GUIDs, preserves current six-slot Party order on subsequent loads, and only promotes the previous active partner when an oversized legacy collection would otherwise push it outside Party. Existing oversized Bank data is never truncated.
+- The Digimon Menu enum preserves the pre-v0.12 serialized order/value of `Collection`, `ScanAndMaterialize`, and `Care`; `Bank` is appended rather than inserted. The native visual tab row still deliberately renders **PARTY → BANK / BOXES → SCAN & MATERIALIZE → CARE**.
+- `UDMFPartyQuickBarWidget` is owner-local presentation. Tab cursor/input mode is not replicated; clicking a Party slot routes through the existing authoritative active-partner request. Care/modal UI hide and restore the quick bar instead of creating parallel gameplay state.
+- The first Materialization/storage UI refresh does not guess placement from an RPC arrival order; it resolves the returned instance GUID against replicated Party/Bank state so Fast Array versus Client-RPC ordering cannot select the wrong tab/page.
+- UE5.8 `UWidget::Slot` shadowing was explicitly audited in the changed native UI. New action-slot locals use descriptive names and no local `Slot` declaration remains.
+- Final static regression gate covers **76 source/header/build files and 19,463 source/build lines**, with **40 UCLASS**, **14 UENUM**, **15 USTRUCT**, **376 UFUNCTION** and **610 UPROPERTY** declarations.
+- Comparison against v0.11.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. Added runtime source is limited to the Party Quick Access and Party destination-button source pairs; `Docs/SETUP_PARTY_BANK_STORAGE.md` is the only new documentation file.
+- Generated-header ordering, changed-source delimiter balance, runtime TODO/FIXME checks and the reflected RPC implementation audit pass.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **P0** on listen host + remote client and packaged two-PC host/client, followed by the v0.11.1 camera and existing music/footsteps/WORLD chat/nameplate/Care/Scan/combat regressions.
+
 ## v0.11.1-alpha — polished player camera boom zoom & character-safe collision source validation
 
 Static/source validation was performed against the user-accepted v0.11.0 global-music baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime test remain the authoritative acceptance gates.

@@ -118,9 +118,23 @@ struct DIGIMONMMOFRAMEWORK_API FDMFWorldChatMessage
 UENUM(BlueprintType)
 enum class EDMFDigimonMenuTab : uint8
 {
-    Collection,
+    /** Backward-compatible API name/value for the active six-Digimon Party page. */
+    Collection UMETA(DisplayName="Party"),
+
+    /** Existing serialized values remain in their pre-v0.12 order for Blueprint/save compatibility. */
     ScanAndMaterialize UMETA(DisplayName="Scan & Materialize"),
-    Care
+    Care,
+
+    /** Appended in v0.12 so earlier enum values are never shifted. */
+    Bank UMETA(DisplayName="Bank / Boxes")
+};
+
+/** Authoritative owner-storage location used by Party/Bank transfer APIs. */
+UENUM(BlueprintType)
+enum class EDMFDigimonStorageLocation : uint8
+{
+    Party,
+    Bank
 };
 
 USTRUCT(BlueprintType)
