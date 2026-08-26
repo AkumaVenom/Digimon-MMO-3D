@@ -1,5 +1,23 @@
 # Validation Report
 
+## v0.10.4-alpha — automatic replicated player-footstep source validation
+
+Static/source validation was performed against the v0.10.3 configurable Admin-hosting baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime test remain the authoritative acceptance gates.
+
+Validated contracts:
+- Footstep runtime changes are confined to `ADMFPlayerAvatarCharacter` plus global `UDMFFrameworkSettings`; `ADMFDigimonCharacter` and Wild Digimon code are unchanged, enforcing the player-only boundary.
+- Automatic cadence reads grounded horizontal `CharacterMovement` velocity and distance travelled rather than AnimBP notifies or the optional native WASD input state.
+- Walk, sprint and crouch stride distances, minimum movement speed, global enable, Sound Cue/USoundBase, volume and pitch are Project Settings exposed.
+- Audio originates from the capsule base, avoiding a per-skeleton socket dependency for player skins.
+- Remote owning clients predict their own local sound for responsiveness; authority independently produces observer presentation through `MulticastPlayPlayerFootstep` as an **Unreliable NetMulticast**. The remote owner suppresses the returned multicast echo.
+- Dedicated servers do not play audio locally; no durable footstep state enters account persistence, replicated properties, combat or movement authority.
+- The configured sound is warmed on rendering clients during BeginPlay to avoid a first-step synchronous-load hitch, with safe lazy fallback if needed.
+- Final static regression gate covers **70 source/header/build files and 16,655 source/build lines**, with **36 UCLASS**, **12 UENUM**, **15 USTRUCT**, **326 UFUNCTION** and **550 UPROPERTY** declarations. All **33 reflected Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies.
+- Comparison against v0.10.3 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**; the only added file is `Docs/SETUP_PLAYER_FOOTSTEPS.md`.
+- Generated-header ordering, changed-source delimiter balance and runtime TODO/FIXME checks pass.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **F0** on listen host + remote client, followed by existing world-chat/nameplate/Care/Scan/combat regressions.
+
 ## v0.10.3-alpha — project-configurable Admin hosting password source validation
 
 The Admin `Host & Play` gate no longer requires a source digest edit. `UDMFFrameworkSettings` now exposes a transient, masked **Set Admin Hosting Password** field under **Networking → Admin Hosting**. On editor change, the plaintext setter is hashed through the existing credential utility, cleared immediately, and only `AdminHostingPasswordDigest` is persisted to the project's default Game config.

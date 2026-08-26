@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.10.4-alpha — Automatic Replicated Player Footsteps
+
+### Added
+- Added automatic **player-avatar-only** footsteps to `ADMFPlayerAvatarCharacter`; Digimon actors are intentionally untouched.
+- Added Project Settings → `Player Avatar → Footsteps` with a master enable switch, global footstep audio asset, walk/sprint/crouch stride distances, minimum movement speed, volume and pitch controls.
+- The single audio asset accepts `USoundBase`; a Sound Cue is recommended for sample randomization, pitch variation and authored attenuation.
+- Footstep cadence is accumulated from grounded horizontal distance travelled rather than animation notifies, keeping the system compatible with different player skins, AnimBPs and custom/Enhanced Input movement.
+- Footstep audio is emitted from the player capsule base, avoiding skeleton-specific foot-socket setup.
+
+### Networking / presentation
+- Authority independently generates observer footsteps and sends them through an **Unreliable NetMulticast** cosmetic event on the replicated player pawn.
+- A remote owning client predicts its own local step for responsiveness and suppresses the returned multicast echo, preventing doubled audio.
+- Dedicated servers generate observer events but do not render audio locally.
+- No footstep state is persisted or replicated as durable gameplay data; a dropped cosmetic packet cannot affect movement, accounts or combat.
+
+### Preserved / documentation
+- World chat, nameplates, Care, Scan/Materialization, combat, frontend endpoint/Admin configuration, player skins and account persistence are unchanged.
+- Added `Docs/SETUP_PLAYER_FOOTSTEPS.md` and updated README, architecture, networking contract, roadmap, native UI/setup notes, test plan, validation report and project config template.
+
 ## 0.10.3-alpha — Project-Configurable Admin Hosting Password
 
 ### Added / changed

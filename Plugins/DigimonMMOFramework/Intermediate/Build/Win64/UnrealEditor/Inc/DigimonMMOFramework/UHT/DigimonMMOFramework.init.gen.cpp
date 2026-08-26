@@ -82,7 +82,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 			SingletonFuncArray,
 			UE_ARRAY_COUNT(SingletonFuncArray),
 			PKG_CompiledIn | 0x00000000,
-			0x89CC938B,
+			0x6385E539,
 			0x1007A7EC,
 			METADATA_PARAMS(0, nullptr)
 		};
@@ -90,5 +90,5 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 	}
 	return Z_Registration_Info_UPackage__Script_DigimonMMOFramework.OuterSingleton;
 }
-static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x89CC938B, 0x1007A7EC));
+static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DigimonMMOFramework(Z_Construct_UPackage__Script_DigimonMMOFramework, TEXT("/Script/DigimonMMOFramework"), Z_Registration_Info_UPackage__Script_DigimonMMOFramework, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x6385E539, 0x1007A7EC));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

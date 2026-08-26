@@ -15,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeDMFFrameworkSettings() {}
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 DEVELOPERSETTINGS_API UClass* Z_Construct_UClass_UDeveloperSettings(ETypeConstructPhase);
 COREUOBJECT_API UClass* Z_Construct_UClass_UClass(ETypeConstructPhase);
+ENGINE_API UClass* Z_Construct_UClass_USoundBase(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -108,6 +109,106 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Ready-to-use F6 menu toggle. Disable when the project wants to open the menu from its own UI/input." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnablePlayerFootsteps_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for automatic replicated player-avatar footsteps. Digimon are intentionally not affected. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for automatic replicated player-avatar footsteps. Digimon are intentionally not affected." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepSound_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Global player footstep audio asset. A Sound Cue is recommended so projects can randomize samples/pitch\n     * and configure spatial attenuation without changing framework code.\n     */" },
+#endif
+		{ "DisplayName", "Player Footstep Sound (Sound Cue Recommended)" },
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global player footstep audio asset. A Sound Cue is recommended so projects can randomize samples/pitch\nand configure spatial attenuation without changing framework code." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepMinimumSpeed_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Cadence" },
+		{ "ClampMax", "1000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Minimum grounded horizontal movement speed required before footsteps accumulate. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Minimum grounded horizontal movement speed required before footsteps accumulate." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepWalkStrideDistance_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Cadence" },
+		{ "ClampMax", "500.0" },
+		{ "ClampMin", "25.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Approximate distance travelled between normal walking footsteps. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Approximate distance travelled between normal walking footsteps." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepSprintStrideDistance_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Cadence" },
+		{ "ClampMax", "500.0" },
+		{ "ClampMin", "25.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Approximate distance travelled between sprinting footsteps. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Approximate distance travelled between sprinting footsteps." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepCrouchStrideDistance_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Cadence" },
+		{ "ClampMax", "500.0" },
+		{ "ClampMin", "25.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Approximate distance travelled between crouched footsteps. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Approximate distance travelled between crouched footsteps." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepVolumeMultiplier_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Presentation" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global gain applied after any volume/randomization authored inside the assigned Sound Cue. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global gain applied after any volume/randomization authored inside the assigned Sound Cue." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerFootstepPitchMultiplier_MetaData[] = {
+		{ "Category", "Player Avatar|Footsteps|Presentation" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.25" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global pitch multiplier applied after any pitch/randomization authored inside the assigned Sound Cue. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerFootsteps" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global pitch multiplier applied after any pitch/randomization authored inside the assigned Sound Cue." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AccountSaveSlot_MetaData[] = {
@@ -722,6 +823,18 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bEnableDefaultPlayerSkinMenuInput = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultPlayerSkinMenuInput;
+	static void NewProp_bEnablePlayerFootsteps_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnablePlayerFootsteps = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnablePlayerFootsteps;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_PlayerFootstepSound;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepMinimumSpeed;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepWalkStrideDistance;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepSprintStrideDistance;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepCrouchStrideDistance;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepVolumeMultiplier;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerFootstepPitchMultiplier;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_AccountSaveSlot;
 	static void NewProp_bAutoRegisterUnknownAccounts_SetBit(void* Obj)
 	{
@@ -878,6 +991,14 @@ const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PlayerSkinSel
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRequirePlayerSkinSelection = { "bRequirePlayerSkinSelection", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bRequirePlayerSkinSelection_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRequirePlayerSkinSelection_MetaData), NewProp_bRequirePlayerSkinSelection_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultPlayerSkin = { "DefaultPlayerSkin", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultPlayerSkin), Z_Construct_UClass_UDMFPlayerSkinData, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultPlayerSkin_MetaData), NewProp_DefaultPlayerSkin_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput = { "bEnableDefaultPlayerSkinMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPlayerSkinMenuInput_MetaData), NewProp_bEnableDefaultPlayerSkinMenuInput_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerFootsteps = { "bEnablePlayerFootsteps", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerFootsteps_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerFootsteps_MetaData), NewProp_bEnablePlayerFootsteps_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_PlayerFootstepSound = { "PlayerFootstepSound", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepSound_MetaData), NewProp_PlayerFootstepSound_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepMinimumSpeed = { "PlayerFootstepMinimumSpeed", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepMinimumSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepMinimumSpeed_MetaData), NewProp_PlayerFootstepMinimumSpeed_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepWalkStrideDistance = { "PlayerFootstepWalkStrideDistance", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepWalkStrideDistance), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepWalkStrideDistance_MetaData), NewProp_PlayerFootstepWalkStrideDistance_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepSprintStrideDistance = { "PlayerFootstepSprintStrideDistance", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepSprintStrideDistance), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepSprintStrideDistance_MetaData), NewProp_PlayerFootstepSprintStrideDistance_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepCrouchStrideDistance = { "PlayerFootstepCrouchStrideDistance", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepCrouchStrideDistance), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepCrouchStrideDistance_MetaData), NewProp_PlayerFootstepCrouchStrideDistance_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepVolumeMultiplier = { "PlayerFootstepVolumeMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepVolumeMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepVolumeMultiplier_MetaData), NewProp_PlayerFootstepVolumeMultiplier_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepPitchMultiplier = { "PlayerFootstepPitchMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepPitchMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepPitchMultiplier_MetaData), NewProp_PlayerFootstepPitchMultiplier_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AccountSaveSlot = { "AccountSaveSlot", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AccountSaveSlot), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccountSaveSlot_MetaData), NewProp_AccountSaveSlot_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts = { "bAutoRegisterUnknownAccounts", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAutoRegisterUnknownAccounts_MetaData), NewProp_bAutoRegisterUnknownAccounts_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxActiveDigimonInventory = { "MaxActiveDigimonInventory", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxActiveDigimonInventory), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxActiveDigimonInventory_MetaData), NewProp_MaxActiveDigimonInventory_MetaData) };
@@ -949,6 +1070,14 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRequirePlayerSkinSelection,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultPlayerSkin,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerFootsteps,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepSound,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepMinimumSpeed,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepWalkStrideDistance,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepSprintStrideDistance,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepCrouchStrideDistance,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepVolumeMultiplier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepPitchMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AccountSaveSlot,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAutoRegisterUnknownAccounts,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxActiveDigimonInventory,
@@ -1079,10 +1208,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 826549636U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1309244929U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_ebcbff8a0abbb21cef918ffe98db0d9eef37d95d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_4fe96fbf9474138007b28fc89e531f6913230102{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

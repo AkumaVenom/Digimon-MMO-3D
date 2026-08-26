@@ -1,8 +1,16 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.10.3-alpha — Configurable Admin Hosting Password`
+**Version:** `0.10.4-alpha — Automatic Replicated Player Footsteps`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.10.4-alpha — Automatic Replicated Player Footsteps
+
+Player avatars now have a ready-to-use **automatic footstep audio system** that requires no animation notifies and does not add footstep logic to Digimon. Assign one global Sound Cue under **Project Settings → Game → Digimon MMO Framework → Player Avatar → Footsteps → Player Footstep Sound** and framework-derived player characters begin producing grounded movement footsteps automatically.
+
+Cadence is distance-driven from actual `CharacterMovement` velocity, with independent walk, sprint and crouch stride distances plus minimum-speed, volume and pitch controls. This keeps footsteps stable across different player skins, animation Blueprints and movement-input implementations. The audio origin is the capsule base rather than a skeleton-specific foot socket, so differently rigged player skins work without per-skeleton setup. A Sound Cue is recommended because it can randomize multiple samples/pitch and provide its own spatial attenuation.
+
+For multiplayer responsiveness, a remote owning client predicts only its **own local footstep sound**, while the server independently produces an **Unreliable NetMulticast** cosmetic footstep event for other relevant clients. The owner suppresses the returned multicast echo, preventing doubled audio. The server remains the observer-presentation authority; no gameplay state, account persistence or Digimon behavior is changed. See `Docs/SETUP_PLAYER_FOOTSTEPS.md`.
 
 ## New in v0.10.3-alpha — Project-Configurable Admin Hosting Password
 
@@ -339,6 +347,7 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
    - `Networking → Server Endpoint → Server Public Address / Hostname`
    - `Networking → Server Endpoint → Game Port`
    - `Networking → Admin Hosting → Set Admin Hosting Password` (enter a project-specific password; the setter clears after hashing)
+   - `Player Avatar → Footsteps → Player Footstep Sound` (assign a spatial Sound Cue; optional cadence/gain controls are alongside it)
    - optional `Default Player Skin` when skin selection is not mandatory
 10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets.
 11. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
@@ -369,7 +378,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2)

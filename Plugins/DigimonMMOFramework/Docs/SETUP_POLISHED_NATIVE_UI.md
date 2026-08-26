@@ -15,6 +15,10 @@ In **Project Settings -> Game -> Digimon MMO Framework -> UI**, the default clas
 
 Leave these native defaults assigned to use the v0.6 presentation. A Blueprint child may still replace any individual presentation while retaining the underlying framework APIs.
 
+## Player footstep presentation — v0.10.4
+
+Player footsteps are configured globally under **Project Settings → Game → Digimon MMO Framework → Player Avatar → Footsteps**. Assign **Player Footstep Sound (Sound Cue Recommended)** and leave the native system enabled for automatic replicated player-avatar footsteps. A Sound Cue can provide random sample selection/pitch and attenuation; the framework supplies the movement cadence and networking. No Widget Blueprint, Anim Notify or Digimon configuration is required. See `SETUP_PLAYER_FOOTSTEPS.md`.
+
 ## World chat extension — v0.10.1
 
 The native gameplay HUD also creates `DMFWorldChatWidget` when **Enable World Chat** is true. It uses a dedicated lower-left WORLD-chat lane while the partner combat quickbar remains centered at the bottom. In v0.10.1 the native chat reserves a `176`-unit bottom safe offset by default, keeping the two persistent HUD surfaces visually separated even in smaller PIE windows. Press **Enter** to focus its input; sending/canceling restores gameplay focus.

@@ -20,6 +20,7 @@ ENGINE_API UEnum* Z_Construct_UEnum_Engine_ECollisionChannel(ETypeConstructPhase
 ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FHitResult(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_AActor(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UCameraComponent(ETypeConstructPhase);
+ENGINE_API UClass* Z_Construct_UClass_USoundBase(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_USpringArmComponent(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UWidgetComponent(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -1413,6 +1414,49 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execMoveRight)
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function MoveRight *******************************
 
+// ********** Begin Class ADMFPlayerAvatarCharacter Function MulticastPlayPlayerFootstep ***********
+static FName NAME_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep = FName(TEXT("MulticastPlayPlayerFootstep"));
+void ADMFPlayerAvatarCharacter::MulticastPlayPlayerFootstep()
+{
+	UFunction* Func = FindFunctionChecked(NAME_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep);
+	ProcessEvent(Func,NULL);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function MulticastPlayPlayerFootstep constinit property declarations ***********
+// ********** End Function MulticastPlayPlayerFootstep constinit property declarations *************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "MulticastPlayPlayerFootstep", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00044C41, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execMulticastPlayPlayerFootstep)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->MulticastPlayPlayerFootstep_Implementation();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function MulticastPlayPlayerFootstep *************
+
 // ********** Begin Class ADMFPlayerAvatarCharacter Function OnRep_Sprinting ***********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1449,6 +1493,50 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execOnRep_Sprinting)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function OnRep_Sprinting *************************
+
+// ********** Begin Class ADMFPlayerAvatarCharacter Function PlayPlayerFootstepLocal ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_PlayPlayerFootstepLocal_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Footsteps" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Plays one local footstep presentation using the globally configured player footstep sound.\n     * Normal gameplay uses the automatic distance-based replicated cadence; this helper exists for project-specific presentation hooks.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Plays one local footstep presentation using the globally configured player footstep sound.\nNormal gameplay uses the automatic distance-based replicated cadence; this helper exists for project-specific presentation hooks." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function PlayPlayerFootstepLocal constinit property declarations ***************
+// ********** End Function PlayPlayerFootstepLocal constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "PlayPlayerFootstepLocal", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_PlayPlayerFootstepLocal(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execPlayPlayerFootstepLocal)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->PlayPlayerFootstepLocal();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function PlayPlayerFootstepLocal *****************
 
 // ********** Begin Class ADMFPlayerAvatarCharacter Function RefreshFrameworkCustomDepth ***********
 #ifdef UHT_STATICS
@@ -2050,6 +2138,9 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_LastInteractionActor_MetaData[] = {
 		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CachedPlayerFootstepSound_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+	};
 #endif // WITH_METADATA
 
 // ********** Begin Class ADMFPlayerAvatarCharacter constinit property declarations ****************
@@ -2103,6 +2194,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsSprinting;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_AppliedPlayerSkinId;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_LastInteractionActor;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_CachedPlayerFootstepSound;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFPlayerAvatarCharacter constinit property declarations ******************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
@@ -2124,7 +2216,9 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("LookYaw"), .Pointer = &ADMFPlayerAvatarCharacter::execLookYaw },
 		{ .NameUTF8 = UTF8TEXT("MoveForward"), .Pointer = &ADMFPlayerAvatarCharacter::execMoveForward },
 		{ .NameUTF8 = UTF8TEXT("MoveRight"), .Pointer = &ADMFPlayerAvatarCharacter::execMoveRight },
+		{ .NameUTF8 = UTF8TEXT("MulticastPlayPlayerFootstep"), .Pointer = &ADMFPlayerAvatarCharacter::execMulticastPlayPlayerFootstep },
 		{ .NameUTF8 = UTF8TEXT("OnRep_Sprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execOnRep_Sprinting },
+		{ .NameUTF8 = UTF8TEXT("PlayPlayerFootstepLocal"), .Pointer = &ADMFPlayerAvatarCharacter::execPlayPlayerFootstepLocal },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshFrameworkCustomDepth },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshWorldNameplate },
 		{ .NameUTF8 = UTF8TEXT("ResetNativeInputState"), .Pointer = &ADMFPlayerAvatarCharacter::execResetNativeInputState },
@@ -2158,7 +2252,9 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_LookYaw, "LookYaw" }, // 5d990d7670bf5227e56f63c4f6e92a2a484fc4a8
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MoveForward, "MoveForward" }, // 4b28b6e0abb7ee103b68a72f0652af3e837210c9
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MoveRight, "MoveRight" }, // 7ba866a1b9cffb870d488569b3da898d4d04a77d
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep, "MulticastPlayPlayerFootstep" }, // ca6d25487b067e7963fa7ca33a031ed95f6b26cd
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_OnRep_Sprinting, "OnRep_Sprinting" }, // 3276587a1c3ec52175887967c00c53dc0068cfe0
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_PlayPlayerFootstepLocal, "PlayPlayerFootstepLocal" }, // c525c73e9c46e553e7fc2f91e5040137bc3be649
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 82ed465b5a8dc30a6b50f8fc50fc512aeb7b7eb2
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // cb47dc40b54e6bd40a047d5f62ea4b3e0c6dcb01
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetNativeInputState, "ResetNativeInputState" }, // 3bae772d7a61997b6ab04490de3cc459cf8b7bb0
@@ -2198,6 +2294,7 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_CustomDepthSten
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIsSprinting = { "bIsSprinting", "OnRep_Sprinting", (EPropertyFlags)0x0040000100000020, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFPlayerAvatarCharacter), &UHT_STATICS::NewProp_bIsSprinting_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsSprinting_MetaData), NewProp_bIsSprinting_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_AppliedPlayerSkinId = { "AppliedPlayerSkinId", nullptr, (EPropertyFlags)0x0040000000002000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, AppliedPlayerSkinId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AppliedPlayerSkinId_MetaData), NewProp_AppliedPlayerSkinId_MetaData) }; // 51539104367397b403249c27cab9a0578cde1246
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_LastInteractionActor = { "LastInteractionActor", nullptr, (EPropertyFlags)0x0144000000002000, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, LastInteractionActor), Z_Construct_UClass_AActor, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LastInteractionActor_MetaData), NewProp_LastInteractionActor_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CachedPlayerFootstepSound = { "CachedPlayerFootstepSound", nullptr, (EPropertyFlags)0x0144000000002000, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, CachedPlayerFootstepSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CachedPlayerFootstepSound_MetaData), NewProp_CachedPlayerFootstepSound_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CameraBoom,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FollowCamera,
@@ -2221,6 +2318,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bIsSprinting,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AppliedPlayerSkinId,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LastInteractionActor,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CachedPlayerFootstepSound,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End Class ADMFPlayerAvatarCharacter Property Definitions *****************************
@@ -2304,10 +2402,10 @@ ADMFPlayerAvatarCharacter::~ADMFPlayerAvatarCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 3487752935U) },
+		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 1758707170U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_585d00e3f20ecf0b75a46481c5564c3f76037cb3{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_473eb8dd148a9013ebbbe88bd020c71e45223d0d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

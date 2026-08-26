@@ -13,6 +13,7 @@ class UDMFPlayerSkinData;
 class ADMFDigimonCharacter;
 class ADMFMMOPlayerController;
 class AActor;
+class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFPlayerInteractionResult, bool, bSuccess, AActor*, TargetActor, EDMFPlayerInteractionType, InteractionType, FText, Message);
 
@@ -130,6 +131,13 @@ public:
     void ResetNativeInputState();
 
     /**
+     * Plays one local footstep presentation using the globally configured player footstep sound.
+     * Normal gameplay uses the automatic distance-based replicated cadence; this helper exists for project-specific presentation hooks.
+     */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Footsteps")
+    void PlayPlayerFootstepLocal();
+
+    /**
      * One-call project interaction entry point. Traces from the local player view and automatically:
      * - targets hostile Digimon (or target+attacks when configured),
      * - uses DMFHealerActor,
@@ -241,8 +249,20 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<AActor> LastInteractionActor;
 
+    UPROPERTY(Transient)
+    TObjectPtr<USoundBase> CachedPlayerFootstepSound;
+
+    float PlayerFootstepDistanceAccumulator = 0.0f;
+    bool bWasGeneratingPlayerFootsteps = false;
+
     void RefreshSkinFromPlayerState();
     void ApplyMovementSpeed();
+    void UpdateAutomaticPlayerFootsteps(float DeltaSeconds);
+    float ResolvePlayerFootstepStrideDistance() const;
+    FVector GetPlayerFootstepAudioLocation() const;
+
+    UFUNCTION(NetMulticast, Unreliable)
+    void MulticastPlayPlayerFootstep();
 
     UFUNCTION(Server, Reliable)
     void ServerSetSprinting(bool bNewSprinting);

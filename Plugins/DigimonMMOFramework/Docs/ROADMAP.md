@@ -18,6 +18,12 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Persistent server-authoritative skin switching at runtime.
 - Native reskinnable character selection/wardrobe UI.
 
+## Player avatar presentation polish — footsteps (implemented in v0.10.4-alpha)
+- Automatic grounded player-only footsteps with no animation-notify requirement.
+- Project Settings Sound Cue/USoundBase assignment with global enable, cadence, volume and pitch controls.
+- Distance-based walk/sprint/crouch cadence and skeleton-independent capsule-base audio origin.
+- Immediate local-owner prediction plus server-authored Unreliable multicast presentation for other relevant players.
+
 ## Phase 2 — Real-time battle core (implemented in v0.2.0-alpha)
 - Server-authoritative combat state machine.
 - Wild/NPC/owned Digimon combatants.

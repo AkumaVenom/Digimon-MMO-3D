@@ -1,5 +1,14 @@
 # Networking / Host Deployment
 
+## v0.10.4 replicated player-footstep contract
+
+- Footsteps exist only on `ADMFPlayerAvatarCharacter`; no Digimon actor receives this system.
+- Grounded movement cadence is derived independently from authoritative server CharacterMovement state. When a stride threshold is reached, authority calls `MulticastPlayPlayerFootstep` as an **Unreliable NetMulticast** cosmetic RPC.
+- Unreliable delivery is deliberate: footsteps are transient presentation, so a lost packet should disappear rather than queue and play late. No HP, inventory, persistence or movement authority depends on the event.
+- A remote owning client separately predicts its own local footstep for immediate responsiveness. When the authoritative multicast returns to that owner, it is suppressed to avoid double playback; other relevant clients hear the server event.
+- Listen hosts hear the authoritative event directly. Dedicated servers never render audio locally but still originate observer multicast events.
+- The assigned Sound Cue/USoundBase and cadence controls are project configuration, not replicated runtime state. Projects should author attenuation in the Sound Cue so ordinary Unreal spatial audio limits audible range.
+
 ## v0.10.3 configurable Admin-host gate
 
 - The local `Host & Play` Admin passphrase is now configured under `Networking → Admin Hosting` instead of requiring a source digest edit.

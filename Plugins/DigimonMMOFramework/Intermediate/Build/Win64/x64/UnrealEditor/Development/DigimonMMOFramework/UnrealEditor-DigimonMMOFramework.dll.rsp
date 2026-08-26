@@ -40,7 +40,7 @@
 /NATVIS:"../Intermediate/Build/Win64/x64/UnrealEditor/Development/AIModule/AIModule.natvis"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.obj"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Module.DigimonMMOFramework.cpp.obj"
-"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFSessionSubsystem.cpp.obj"
+"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFPlayerAvatarCharacter.cpp.obj"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFFrameworkSettings.cpp.obj"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Default.rc2.res"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/InputCore/UnrealEditor-InputCore.lib"

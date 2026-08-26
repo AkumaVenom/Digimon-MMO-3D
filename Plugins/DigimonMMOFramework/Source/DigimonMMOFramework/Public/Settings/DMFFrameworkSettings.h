@@ -16,6 +16,7 @@ class UDMFWorldChatWidget;
 class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
+class USoundBase;
 class UWorld;
 struct FPropertyChangedEvent;
 
@@ -57,6 +58,41 @@ public:
     /** Ready-to-use F6 menu toggle. Disable when the project wants to open the menu from its own UI/input. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar")
     bool bEnableDefaultPlayerSkinMenuInput = true;
+
+    /** Master switch for automatic replicated player-avatar footsteps. Digimon are intentionally not affected. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps")
+    bool bEnablePlayerFootsteps = true;
+
+    /**
+     * Global player footstep audio asset. A Sound Cue is recommended so projects can randomize samples/pitch
+     * and configure spatial attenuation without changing framework code.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps", meta=(EditCondition="bEnablePlayerFootsteps", DisplayName="Player Footstep Sound (Sound Cue Recommended)"))
+    TSoftObjectPtr<USoundBase> PlayerFootstepSound;
+
+    /** Minimum grounded horizontal movement speed required before footsteps accumulate. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Cadence", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="0.0", ClampMax="1000.0"))
+    float PlayerFootstepMinimumSpeed = 35.0f;
+
+    /** Approximate distance travelled between normal walking footsteps. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Cadence", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="25.0", ClampMax="500.0"))
+    float PlayerFootstepWalkStrideDistance = 150.0f;
+
+    /** Approximate distance travelled between sprinting footsteps. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Cadence", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="25.0", ClampMax="500.0"))
+    float PlayerFootstepSprintStrideDistance = 175.0f;
+
+    /** Approximate distance travelled between crouched footsteps. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Cadence", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="25.0", ClampMax="500.0"))
+    float PlayerFootstepCrouchStrideDistance = 120.0f;
+
+    /** Global gain applied after any volume/randomization authored inside the assigned Sound Cue. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Presentation", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="0.0", ClampMax="4.0"))
+    float PlayerFootstepVolumeMultiplier = 1.0f;
+
+    /** Global pitch multiplier applied after any pitch/randomization authored inside the assigned Sound Cue. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps|Presentation", meta=(EditCondition="bEnablePlayerFootsteps", ClampMin="0.25", ClampMax="4.0"))
+    float PlayerFootstepPitchMultiplier = 1.0f;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Account")
     FString AccountSaveSlot = TEXT("DMF_ServerAccounts");

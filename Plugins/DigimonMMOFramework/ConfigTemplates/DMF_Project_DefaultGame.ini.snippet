@@ -10,6 +10,19 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+; v0.10.4 automatic replicated player-footstep defaults.
+; Assign PlayerFootstepSound in Project Settings > Player Avatar > Footsteps (a spatial Sound Cue is recommended).
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnablePlayerFootsteps=True
+; PlayerFootstepSound=/Game/Audio/SC_PlayerFootsteps.SC_PlayerFootsteps
+PlayerFootstepMinimumSpeed=35.0
+PlayerFootstepWalkStrideDistance=150.0
+PlayerFootstepSprintStrideDistance=175.0
+PlayerFootstepCrouchStrideDistance=120.0
+PlayerFootstepVolumeMultiplier=1.0
+PlayerFootstepPitchMultiplier=1.0
+
+
 ; v0.8.0 Care defaults. Asset references can be assigned more safely in Project Settings.
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]
 bEnableCareSystem=True

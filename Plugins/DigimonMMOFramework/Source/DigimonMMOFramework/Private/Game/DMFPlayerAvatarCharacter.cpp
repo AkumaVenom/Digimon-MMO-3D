@@ -18,10 +18,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputCoreTypes.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInterface.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "Settings/DMFFrameworkSettings.h"
+#include "Sound/SoundBase.h"
 #include "UI/DMFWorldNameplateWidget.h"
 
 ADMFPlayerAvatarCharacter::ADMFPlayerAvatarCharacter()
@@ -81,11 +83,25 @@ void ADMFPlayerAvatarCharacter::BeginPlay()
     RefreshFrameworkCustomDepth();
     RefreshSkinFromPlayerState();
     RefreshWorldNameplate();
+
+    // Warm the configured footstep asset on rendering clients so the first actual step does not incur a synchronous-load hitch.
+    if (GetNetMode() != NM_DedicatedServer)
+    {
+        const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+        if (Settings && Settings->bEnablePlayerFootsteps && !Settings->PlayerFootstepSound.IsNull())
+        {
+            CachedPlayerFootstepSound = Settings->PlayerFootstepSound.LoadSynchronous();
+        }
+    }
 }
 
 void ADMFPlayerAvatarCharacter::Tick(const float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    // Footsteps are independent of the framework's legacy input bindings so Enhanced Input/custom movement projects
+    // still receive automatic footsteps from actual replicated CharacterMovement velocity.
+    UpdateAutomaticPlayerFootsteps(DeltaSeconds);
 
     if (!IsLocallyControlled() || !bEnableNativeThirdPersonInput)
     {
@@ -267,6 +283,149 @@ void ADMFPlayerAvatarCharacter::ResetNativeInputState()
     bLeftPressed = false;
     bRightPressed = false;
     StopSprinting();
+}
+
+void ADMFPlayerAvatarCharacter::UpdateAutomaticPlayerFootsteps(const float DeltaSeconds)
+{
+    // Authority generates observer presentation. A remote owning client also predicts its own footsteps locally
+    // for immediate response, then suppresses the server multicast echo in MulticastPlayPlayerFootstep_Implementation().
+    const bool bShouldGenerate = HasAuthority() || (!HasAuthority() && IsLocallyControlled());
+    if (!bShouldGenerate || DeltaSeconds <= 0.0f)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const UCharacterMovementComponent* Movement = GetCharacterMovement();
+    const bool bConfigured = Settings
+        && Settings->bEnablePlayerFootsteps
+        && !Settings->PlayerFootstepSound.IsNull()
+        && Movement;
+
+    const float HorizontalSpeed = GetVelocity().Size2D();
+    const bool bGroundedMovement = bConfigured
+        && Movement->IsMovingOnGround()
+        && HorizontalSpeed >= FMath::Max(0.0f, Settings->PlayerFootstepMinimumSpeed);
+
+    if (!bGroundedMovement)
+    {
+        PlayerFootstepDistanceAccumulator = 0.0f;
+        bWasGeneratingPlayerFootsteps = false;
+        return;
+    }
+
+    const float StrideDistance = ResolvePlayerFootstepStrideDistance();
+    if (StrideDistance <= KINDA_SMALL_NUMBER)
+    {
+        return;
+    }
+
+    // Starting from a partial stride prevents a long silent delay when movement begins without producing an
+    // unrealistic instantaneous step on the exact first movement frame.
+    if (!bWasGeneratingPlayerFootsteps)
+    {
+        PlayerFootstepDistanceAccumulator = StrideDistance * 0.45f;
+        bWasGeneratingPlayerFootsteps = true;
+    }
+
+    // Distance-based cadence naturally follows walk/sprint/crouch speed and remains animation-blueprint agnostic.
+    // Cap one event per frame so a hitch never dumps a burst of stale footsteps.
+    PlayerFootstepDistanceAccumulator += HorizontalSpeed * DeltaSeconds;
+    if (PlayerFootstepDistanceAccumulator < StrideDistance)
+    {
+        return;
+    }
+
+    PlayerFootstepDistanceAccumulator = FMath::Fmod(PlayerFootstepDistanceAccumulator, StrideDistance);
+
+    if (HasAuthority())
+    {
+        MulticastPlayPlayerFootstep();
+    }
+    else
+    {
+        PlayPlayerFootstepLocal();
+    }
+}
+
+float ADMFPlayerAvatarCharacter::ResolvePlayerFootstepStrideDistance() const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings)
+    {
+        return 0.0f;
+    }
+
+    if (bIsCrouched)
+    {
+        return FMath::Max(25.0f, Settings->PlayerFootstepCrouchStrideDistance);
+    }
+
+    if (bIsSprinting)
+    {
+        return FMath::Max(25.0f, Settings->PlayerFootstepSprintStrideDistance);
+    }
+
+    return FMath::Max(25.0f, Settings->PlayerFootstepWalkStrideDistance);
+}
+
+FVector ADMFPlayerAvatarCharacter::GetPlayerFootstepAudioLocation() const
+{
+    const UCapsuleComponent* Capsule = GetCapsuleComponent();
+    const float CapsuleHalfHeight = Capsule ? Capsule->GetScaledCapsuleHalfHeight() : 0.0f;
+
+    // Use the capsule base instead of skeleton-specific foot sockets so every player skin works out of the box.
+    return GetActorLocation() - FVector(0.0f, 0.0f, FMath::Max(0.0f, CapsuleHalfHeight - 4.0f));
+}
+
+void ADMFPlayerAvatarCharacter::PlayPlayerFootstepLocal()
+{
+    if (GetNetMode() == NM_DedicatedServer)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnablePlayerFootsteps || Settings->PlayerFootstepSound.IsNull())
+    {
+        return;
+    }
+
+    USoundBase* FootstepSound = CachedPlayerFootstepSound.Get();
+    if (!FootstepSound)
+    {
+        FootstepSound = Settings->PlayerFootstepSound.Get();
+        if (!FootstepSound)
+        {
+            FootstepSound = Settings->PlayerFootstepSound.LoadSynchronous();
+        }
+        CachedPlayerFootstepSound = FootstepSound;
+    }
+
+    if (!FootstepSound)
+    {
+        return;
+    }
+
+    UGameplayStatics::PlaySoundAtLocation(
+        this,
+        FootstepSound,
+        GetPlayerFootstepAudioLocation(),
+        FRotator::ZeroRotator,
+        FMath::Max(0.0f, Settings->PlayerFootstepVolumeMultiplier),
+        FMath::Clamp(Settings->PlayerFootstepPitchMultiplier, 0.25f, 4.0f));
+}
+
+void ADMFPlayerAvatarCharacter::MulticastPlayPlayerFootstep_Implementation()
+{
+    // Remote owners already predict the exact same local-only footstep for responsiveness.
+    // Suppressing the returned multicast avoids a doubled sound while observers still hear the server event.
+    if (!HasAuthority() && IsLocallyControlled())
+    {
+        return;
+    }
+
+    PlayPlayerFootstepLocal();
 }
 
 bool ADMFPlayerAvatarCharacter::Interact()

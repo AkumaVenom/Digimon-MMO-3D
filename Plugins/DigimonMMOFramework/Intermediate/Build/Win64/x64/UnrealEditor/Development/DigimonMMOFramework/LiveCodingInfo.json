@@ -51,8 +51,8 @@
 			"DMFHealerActor.cpp.obj",
 			"DMFMMOGameMode.cpp.obj",
 			"DMFMMOPlayerController.cpp.obj",
-			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
+			"DMFSessionSubsystem.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
 			"DMFAccountPersistenceSubsystem.cpp.obj",
@@ -69,7 +69,7 @@
 			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DMFSessionSubsystem.cpp.obj",
+			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFFrameworkSettings.cpp.obj"
 		]
 	}

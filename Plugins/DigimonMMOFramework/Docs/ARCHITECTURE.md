@@ -6,6 +6,12 @@
 
 `ADMFPlayerAvatarCharacter` is the ready-to-use replicated third-person gameplay pawn. Character skins are visual Primary Data Assets (`UDMFPlayerSkinData`), not alternate pawn classes. A skin change therefore cannot replace possession, collision authority, inventory ownership or movement code.
 
+## Player footstep presentation architecture
+
+`ADMFPlayerAvatarCharacter` owns the v0.10.4 player-only footstep presentation. It accumulates **grounded horizontal distance travelled** from `CharacterMovement` rather than depending on AnimBP notifies, so all framework player skins and custom/Enhanced Input movement stacks inherit the feature automatically. Walk, sprint and crouch stride distances are project settings; the audio source is placed at the capsule base to avoid skeleton-specific socket assumptions.
+
+A remote owning client predicts only its own local audio for responsiveness. The server performs the same movement-derived cadence independently and sends an Unreliable NetMulticast cosmetic event to observers. The owning remote client ignores that returned multicast, so it never hears a doubled step. This event is presentation-only: movement replication remains Unreal CharacterMovement authority and no durable footstep property or account state is introduced. Digimon classes do not execute this path.
+
 `UDMFPlayerDigimonComponent` owns the active Digimon inventory and active partner state. Inventory replication uses `FFastArraySerializer` with `COND_OwnerOnly` to avoid broadcasting private collection data to every connected player.
 
 The server performs starter validation, constructs the unique Digimon instance, persists it, and spawns the authoritative 3D partner actor. The client never supplies trusted stats or an arbitrary actor class. Partner species resolution prefers UE Asset Manager registration and falls back to the configured starter roster for onboarding.

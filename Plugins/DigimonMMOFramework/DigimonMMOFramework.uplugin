@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1003,
-  "VersionName": "0.10.3-alpha",
+  "Version": 1004,
+  "VersionName": "0.10.4-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with project-configurable server endpoint and Admin hosting password deployment, polished native world chat and HUD-safe chat/quickbar layout, automatic player/Digimon nameplates, persistent virtual-pet Care, cel-shaded Care props, Scan Data and Materialization, combat, player skins and account persistence.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with automatic replicated player footsteps, project-configurable server endpoint and Admin hosting password, polished native world chat, automatic player/Digimon nameplates, persistent virtual-pet Care, cel-shaded Care props, Scan Data and Materialization, combat, player skins and account persistence.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

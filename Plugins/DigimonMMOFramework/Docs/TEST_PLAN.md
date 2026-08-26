@@ -1,6 +1,20 @@
-# UE5.8 Validation Plan — 0.10.3-alpha
+# UE5.8 Validation Plan — 0.10.4-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.3 adds Project Settings-configurable Admin Host & Play password setup on top of the v0.10.2 configurable server endpoint and working v0.10.1 WORLD chat/HUD-safe layout while retaining all nameplate, Care/CustomDepth, Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.4 adds automatic replicated player-only footsteps on top of the v0.10.3 configurable Admin hosting/password and v0.10.1 WORLD chat/nameplate/Care baseline while retaining all existing combat, possession, UI, wild spawning and persistence regression contracts.
+
+
+## F0. v0.10.4 automatic replicated player-footstep acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → Player Avatar → Footsteps** and assign a spatial Sound Cue to **Player Footstep Sound (Sound Cue Recommended)**. Keep **Enable Player Footsteps** enabled.
+2. Compile in UE5.8.1 and launch listen host + remote client with two player avatars. Confirm there are no footstep-related UHT/C++ warnings or errors.
+3. Walk the host avatar. The host must hear one correctly paced local footstep stream; the remote client must hear the host footsteps spatially with no doubled events.
+4. Walk the remote-client avatar. That client must hear immediate local footsteps, while the host hears the replicated remote footsteps. Confirm the owning client does **not** hear a second multicast echo.
+5. Sprint and crouch. Verify cadence naturally changes using the configured sprint/crouch stride distances rather than remaining fixed-time.
+6. Stop moving and stand still. Footsteps must stop immediately after cadence state resets. Jump/fall and verify no airborne footsteps are generated; resume on grounded movement.
+7. Test diagonal movement, controller/custom Enhanced Input movement (if used) and player-skin swaps. Footsteps must continue because cadence reads actual CharacterMovement velocity rather than framework WASD state or animation notifies.
+8. Disable **Enable Player Footsteps** and restart PIE. Neither host nor remote client should generate player footstep audio. Re-enable it afterward.
+9. Confirm owned and Wild Digimon do not receive the player footstep Sound Cue from this system.
+10. Re-run WORLD chat, nameplate, Care, Scan/Materialization, combat and Admin host/join regression sections.
 
 
 ## A0. v0.10.3 configurable Admin-host password acceptance
