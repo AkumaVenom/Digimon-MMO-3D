@@ -62,7 +62,7 @@ private:
     void HandleNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
     void HandleTravelFailure(UWorld* World, ETravelFailure::Type FailureType, const FString& ErrorString);
 
-    FString BuildHiddenServerAddress() const;
+    bool BuildConfiguredServerAddress(FString& OutAddress, FText& OutError) const;
     FString BuildTravelOptions(bool bHostAdmin) const;
     void BroadcastStatus(const FText& Message);
 };

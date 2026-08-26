@@ -7,6 +7,10 @@
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFWorldNameplateWidget.h"
 #include "UI/DMFWorldChatWidget.h"
+#include "Utility/DMFCredentialUtility.h"
+#if WITH_EDITOR
+#include "UObject/UnrealType.h"
+#endif
 
 UDMFFrameworkSettings::UDMFFrameworkSettings()
 {
@@ -20,3 +24,35 @@ UDMFFrameworkSettings::UDMFFrameworkSettings()
     DigimonNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     CarePropActorClass = ADMFDigimonCarePropActor::StaticClass();
 }
+
+#if WITH_EDITOR
+void UDMFFrameworkSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+    const FName ChangedPropertyName = PropertyChangedEvent.GetPropertyName();
+    if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(UDMFFrameworkSettings, AdminHostingPasswordInput))
+    {
+        if (!AdminHostingPasswordInput.IsEmpty())
+        {
+            if (AdminHostingPasswordInput.Len() >= 4 && AdminHostingPasswordInput.Len() <= 128)
+            {
+                AdminHostingPasswordDigest = UDMFCredentialUtility::HashCredential(AdminHostingPasswordInput);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Digimon MMO Framework: Admin Hosting Password must be 4-128 characters. Existing Admin password was not changed."));
+            }
+
+            // Never retain the plaintext setter value on the developer settings object/config.
+            AdminHostingPasswordInput.Reset();
+        }
+    }
+
+    Super::PostEditChangeProperty(PropertyChangedEvent);
+
+    if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(UDMFFrameworkSettings, AdminHostingPasswordInput))
+    {
+        // Persist the hidden digest to Config/DefaultGame.ini immediately; the transient plaintext setter is never serialized.
+        TryUpdateDefaultConfigFile(FString(), true);
+    }
+}
+#endif

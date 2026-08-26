@@ -1,5 +1,22 @@
 # Networking / Host Deployment
 
+## v0.10.3 configurable Admin-host gate
+
+- The local `Host & Play` Admin passphrase is now configured under `Networking → Admin Hosting` instead of requiring a source digest edit.
+- Project Settings accepts a temporary plaintext setter value only in the editor, hashes it immediately, clears it, and persists only `AdminHostingPasswordDigest` to the project Game config.
+- `UnlockAdmin` hashes the locally entered candidate and compares it with the configured digest. Raw Admin password text is never part of login travel options, RPC payloads, replicated state or account persistence.
+- The Admin gate is a local hosting-control gate, **not** server-side identity/role authorization. Existing PreLogin account validation and authoritative gameplay networking remain independent.
+- A malformed configured digest fails closed. The v0.10.2 digest is retained as the class default for upgrade compatibility until the project deliberately replaces it.
+
+## v0.10.2 configurable server-endpoint contract
+
+- **Server Public Address / Hostname** is project deployment configuration under `Networking → Server Endpoint`; the regular-player destination is no longer encoded in plugin C++.
+- `Join Game` reads the configured host and `GamePort`, validates that the host contains only safe hostname/IPv4 characters, then constructs `host:port` before appending the existing authenticated travel options.
+- Clients still cannot supply or mutate the destination through the native frontend UI. Changing the deployment endpoint requires changing project configuration and rebuilding/redeploying (or an intentional config override by the consuming project).
+- `Host & Play` remains Admin-gated and starts the same authoritative Unreal listen server. It validates the configured player-facing endpoint as a deployment preflight; the public address is not an RPC and is not replicated gameplay state.
+- The address is the endpoint **players use to reach the host**. It does not configure router port forwarding, NAT, DNS or firewall rules, and it does not replace Unreal's normal NetDriver socket binding.
+- The prior default `DigimonMMO3D.custom-gaming.net` is retained to avoid upgrade-time behavior changes.
+
 ## v0.10.1 HUD-layout note
 
 The v0.10.1 chat/quickbar separation fix is **presentation-only**. `WorldChatBottomSafeOffset` affects only the native local widget inset and adds no replicated property, RPC, server validation path or chat-history change.
@@ -38,7 +55,7 @@ The v0.10.1 chat/quickbar separation fix is **presentation-only**. `WorldChatBot
 This baseline is intentionally **multiplayer gameplay only**:
 
 - The blank frontend/menu map may run locally before connection.
-- A normal player can only use the framework's regular **Join Game** path, which connects to the compiled fixed endpoint.
+- A normal player can only use the framework's regular **Join Game** path, which connects to the project-configured server endpoint.
 - An administrator who passes the extra Admin gate can choose **Host & Play**, causing the configured open-world map to open as an authoritative Unreal listen server.
 - `ADMFMMOGameMode` rejects the concept of standalone gameplay and returns to the configured frontend when loaded without networking.
 

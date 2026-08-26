@@ -17,6 +17,7 @@ class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
 class UWorld;
+struct FPropertyChangedEvent;
 
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Digimon MMO Framework"))
 class DIGIMONMMOFRAMEWORK_API UDMFFrameworkSettings : public UDeveloperSettings
@@ -273,6 +274,30 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence", meta=(ClampMin="5.0"))
     float AccountAutosaveInterval = 30.0f;
 
-    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Networking", meta=(ClampMin="1", ClampMax="65535"))
+    /**
+     * Public IPv4 address or DNS hostname that normal players use when Join Game is pressed.
+     * The admin listen host must be reachable at this address through the project's normal router/firewall/NAT setup.
+     * This is intentionally project-configurable so deployments never need to edit plugin C++ just to change endpoint.
+     */
+    UPROPERTY(Config, EditAnywhere, Category="Networking|Server Endpoint", meta=(DisplayName="Server Public Address / Hostname", ToolTip="Public IPv4 address or DNS hostname players use to reach the admin listen host. Enter only the host name/address; configure the port separately below."))
+    FString ServerPublicAddress = TEXT("DigimonMMO3D.custom-gaming.net");
+
+    /** Connection port appended to Server Public Address for Join Game. It must match the port exposed/forwarded by the host deployment. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Networking|Server Endpoint", meta=(DisplayName="Game Port", ClampMin="1", ClampMax="65535"))
     int32 GamePort = 7777;
+
+    /**
+     * Editor-only password setter for the local Admin Host & Play gate.
+     * Entering a new value hashes it immediately into AdminHostingPasswordDigest and clears this field, so plaintext is not retained in project config.
+     */
+    UPROPERTY(EditAnywhere, Transient, Category="Networking|Admin Hosting", meta=(DisplayName="Set Admin Hosting Password", PasswordField="true", ToolTip="Enter a new 4-128 character password for the Admin Host & Play gate. The framework stores only its one-way digest and clears this field after the Project Settings change is applied."))
+    FString AdminHostingPasswordInput;
+
+    /** One-way digest used by the local Admin frontend gate. Hidden from normal Project Settings editing. */
+    UPROPERTY(Config)
+    FString AdminHostingPasswordDigest = TEXT("44d5c8be1c38b3c4b3030eab3666607d4db5983a");
+
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };

@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.10.1-alpha — World Chat HUD Safe-Layout Fix`
+**Version:** `0.10.3-alpha — Configurable Admin Hosting Password`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.10.3-alpha — Project-Configurable Admin Hosting Password
+
+The protected **Admin → Host & Play** passphrase is now configurable directly from **Project Settings → Game → Digimon MMO Framework → Networking → Admin Hosting → Set Admin Hosting Password**. Projects no longer need to modify a C++ digest to choose their own hosting password.
+
+The settings field is deliberately a **setter**, not plaintext storage: enter a new 4-128 character password and the framework immediately converts it to the existing one-way credential digest, clears the visible password field, and persists only the digest to `DefaultGame.ini`. Existing v0.10.2 deployments retain the previous Admin digest until a project-specific replacement is entered, so upgrading does not unexpectedly break the current hosting workflow.
+
+The Admin gate remains local frontend protection for **Host & Play**. It is not a substitute for server/account authentication, firewall/NAT security or a production backend authorization service. See `Docs/SETUP_ADMIN_HOSTING.md`.
+
+## New in v0.10.2-alpha — Project-Configurable Admin Host / Join Endpoint
+
+The framework no longer requires a C++ edit to change the regular-player MMO destination. **Project Settings → Game → Digimon MMO Framework → Networking → Server Endpoint** now exposes **Server Public Address / Hostname** plus the existing **Game Port**. The default address preserves the previous `DigimonMMO3D.custom-gaming.net` deployment, so upgrading does not silently change current connection behavior.
+
+`Join Game` now builds its travel target from that project setting after strict host-only validation. The setting accepts an IPv4 address or DNS hostname only—no `http://`, paths, embedded ports or Unreal travel options—so deployment config cannot inject extra travel parameters. `Host & Play` performs the same endpoint preflight after the Admin gate and reports the configured player endpoint in the local frontend status while Unreal continues to create the authoritative listen server normally.
+
+This setting is a **deployment endpoint**, not NAT automation: the host/router/firewall must still expose the configured game port to the machine running the listen host. See `Docs/SETUP_SERVER_ENDPOINT.md`.
 
 ## New in v0.10.1-alpha — World Chat HUD Safe-Layout Fix
 
@@ -279,8 +295,8 @@ This maintenance release preserves the complete v0.3.0 player-avatar/skin featur
 - Frontend GameMode/HUD with a fully functional native UMG fallback login/main-menu UI.
 - Username/password credential staging with server-side validation during connection.
 - Optional first-login auto-registration on the host's server-side account database.
-- Fixed regular-player join target compiled into the runtime (not exposed to UI, settings or Blueprint).
-- Admin-only `Host & Play` flow protected by the requested admin passphrase, stored in source as a one-way digest instead of plaintext.
+- Project-configurable regular-player server endpoint under `Networking → Server Endpoint`; no plugin C++ edit is required to change the host/IP used by **Join Game**.
+- Admin-only `Host & Play` flow protected by a Project Settings-configurable passphrase; the editor stores only its one-way digest rather than retaining plaintext.
 - Single package flow: normal users join; an unlocked admin may start the authoritative listen host.
 - Persistent account database through a host-side `USaveGame` database.
 - Blueprint/data-asset driven Digimon species definitions.
@@ -320,6 +336,9 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
    - `Frontend Map`
    - `Open World Map`
    - `Starter Roster`
+   - `Networking → Server Endpoint → Server Public Address / Hostname`
+   - `Networking → Server Endpoint → Game Port`
+   - `Networking → Admin Hosting → Set Admin Hosting Password` (enter a project-specific password; the setter clears after hashing)
    - optional `Default Player Skin` when skin selection is not mandatory
 10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets.
 11. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
@@ -342,7 +361,7 @@ All content-facing species fields, starter definitions and major runtime entry p
 
 ## Security note
 
-The requested hidden hostname is intentionally not exposed through the UI/settings/Blueprint surface, but no hostname embedded in a client binary can be made truly secret from a determined reverse engineer.
+The server destination is intentionally editable in **Project Settings** rather than embedded/obscured in plugin C++. It is deployment configuration, not a secret: packaged clients necessarily need the destination they connect to, and a determined user can inspect network destinations from a client binary or live connection. The framework therefore validates the configured hostname/IP for safe travel construction instead of pretending it is a cryptographic boundary.
 
 Likewise, this alpha provides an out-of-the-box private-host login gate, not internet-grade account security. Credential digests carried in Unreal travel options can be replayed if traffic is captured. Before public production deployment, replace the credential transport with a TLS-backed authentication service that issues short-lived signed session tickets. The persistence and PlayerState interfaces are structured so that authentication can be swapped without rewriting Digimon inventory/onboarding logic.
 

@@ -1,6 +1,28 @@
-# UE5.8 Validation Plan — 0.10.1-alpha
+# UE5.8 Validation Plan — 0.10.3-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.1 retains the polished server-authoritative WORLD chat and adds the HUD-safe native chat/quickbar layout on top of the user-accepted v0.9.1 nameplate baseline while retaining all Care/CustomDepth, Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.3 adds Project Settings-configurable Admin Host & Play password setup on top of the v0.10.2 configurable server endpoint and working v0.10.1 WORLD chat/HUD-safe layout while retaining all nameplate, Care/CustomDepth, Scan/Materialization, combat, possession, UI, wild spawning and persistence regression contracts.
+
+
+## A0. v0.10.3 configurable Admin-host password acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → Networking → Admin Hosting** and confirm **Set Admin Hosting Password** is editable without opening C++.
+2. Enter a new 4-128 character password. Confirm the setter is masked while typing and clears after the setting is applied.
+3. Restart the editor, login, open **Admin**, enter the previous password and confirm unlock fails.
+4. Enter the new password and confirm Admin unlock succeeds and exposes **Host & Play**.
+5. Confirm no plaintext Admin password is present in the framework's project config; only `AdminHostingPasswordDigest` is persisted.
+6. Confirm a malformed/empty manually damaged digest fails closed with configuration guidance rather than unlocking Admin. Restore the correct Project Settings password afterward.
+7. Run Host & Play and the second-client Join Game test below to confirm this local gate change does not alter network authority.
+
+## E0. v0.10.2 configurable server-endpoint acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → Networking → Server Endpoint** and confirm **Server Public Address / Hostname** and **Game Port** are editable without opening C++.
+2. For same-machine PIE/testing, set the address to `127.0.0.1` and keep the port aligned with the active Unreal listen-server port/configuration.
+3. Login as the admin account, unlock Admin and press **Host & Play**. Confirm hosting succeeds and the local status reports the configured player endpoint.
+4. On the second client, login and press **Join Game**. Confirm its travel target uses the configured address/port and the existing account authentication/possession flow succeeds.
+5. Change the address to the real LAN/public IPv4 address or DNS hostname used by the packaged host, rebuild/redeploy configuration as appropriate, and repeat on two machines.
+6. Set the address blank and confirm both Host & Play preflight and Join Game fail cleanly with a Project Settings guidance message instead of attempting malformed travel.
+7. Enter an invalid value such as `http://127.0.0.1` or `127.0.0.1?listen`; confirm it is rejected before travel.
+8. Restore the production endpoint and run the WORLD chat, world-nameplate, Care, Scan/Materialization and combat regression sections below.
 
 ## W0. v0.10.1 polished world-chat multiplayer + HUD-layout acceptance
 
@@ -102,12 +124,14 @@ Run these tests after the plugin compiles in the target UE5.8.1 project. v0.10.1
 
 ## B. Admin listen-host test
 
-1. Enter an unused username/password and press **Login**.
-2. Open **Admin**, enter the configured admin passphrase, and unlock.
-3. Press **Host & Play**.
-4. Confirm the open-world map is running as `NM_ListenServer`, never `NM_Standalone`.
-5. For the new host account, confirm starter selection appears.
-6. Select a starter and confirm it spawns as a 3D replicated partner.
+1. In Project Settings → Digimon MMO Framework → Networking → Admin Hosting, set a new 4-128 character **Admin Hosting Password**. Confirm the setter field clears after applying the change.
+2. Enter an unused username/password and press **Login**.
+3. Open **Admin**, enter an incorrect Admin password and confirm the host controls remain locked.
+4. Enter the newly configured Admin password and unlock.
+5. Press **Host & Play**.
+6. Confirm the open-world map is running as `NM_ListenServer`, never `NM_Standalone`.
+7. For the new host account, confirm starter selection appears.
+8. Select a starter and confirm it spawns as a 3D replicated partner.
 
 ## C. Two-client replication test
 

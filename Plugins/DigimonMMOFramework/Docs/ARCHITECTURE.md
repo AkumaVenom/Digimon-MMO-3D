@@ -44,7 +44,7 @@ This separation is mandatory for:
 1. Blank frontend map runs `ADMFFrontendGameMode`.
 2. `ADMFFrontendHUD` creates the native `UDMFLoginMainMenuWidget`.
 3. Login locally stages username + credential digest.
-4. **Join Game** travels to the fixed MMO hostname with authentication options.
+4. **Join Game** validates `Server Public Address / Hostname` + `Game Port` from Project Settings, then travels to that configured MMO endpoint with authentication options.
 5. Server `PreLogin` validates credentials or auto-registers the account.
 6. `InitNewPlayer` hydrates `ADMFPlayerState`, avatar state and Digimon state.
 7. If the account requires a player skin, `UDMFPlayerSkinSelectionWidget` appears first and the server validates the selected `DMFPlayerSkin`.
@@ -52,7 +52,7 @@ This separation is mandatory for:
 9. Starter selection is sent as a Server RPC and validated against the configured starter roster.
 10. Server creates/persists/spawns the partner; returning players skip completed onboarding stages.
 
-Admin flow uses the same frontend but requires the additional admin unlock before `Host & Play` can start the open-world map with `listen`.
+Admin flow uses the same frontend but requires the additional admin unlock before `Host & Play` can start the open-world map with `listen`. v0.10.2 preflights the project-configured player-facing endpoint, and v0.10.3 also moves the Admin hosting password into Project Settings using a transient editor setter that persists only a one-way digest. Endpoint and Admin-host deployment configuration are therefore centralized without moving gameplay authority into UI.
 
 ## Expansion points already reserved
 

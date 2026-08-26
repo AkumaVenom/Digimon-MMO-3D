@@ -6,12 +6,6 @@
 #include "Misc/PackageName.h"
 #include "Engine/Engine.h"
 
-namespace DMFPrivate
-{
-    // SHA-1 digest of the required admin passphrase. The plaintext is intentionally not shipped in plugin source.
-    static constexpr TCHAR AdminPasswordDigest[] = TEXT("44d5c8be1c38b3c4b3030eab3666607d4db5983a");
-}
-
 void UDMFSessionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
@@ -105,8 +99,27 @@ bool UDMFSessionSubsystem::UnlockAdmin(const FString& AdminPassword, FText& OutM
         return false;
     }
 
-    const FString Candidate = UDMFCredentialUtility::HashCredential(AdminPassword);
-    bAdminUnlocked = Candidate.Equals(DMFPrivate::AdminPasswordDigest, ESearchCase::CaseSensitive);
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings)
+    {
+        OutMessage = NSLOCTEXT("DMF", "AdminSettingsUnavailable", "Digimon MMO Framework Admin hosting settings are unavailable.");
+        BroadcastStatus(OutMessage);
+        return false;
+    }
+
+    const FString CandidateDigest = UDMFCredentialUtility::HashCredential(AdminPassword);
+    const FString& ExpectedDigest = Settings->AdminHostingPasswordDigest;
+
+    // A SHA-1 digest is 40 hexadecimal characters. Refuse a malformed deployment setting rather than silently weakening the gate.
+    if (ExpectedDigest.Len() != 40)
+    {
+        bAdminUnlocked = false;
+        OutMessage = NSLOCTEXT("DMF", "AdminPasswordConfigInvalid", "Admin Hosting Password is not configured correctly. Set it in Project Settings > Digimon MMO Framework > Networking > Admin Hosting.");
+        BroadcastStatus(OutMessage);
+        return false;
+    }
+
+    bAdminUnlocked = CandidateDigest.Equals(ExpectedDigest, ESearchCase::CaseSensitive);
 
     OutMessage = bAdminUnlocked
         ? NSLOCTEXT("DMF", "AdminUnlocked", "Admin hosting controls unlocked.")
@@ -115,27 +128,49 @@ bool UDMFSessionSubsystem::UnlockAdmin(const FString& AdminPassword, FText& OutM
     return bAdminUnlocked;
 }
 
-FString UDMFSessionSubsystem::BuildHiddenServerAddress() const
+bool UDMFSessionSubsystem::BuildConfiguredServerAddress(FString& OutAddress, FText& OutError) const
 {
-    // Intentionally not exposed through settings, UI, logs or Blueprint. The endpoint is lightly encoded
-    // to avoid casual plaintext discovery; this remains obscurity rather than a cryptographic boundary.
-    static constexpr uint8 EncodedHost[] =
-    {
-        30, 51, 61, 51, 55, 53, 52, 23, 23, 21, 105, 30, 116, 57, 47,
-        41, 46, 53, 55, 119, 61, 59, 55, 51, 52, 61, 116, 52, 63, 46
-    };
-    static constexpr uint8 Key = 0x5A;
-
-    FString Host;
-    Host.Reserve(UE_ARRAY_COUNT(EncodedHost));
-    for (const uint8 Value : EncodedHost)
-    {
-        Host.AppendChar(static_cast<TCHAR>(Value ^ Key));
-    }
+    OutAddress.Reset();
+    OutError = FText::GetEmpty();
 
     const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
-    const int32 Port = Settings ? Settings->GamePort : 7777;
-    return FString::Printf(TEXT("%s:%d"), *Host, Port);
+    if (!Settings)
+    {
+        OutError = NSLOCTEXT("DMF", "ServerEndpointSettingsUnavailable", "Digimon MMO Framework networking settings are unavailable.");
+        return false;
+    }
+
+    const FString Host = Settings->ServerPublicAddress.TrimStartAndEnd();
+    if (Host.IsEmpty())
+    {
+        OutError = NSLOCTEXT("DMF", "ServerEndpointMissing", "Server Public Address / Hostname is not configured in Project Settings > Digimon MMO Framework > Networking > Server Endpoint.");
+        return false;
+    }
+
+    // Keep the endpoint deliberately narrow: a host/IP only, never a URL, path, travel option or user-info string.
+    // This prevents project configuration from accidentally injecting Unreal travel options into the client URL.
+    if (Host.Len() > 253)
+    {
+        OutError = NSLOCTEXT("DMF", "ServerEndpointTooLong", "Server Public Address / Hostname is too long.");
+        return false;
+    }
+
+    for (const TCHAR Character : Host)
+    {
+        const bool bAllowed = FChar::IsAlnum(Character)
+            || Character == TEXT('.')
+            || Character == TEXT('-')
+            || Character == TEXT('_');
+        if (!bAllowed)
+        {
+            OutError = NSLOCTEXT("DMF", "ServerEndpointInvalidCharacters", "Server Public Address / Hostname must contain only letters, numbers, dots, hyphens or underscores. Do not enter http://, a path, a port or Unreal travel options.");
+            return false;
+        }
+    }
+
+    const int32 Port = FMath::Clamp(Settings->GamePort, 1, 65535);
+    OutAddress = FString::Printf(TEXT("%s:%d"), *Host, Port);
+    return true;
 }
 
 FString UDMFSessionSubsystem::BuildTravelOptions(const bool bHostAdmin) const
@@ -166,7 +201,16 @@ bool UDMFSessionSubsystem::JoinGame(FText& OutMessage)
         return false;
     }
 
-    const FString URL = BuildHiddenServerAddress() + BuildTravelOptions(false);
+    FString ServerAddress;
+    FText EndpointError;
+    if (!BuildConfiguredServerAddress(ServerAddress, EndpointError))
+    {
+        OutMessage = EndpointError;
+        BroadcastStatus(OutMessage);
+        return false;
+    }
+
+    const FString URL = ServerAddress + BuildTravelOptions(false);
     PC->ClientTravel(URL, TRAVEL_Absolute);
     OutMessage = NSLOCTEXT("DMF", "Joining", "Connecting to the Digimon MMO host...");
     BroadcastStatus(OutMessage);
@@ -190,6 +234,15 @@ bool UDMFSessionSubsystem::HostAndPlay(FText& OutMessage)
         return false;
     }
 
+    FString ConfiguredServerAddress;
+    FText EndpointError;
+    if (!BuildConfiguredServerAddress(ConfiguredServerAddress, EndpointError))
+    {
+        OutMessage = EndpointError;
+        BroadcastStatus(OutMessage);
+        return false;
+    }
+
     const FString ObjectPath = Settings->OpenWorldMap.ToSoftObjectPath().ToString();
     const FString PackageName = FPackageName::ObjectPathToPackageName(ObjectPath);
     if (PackageName.IsEmpty())
@@ -209,7 +262,9 @@ bool UDMFSessionSubsystem::HostAndPlay(FText& OutMessage)
 
     const FString Options = TEXT("listen") + BuildTravelOptions(true);
     UGameplayStatics::OpenLevel(World, FName(*PackageName), true, Options);
-    OutMessage = NSLOCTEXT("DMF", "Hosting", "Starting authoritative listen host...");
+    OutMessage = FText::Format(
+        NSLOCTEXT("DMF", "Hosting", "Starting authoritative listen host. Configured player endpoint: {0}"),
+        FText::FromString(ConfiguredServerAddress));
     BroadcastStatus(OutMessage);
     return true;
 }

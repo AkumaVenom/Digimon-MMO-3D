@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.10.3-alpha — Project-Configurable Admin Hosting Password
+
+### Added / changed
+- Added **Project Settings → Digimon MMO Framework → Networking → Admin Hosting → Set Admin Hosting Password** so projects can replace the Admin `Host & Play` passphrase without editing plugin C++.
+- The Project Settings field is an editor-only password setter: entering a new 4-128 character value immediately hashes it, clears the plaintext field and persists only `AdminHostingPasswordDigest` to `DefaultGame.ini`.
+- The previous one-way Admin digest remains the default value for upgrade compatibility, so existing v0.10.2 projects keep their current Admin unlock behavior until the developer deliberately sets a replacement password.
+- `UDMFSessionSubsystem::UnlockAdmin` now reads the configured digest from `UDMFFrameworkSettings`; the candidate password is hashed locally and compared against that digest. The raw configured password never enters session state, network travel options, account persistence or replicated data.
+
+### Safety / deployment notes
+- The Admin password remains a **local frontend hosting gate**, not remote server authentication. It controls access to `Host & Play`; server account validation and Unreal network authority remain separate systems.
+- The persisted digest is intentionally hidden from normal Project Settings editing. A malformed digest fails closed with a configuration guidance message instead of silently bypassing the gate.
+- Server endpoint configuration, world chat, nameplates, Care, Scan/Materialization, combat, accounts and persistence are unchanged.
+
+### Documentation
+- Added `Docs/SETUP_ADMIN_HOSTING.md` and updated README, server-endpoint setup, architecture, networking, polished native UI notes, roadmap, test plan, validation report and config template.
+
+## 0.10.2-alpha — Project-Configurable Server Endpoint
+
+### Added / changed
+- Replaced the source-encoded regular-player hostname with **Project Settings → Digimon MMO Framework → Networking → Server Endpoint → Server Public Address / Hostname**.
+- Preserved the previous `DigimonMMO3D.custom-gaming.net` value as the default so existing deployments retain their connection target after upgrade.
+- `Join Game` now builds `host:GamePort` from project configuration; creators can switch LAN IP, public IPv4 address or DNS hostname without touching plugin C++.
+- `Host & Play` performs the same endpoint preflight after the Admin gate and reports the configured player endpoint in local frontend status. The actual Unreal listen-server authority model is unchanged.
+
+### Safety / validation
+- Added strict endpoint sanitation: empty/oversized values and strings containing URL schemes, paths, embedded ports, spaces or Unreal travel-option characters are rejected before network travel.
+- The endpoint field accepts only host/IP characters (letters, numbers, `.`, `-`, `_`); `GamePort` remains the separately clamped port setting.
+- The setting does not alter credentials, Admin authorization, PlayerState identity, world chat, nameplates, Care, Scan/Materialization, combat or persistence.
+
+### Documentation
+- Added `Docs/SETUP_SERVER_ENDPOINT.md` and updated README, architecture, networking, polished native UI notes, roadmap, test plan, validation report and config template.
+
 ## 0.10.1-alpha — World Chat HUD Safe-Layout Fix
 
 - Fixed the native WORLD chat overlapping the centered partner ability quick-access UI at normal PIE/game viewport sizes.

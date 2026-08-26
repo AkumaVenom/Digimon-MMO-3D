@@ -112,7 +112,7 @@ The native frontend now has two clear states:
 
 `Logout` clears only the locally staged frontend credentials/admin unlock and returns the same widget to login state. It does not alter the server account database.
 
-The fixed regular-player destination and server authentication remain hidden from the UI.
+The regular-player destination remains absent from the runtime login UI, but v0.10.2 makes it safely editable by developers under **Project Settings → Digimon MMO Framework → Networking → Server Endpoint**. v0.10.3 likewise exposes **Networking → Admin Hosting → Set Admin Hosting Password**; the editor hashes and clears the setter value so plaintext is not retained in project config. Server authentication remains handled by the existing gated frontend/server flow.
 
 ## 9. Combat quick bar
 

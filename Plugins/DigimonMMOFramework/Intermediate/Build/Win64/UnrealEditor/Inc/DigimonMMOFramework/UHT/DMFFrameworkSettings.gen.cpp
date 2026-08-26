@@ -663,11 +663,44 @@ struct UHT_STATICS
 		{ "ClampMin", "5.0" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ServerPublicAddress_MetaData[] = {
+		{ "Category", "Networking|Server Endpoint" },
+		{ "DisplayName", "Server Public Address / Hostname" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Public IPv4 address or DNS hostname players use to reach the admin listen host. Enter only the host name/address; configure the port separately below." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GamePort_MetaData[] = {
-		{ "Category", "Networking" },
+		{ "Category", "Networking|Server Endpoint" },
 		{ "ClampMax", "65535" },
 		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Connection port appended to Server Public Address for Join Game. It must match the port exposed/forwarded by the host deployment. */" },
+#endif
+		{ "DisplayName", "Game Port" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Connection port appended to Server Public Address for Join Game. It must match the port exposed/forwarded by the host deployment." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AdminHostingPasswordInput_MetaData[] = {
+		{ "Category", "Networking|Admin Hosting" },
+		{ "DisplayName", "Set Admin Hosting Password" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+		{ "PasswordField", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Enter a new 4-128 character password for the Admin Host & Play gate. The framework stores only its one-way digest and clears this field after the Project Settings change is applied." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AdminHostingPasswordDigest_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** One-way digest used by the local Admin frontend gate. Hidden from normal Project Settings editing. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "One-way digest used by the local Admin frontend gate. Hidden from normal Project Settings editing." },
+#endif
 	};
 #endif // WITH_METADATA
 
@@ -822,7 +855,10 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerPartnerOutgoingDamageMultiplier;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerPartnerIncomingDamageMultiplier;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_AccountAutosaveInterval;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_ServerPublicAddress;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_GamePort;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_AdminHostingPasswordInput;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_AdminHostingPasswordDigest;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class UDMFFrameworkSettings constinit property declarations **********************
 	static FTypeConstructFunc* DependentSingletons[];
@@ -899,7 +935,10 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PartnerLeashR
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerPartnerOutgoingDamageMultiplier = { "PlayerPartnerOutgoingDamageMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerPartnerOutgoingDamageMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerPartnerOutgoingDamageMultiplier_MetaData), NewProp_PlayerPartnerOutgoingDamageMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerPartnerIncomingDamageMultiplier = { "PlayerPartnerIncomingDamageMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerPartnerIncomingDamageMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerPartnerIncomingDamageMultiplier_MetaData), NewProp_PlayerPartnerIncomingDamageMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_AccountAutosaveInterval = { "AccountAutosaveInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AccountAutosaveInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccountAutosaveInterval_MetaData), NewProp_AccountAutosaveInterval_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_ServerPublicAddress = { "ServerPublicAddress", nullptr, (EPropertyFlags)0x0010000000004001, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ServerPublicAddress), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ServerPublicAddress_MetaData), NewProp_ServerPublicAddress_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_GamePort = { "GamePort", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, GamePort), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GamePort_MetaData), NewProp_GamePort_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AdminHostingPasswordInput = { "AdminHostingPasswordInput", nullptr, (EPropertyFlags)0x0010000000002001, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AdminHostingPasswordInput), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AdminHostingPasswordInput_MetaData), NewProp_AdminHostingPasswordInput_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AdminHostingPasswordDigest = { "AdminHostingPasswordDigest", nullptr, (EPropertyFlags)0x0010000000004000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AdminHostingPasswordDigest), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AdminHostingPasswordDigest_MetaData), NewProp_AdminHostingPasswordDigest_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendMap,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OpenWorldMap,
@@ -967,7 +1006,10 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerPartnerOutgoingDamageMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerPartnerIncomingDamageMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AccountAutosaveInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ServerPublicAddress,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GamePort,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AdminHostingPasswordInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AdminHostingPasswordDigest,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End Class UDMFFrameworkSettings Property Definitions *********************************
@@ -1037,10 +1079,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3566620676U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 826549636U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_cc6fedc6094fb6c882bf0d40ebe6b692e7d95578{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_ebcbff8a0abbb21cef918ffe98db0d9eef37d95d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

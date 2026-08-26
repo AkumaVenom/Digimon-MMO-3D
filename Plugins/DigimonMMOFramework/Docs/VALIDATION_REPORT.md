@@ -1,5 +1,34 @@
 # Validation Report
 
+## v0.10.3-alpha — project-configurable Admin hosting password source validation
+
+The Admin `Host & Play` gate no longer requires a source digest edit. `UDMFFrameworkSettings` now exposes a transient, masked **Set Admin Hosting Password** field under **Networking → Admin Hosting**. On editor change, the plaintext setter is hashed through the existing credential utility, cleared immediately, and only `AdminHostingPasswordDigest` is persisted to the project's default Game config.
+
+Validated contracts:
+- `UDMFSessionSubsystem::UnlockAdmin` hashes the locally entered candidate and compares it only against `UDMFFrameworkSettings::AdminHostingPasswordDigest`.
+- Raw Admin password text is not retained in session state, network travel options, RPC payloads, replicated properties or account SaveGame data.
+- The setter accepts 4-128 characters; invalid setter length preserves the existing digest and clears the temporary plaintext field.
+- A malformed runtime digest fails closed with Project Settings guidance.
+- The prior digest remains the C++ default solely for upgrade compatibility, so v0.10.2 projects do not lose their working Admin unlock until a replacement password is deliberately set.
+- Server endpoint, world chat, nameplates, Care, Scan/Materialization, combat, account and persistence behavior is unchanged.
+- Final static regression gate covers **70 source/header/build files and 16,440 source/build lines**, with **36 UCLASS**, **12 UENUM**, **15 USTRUCT**, **324 UFUNCTION** and **541 UPROPERTY** declarations. All **32 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies. Comparison against v0.10.2 finds **zero baseline files removed**, **zero existing reflected UFUNCTION names removed**, and only `Docs/SETUP_ADMIN_HOSTING.md` added.
+
+Required runtime acceptance: clean UE5.8.1 compile, Project Settings password change + editor restart persistence check, wrong/correct Admin unlock tests, listen-host start, second-client Join Game, then the existing world-chat/nameplate/Care/Scan/combat regression suite.
+
+## v0.10.2-alpha — project-configurable server endpoint source validation
+
+The regular-player endpoint has been moved from a lightly encoded source constant into `UDMFFrameworkSettings::ServerPublicAddress`, exposed under **Networking → Server Endpoint**, while retaining the previous deployment hostname as the default. `UDMFSessionSubsystem` now constructs the player destination exclusively from validated project settings.
+
+Validated contracts:
+- `Join Game` consumes the configured host + `GamePort`; no runtime username/password/admin input can alter the destination.
+- Endpoint validation rejects empty/oversized values and characters used by URL schemes, paths, embedded ports and Unreal travel-option injection before `ClientTravel`.
+- `Host & Play` remains behind the existing local Admin unlock and performs the same endpoint preflight before opening the authoritative listen world.
+- No account schema, RPC payload, PlayerState ownership, world-chat, nameplate, Care, Scan/Materialization, combat or persistence authority path is changed.
+- The public endpoint remains deployment metadata rather than secret data; router/NAT/firewall/DNS setup remains external to the plugin.
+- Final static regression gate covers **70 source/header/build files and 16,375 source/build lines**, with **36 UCLASS**, **12 UENUM**, **15 USTRUCT**, **324 UFUNCTION** and **539 UPROPERTY** declarations. All **32 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies. Comparison against v0.10.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**; only the new endpoint setup document is added.
+
+Required runtime acceptance: clean UE5.8.1 compile, admin listen-host start, second-client join using a configured LAN/public address, invalid-endpoint rejection, then the existing multiplayer regression suite.
+
 ## v0.10.1-alpha — world-chat HUD safe-layout source validation
 
 This patch is presentation-only over the runtime-working v0.10.0 world chat reported by the user. The native WORLD chat no longer shares the combat quickbar's bottom HUD lane: when `bShowNativeCombatQuickBar` is enabled, the chat bottom inset is driven by the new configurable `WorldChatBottomSafeOffset` (`176` by default); when the native quickbar is disabled, chat returns to its original `30`-unit inset.
@@ -361,7 +390,7 @@ The v0.2.2 baseline was confirmed by the user to compile successfully in UE5.8.1
 - Delimiter/brace balance checked across framework C++ source.
 - No `TODO`/`FIXME` placeholders exist in runtime source.
 - Obsolete `Engine/PrimaryAssetId.h` include remains absent.
-- Requested admin passphrase plaintext and fixed MMO hostname plaintext remain absent from the release source/docs/config literals.
+- Historical v0.3.0 check: at that release point, the requested admin passphrase plaintext and then-fixed MMO hostname plaintext were absent from source/docs/config literals. **Superseded in v0.10.2/v0.10.3:** the server endpoint is intentionally project-configurable, and the Admin passphrase is now set through Project Settings while remaining digest-only at rest.
 - `DMFPlayerSkin` Asset Manager registration is present beside species, starter roster and ability entries with `AlwaysCook`.
 - `ADMFMMOGameMode` defaults to `ADMFPlayerAvatarCharacter` while still permitting a project Blueprint subclass as `DefaultPawnClass`.
 - `ADMFPlayerState` owns both `UDMFPlayerAvatarComponent` and `UDMFPlayerDigimonComponent`; skin RPC authority does not depend on a client-owned arbitrary mesh actor.
@@ -407,8 +436,8 @@ This release candidate received source-level validation in the build workspace. 
 - UE generated-header include ordering checked across framework public headers.
 - Delimiter/brace balance checked across framework C++ headers/source.
 - No TODO/FIXME placeholders were introduced in release source.
-- Requested admin passphrase plaintext remains absent from the deliverable; only its one-way comparison digest is embedded.
-- Fixed MMO hostname plaintext remains absent from UI/settings/Blueprint/source literals and is reconstructed at runtime.
+- Requested admin passphrase plaintext remains absent from persistent framework configuration; v0.10.3 persists only its one-way comparison digest after the editor password setter is used.
+- Historical v0.2.x check: the fixed MMO hostname was reconstructed at runtime. **Superseded in v0.10.2:** the endpoint is intentionally exposed as validated project deployment configuration under `Networking → Server Endpoint`.
 - Existing v0.1.0 account, starter, Fast Array inventory, active-partner and persistence contracts are preserved.
 - `DMFDigimonAbility`, `DMFDigimonSpecies` and `DMFStarterRoster` all have project Asset Manager `AlwaysCook` scan entries.
 - Combat component is a static replicated actor component owned by a replicated Digimon actor.

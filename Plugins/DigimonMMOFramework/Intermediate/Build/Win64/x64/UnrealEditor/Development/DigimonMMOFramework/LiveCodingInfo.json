@@ -49,9 +49,10 @@
 			"DMFFrontendGameMode.cpp.obj",
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
+			"DMFMMOGameMode.cpp.obj",
+			"DMFMMOPlayerController.cpp.obj",
 			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
-			"DMFSessionSubsystem.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
 			"DMFAccountPersistenceSubsystem.cpp.obj",
@@ -65,12 +66,11 @@
 			"DMFScanSpeciesEntryButton.cpp.obj",
 			"DMFStarterEntryButton.cpp.obj",
 			"DMFStarterSelectionWidget.cpp.obj",
+			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DMFMMOGameMode.cpp.obj",
-			"DMFMMOPlayerController.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
-			"DMFWorldChatWidget.cpp.obj"
+			"DMFSessionSubsystem.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj"
 		]
 	}
 }
