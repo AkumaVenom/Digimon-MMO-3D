@@ -51,6 +51,11 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execResetNativeInputState); \
 	DECLARE_FUNCTION(execStopSprinting); \
 	DECLARE_FUNCTION(execStartSprinting); \
+	DECLARE_FUNCTION(execRefreshCameraCollisionPolicy); \
+	DECLARE_FUNCTION(execResetCameraZoom); \
+	DECLARE_FUNCTION(execGetCameraZoomDistance); \
+	DECLARE_FUNCTION(execSetCameraZoomDistance); \
+	DECLARE_FUNCTION(execAddCameraZoomInput); \
 	DECLARE_FUNCTION(execLookPitch); \
 	DECLARE_FUNCTION(execLookYaw); \
 	DECLARE_FUNCTION(execMoveRight); \

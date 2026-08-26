@@ -44,19 +44,19 @@
 			"DMFDigimonCombatComponent.cpp.obj",
 			"DMFPlayerAvatarComponent.cpp.obj",
 			"DMFPlayerDigimonComponent.cpp.obj",
+			"DigimonMMOFramework.cpp.obj",
 			"DMFDigimonCarePropActor.cpp.obj",
-			"DMFDigimonCharacter.cpp.obj",
 			"DMFFrontendGameMode.cpp.obj",
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
 			"DMFMMOGameMode.cpp.obj",
 			"DMFMMOPlayerController.cpp.obj",
-			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
 			"DMFSessionSubsystem.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
 			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFMusicSubsystem.cpp.obj",
 			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
 			"DMFDigimonInventoryWidget.cpp.obj",
@@ -70,9 +70,9 @@
 			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DigimonMMOFramework.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
-			"DMFMusicSubsystem.cpp.obj"
+			"DMFDigimonCharacter.cpp.obj",
+			"DMFPlayerAvatarCharacter.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj"
 		]
 	}
 }

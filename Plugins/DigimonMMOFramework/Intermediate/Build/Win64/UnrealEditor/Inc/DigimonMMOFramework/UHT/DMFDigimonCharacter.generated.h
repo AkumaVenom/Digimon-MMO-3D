@@ -26,6 +26,7 @@ struct FDMFDigimonInstance;
 	virtual void MulticastPlayCareWasteCue_Implementation(int32 FartSoundIndex); \
 	virtual void MulticastPlayCareFeedingCue_Implementation(int32 FeedingVoiceIndex); \
 	DECLARE_FUNCTION(execOnRep_DigimonState); \
+	DECLARE_FUNCTION(execRefreshCameraCollisionPolicy); \
 	DECLARE_FUNCTION(execRefreshFrameworkCustomDepth); \
 	DECLARE_FUNCTION(execRefreshWorldNameplate); \
 	DECLARE_FUNCTION(execIsDefeatedPresentationActive); \

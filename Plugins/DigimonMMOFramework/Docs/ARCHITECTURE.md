@@ -1,5 +1,13 @@
 # Architecture
 
+## Player camera boom architecture (v0.11.1)
+
+`ADMFPlayerAvatarCharacter` owns the framework camera boom and the local requested zoom distance. The default mouse-wheel bindings only update that local requested distance; `Tick` interpolates `USpringArmComponent::TargetArmLength` toward it after clamping against the Project Settings minimum/maximum. No camera distance, zoom input or interpolation state enters replication or persistence.
+
+The spring arm keeps `bDoCollisionTest=true` and `ProbeChannel=ECC_Camera`, preserving normal wall/world obstruction behavior. Separately, `RefreshCameraCollisionPolicy` applies the global character-safe rule to every primitive component owned by framework player avatars and Digimon: `ECC_Camera = Ignore`. This deliberately changes only the camera channel, leaving Pawn/Visibility/combat/interaction collision semantics untouched. Blueprint-added primitive components are included so cosmetic/collision additions cannot accidentally reintroduce third-person camera popping.
+
+Projects using Enhanced Input can disable the framework mouse-wheel binding while retaining the same local zoom implementation through the Blueprint callable zoom API.
+
 ## Global music presentation director (v0.11.0)
 
 `UDMFMusicSubsystem` is a GameInstance-lifetime, local presentation subsystem that resolves one semantic state: `Frontend`, `OpenWorld`, `Battle` or `None`. It survives normal frontend/gameplay travel and owns persistent 2D AudioComponents so state changes can crossfade rather than hard-cut.

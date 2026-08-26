@@ -120,6 +120,26 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Camera")
     void LookPitch(float Value);
 
+    /** Adds local third-person camera zoom input. Positive values zoom in; negative values zoom out. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Camera|Zoom")
+    void AddCameraZoomInput(float Value);
+
+    /** Requests an absolute local boom distance, clamped to the global Project Settings min/max range. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Camera|Zoom")
+    void SetCameraZoomDistance(float NewDistance, bool bInstant = false);
+
+    /** Returns the locally requested boom distance (not the temporary collision-compressed spring-arm result). */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Camera|Zoom")
+    float GetCameraZoomDistance() const { return DesiredCameraBoomLength; }
+
+    /** Restores the globally configured default camera boom distance. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Camera|Zoom")
+    void ResetCameraZoom(bool bInstant = false);
+
+    /** Reasserts the global rule that player collision must not block the spring-arm camera channel. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Camera|Collision")
+    void RefreshCameraCollisionPolicy();
+
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Movement")
     void StartSprinting();
 
@@ -255,8 +275,13 @@ private:
     float PlayerFootstepDistanceAccumulator = 0.0f;
     bool bWasGeneratingPlayerFootsteps = false;
 
+    float DesiredCameraBoomLength = 400.0f;
+    bool bCameraZoomInitialized = false;
+
     void RefreshSkinFromPlayerState();
     void ApplyMovementSpeed();
+    void InitializeCameraZoom();
+    void UpdateCameraZoom(float DeltaSeconds);
     void UpdateAutomaticPlayerFootsteps(float DeltaSeconds);
     float ResolvePlayerFootstepStrideDistance() const;
     FVector GetPlayerFootstepAudioLocation() const;
@@ -287,6 +312,8 @@ private:
     void HandleInteractionPressed();
     void HandleMouseX(float Value);
     void HandleMouseY(float Value);
+    void HandleCameraZoomIn();
+    void HandleCameraZoomOut();
     void HandleGamepadMoveForward(float Value);
     void HandleGamepadMoveRight(float Value);
     void HandleGamepadLookYaw(float Value);

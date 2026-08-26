@@ -9,6 +9,7 @@
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/MeshComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,12 +48,14 @@ void ADMFDigimonCharacter::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
     RefreshFrameworkCustomDepth();
+    RefreshCameraCollisionPolicy();
 }
 
 void ADMFDigimonCharacter::BeginPlay()
 {
     Super::BeginPlay();
     RefreshFrameworkCustomDepth();
+    RefreshCameraCollisionPolicy();
     RefreshWorldNameplate();
 
     // Combat state replication is the durable source of truth for defeated presentation.
@@ -588,6 +591,27 @@ void ADMFDigimonCharacter::MulticastPlayCareWasteCue_Implementation(const int32 
     BP_OnCareWasteCue(FartSoundIndex);
 }
 
+
+void ADMFDigimonCharacter::RefreshCameraCollisionPolicy()
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bIgnorePlayersAndDigimonForCameraCollision)
+    {
+        return;
+    }
+
+    // Apply to every primitive owned by the Digimon, including Blueprint-added cosmetic/collision components.
+    // Only ECC_Camera is changed: visibility targeting, Pawn collision and combat interaction remain intact.
+    TArray<UPrimitiveComponent*> PrimitiveComponents;
+    GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+    for (UPrimitiveComponent* PrimitiveComponent : PrimitiveComponents)
+    {
+        if (PrimitiveComponent)
+        {
+            PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+        }
+    }
+}
 
 void ADMFDigimonCharacter::RefreshFrameworkCustomDepth()
 {

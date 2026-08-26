@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision
+
+### Added / changed
+- Added automatic local player camera boom zoom with **Mouse Wheel Up = zoom in** and **Mouse Wheel Down = zoom out** default bindings.
+- Added Project Settings camera controls for master enable, default input, default/min/max boom length, wheel step and interpolation speed.
+- Added Blueprint camera APIs on `ADMFPlayerAvatarCharacter`: `AddCameraZoomInput`, `SetCameraZoomDistance`, `GetCameraZoomDistance`, `ResetCameraZoom` and `RefreshCameraCollisionPolicy`.
+- Added the global **Ignore Players And Digimon For Camera Collision** policy. Player and Digimon primitive components ignore only `ECC_Camera`, preventing characters from retracting a third-person spring arm while preserving Pawn, Visibility, combat and interaction collision.
+- The framework spring arm continues collision-testing against `ECC_Camera`, so walls/level geometry still retract the camera normally.
+- Camera distance remains entirely client-local and creates no RPC, replicated property or SaveGame state.
+
+### Documentation
+- Added `Docs/SETUP_PLAYER_CAMERA_ZOOM.md` and updated README, architecture, networking, roadmap, test plan, validation report and project config template.
+
 ## 0.11.0-alpha — Polished Global Music Director
 
 ### Added

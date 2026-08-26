@@ -59,6 +59,41 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar")
     bool bEnableDefaultPlayerSkinMenuInput = true;
 
+    /** Master switch for the framework's local third-person camera boom zoom system. Camera distance is never replicated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom")
+    bool bEnablePlayerCameraZoom = true;
+
+    /** Ready-to-use Mouse Wheel Up/Down zoom binding. Disable when an Enhanced Input mapping supplies zoom instead. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom"))
+    bool bEnableDefaultPlayerCameraZoomInput = true;
+
+    /** Camera boom distance used when the locally controlled player first enters gameplay or resets zoom. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom", ClampMin="0.0", ClampMax="5000.0"))
+    float PlayerCameraDefaultBoomLength = 400.0f;
+
+    /** Closest permitted third-person camera distance. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom", ClampMin="0.0", ClampMax="5000.0"))
+    float PlayerCameraMinimumBoomLength = 220.0f;
+
+    /** Farthest permitted third-person camera distance. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom", ClampMin="0.0", ClampMax="10000.0"))
+    float PlayerCameraMaximumBoomLength = 850.0f;
+
+    /** Boom-length change requested by one mouse-wheel notch. Positive zoom input moves the camera closer. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom", ClampMin="1.0", ClampMax="1000.0"))
+    float PlayerCameraMouseWheelZoomStep = 75.0f;
+
+    /** Interpolation speed used when moving toward the requested boom distance. Set to zero for instant zoom. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Zoom", meta=(EditCondition="bEnablePlayerCameraZoom", ClampMin="0.0", ClampMax="100.0"))
+    float PlayerCameraZoomInterpolationSpeed = 14.0f;
+
+    /**
+     * When enabled, framework player capsules/meshes and Digimon capsules/meshes ignore ECC_Camera.
+     * The spring arm still collides with level/world geometry, but another character can no longer shove the camera inward.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Camera|Collision")
+    bool bIgnorePlayersAndDigimonForCameraCollision = true;
+
     /** Master switch for automatic replicated player-avatar footsteps. Digimon are intentionally not affected. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Player Avatar|Footsteps")
     bool bEnablePlayerFootsteps = true;

@@ -1,8 +1,18 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.11.0-alpha — Polished Global Music Director`
+**Version:** `0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.11.1-alpha — Polished Player Camera Boom Zoom & Character-Safe Camera Collision
+
+Player avatars now have a ready-to-use **smooth third-person spring-arm zoom system** configured globally under **Project Settings → Game → Digimon MMO Framework → Camera → Zoom**. Mouse Wheel Up zooms in and Mouse Wheel Down zooms out by default, with global default/minimum/maximum boom distances, wheel step size, smoothing speed and a separate default-input toggle for Enhanced Input projects.
+
+Zoom is deliberately **local presentation only**: every player can choose their own camera distance without RPCs, replicated camera state or account persistence. Blueprint projects can call `Add Camera Zoom Input`, `Set Camera Zoom Distance`, `Get Camera Zoom Distance` and `Reset Camera Zoom` directly while retaining the same global clamps.
+
+This release also fixes a common third-person MMO camera annoyance. With **Camera → Collision → Ignore Players And Digimon For Camera Collision** enabled (default), framework player avatars and Digimon force their primitive components to ignore `ECC_Camera`. Other players, owned partners and Wild Digimon can therefore pass between the controlled player and spring arm without shoving the camera forward. The spring arm itself still tests `ECC_Camera`, so walls and normal level geometry continue retracting the boom correctly.
+
+See `Docs/SETUP_PLAYER_CAMERA_ZOOM.md` for configuration, Enhanced Input integration and the host + remote-client acceptance checklist.
 
 ## New in v0.11.0-alpha — Polished Global Music Director
 
@@ -394,7 +404,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2)

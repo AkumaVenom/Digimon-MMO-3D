@@ -827,6 +827,50 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execOnRep_DigimonState)
 }
 // ********** End Class ADMFDigimonCharacter Function OnRep_DigimonState ***************************
 
+// ********** Begin Class ADMFDigimonCharacter Function RefreshCameraCollisionPolicy ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Camera|Collision" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Reasserts the global rule that Digimon collision must not block third-person camera spring arms. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Reasserts the global rule that Digimon collision must not block third-person camera spring arms." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshCameraCollisionPolicy constinit property declarations **********
+// ********** End Function RefreshCameraCollisionPolicy constinit property declarations ************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "RefreshCameraCollisionPolicy", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execRefreshCameraCollisionPolicy)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshCameraCollisionPolicy();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function RefreshCameraCollisionPolicy *****************
+
 // ********** Begin Class ADMFDigimonCharacter Function RefreshFrameworkCustomDepth ****************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1394,6 +1438,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareFeedingCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareFeedingCue },
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayCareWasteCue"), .Pointer = &ADMFDigimonCharacter::execMulticastPlayCareWasteCue },
 		{ .NameUTF8 = UTF8TEXT("OnRep_DigimonState"), .Pointer = &ADMFDigimonCharacter::execOnRep_DigimonState },
+		{ .NameUTF8 = UTF8TEXT("RefreshCameraCollisionPolicy"), .Pointer = &ADMFDigimonCharacter::execRefreshCameraCollisionPolicy },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFDigimonCharacter::execRefreshFrameworkCustomDepth },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFDigimonCharacter::execRefreshWorldNameplate },
 		{ .NameUTF8 = UTF8TEXT("ResolveSpeciesData"), .Pointer = &ADMFDigimonCharacter::execResolveSpeciesData },
@@ -1418,6 +1463,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue, "MulticastPlayCareFeedingCue" }, // a0e74399d79f72c637f3d96e47a259d85b814675
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareWasteCue, "MulticastPlayCareWasteCue" }, // 70ef942ca92f2582f5251147291095dfa83edf7e
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy, "RefreshCameraCollisionPolicy" }, // ab4db5a823f707f593372c460034e9f30c054a58
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // 6bd71dc2f39809ecbe83a51eb8aa9897fa31053d
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ResolveSpeciesData, "ResolveSpeciesData" }, // ef9c63bfa88bbcf754437dd5749581017e42c278
@@ -1575,10 +1621,10 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3659481447U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3720375345U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_ec2a689cdd03a795e10f49ca4cfa6c7826c29f3e{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_6d21fc353a2fdb8634c7862aaff1c41c14aa396f{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

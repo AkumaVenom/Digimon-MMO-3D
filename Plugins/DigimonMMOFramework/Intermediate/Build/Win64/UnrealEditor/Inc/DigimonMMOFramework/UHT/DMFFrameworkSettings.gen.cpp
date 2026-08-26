@@ -111,6 +111,102 @@ struct UHT_STATICS
 		{ "ToolTip", "Ready-to-use F6 menu toggle. Disable when the project wants to open the menu from its own UI/input." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnablePlayerCameraZoom_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the framework's local third-person camera boom zoom system. Camera distance is never replicated. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the framework's local third-person camera boom zoom system. Camera distance is never replicated." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDefaultPlayerCameraZoomInput_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Ready-to-use Mouse Wheel Up/Down zoom binding. Disable when an Enhanced Input mapping supplies zoom instead. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Ready-to-use Mouse Wheel Up/Down zoom binding. Disable when an Enhanced Input mapping supplies zoom instead." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerCameraDefaultBoomLength_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+		{ "ClampMax", "5000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Camera boom distance used when the locally controlled player first enters gameplay or resets zoom. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Camera boom distance used when the locally controlled player first enters gameplay or resets zoom." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerCameraMinimumBoomLength_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+		{ "ClampMax", "5000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Closest permitted third-person camera distance. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Closest permitted third-person camera distance." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerCameraMaximumBoomLength_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+		{ "ClampMax", "10000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Farthest permitted third-person camera distance. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Farthest permitted third-person camera distance." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerCameraMouseWheelZoomStep_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+		{ "ClampMax", "1000.0" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Boom-length change requested by one mouse-wheel notch. Positive zoom input moves the camera closer. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Boom-length change requested by one mouse-wheel notch. Positive zoom input moves the camera closer." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerCameraZoomInterpolationSpeed_MetaData[] = {
+		{ "Category", "Camera|Zoom" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Interpolation speed used when moving toward the requested boom distance. Set to zero for instant zoom. */" },
+#endif
+		{ "EditCondition", "bEnablePlayerCameraZoom" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Interpolation speed used when moving toward the requested boom distance. Set to zero for instant zoom." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIgnorePlayersAndDigimonForCameraCollision_MetaData[] = {
+		{ "Category", "Camera|Collision" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * When enabled, framework player capsules/meshes and Digimon capsules/meshes ignore ECC_Camera.\n     * The spring arm still collides with level/world geometry, but another character can no longer shove the camera inward.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "When enabled, framework player capsules/meshes and Digimon capsules/meshes ignore ECC_Camera.\nThe spring arm still collides with level/world geometry, but another character can no longer shove the camera inward." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnablePlayerFootsteps_MetaData[] = {
 		{ "Category", "Player Avatar|Footsteps" },
 #if !UE_BUILD_SHIPPING
@@ -953,6 +1049,26 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bEnableDefaultPlayerSkinMenuInput = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultPlayerSkinMenuInput;
+	static void NewProp_bEnablePlayerCameraZoom_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnablePlayerCameraZoom = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnablePlayerCameraZoom;
+	static void NewProp_bEnableDefaultPlayerCameraZoomInput_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableDefaultPlayerCameraZoomInput = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultPlayerCameraZoomInput;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerCameraDefaultBoomLength;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerCameraMinimumBoomLength;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerCameraMaximumBoomLength;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerCameraMouseWheelZoomStep;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerCameraZoomInterpolationSpeed;
+	static void NewProp_bIgnorePlayersAndDigimonForCameraCollision_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bIgnorePlayersAndDigimonForCameraCollision = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIgnorePlayersAndDigimonForCameraCollision;
 	static void NewProp_bEnablePlayerFootsteps_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bEnablePlayerFootsteps = 1;
@@ -1141,6 +1257,14 @@ const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PlayerSkinSel
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRequirePlayerSkinSelection = { "bRequirePlayerSkinSelection", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bRequirePlayerSkinSelection_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRequirePlayerSkinSelection_MetaData), NewProp_bRequirePlayerSkinSelection_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultPlayerSkin = { "DefaultPlayerSkin", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultPlayerSkin), Z_Construct_UClass_UDMFPlayerSkinData, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultPlayerSkin_MetaData), NewProp_DefaultPlayerSkin_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput = { "bEnableDefaultPlayerSkinMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPlayerSkinMenuInput_MetaData), NewProp_bEnableDefaultPlayerSkinMenuInput_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerCameraZoom = { "bEnablePlayerCameraZoom", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerCameraZoom_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerCameraZoom_MetaData), NewProp_bEnablePlayerCameraZoom_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPlayerCameraZoomInput = { "bEnableDefaultPlayerCameraZoomInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPlayerCameraZoomInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPlayerCameraZoomInput_MetaData), NewProp_bEnableDefaultPlayerCameraZoomInput_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerCameraDefaultBoomLength = { "PlayerCameraDefaultBoomLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerCameraDefaultBoomLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerCameraDefaultBoomLength_MetaData), NewProp_PlayerCameraDefaultBoomLength_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerCameraMinimumBoomLength = { "PlayerCameraMinimumBoomLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerCameraMinimumBoomLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerCameraMinimumBoomLength_MetaData), NewProp_PlayerCameraMinimumBoomLength_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerCameraMaximumBoomLength = { "PlayerCameraMaximumBoomLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerCameraMaximumBoomLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerCameraMaximumBoomLength_MetaData), NewProp_PlayerCameraMaximumBoomLength_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerCameraMouseWheelZoomStep = { "PlayerCameraMouseWheelZoomStep", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerCameraMouseWheelZoomStep), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerCameraMouseWheelZoomStep_MetaData), NewProp_PlayerCameraMouseWheelZoomStep_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerCameraZoomInterpolationSpeed = { "PlayerCameraZoomInterpolationSpeed", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerCameraZoomInterpolationSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerCameraZoomInterpolationSpeed_MetaData), NewProp_PlayerCameraZoomInterpolationSpeed_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIgnorePlayersAndDigimonForCameraCollision = { "bIgnorePlayersAndDigimonForCameraCollision", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bIgnorePlayersAndDigimonForCameraCollision_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIgnorePlayersAndDigimonForCameraCollision_MetaData), NewProp_bIgnorePlayersAndDigimonForCameraCollision_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerFootsteps = { "bEnablePlayerFootsteps", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerFootsteps_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerFootsteps_MetaData), NewProp_bEnablePlayerFootsteps_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_PlayerFootstepSound = { "PlayerFootstepSound", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepSound_MetaData), NewProp_PlayerFootstepSound_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerFootstepMinimumSpeed = { "PlayerFootstepMinimumSpeed", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerFootstepMinimumSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerFootstepMinimumSpeed_MetaData), NewProp_PlayerFootstepMinimumSpeed_MetaData) };
@@ -1232,6 +1356,14 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRequirePlayerSkinSelection,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultPlayerSkin,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPlayerSkinMenuInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerCameraZoom,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPlayerCameraZoomInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerCameraDefaultBoomLength,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerCameraMinimumBoomLength,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerCameraMaximumBoomLength,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerCameraMouseWheelZoomStep,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerCameraZoomInterpolationSpeed,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bIgnorePlayersAndDigimonForCameraCollision,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerFootsteps,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepSound,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerFootstepMinimumSpeed,
@@ -1382,10 +1514,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1458410915U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3584586684U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_7cac819a19e9487316dd827b9fda7ce7046a067d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_e6c20f9805251ba10aa3b9bb4da73a7b842920ee{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

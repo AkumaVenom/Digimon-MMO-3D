@@ -18,6 +18,12 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Persistent server-authoritative skin switching at runtime.
 - Native reskinnable character selection/wardrobe UI.
 
+## Player camera presentation polish — boom zoom & character-safe collision (implemented in v0.11.1-alpha)
+- Automatic Mouse Wheel Up/Down local spring-arm zoom with project-wide default/min/max distances, wheel step and smoothing.
+- Blueprint/Enhanced Input callable zoom API without adding camera replication or account persistence.
+- Player avatars and Digimon globally ignore `ECC_Camera` so characters cannot shove another player's spring-arm camera inward.
+- World/level camera obstruction remains active through the spring arm's normal `ECC_Camera` collision test.
+
 ## Player avatar presentation polish — footsteps (implemented in v0.10.4-alpha)
 - Automatic grounded player-only footsteps with no animation-notify requirement.
 - Project Settings Sound Cue/USoundBase assignment with global enable, cadence, volume and pitch controls.

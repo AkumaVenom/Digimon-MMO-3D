@@ -180,6 +180,10 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Rendering|Cel Shading")
     void RefreshFrameworkCustomDepth();
 
+    /** Reasserts the global rule that Digimon collision must not block third-person camera spring arms. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Camera|Collision")
+    void RefreshCameraCollisionPolicy();
+
     /** Stencil value written by all Digimon mesh components while Custom Depth rendering is enabled. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Rendering|Cel Shading", meta=(ClampMin="0", ClampMax="255"))
     int32 CustomDepthStencilValue = 0;

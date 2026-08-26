@@ -100,6 +100,66 @@ UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPlayerInteractio
 #undef UHT_STATICS
 // ********** End Delegate FDMFPlayerInteractionResult *********************************************
 
+// ********** Begin Class ADMFPlayerAvatarCharacter Function AddCameraZoomInput ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_AddCameraZoomInput_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarCharacter_eventAddCameraZoomInput_Parms
+	{
+		float Value;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Adds local third-person camera zoom input. Positive values zoom in; negative values zoom out. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Adds local third-person camera zoom input. Positive values zoom in; negative values zoom out." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function AddCameraZoomInput constinit property declarations ********************
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Value;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function AddCameraZoomInput constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function AddCameraZoomInput Property Definitions *******************************
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_Value = { "Value", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarCharacter_eventAddCameraZoomInput_Parms, Value), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Value,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function AddCameraZoomInput Property Definitions *********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "AddCameraZoomInput", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarCharacter_eventAddCameraZoomInput_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarCharacter_eventAddCameraZoomInput_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_AddCameraZoomInput(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execAddCameraZoomInput)
+{
+	P_GET_PROPERTY(FFloatProperty,Z_Param_Value);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->AddCameraZoomInput(Z_Param_Value);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function AddCameraZoomInput **********************
+
 // ********** Begin Class ADMFPlayerAvatarCharacter Function ApplyPlayerSkinData *******************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -629,6 +689,65 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execGetAppliedPlayerSkinId)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function GetAppliedPlayerSkinId ******************
+
+// ********** Begin Class ADMFPlayerAvatarCharacter Function GetCameraZoomDistance *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetCameraZoomDistance_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarCharacter_eventGetCameraZoomDistance_Parms
+	{
+		float ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Returns the locally requested boom distance (not the temporary collision-compressed spring-arm result). */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Returns the locally requested boom distance (not the temporary collision-compressed spring-arm result)." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetCameraZoomDistance constinit property declarations *****************
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetCameraZoomDistance constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetCameraZoomDistance Property Definitions ****************************
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarCharacter_eventGetCameraZoomDistance_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetCameraZoomDistance Property Definitions ******************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "GetCameraZoomDistance", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarCharacter_eventGetCameraZoomDistance_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarCharacter_eventGetCameraZoomDistance_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetCameraZoomDistance(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execGetCameraZoomDistance)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(float*)Z_Param__Result=P_THIS->GetCameraZoomDistance();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function GetCameraZoomDistance *******************
 
 // ********** Begin Class ADMFPlayerAvatarCharacter Function GetCurrentDigimonTarget ***************
 #ifdef UHT_STATICS
@@ -1538,6 +1657,50 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execPlayPlayerFootstepLocal)
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function PlayPlayerFootstepLocal *****************
 
+// ********** Begin Class ADMFPlayerAvatarCharacter Function RefreshCameraCollisionPolicy **********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshCameraCollisionPolicy_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Camera|Collision" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Reasserts the global rule that player collision must not block the spring-arm camera channel. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Reasserts the global rule that player collision must not block the spring-arm camera channel." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshCameraCollisionPolicy constinit property declarations **********
+// ********** End Function RefreshCameraCollisionPolicy constinit property declarations ************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "RefreshCameraCollisionPolicy", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshCameraCollisionPolicy(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execRefreshCameraCollisionPolicy)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshCameraCollisionPolicy();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function RefreshCameraCollisionPolicy ************
+
 // ********** Begin Class ADMFPlayerAvatarCharacter Function RefreshFrameworkCustomDepth ***********
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1625,6 +1788,71 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execRefreshWorldNameplate)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function RefreshWorldNameplate *******************
+
+// ********** Begin Class ADMFPlayerAvatarCharacter Function ResetCameraZoom ***********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetCameraZoom_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarCharacter_eventResetCameraZoom_Parms
+	{
+		bool bInstant;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Restores the globally configured default camera boom distance. */" },
+#endif
+		{ "CPP_Default_bInstant", "false" },
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Restores the globally configured default camera boom distance." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ResetCameraZoom constinit property declarations ***********************
+	static void NewProp_bInstant_SetBit(void* Obj)
+	{
+		((DMFPlayerAvatarCharacter_eventResetCameraZoom_Parms*)Obj)->bInstant = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bInstant;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ResetCameraZoom constinit property declarations *************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ResetCameraZoom Property Definitions **********************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bInstant = { "bInstant", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerAvatarCharacter_eventResetCameraZoom_Parms), &UHT_STATICS::NewProp_bInstant_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bInstant,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ResetCameraZoom Property Definitions ************************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "ResetCameraZoom", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarCharacter_eventResetCameraZoom_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarCharacter_eventResetCameraZoom_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetCameraZoom(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execResetCameraZoom)
+{
+	P_GET_UBOOL(Z_Param_bInstant);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ResetCameraZoom(Z_Param_bInstant);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function ResetCameraZoom *************************
 
 // ********** Begin Class ADMFPlayerAvatarCharacter Function ResetNativeInputState *****************
 #ifdef UHT_STATICS
@@ -1734,6 +1962,76 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execServerSetSprinting)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function ServerSetSprinting **********************
+
+// ********** Begin Class ADMFPlayerAvatarCharacter Function SetCameraZoomDistance *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_SetCameraZoomDistance_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms
+	{
+		float NewDistance;
+		bool bInstant;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Camera|Zoom" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Requests an absolute local boom distance, clamped to the global Project Settings min/max range. */" },
+#endif
+		{ "CPP_Default_bInstant", "false" },
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Requests an absolute local boom distance, clamped to the global Project Settings min/max range." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function SetCameraZoomDistance constinit property declarations *****************
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_NewDistance;
+	static void NewProp_bInstant_SetBit(void* Obj)
+	{
+		((DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms*)Obj)->bInstant = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bInstant;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function SetCameraZoomDistance constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function SetCameraZoomDistance Property Definitions ****************************
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_NewDistance = { "NewDistance", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms, NewDistance), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bInstant = { "bInstant", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms), &UHT_STATICS::NewProp_bInstant_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewDistance,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bInstant,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function SetCameraZoomDistance Property Definitions ******************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "SetCameraZoomDistance", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarCharacter_eventSetCameraZoomDistance_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_SetCameraZoomDistance(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execSetCameraZoomDistance)
+{
+	P_GET_PROPERTY(FFloatProperty,Z_Param_NewDistance);
+	P_GET_UBOOL(Z_Param_bInstant);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->SetCameraZoomDistance(Z_Param_NewDistance,Z_Param_bInstant);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function SetCameraZoomDistance *******************
 
 // ********** Begin Class ADMFPlayerAvatarCharacter Function StartSprinting ************************
 #ifdef UHT_STATICS
@@ -2198,11 +2496,13 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFPlayerAvatarCharacter constinit property declarations ******************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
+		{ .NameUTF8 = UTF8TEXT("AddCameraZoomInput"), .Pointer = &ADMFPlayerAvatarCharacter::execAddCameraZoomInput },
 		{ .NameUTF8 = UTF8TEXT("ApplyPlayerSkinData"), .Pointer = &ADMFPlayerAvatarCharacter::execApplyPlayerSkinData },
 		{ .NameUTF8 = UTF8TEXT("ClearDigimonTarget"), .Pointer = &ADMFPlayerAvatarCharacter::execClearDigimonTarget },
 		{ .NameUTF8 = UTF8TEXT("CommandDigimonAbilitySlot"), .Pointer = &ADMFPlayerAvatarCharacter::execCommandDigimonAbilitySlot },
 		{ .NameUTF8 = UTF8TEXT("FindInteractionTarget"), .Pointer = &ADMFPlayerAvatarCharacter::execFindInteractionTarget },
 		{ .NameUTF8 = UTF8TEXT("GetAppliedPlayerSkinId"), .Pointer = &ADMFPlayerAvatarCharacter::execGetAppliedPlayerSkinId },
+		{ .NameUTF8 = UTF8TEXT("GetCameraZoomDistance"), .Pointer = &ADMFPlayerAvatarCharacter::execGetCameraZoomDistance },
 		{ .NameUTF8 = UTF8TEXT("GetCurrentDigimonTarget"), .Pointer = &ADMFPlayerAvatarCharacter::execGetCurrentDigimonTarget },
 		{ .NameUTF8 = UTF8TEXT("GetInteractionPromptForActor"), .Pointer = &ADMFPlayerAvatarCharacter::execGetInteractionPromptForActor },
 		{ .NameUTF8 = UTF8TEXT("GetLastInteractionActor"), .Pointer = &ADMFPlayerAvatarCharacter::execGetLastInteractionActor },
@@ -2219,10 +2519,13 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayPlayerFootstep"), .Pointer = &ADMFPlayerAvatarCharacter::execMulticastPlayPlayerFootstep },
 		{ .NameUTF8 = UTF8TEXT("OnRep_Sprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execOnRep_Sprinting },
 		{ .NameUTF8 = UTF8TEXT("PlayPlayerFootstepLocal"), .Pointer = &ADMFPlayerAvatarCharacter::execPlayPlayerFootstepLocal },
+		{ .NameUTF8 = UTF8TEXT("RefreshCameraCollisionPolicy"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshCameraCollisionPolicy },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshFrameworkCustomDepth },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFPlayerAvatarCharacter::execRefreshWorldNameplate },
+		{ .NameUTF8 = UTF8TEXT("ResetCameraZoom"), .Pointer = &ADMFPlayerAvatarCharacter::execResetCameraZoom },
 		{ .NameUTF8 = UTF8TEXT("ResetNativeInputState"), .Pointer = &ADMFPlayerAvatarCharacter::execResetNativeInputState },
 		{ .NameUTF8 = UTF8TEXT("ServerSetSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execServerSetSprinting },
+		{ .NameUTF8 = UTF8TEXT("SetCameraZoomDistance"), .Pointer = &ADMFPlayerAvatarCharacter::execSetCameraZoomDistance },
 		{ .NameUTF8 = UTF8TEXT("StartSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execStartSprinting },
 		{ .NameUTF8 = UTF8TEXT("StopSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execStopSprinting },
 		{ .NameUTF8 = UTF8TEXT("TargetAndAttackDigimonFromActor"), .Pointer = &ADMFPlayerAvatarCharacter::execTargetAndAttackDigimonFromActor },
@@ -2230,6 +2533,7 @@ struct UHT_STATICS
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_AddCameraZoomInput, "AddCameraZoomInput" }, // bfb6514da914f00193291d28eac501b5e7b1ac38
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ApplyPlayerSkinData, "ApplyPlayerSkinData" }, // b156fffa16470599d7bb776cf154be9f84448931
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_BP_OnDigimonInteracted, "BP_OnDigimonInteracted" }, // 6899616f8c0139696dd36604bfff3087621cf6ba
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_BP_OnPlayerSkinApplied, "BP_OnPlayerSkinApplied" }, // f099fc8c9c726805a653fedc0730df5a216f0f5a
@@ -2239,6 +2543,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_CommandDigimonAbilitySlot, "CommandDigimonAbilitySlot" }, // b1b8ba8eaa658c15fbe0ca8ddb92cea4cd231b26
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_FindInteractionTarget, "FindInteractionTarget" }, // 7cb778a18d8596f948c5ac968359bbf10c6e1261
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetAppliedPlayerSkinId, "GetAppliedPlayerSkinId" }, // 6a5b26f98a1d42b23c41f46163bd4440495eb15c
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetCameraZoomDistance, "GetCameraZoomDistance" }, // a8c2ce144978120dd4ad1b4175fa515c58a24104
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetCurrentDigimonTarget, "GetCurrentDigimonTarget" }, // 5091ad59213a2ce20af42a1feb3d5e2ecac24f9c
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetInteractionPromptForActor, "GetInteractionPromptForActor" }, // bf839a5483d6b9dfb26bdc0d939424f9c756ebeb
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_GetLastInteractionActor, "GetLastInteractionActor" }, // f0e91a3764b19ba511d16c335cef1fd87a8fed56
@@ -2255,10 +2560,13 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_MulticastPlayPlayerFootstep, "MulticastPlayPlayerFootstep" }, // ca6d25487b067e7963fa7ca33a031ed95f6b26cd
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_OnRep_Sprinting, "OnRep_Sprinting" }, // 3276587a1c3ec52175887967c00c53dc0068cfe0
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_PlayPlayerFootstepLocal, "PlayPlayerFootstepLocal" }, // c525c73e9c46e553e7fc2f91e5040137bc3be649
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshCameraCollisionPolicy, "RefreshCameraCollisionPolicy" }, // b15ed5db1902621ad5ad90c19214795cb9f374ee
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 82ed465b5a8dc30a6b50f8fc50fc512aeb7b7eb2
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // cb47dc40b54e6bd40a047d5f62ea4b3e0c6dcb01
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetCameraZoom, "ResetCameraZoom" }, // af8c7d9d9eba5f9e827fa83fdb81a76a89121721
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ResetNativeInputState, "ResetNativeInputState" }, // 3bae772d7a61997b6ab04490de3cc459cf8b7bb0
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_ServerSetSprinting, "ServerSetSprinting" }, // e35b8284bc15b0222ab1c719a7c631c9de2a5033
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_SetCameraZoomDistance, "SetCameraZoomDistance" }, // a0dc164736c319c9f5b148223a2258b209eafd6a
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_StartSprinting, "StartSprinting" }, // a4b131e002fc083c2ac26835c41f1a11f339df4b
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_StopSprinting, "StopSprinting" }, // 4da3110ff89b1452ad76545e23015a5d123c56d2
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_TargetAndAttackDigimonFromActor, "TargetAndAttackDigimonFromActor" }, // 34de0f17cbbfe6b0ae34e9e89a05dfc3122a0482
@@ -2402,10 +2710,10 @@ ADMFPlayerAvatarCharacter::~ADMFPlayerAvatarCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 1758707170U) },
+		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 4272439575U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_473eb8dd148a9013ebbbe88bd020c71e45223d0d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_62677b49d4550d34bd9e0d838a83c269314cd1db{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

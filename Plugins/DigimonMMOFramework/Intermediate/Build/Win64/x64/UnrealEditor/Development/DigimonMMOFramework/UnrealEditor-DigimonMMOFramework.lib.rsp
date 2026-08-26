@@ -9,7 +9,7 @@
 /NODEFAULTLIB
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.obj"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Module.DigimonMMOFramework.cpp.obj"
-"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DigimonMMOFramework.cpp.obj"
+"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFDigimonCharacter.cpp.obj"
+"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFPlayerAvatarCharacter.cpp.obj"
 "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFFrameworkSettings.cpp.obj"
-"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFMusicSubsystem.cpp.obj"
 /OUT:"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/UnrealEditor-DigimonMMOFramework.lib"

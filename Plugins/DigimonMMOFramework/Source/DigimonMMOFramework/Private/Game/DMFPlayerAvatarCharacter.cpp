@@ -7,6 +7,7 @@
 #include "Components/DMFDigimonCombatComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/MeshComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Data/DMFPlayerSkinData.h"
@@ -52,6 +53,9 @@ ADMFPlayerAvatarCharacter::ADMFPlayerAvatarCharacter()
     CameraBoom->bUsePawnControlRotation = true;
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 12.0f;
+    // Keep world obstruction handling, but framework Players/Digimon can be globally forced to ignore ECC_Camera.
+    CameraBoom->bDoCollisionTest = true;
+    CameraBoom->ProbeChannel = ECC_Camera;
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -74,6 +78,7 @@ void ADMFPlayerAvatarCharacter::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
     RefreshFrameworkCustomDepth();
+    RefreshCameraCollisionPolicy();
 }
 
 void ADMFPlayerAvatarCharacter::BeginPlay()
@@ -81,6 +86,7 @@ void ADMFPlayerAvatarCharacter::BeginPlay()
     Super::BeginPlay();
     ApplyMovementSpeed();
     RefreshFrameworkCustomDepth();
+    RefreshCameraCollisionPolicy();
     RefreshSkinFromPlayerState();
     RefreshWorldNameplate();
 
@@ -98,6 +104,9 @@ void ADMFPlayerAvatarCharacter::BeginPlay()
 void ADMFPlayerAvatarCharacter::Tick(const float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    // Camera zoom is entirely local presentation. It does not replicate camera distance or generate network traffic.
+    UpdateCameraZoom(DeltaSeconds);
 
     // Footsteps are independent of the framework's legacy input bindings so Enhanced Input/custom movement projects
     // still receive automatic footsteps from actual replicated CharacterMovement velocity.
@@ -145,6 +154,13 @@ void ADMFPlayerAvatarCharacter::SetupPlayerInputComponent(UInputComponent* Playe
         PlayerInputComponent->BindAxisKey(EKeys::Gamepad_LeftX, this, &ADMFPlayerAvatarCharacter::HandleGamepadMoveRight);
         PlayerInputComponent->BindAxisKey(EKeys::Gamepad_RightX, this, &ADMFPlayerAvatarCharacter::HandleGamepadLookYaw);
         PlayerInputComponent->BindAxisKey(EKeys::Gamepad_RightY, this, &ADMFPlayerAvatarCharacter::HandleGamepadLookPitch);
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && Settings->bEnablePlayerCameraZoom && Settings->bEnableDefaultPlayerCameraZoomInput)
+    {
+        PlayerInputComponent->BindKey(EKeys::MouseScrollUp, IE_Pressed, this, &ADMFPlayerAvatarCharacter::HandleCameraZoomIn);
+        PlayerInputComponent->BindKey(EKeys::MouseScrollDown, IE_Pressed, this, &ADMFPlayerAvatarCharacter::HandleCameraZoomOut);
     }
 
     if (bEnableNativeInteractionInput)
@@ -253,6 +269,127 @@ void ADMFPlayerAvatarCharacter::LookPitch(const float Value)
     if (!FMath::IsNearlyZero(Value))
     {
         AddControllerPitchInput(Value);
+    }
+}
+
+void ADMFPlayerAvatarCharacter::InitializeCameraZoom()
+{
+    if (bCameraZoomInitialized || !CameraBoom || !IsLocallyControlled())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnablePlayerCameraZoom)
+    {
+        DesiredCameraBoomLength = CameraBoom->TargetArmLength;
+        bCameraZoomInitialized = true;
+        return;
+    }
+
+    const float MinimumBoom = FMath::Max(0.0f, FMath::Min(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    const float MaximumBoom = FMath::Max(MinimumBoom, FMath::Max(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    DesiredCameraBoomLength = FMath::Clamp(Settings->PlayerCameraDefaultBoomLength, MinimumBoom, MaximumBoom);
+    CameraBoom->TargetArmLength = DesiredCameraBoomLength;
+    bCameraZoomInitialized = true;
+}
+
+void ADMFPlayerAvatarCharacter::UpdateCameraZoom(const float DeltaSeconds)
+{
+    if (!CameraBoom || !IsLocallyControlled())
+    {
+        return;
+    }
+
+    InitializeCameraZoom();
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnablePlayerCameraZoom)
+    {
+        return;
+    }
+
+    const float MinimumBoom = FMath::Max(0.0f, FMath::Min(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    const float MaximumBoom = FMath::Max(MinimumBoom, FMath::Max(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    DesiredCameraBoomLength = FMath::Clamp(DesiredCameraBoomLength, MinimumBoom, MaximumBoom);
+
+    const float InterpSpeed = FMath::Max(0.0f, Settings->PlayerCameraZoomInterpolationSpeed);
+    CameraBoom->TargetArmLength = InterpSpeed <= KINDA_SMALL_NUMBER
+        ? DesiredCameraBoomLength
+        : FMath::FInterpTo(CameraBoom->TargetArmLength, DesiredCameraBoomLength, FMath::Max(0.0f, DeltaSeconds), InterpSpeed);
+}
+
+void ADMFPlayerAvatarCharacter::AddCameraZoomInput(const float Value)
+{
+    if (!CameraBoom || !IsLocallyControlled() || FMath::IsNearlyZero(Value))
+    {
+        return;
+    }
+
+    InitializeCameraZoom();
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnablePlayerCameraZoom)
+    {
+        return;
+    }
+
+    const float MinimumBoom = FMath::Max(0.0f, FMath::Min(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    const float MaximumBoom = FMath::Max(MinimumBoom, FMath::Max(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    const float Step = FMath::Max(1.0f, Settings->PlayerCameraMouseWheelZoomStep);
+    DesiredCameraBoomLength = FMath::Clamp(DesiredCameraBoomLength - (Value * Step), MinimumBoom, MaximumBoom);
+}
+
+void ADMFPlayerAvatarCharacter::SetCameraZoomDistance(const float NewDistance, const bool bInstant)
+{
+    if (!CameraBoom || !IsLocallyControlled())
+    {
+        return;
+    }
+
+    InitializeCameraZoom();
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnablePlayerCameraZoom)
+    {
+        return;
+    }
+
+    const float MinimumBoom = FMath::Max(0.0f, FMath::Min(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    const float MaximumBoom = FMath::Max(MinimumBoom, FMath::Max(Settings->PlayerCameraMinimumBoomLength, Settings->PlayerCameraMaximumBoomLength));
+    DesiredCameraBoomLength = FMath::Clamp(NewDistance, MinimumBoom, MaximumBoom);
+    if (bInstant)
+    {
+        CameraBoom->TargetArmLength = DesiredCameraBoomLength;
+    }
+}
+
+void ADMFPlayerAvatarCharacter::ResetCameraZoom(const bool bInstant)
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings)
+    {
+        return;
+    }
+    SetCameraZoomDistance(Settings->PlayerCameraDefaultBoomLength, bInstant);
+}
+
+void ADMFPlayerAvatarCharacter::RefreshCameraCollisionPolicy()
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bIgnorePlayersAndDigimonForCameraCollision)
+    {
+        return;
+    }
+
+    // Apply to every primitive owned by the avatar, including Blueprint-added cosmetic/collision components.
+    // This changes only ECC_Camera; Pawn/Visibility/combat/interaction responses are untouched.
+    TArray<UPrimitiveComponent*> PrimitiveComponents;
+    GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+    for (UPrimitiveComponent* PrimitiveComponent : PrimitiveComponents)
+    {
+        if (PrimitiveComponent)
+        {
+            PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+        }
     }
 }
 
@@ -796,6 +933,8 @@ void ADMFPlayerAvatarCharacter::HandleCrouchReleased() { UnCrouch(); }
 void ADMFPlayerAvatarCharacter::HandleInteractionPressed() { Interact(); }
 void ADMFPlayerAvatarCharacter::HandleMouseX(const float Value) { LookYaw(Value * MouseYawScale); }
 void ADMFPlayerAvatarCharacter::HandleMouseY(const float Value) { LookPitch(-Value * MousePitchScale); }
+void ADMFPlayerAvatarCharacter::HandleCameraZoomIn() { AddCameraZoomInput(1.0f); }
+void ADMFPlayerAvatarCharacter::HandleCameraZoomOut() { AddCameraZoomInput(-1.0f); }
 void ADMFPlayerAvatarCharacter::HandleGamepadMoveForward(const float Value) { MoveForward(Value); }
 void ADMFPlayerAvatarCharacter::HandleGamepadMoveRight(const float Value) { MoveRight(Value); }
 void ADMFPlayerAvatarCharacter::HandleGamepadLookYaw(const float Value) { LookYaw(Value); }

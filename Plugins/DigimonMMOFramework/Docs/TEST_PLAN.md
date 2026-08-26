@@ -1,7 +1,20 @@
-# UE5.8 Validation Plan — 0.11.0-alpha
+# UE5.8 Validation Plan — 0.11.1-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.11.0 adds the local automatic Frontend/Open World/Battle music director on top of the runtime-working v0.10.4 player-footstep baseline while retaining all existing hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, UI, spawning and persistence regression contracts.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.11.1 adds local camera boom zoom and character-safe camera collision on top of the runtime-working v0.11.0 global-music baseline while retaining all existing music, footsteps, hosting, WORLD chat, nameplate, Care, Scan/Materialization, combat, possession, UI, spawning and persistence regression contracts.
 
+
+## C0. v0.11.1 camera boom zoom & collision acceptance
+
+1. In Project Settings → Digimon MMO Framework → Camera → Zoom, confirm the master switch, default input, default/min/max boom distances, wheel step and interpolation speed are exposed.
+2. Confirm Camera → Collision exposes **Ignore Players And Digimon For Camera Collision** and it defaults enabled.
+3. Run listen host + remote client PIE. On each window independently, Mouse Wheel Up must zoom in and Mouse Wheel Down must zoom out.
+4. Repeated scroll input must stop exactly at the configured minimum/maximum requested boom lengths.
+5. With interpolation speed above zero, zoom transitions must be smooth; setting it to zero must permit immediate changes.
+6. Put the second player between the first player and camera. The first spring arm must not retract because of that player. Repeat in the opposite direction.
+7. Walk/summon an owned Digimon and place a Wild Digimon between camera and player. Neither may retract the boom.
+8. Back the camera toward a wall or other level geometry that blocks `ECC_Camera`; normal spring-arm collision retraction must still work.
+9. Verify Player/Digimon Visibility targeting, player-player collision, movement, combat, footsteps, nameplates and interaction remain unchanged.
+10. Set host and remote client to different zoom distances and confirm there is no cross-client coupling or new network traffic requirement.
 
 ## M0. v0.11.0 global music director acceptance
 

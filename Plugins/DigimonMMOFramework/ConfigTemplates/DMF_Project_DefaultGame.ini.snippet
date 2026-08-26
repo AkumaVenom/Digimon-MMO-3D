@@ -10,6 +10,18 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+; v0.11.1 polished local player camera boom zoom + character-safe camera collision defaults.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnablePlayerCameraZoom=True
+bEnableDefaultPlayerCameraZoomInput=True
+PlayerCameraDefaultBoomLength=400.0
+PlayerCameraMinimumBoomLength=220.0
+PlayerCameraMaximumBoomLength=850.0
+PlayerCameraMouseWheelZoomStep=75.0
+PlayerCameraZoomInterpolationSpeed=14.0
+bIgnorePlayersAndDigimonForCameraCollision=True
+
+
 ; v0.11.0 automatic Frontend / Open World / Battle music director defaults.
 ; Assign the three music assets in Project Settings > Audio > Music. Sound Cues are recommended.
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]

@@ -1,5 +1,22 @@
 # Validation Report
 
+## v0.11.1-alpha — polished player camera boom zoom & character-safe collision source validation
+
+Static/source validation was performed against the user-accepted v0.11.0 global-music baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus listen-host/remote-client runtime test remain the authoritative acceptance gates.
+
+Validated contracts:
+- `ADMFPlayerAvatarCharacter` owns the requested boom distance locally; mouse-wheel input and interpolation do not create a replicated property, RPC or SaveGame field.
+- Project Settings exposes the camera master switch, default Mouse Wheel input toggle, default/min/max boom distances, wheel step and interpolation speed. Runtime sanitization handles reversed min/max values and clamps the default/requested distance into the resolved range.
+- Mouse Wheel Up routes to positive zoom input (closer camera); Mouse Wheel Down routes to negative zoom input (farther camera). Enhanced Input projects can disable only the default binding and call the Blueprint zoom API directly.
+- `USpringArmComponent` explicitly retains `bDoCollisionTest=true` with `ECC_Camera`, preserving wall/world obstruction behavior.
+- The global character-safe policy applies `ECC_Camera=Ignore` to every primitive component on framework player avatars and Digimon during construction/BeginPlay, including Blueprint-added primitive components. No Pawn, Visibility, combat, interaction or navigation response is modified.
+- `RefreshCameraCollisionPolicy` is exposed on both player and Digimon classes for projects that deliberately alter component collision later at runtime.
+- Final static regression gate covers **72 source/header/build files and 17,447 source/build lines**, with **37 UCLASS**, **13 UENUM**, **15 USTRUCT**, **336 UFUNCTION** and **574 UPROPERTY** declarations. All **33 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies.
+- Comparison against v0.11.0 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. The only added file is `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`.
+- Generated-header ordering, changed-source delimiter balance and runtime TODO/FIXME checks pass.
+
+Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **C0** with listen host + remote client, followed by the v0.11.0 music, v0.10.4 footsteps and existing WORLD chat/nameplate/Care/Scan/combat regressions.
+
 ## v0.11.0-alpha — polished global music director source validation
 
 Static/source validation was performed against the user-runtime-validated v0.10.4 automatic player-footstep baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus Frontend/Open World/listen-host/remote-client runtime test remain the authoritative acceptance gates.

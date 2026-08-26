@@ -1,5 +1,11 @@
 # Networking / Host Deployment
 
+## v0.11.1 player camera networking contract
+
+Player camera zoom is **client-local presentation only**. Mouse-wheel input, desired boom length, interpolation and spring-arm compression are not replicated and do not enter PlayerState/account persistence. Two players can therefore use different camera distances while sharing the same authoritative world simulation.
+
+The new character camera-collision policy is deterministic actor configuration rather than network gameplay state. Framework player and Digimon primitive components ignore only `ECC_Camera`; movement, Pawn collision, targeting/Visibility traces, combat authority, interaction and navigation are unchanged. No new camera RPCs or replicated properties are introduced.
+
 ## v0.11.0 global music networking contract
 
 - Frontend/Open World/Battle music is **local presentation only** and adds no music RPC, replicated property or persistent account field.
