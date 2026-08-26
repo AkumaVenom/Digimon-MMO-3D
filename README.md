@@ -297,6 +297,7 @@ The project currently has working foundations for:
 
 * Multiplayer gameplay
 * Player accounts
+* Digimon Care System
 * Persistent account progression
 * Starter Digimon selection
 * Individual Digimon ownership
@@ -310,8 +311,6 @@ The project currently has working foundations for:
 * Multiplayer partner synchronization
 * Digimon inventory and management foundations
 * Real-time Digimon gameplay foundations
-
-The **Digimon Care System**, including feeding and hunger-related gameplay, is currently being expanded and prepared as one of the next major gameplay milestones.
 
 ---
 
