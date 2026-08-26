@@ -321,7 +321,7 @@ Digimon MMO 3D is intended to grow far beyond its current Alpha foundations.
 Future development can continue expanding areas such as:
 
 * Deeper Digimon Care
-* Hunger and additional partner needs
+* Additional partner needs
 * More Digimon behaviours
 * Expanded real-time combat
 * More abilities and battle commands
