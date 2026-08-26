@@ -16,6 +16,8 @@ being built system-by-system with a strong focus on multiplayer
 gameplay, persistence, progression, and the bond between the player and
 their Digimon.
 
+<img width="1707" height="724" alt="Splash- RaGEZONE" src="https://github.com/user-attachments/assets/b668489e-45ca-46d3-ace3-7e4b4754172f" />
+
 ---
 
 # 🧪 Current Accepted Development Baseline
