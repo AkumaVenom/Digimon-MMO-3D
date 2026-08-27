@@ -52,6 +52,8 @@ their own account and Digimon progression.
 
 <img width="1920" height="1080" alt="MainScreen" src="https://github.com/user-attachments/assets/b44dadc3-24c4-4202-a84f-15b5f98cfa2b" />
 
+<img width="1920" height="1080" alt="1" src="https://github.com/user-attachments/assets/e58d5764-777e-43a7-8d57-d02529b9b188" />
+
 ---
 
 # 🎮 The Core Gameplay Loop
