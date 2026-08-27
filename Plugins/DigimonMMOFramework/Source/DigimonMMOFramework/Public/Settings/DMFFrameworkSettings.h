@@ -20,6 +20,7 @@ class UStaticMesh;
 class USoundBase;
 class UNiagaraSystem;
 class UParticleSystem;
+class UPaperSprite;
 class UWorld;
 struct FPropertyChangedEvent;
 
@@ -422,6 +423,102 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat")
     bool bShowNativeCombatQuickBar = true;
+
+    /** Master switch for local owner-only active-partner and enemy-target selection presentation. No targeting visuals are replicated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals")
+    bool bEnableCombatTargetingVisuals = true;
+
+    /** Shows the project's blue selection-ring PaperSprite under this local player's currently summoned active partner only. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Active Partner", meta=(EditCondition="bEnableCombatTargetingVisuals"))
+    bool bShowActivePartnerTargetingRing = true;
+
+    /** Blue PaperSprite used beneath the owning player's active partner. Assign CircleRing_T_Sprite (or equivalent) here. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Active Partner", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing"))
+    TSoftObjectPtr<UPaperSprite> ActivePartnerTargetingRingSprite;
+
+    /** Additional local-space sprite scale before optional capsule-size adaptation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Active Partner", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing"))
+    FVector ActivePartnerTargetingRingScale = FVector(1.0f, 1.0f, 1.0f);
+
+    /** Height above the Digimon capsule bottom, useful for preventing translucent z-fighting with the floor. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Active Partner", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing", ClampMin="-50.0", ClampMax="100.0"))
+    float ActivePartnerTargetingRingGroundOffset = 3.0f;
+
+    /** Continuous world-Z spin speed. Positive and negative values rotate in opposite directions. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Active Partner", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing", ClampMin="-720.0", ClampMax="720.0"))
+    float ActivePartnerTargetingRingRotationDegreesPerSecond = 28.0f;
+
+    /** Shows the project's hostile/selected target PaperSprite beneath only this local player's current command target. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Target", meta=(EditCondition="bEnableCombatTargetingVisuals"))
+    bool bShowEnemyTargetingRing = true;
+
+    /** Enemy-target PaperSprite used beneath the currently selected hostile Digimon. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Target", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetingRing"))
+    TSoftObjectPtr<UPaperSprite> EnemyTargetingRingSprite;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Target", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetingRing"))
+    FVector EnemyTargetingRingScale = FVector(1.0f, 1.0f, 1.0f);
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Target", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetingRing", ClampMin="-50.0", ClampMax="100.0"))
+    float EnemyTargetingRingGroundOffset = 4.0f;
+
+    /** Default rotates opposite/faster than the active-partner ring for stronger visual separation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Target", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetingRing", ClampMin="-720.0", ClampMax="720.0"))
+    float EnemyTargetingRingRotationDegreesPerSecond = -42.0f;
+
+    /** PaperSprite assets normally face the X/Z plane; Roll=90 lays them flat while a parent pivot performs clean world-Z rotation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals"))
+    FRotator TargetingRingSpriteRelativeRotation = FRotator(0.0f, 0.0f, 90.0f);
+
+    /** Automatically adapts both ring sizes to very small/large Digimon capsule radii. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals"))
+    bool bScaleTargetingRingsToDigimonCapsule = true;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule", ClampMin="1.0", ClampMax="500.0"))
+    float TargetingRingReferenceCapsuleRadius = 42.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule", ClampMin="0.05", ClampMax="10.0"))
+    float TargetingRingMinimumAutoScale = 0.65f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule", ClampMin="0.05", ClampMax="20.0"))
+    float TargetingRingMaximumAutoScale = 3.0f;
+
+    /** Slate/render priority for translucent PaperSprite rings. Enemy ring uses this value + 1. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Rings", meta=(EditCondition="bEnableCombatTargetingVisuals", ClampMin="-100", ClampMax="100"))
+    int32 TargetingVisualTranslucentSortPriority = 10;
+
+    /** Shows the hovering down-arrow effect over the current local command target. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals"))
+    bool bShowEnemyTargetArrow = true;
+
+    /** Niagara is preferred when both Niagara and Cascade assets are supplied. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow"))
+    bool bPreferNiagaraEnemyTargetArrow = true;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow"))
+    TSoftObjectPtr<UNiagaraSystem> EnemyTargetArrowNiagaraSystem;
+
+    /** Legacy/fallback particle system used when Niagara is unassigned or not preferred. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow"))
+    TSoftObjectPtr<UParticleSystem> EnemyTargetArrowCascadeSystem;
+
+    /** Additional distance above the top of the target capsule. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow", ClampMin="-200.0", ClampMax="1000.0"))
+    float EnemyTargetArrowHeightOffset = 60.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow"))
+    FVector EnemyTargetArrowScale = FVector(1.0f, 1.0f, 1.0f);
+
+    /** Rotation correction for arrow VFX authored in a different local axis. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow"))
+    FRotator EnemyTargetArrowRotation = FRotator::ZeroRotator;
+
+    /** Native vertical hovering amplitude. Set to zero if the Niagara/Cascade system already performs its own bob animation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow", ClampMin="0.0", ClampMax="200.0"))
+    float EnemyTargetArrowBobAmplitude = 10.0f;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Targeting Visuals|Enemy Arrow", meta=(EditCondition="bEnableCombatTargetingVisuals && bShowEnemyTargetArrow", ClampMin="0.0", ClampMax="10.0"))
+    float EnemyTargetArrowBobFrequencyHz = 1.5f;
 
     /** Master switch for the framework's legacy/default controller combat bindings. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Combat|Input")

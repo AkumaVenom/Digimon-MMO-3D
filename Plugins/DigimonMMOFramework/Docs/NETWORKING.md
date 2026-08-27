@@ -241,3 +241,14 @@ During `bCareSequenceActive`, the owner component rejects conflicting set-active
 ## DigiDex networking contract (v0.14)
 
 DigiDex introduces **no network RPCs and no replicated properties**. The species catalog is static cooked project content resolved from the Asset Manager. Per-account `OWNED`/`SCANNED` badges are computed locally from the existing owner-only Party, Bank and Scan replication already delivered to that owning client. DigiDex cannot request summon, storage, Care, Materialization or Digivolution mutations.
+
+## v0.14.2 targeting-visual network contract
+
+### v0.14.3 targeting visibility fix
+The rendering fix does not change the network contract. Marker components no longer use `OnlyOwnerSee`, because the entire `ADMFTargetingPresentationActor` is already non-replicated and created only on the local controller. No remote machine receives that actor or its sprite/VFX components; `ActivePartnerActor` and `CommandTarget` remain owner-only authoritative inputs.
+
+- Active-partner and enemy-target rings plus the hovering target arrow are **client-local presentation only**.
+- `ADMFTargetingPresentationActor::bReplicates` is false and dedicated servers construct no visible targeting presentation.
+- No targeting-visual RPC or replicated property is added. The local actor consumes the existing `COND_OwnerOnly` `ActivePartnerActor` and `CommandTarget` references.
+- Consequently Player A does not receive Player B's marker selection state. If two players independently target the same enemy, both render their own local marker set.
+- Target legality and target changes remain server-owned through `ServerSetCommandTarget` / existing combat validation. Marker visibility grants no combat authority.

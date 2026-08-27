@@ -14,6 +14,7 @@ class UDMFScanNotificationWidget;
 class UDMFWorldChatWidget;
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
+class ADMFTargetingPresentationActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFWorldChatMessageReceived, FDMFWorldChatMessage, ChatMessage);
@@ -125,6 +126,13 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Combat")
     void CommandActivePartnerAbilitySlot(int32 SlotIndex);
 
+    /** Creates/reloads this client's non-replicated partner/target selection presentation from Project Settings. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Combat|Targeting Visuals")
+    void RefreshTargetingVisuals();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Combat|Targeting Visuals")
+    ADMFTargetingPresentationActor* GetTargetingPresentationActor() const { return TargetingPresentationActor; }
+
     /** Called by ADMFHealerActor::RequestHeal; routes the interaction through this client-owned controller. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Healing")
     void RequestUseHealer(ADMFHealerActor* Healer);
@@ -221,6 +229,10 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFWorldChatWidget> WorldChatWidget;
 
+    /** Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController. */
+    UPROPERTY(Transient)
+    TObjectPtr<ADMFTargetingPresentationActor> TargetingPresentationActor;
+
     bool bPlayerSkinMenuOpenedManually = false;
     bool bFrameworkModalInputLocked = false;
     bool bCarePresentationActive = false;
@@ -263,6 +275,7 @@ private:
 
     void BindStarterState();
     void BindAvatarState();
+    void EnsureTargetingPresentation();
     void ValidateLocalAvatarPossession();
     void ApplyFrameworkModalInputMode();
     void RestoreGameplayInputMode();

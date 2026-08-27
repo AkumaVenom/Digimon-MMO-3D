@@ -34,6 +34,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPartyQuickBarWidget(EType
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinSelectionWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFScanNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterSelectionWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFTargetingPresentationActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFWorldChatWidget(ETypeConstructPhase);
 // ********** End Same Module References ***********************************************************
 #define UHT_STRUCT_BASE(INIT) UE::CodeGen::ConstInit::TCompiledInObjectPtr<const FStructBaseChain>(UE::Private::AsStructBaseChain(INIT))
@@ -736,6 +737,59 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execCommandPartnerTargetAndAttack)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function CommandPartnerTargetAndAttack *************
+
+// ********** Begin Class ADMFMMOPlayerController Function GetTargetingPresentationActor ***********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_GetTargetingPresentationActor_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventGetTargetingPresentationActor_Parms
+	{
+		ADMFTargetingPresentationActor* ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Combat|Targeting Visuals" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetTargetingPresentationActor constinit property declarations *********
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetTargetingPresentationActor constinit property declarations ***********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetTargetingPresentationActor Property Definitions ********************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventGetTargetingPresentationActor_Parms, ReturnValue), Z_Construct_UClass_ADMFTargetingPresentationActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetTargetingPresentationActor Property Definitions **********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "GetTargetingPresentationActor", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventGetTargetingPresentationActor_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventGetTargetingPresentationActor_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_GetTargetingPresentationActor(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execGetTargetingPresentationActor)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(ADMFTargetingPresentationActor**)Z_Param__Result=P_THIS->GetTargetingPresentationActor();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function GetTargetingPresentationActor *************
 
 // ********** Begin Class ADMFMMOPlayerController Function GetWorldChatWidget **********************
 #ifdef UHT_STATICS
@@ -2313,6 +2367,50 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshStarterSelectionUI)
 }
 // ********** End Class ADMFMMOPlayerController Function RefreshStarterSelectionUI *****************
 
+// ********** Begin Class ADMFMMOPlayerController Function RefreshTargetingVisuals *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_RefreshTargetingVisuals_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Combat|Targeting Visuals" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Creates/reloads this client's non-replicated partner/target selection presentation from Project Settings. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Creates/reloads this client's non-replicated partner/target selection presentation from Project Settings." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshTargetingVisuals constinit property declarations ***************
+// ********** End Function RefreshTargetingVisuals constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "RefreshTargetingVisuals", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_RefreshTargetingVisuals(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshTargetingVisuals)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshTargetingVisuals();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function RefreshTargetingVisuals *******************
+
 // ********** Begin Class ADMFMMOPlayerController Function RefreshWorldChatUI **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -3056,6 +3154,15 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingPresentationActor_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController." },
+#endif
+	};
 #endif // WITH_METADATA
 
 // ********** Begin Class ADMFMMOPlayerController constinit property declarations ******************
@@ -3068,6 +3175,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigimonInventoryWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanNotificationWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_WorldChatWidget;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_TargetingPresentationActor;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFMMOPlayerController constinit property declarations ********************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
@@ -3082,6 +3190,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("CloseWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execCloseWorldChatInput },
 		{ .NameUTF8 = UTF8TEXT("CommandActivePartnerAbilitySlot"), .Pointer = &ADMFMMOPlayerController::execCommandActivePartnerAbilitySlot },
 		{ .NameUTF8 = UTF8TEXT("CommandPartnerTargetAndAttack"), .Pointer = &ADMFMMOPlayerController::execCommandPartnerTargetAndAttack },
+		{ .NameUTF8 = UTF8TEXT("GetTargetingPresentationActor"), .Pointer = &ADMFMMOPlayerController::execGetTargetingPresentationActor },
 		{ .NameUTF8 = UTF8TEXT("GetWorldChatWidget"), .Pointer = &ADMFMMOPlayerController::execGetWorldChatWidget },
 		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceFinished"), .Pointer = &ADMFMMOPlayerController::execHandleCareSequenceFinished },
 		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceStarted"), .Pointer = &ADMFMMOPlayerController::execHandleCareSequenceStarted },
@@ -3113,6 +3222,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("RefreshPartyQuickBar"), .Pointer = &ADMFMMOPlayerController::execRefreshPartyQuickBar },
 		{ .NameUTF8 = UTF8TEXT("RefreshPlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshPlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshStarterSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshStarterSelectionUI },
+		{ .NameUTF8 = UTF8TEXT("RefreshTargetingVisuals"), .Pointer = &ADMFMMOPlayerController::execRefreshTargetingVisuals },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldChatUI"), .Pointer = &ADMFMMOPlayerController::execRefreshWorldChatUI },
 		{ .NameUTF8 = UTF8TEXT("RequestUseHealer"), .Pointer = &ADMFMMOPlayerController::execRequestUseHealer },
 		{ .NameUTF8 = UTF8TEXT("SelectDigimonCommandTargetUnderCursor"), .Pointer = &ADMFMMOPlayerController::execSelectDigimonCommandTargetUnderCursor },
@@ -3141,6 +3251,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseWorldChatInput, "CloseWorldChatInput" }, // adcedc494f95685c5079b99a417855a026a22121
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandActivePartnerAbilitySlot, "CommandActivePartnerAbilitySlot" }, // 23e8ffa3a886714910a4020728670525fc575c67
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandPartnerTargetAndAttack, "CommandPartnerTargetAndAttack" }, // 29f86ad7ebe90c83566ec078666ff7b3fed62be5
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_GetTargetingPresentationActor, "GetTargetingPresentationActor" }, // 3027e85cfd2b3dd27749040fe21eb38fedec6e86
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_GetWorldChatWidget, "GetWorldChatWidget" }, // b264e970e7dcdb0c062385db218646c865077e93
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceFinished, "HandleCareSequenceFinished" }, // 19f516ba8872840b2c39243f2545fb5cb8c6d50f
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceStarted, "HandleCareSequenceStarted" }, // 12e99f63bcc79520007a4e4ccecb1a57ee3333e0
@@ -3172,6 +3283,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPartyQuickBar, "RefreshPartyQuickBar" }, // 26d49dc08a1e05ec8c762195c40ad5fe60d7fa72
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPlayerSkinSelectionUI, "RefreshPlayerSkinSelectionUI" }, // 63c4b16d73d5d5b889759ffda68ec30442000bb2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshStarterSelectionUI, "RefreshStarterSelectionUI" }, // d7dbaa478809f0e8e263917c1869d4d1e4c66543
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshTargetingVisuals, "RefreshTargetingVisuals" }, // 0fb1a439a67c7035c806b41797a56c12ebcc01bb
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshWorldChatUI, "RefreshWorldChatUI" }, // c7bea9fe9f25e72e3aee0396d97947d4a2f4b521
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RequestUseHealer, "RequestUseHealer" }, // 8b7c978fd62e9a2fccc659796cd3dcecd42dd1c2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_SelectDigimonCommandTargetUnderCursor, "SelectDigimonCommandTargetUnderCursor" }, // b31362fed008ea36285bb10bd1c1e764c00c95d5
@@ -3204,6 +3316,7 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerSkinWi
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidget = { "DigimonInventoryWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, DigimonInventoryWidget), Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidget_MetaData), NewProp_DigimonInventoryWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanNotificationWidget = { "ScanNotificationWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, ScanNotificationWidget), Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidget_MetaData), NewProp_ScanNotificationWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_WorldChatWidget = { "WorldChatWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, WorldChatWidget), Z_Construct_UClass_UDMFWorldChatWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatWidget_MetaData), NewProp_WorldChatWidget_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_TargetingPresentationActor = { "TargetingPresentationActor", nullptr, (EPropertyFlags)0x0144000000002000, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, TargetingPresentationActor), Z_Construct_UClass_ADMFTargetingPresentationActor, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingPresentationActor_MetaData), NewProp_TargetingPresentationActor_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnHealerInteractionResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnWorldChatMessageReceived,
@@ -3214,6 +3327,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatWidget,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingPresentationActor,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End Class ADMFMMOPlayerController Property Definitions *******************************
@@ -3289,10 +3403,10 @@ ADMFMMOPlayerController::~ADMFMMOPlayerController() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 614060812U) },
+		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 227907581U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_237a7375997720e71cf37f28a09ffceeb99be735{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_b605dcc19d496866aba60a5a27002120d5a7bfca{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

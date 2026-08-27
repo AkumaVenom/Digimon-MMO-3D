@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening`
+**Version:** `0.14.3-alpha — Local Targeting Visibility Runtime Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.14.3-alpha — Local Targeting Visibility Runtime Fix
+
+v0.14.3 fixes the runtime visibility failure discovered during the first real targeting-marker setup test. The v0.14.2 presentation actor was already spawned only for the local framework PlayerController and never replicated, but its PaperSprite/Niagara/Cascade components also used Unreal's `Only Owner See` render filter. Depending on the active camera/view-owner chain, that redundant component-level filter could cull the local marker components for the same player who owned the presentation actor, resulting in the blue partner ring, hostile target ring and enemy arrow all being invisible even while target selection itself worked correctly.
+
+The local targeting actor remains completely non-replicated and MMO-private, but its render components now use normal local-world visibility instead of `Only Owner See`. Because the actor exists only in that local player's world, another network player still cannot receive or render those markers. The presentation actor also now lazily reloads newly assigned targeting assets during PIE and is created even while the global targeting switch is disabled, allowing the Project Settings switch/assets to be changed during a running editor session without leaving the presentation permanently uninitialized.
+
+No combat authority, command-target replication, projectile logic, Party/Bank state, SaveGame data or network RPC contract changed in this fix.
+
+## New in v0.14.2-alpha — Polished Owner-Only Combat Targeting Visuals
+
+Combat selection now has a first-class polished world presentation built specifically for MMO privacy. The locally owning player can see a configurable blue rotating `PaperSprite` ring beneath their own summoned active partner, a separate hostile/selected ring beneath their current command target, and a Niagara-preferred/Cascade-fallback down-arrow hovering above that target. Other players never see these markers unless they independently select the same Digimon through their own local combat state.
+
+Both rings use independent world-Z rotation pivots so their source sprites stay flat on the floor while rotating cleanly. Defaults deliberately use different speeds/directions (`+28°/s` partner, `-42°/s` enemy), and optional capsule-radius adaptation keeps marker size sensible across tiny Fresh forms and very large Mega/Ultra Digimon. Ground offsets, sprite scales/orientation, translucent sort priority, arrow height/scale/rotation, Niagara/Cascade assets, and native hover bob are all exposed under **Project Settings → Combat → Targeting Visuals**.
+
+The system adds no targeting RPC, replicated marker actor, or SaveGame state. A non-replicated `DMFTargetingPresentationActor` exists only for each local player controller and reads the existing owner-only `ActivePartnerActor` / `CommandTarget` state. Target selection, hostility validation, combat commands and damage authority therefore remain unchanged. See `Docs/SETUP_COMBAT_TARGETING_VISUALS.md` for exact setup using the supplied `CircleRing_T_Sprite`, hostile ring sprite and `NS_Icon2D_Arrow` assets.
 
 ## New in v0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening
 

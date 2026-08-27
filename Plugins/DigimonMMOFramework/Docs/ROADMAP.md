@@ -170,3 +170,17 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Added hard cleanup for projectile actors and all timed/impact attack VFX, including looping Niagara/Cascade systems.
 - Existing Timed Impact abilities remain backward compatible by default.
 
+
+## Completed — v0.14.3 local targeting visibility runtime fix
+
+- Removed redundant renderer owner-visibility filtering that could hide all local-only targeting markers from their intended player.
+- Added runtime Project Settings asset recovery and enable/disable resilience during PIE.
+- Preserved the zero-RPC, non-replicated marker architecture and all combat authority contracts.
+
+## Completed — v0.14.2 polished owner-only combat targeting visuals
+
+- Local active-partner PaperSprite selection ring.
+- Local selected-enemy PaperSprite ring.
+- Niagara-preferred / Cascade-fallback hovering enemy arrow.
+- Independent world-Z ring rotation speeds/directions and automatic Digimon capsule-size adaptation.
+- Project Settings exposure and host/multi-client privacy contract.

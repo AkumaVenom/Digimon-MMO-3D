@@ -4,11 +4,13 @@
 #include "Components/DMFPlayerAvatarComponent.h"
 #include "Components/DMFPlayerDigimonComponent.h"
 #include "Components/InputComponent.h"
+#include "Engine/World.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFHealerActor.h"
 #include "Game/DMFMMOGameMode.h"
 #include "Game/DMFPlayerAvatarCharacter.h"
 #include "Game/DMFPlayerState.h"
+#include "Game/DMFTargetingPresentationActor.h"
 #include "InputCoreTypes.h"
 #include "Settings/DMFFrameworkSettings.h"
 #include "TimerManager.h"
@@ -83,6 +85,7 @@ void ADMFMMOPlayerController::BeginPlay()
 
     RefreshWorldChatUI();
     RefreshPartyQuickBar();
+    EnsureTargetingPresentation();
     const UDMFFrameworkSettings* ChatSettings = GetDefault<UDMFFrameworkSettings>();
     if (!ChatSettings || ChatSettings->bEnableWorldChat)
     {
@@ -1208,6 +1211,42 @@ void ADMFMMOPlayerController::TogglePartyQuickAccessInteraction()
     else
     {
         OpenPartyQuickAccessInteraction();
+    }
+}
+
+void ADMFMMOPlayerController::EnsureTargetingPresentation()
+{
+    if (!IsLocalController() || GetNetMode() == NM_DedicatedServer || IsValid(TargetingPresentationActor))
+    {
+        return;
+    }
+
+    // Always keep the tiny local-only presentation actor available. The actor itself reads the
+    // global enable switch and hides all components while targeting visuals are disabled. This also
+    // allows Project Settings changes made during PIE to become visible without restarting the world.
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return;
+    }
+
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    SpawnParams.Instigator = GetPawn();
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    SpawnParams.ObjectFlags |= RF_Transient;
+    TargetingPresentationActor = World->SpawnActor<ADMFTargetingPresentationActor>(
+        ADMFTargetingPresentationActor::StaticClass(),
+        FTransform::Identity,
+        SpawnParams);
+}
+
+void ADMFMMOPlayerController::RefreshTargetingVisuals()
+{
+    EnsureTargetingPresentation();
+    if (IsValid(TargetingPresentationActor))
+    {
+        TargetingPresentationActor->RefreshPresentationAssets();
     }
 }
 

@@ -1,3 +1,16 @@
+# v0.14.3-alpha validation summary
+
+- Built directly on v0.14.2 targeting-visual source, itself additive over the user-runtime-accepted v0.14.1 projectile baseline.
+- Fixed the local rendering contract by removing redundant `OnlyOwnerSee`/owner-view filtering from the non-replicated targeting presentation components.
+- Targeting privacy remains structural: `ADMFTargetingPresentationActor::bReplicates=false` and is spawned only by a local `DMFMMOPlayerController`; no marker state is added to replication.
+- Added lazy Project Settings asset refresh during PIE and made presentation-actor creation independent of the master enable switch so enable/asset changes can recover without a level restart.
+- No SaveGame schema, combat authority, target-selection RPC, projectile authority, Party/Bank, DigiDex, Digivolution, Care/healer or account persistence behavior changed.
+- Final static gate: **80 source/header/build files, 23,711 source/build lines, 42 UCLASS, 15 UENUM, 16 USTRUCT, 422 UFUNCTION and 769 UPROPERTY declarations**.
+- All **42 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies; v0.14.3 adds no RPCs.
+- Comparison against v0.14.2 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+- Generated-header ordering, changed-source delimiter balance, runtime TODO/FIXME scan and targeting-render-owner regression checks pass.
+- Archive integrity/hash is verified during packaging.
+
 # v0.14.1-alpha validation summary
 
 - Built directly on the accepted/runtime-validated v0.14.0 DigiDex baseline.
@@ -709,3 +722,24 @@ This maintenance release replaces all three obsolete include occurrences in the 
 - Static baseline comparison: zero v0.14.0 files removed, zero existing reflected UFUNCTION names removed, and all 42 RPC declarations have matching implementations.
 - UnrealBuildTool/PIE execution is not available in this environment; UE5.8.x Editor compile plus host/remote-client projectile tests remain the authoritative runtime gate.
 
+
+## v0.14.2-alpha — polished owner-only combat targeting visuals source validation
+
+Static/source validation was performed against the user-runtime-validated v0.14.1 replicated-projectile baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8 compile plus listen-host/multi-client runtime test remain the authoritative acceptance gates.
+
+Validated contracts:
+- Added the local-only `ADMFTargetingPresentationActor` source pair. `bReplicates=false`; the actor is spawned only for the locally controlled framework PlayerController and renders no dedicated-server presentation.
+- Active-partner presentation consumes the existing owner-only `ActivePartnerActor`; enemy selection presentation consumes the existing owner-only `CommandTarget`. No marker-selection replication channel was added.
+- PaperSprite partner/enemy rings use separate scene pivots for clean world-Z rotation while the sprite receives a configurable flat-floor orientation. Default speeds are intentionally distinct/opposed at `+28` and `-42` degrees/second.
+- Optional capsule-radius scaling is clamped by configurable min/max values so the same global art remains usable across small Fresh and large late-stage Digimon.
+- Enemy arrow uses Niagara-preferred/Cascade-fallback selection, target-capsule-top placement, scale/rotation correction and optional native sinusoidal vertical hover.
+- Ring/particle primitives use owner-only rendering hardening in addition to the non-replicated actor boundary, so network clients do not receive or render one another's marker actor/state.
+- Defeated/cleared targets deactivate the hostile ring/arrow, and recalled/replaced partners remove/reposition the blue active-partner ring without modifying combat state.
+- Project Settings exposes the complete targeting presentation asset/tuning surface; Paper2D is now an explicit runtime plugin/module dependency because the requested ring assets are native PaperSprite assets.
+- Existing v0.14.1 projectile execution/homing/impact/cleanup, DigiDex, Digivolution, Party/Bank, Care/healer, nameplates/chat, camera/music/footsteps, accounts and frontend contracts remain additive and unchanged.
+- Final static regression gate covers **80 source/header/build files and 23,752 source/build lines**, with **42 UCLASS**, **15 UENUM**, **16 USTRUCT**, **422 UFUNCTION** and **769 UPROPERTY** declarations.
+- All **42 reflected Server/Client/NetMulticast RPC declarations** still have matching `_Implementation` bodies. Targeting visuals add **zero new RPCs**.
+- Comparison against v0.14.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**. Added reflected APIs are limited to `RefreshTargetingVisuals`, `GetTargetingPresentationActor`, `RefreshPresentationAssets`, `GetPresentedActivePartner`, and `GetPresentedCommandTarget`.
+- Generated-header ordering, changed-source delimiter balance and runtime TODO/FIXME checks pass.
+
+Required runtime acceptance: clean UE5.8 compile, then run `TEST_PLAN.md` section **T0** with listen host + two remote clients and packaged clients, followed by the v0.14.1 projectile/homing regression and existing combat/Party/Care/Scan/Digivolution/DigiDex regressions.

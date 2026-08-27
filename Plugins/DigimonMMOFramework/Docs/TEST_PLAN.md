@@ -546,3 +546,23 @@ The baseline should not be treated as networking-accepted until it passes a pack
 9. Keep another ability in Timed Impact mode, assign a deliberately looping Niagara/Cascade system, set `Presentation VFX Lifetime Seconds`, and verify the transient cue is forcibly removed.
 10. Regression: repeat manual slots/auto battle, retaliation, combat facing, Party/Bank, DigiDex, Digivolution, Care, healer, world chat/nameplates and persistence tests; no pre-v0.14.1 gameplay authority path should change.
 
+
+## T0 — v0.14.2 owner-only targeting visuals
+
+### v0.14.3 visibility regression
+- With a valid active-partner sprite, enemy-target sprite and Niagara arrow assigned, confirm all three can render on the owning listen host.
+- Repeat on a remote client. The remote client must see its own markers even though the local camera view target is the possessed avatar rather than the PlayerController.
+- Confirm another player does not see those local markers.
+- During PIE, clear/reassign a ring or arrow asset in Project Settings and confirm the presentation recovers automatically without restarting the level.
+- Disable then re-enable **Enable Combat Targeting Visuals** during PIE and confirm the already-local presentation actor hides/restores cleanly.
+
+1. Assign blue partner ring PaperSprite, hostile target ring PaperSprite and Niagara arrow in Project Settings.
+2. Run listen host + two clients and summon a different partner for each account.
+3. Confirm each window shows the blue ring only under its own active partner.
+4. Select different Wild Digimon on each client; each window must show only its own hostile ring + arrow.
+5. Confirm the partner/enemy rings rotate continuously at different default speeds/directions.
+6. Test small Fresh and large later-stage capsule sizes; verify auto-size remains clamped/readable.
+7. Clear/defeat target and verify hostile ring/arrow deactivate. Recall/switch partner and verify blue ring follows owner state.
+8. Unassign Niagara and assign Cascade fallback; repeat target selection. Then restore Niagara and verify Niagara is preferred.
+9. Verify host/client target selection, abilities, v0.14.1 projectile homing/impact/cleanup and all combat damage remain server-authoritative and unchanged.
+10. Package two clients and repeat privacy/cleanup checks.

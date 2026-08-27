@@ -126,3 +126,33 @@ GamePort=7777
 
 ; v0.14 read-only implemented-species encyclopedia
 bEnableDigiDex=True
+
+; v0.14.2 local owner-only combat targeting presentation.
+; Assign the requested PaperSprite/Niagara/Cascade assets in Project Settings > Combat > Targeting Visuals.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnableCombatTargetingVisuals=True
+bShowActivePartnerTargetingRing=True
+; ActivePartnerTargetingRingSprite=/Game/...
+ActivePartnerTargetingRingScale=(X=1.0,Y=1.0,Z=1.0)
+ActivePartnerTargetingRingGroundOffset=3.0
+ActivePartnerTargetingRingRotationDegreesPerSecond=28.0
+bShowEnemyTargetingRing=True
+; EnemyTargetingRingSprite=/Game/...
+EnemyTargetingRingScale=(X=1.0,Y=1.0,Z=1.0)
+EnemyTargetingRingGroundOffset=4.0
+EnemyTargetingRingRotationDegreesPerSecond=-42.0
+TargetingRingSpriteRelativeRotation=(Pitch=0.0,Yaw=0.0,Roll=90.0)
+bScaleTargetingRingsToDigimonCapsule=True
+TargetingRingReferenceCapsuleRadius=42.0
+TargetingRingMinimumAutoScale=0.65
+TargetingRingMaximumAutoScale=3.0
+TargetingVisualTranslucentSortPriority=10
+bShowEnemyTargetArrow=True
+bPreferNiagaraEnemyTargetArrow=True
+; EnemyTargetArrowNiagaraSystem=/Game/...
+; EnemyTargetArrowCascadeSystem=/Game/...
+EnemyTargetArrowHeightOffset=60.0
+EnemyTargetArrowScale=(X=1.0,Y=1.0,Z=1.0)
+EnemyTargetArrowRotation=(Pitch=0.0,Yaw=0.0,Roll=0.0)
+EnemyTargetArrowBobAmplitude=10.0
+EnemyTargetArrowBobFrequencyHz=1.5

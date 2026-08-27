@@ -12,6 +12,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 void EmptyLinkFunctionForGeneratedCodeDMFFrameworkSettings() {}
 
 // ********** Begin Cross Module References ********************************************************
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator(ETypeConstructPhase);
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 DEVELOPERSETTINGS_API UClass* Z_Construct_UClass_UDeveloperSettings(ETypeConstructPhase);
 COREUOBJECT_API UClass* Z_Construct_UClass_UClass(ETypeConstructPhase);
@@ -20,6 +21,7 @@ ENGINE_API UClass* Z_Construct_UClass_USoundBase(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
 NIAGARA_API UClass* Z_Construct_UClass_UNiagaraSystem(ETypeConstructPhase);
+PAPER2D_API UClass* Z_Construct_UClass_UPaperSprite(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -1094,6 +1096,265 @@ struct UHT_STATICS
 		{ "Category", "Combat" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableCombatTargetingVisuals_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for local owner-only active-partner and enemy-target selection presentation. No targeting visuals are replicated. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for local owner-only active-partner and enemy-target selection presentation. No targeting visuals are replicated." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowActivePartnerTargetingRing_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Active Partner" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shows the project's blue selection-ring PaperSprite under this local player's currently summoned active partner only. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shows the project's blue selection-ring PaperSprite under this local player's currently summoned active partner only." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActivePartnerTargetingRingSprite_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Active Partner" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Blue PaperSprite used beneath the owning player's active partner. Assign CircleRing_T_Sprite (or equivalent) here. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Blue PaperSprite used beneath the owning player's active partner. Assign CircleRing_T_Sprite (or equivalent) here." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActivePartnerTargetingRingScale_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Active Partner" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Additional local-space sprite scale before optional capsule-size adaptation. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Additional local-space sprite scale before optional capsule-size adaptation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActivePartnerTargetingRingGroundOffset_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Active Partner" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "-50.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Height above the Digimon capsule bottom, useful for preventing translucent z-fighting with the floor. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Height above the Digimon capsule bottom, useful for preventing translucent z-fighting with the floor." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Active Partner" },
+		{ "ClampMax", "720.0" },
+		{ "ClampMin", "-720.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Continuous world-Z spin speed. Positive and negative values rotate in opposite directions. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowActivePartnerTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Continuous world-Z spin speed. Positive and negative values rotate in opposite directions." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowEnemyTargetingRing_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Target" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shows the project's hostile/selected target PaperSprite beneath only this local player's current command target. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shows the project's hostile/selected target PaperSprite beneath only this local player's current command target." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetingRingSprite_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Target" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Enemy-target PaperSprite used beneath the currently selected hostile Digimon. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Enemy-target PaperSprite used beneath the currently selected hostile Digimon." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetingRingScale_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Target" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetingRingGroundOffset_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Target" },
+		{ "ClampMax", "100.0" },
+		{ "ClampMin", "-50.0" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetingRingRotationDegreesPerSecond_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Target" },
+		{ "ClampMax", "720.0" },
+		{ "ClampMin", "-720.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Default rotates opposite/faster than the active-partner ring for stronger visual separation. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetingRing" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Default rotates opposite/faster than the active-partner ring for stronger visual separation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingRingSpriteRelativeRotation_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** PaperSprite assets normally face the X/Z plane; Roll=90 lays them flat while a parent pivot performs clean world-Z rotation. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "PaperSprite assets normally face the X/Z plane; Roll=90 lays them flat while a parent pivot performs clean world-Z rotation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bScaleTargetingRingsToDigimonCapsule_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Automatically adapts both ring sizes to very small/large Digimon capsule radii. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Automatically adapts both ring sizes to very small/large Digimon capsule radii." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingRingReferenceCapsuleRadius_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+		{ "ClampMax", "500.0" },
+		{ "ClampMin", "1.0" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingRingMinimumAutoScale_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.05" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingRingMaximumAutoScale_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+		{ "ClampMax", "20.0" },
+		{ "ClampMin", "0.05" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bScaleTargetingRingsToDigimonCapsule" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TargetingVisualTranslucentSortPriority_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Rings" },
+		{ "ClampMax", "100" },
+		{ "ClampMin", "-100" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Slate/render priority for translucent PaperSprite rings. Enemy ring uses this value + 1. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Slate/render priority for translucent PaperSprite rings. Enemy ring uses this value + 1." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowEnemyTargetArrow_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shows the hovering down-arrow effect over the current local command target. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shows the hovering down-arrow effect over the current local command target." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bPreferNiagaraEnemyTargetArrow_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Niagara is preferred when both Niagara and Cascade assets are supplied. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Niagara is preferred when both Niagara and Cascade assets are supplied." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowNiagaraSystem_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowCascadeSystem_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Legacy/fallback particle system used when Niagara is unassigned or not preferred. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Legacy/fallback particle system used when Niagara is unassigned or not preferred." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowHeightOffset_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+		{ "ClampMax", "1000.0" },
+		{ "ClampMin", "-200.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Additional distance above the top of the target capsule. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Additional distance above the top of the target capsule." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowScale_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowRotation_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Rotation correction for arrow VFX authored in a different local axis. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Rotation correction for arrow VFX authored in a different local axis." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowBobAmplitude_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+		{ "ClampMax", "200.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Native vertical hovering amplitude. Set to zero if the Niagara/Cascade system already performs its own bob animation. */" },
+#endif
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Native vertical hovering amplitude. Set to zero if the Niagara/Cascade system already performs its own bob animation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EnemyTargetArrowBobFrequencyHz_MetaData[] = {
+		{ "Category", "Combat|Targeting Visuals|Enemy Arrow" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.0" },
+		{ "EditCondition", "bEnableCombatTargetingVisuals && bShowEnemyTargetArrow" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableDefaultCombatInputBindings_MetaData[] = {
 		{ "Category", "Combat|Input" },
 #if !UE_BUILD_SHIPPING
@@ -1472,6 +1733,56 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bShowNativeCombatQuickBar = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowNativeCombatQuickBar;
+	static void NewProp_bEnableCombatTargetingVisuals_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableCombatTargetingVisuals = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableCombatTargetingVisuals;
+	static void NewProp_bShowActivePartnerTargetingRing_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowActivePartnerTargetingRing = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowActivePartnerTargetingRing;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_ActivePartnerTargetingRingSprite;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_ActivePartnerTargetingRingScale;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ActivePartnerTargetingRingGroundOffset;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond;
+	static void NewProp_bShowEnemyTargetingRing_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowEnemyTargetingRing = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowEnemyTargetingRing;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_EnemyTargetingRingSprite;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_EnemyTargetingRingScale;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_EnemyTargetingRingGroundOffset;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_EnemyTargetingRingRotationDegreesPerSecond;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_TargetingRingSpriteRelativeRotation;
+	static void NewProp_bScaleTargetingRingsToDigimonCapsule_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bScaleTargetingRingsToDigimonCapsule = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bScaleTargetingRingsToDigimonCapsule;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_TargetingRingReferenceCapsuleRadius;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_TargetingRingMinimumAutoScale;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_TargetingRingMaximumAutoScale;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_TargetingVisualTranslucentSortPriority;
+	static void NewProp_bShowEnemyTargetArrow_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowEnemyTargetArrow = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowEnemyTargetArrow;
+	static void NewProp_bPreferNiagaraEnemyTargetArrow_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bPreferNiagaraEnemyTargetArrow = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bPreferNiagaraEnemyTargetArrow;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_EnemyTargetArrowNiagaraSystem;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_EnemyTargetArrowCascadeSystem;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_EnemyTargetArrowHeightOffset;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_EnemyTargetArrowScale;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_EnemyTargetArrowRotation;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_EnemyTargetArrowBobAmplitude;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_EnemyTargetArrowBobFrequencyHz;
 	static void NewProp_bEnableDefaultCombatInputBindings_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bEnableDefaultCombatInputBindings = 1;
@@ -1615,6 +1926,32 @@ const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_DefaultD
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigivolutionSoundVolumeMultiplier = { "DigivolutionSoundVolumeMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigivolutionSoundVolumeMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionSoundVolumeMultiplier_MetaData), NewProp_DigivolutionSoundVolumeMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DigivolutionSoundPitchMultiplier = { "DigivolutionSoundPitchMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigivolutionSoundPitchMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionSoundPitchMultiplier_MetaData), NewProp_DigivolutionSoundPitchMultiplier_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeCombatQuickBar = { "bShowNativeCombatQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeCombatQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeCombatQuickBar_MetaData), NewProp_bShowNativeCombatQuickBar_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableCombatTargetingVisuals = { "bEnableCombatTargetingVisuals", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableCombatTargetingVisuals_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableCombatTargetingVisuals_MetaData), NewProp_bEnableCombatTargetingVisuals_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowActivePartnerTargetingRing = { "bShowActivePartnerTargetingRing", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowActivePartnerTargetingRing_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowActivePartnerTargetingRing_MetaData), NewProp_bShowActivePartnerTargetingRing_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_ActivePartnerTargetingRingSprite = { "ActivePartnerTargetingRingSprite", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ActivePartnerTargetingRingSprite), Z_Construct_UClass_UPaperSprite, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActivePartnerTargetingRingSprite_MetaData), NewProp_ActivePartnerTargetingRingSprite_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ActivePartnerTargetingRingScale = { "ActivePartnerTargetingRingScale", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ActivePartnerTargetingRingScale), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActivePartnerTargetingRingScale_MetaData), NewProp_ActivePartnerTargetingRingScale_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ActivePartnerTargetingRingGroundOffset = { "ActivePartnerTargetingRingGroundOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ActivePartnerTargetingRingGroundOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActivePartnerTargetingRingGroundOffset_MetaData), NewProp_ActivePartnerTargetingRingGroundOffset_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond = { "ActivePartnerTargetingRingRotationDegreesPerSecond", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ActivePartnerTargetingRingRotationDegreesPerSecond), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond_MetaData), NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowEnemyTargetingRing = { "bShowEnemyTargetingRing", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowEnemyTargetingRing_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowEnemyTargetingRing_MetaData), NewProp_bShowEnemyTargetingRing_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_EnemyTargetingRingSprite = { "EnemyTargetingRingSprite", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetingRingSprite), Z_Construct_UClass_UPaperSprite, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetingRingSprite_MetaData), NewProp_EnemyTargetingRingSprite_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_EnemyTargetingRingScale = { "EnemyTargetingRingScale", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetingRingScale), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetingRingScale_MetaData), NewProp_EnemyTargetingRingScale_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_EnemyTargetingRingGroundOffset = { "EnemyTargetingRingGroundOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetingRingGroundOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetingRingGroundOffset_MetaData), NewProp_EnemyTargetingRingGroundOffset_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_EnemyTargetingRingRotationDegreesPerSecond = { "EnemyTargetingRingRotationDegreesPerSecond", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetingRingRotationDegreesPerSecond), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetingRingRotationDegreesPerSecond_MetaData), NewProp_EnemyTargetingRingRotationDegreesPerSecond_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_TargetingRingSpriteRelativeRotation = { "TargetingRingSpriteRelativeRotation", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, TargetingRingSpriteRelativeRotation), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingRingSpriteRelativeRotation_MetaData), NewProp_TargetingRingSpriteRelativeRotation_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bScaleTargetingRingsToDigimonCapsule = { "bScaleTargetingRingsToDigimonCapsule", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bScaleTargetingRingsToDigimonCapsule_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bScaleTargetingRingsToDigimonCapsule_MetaData), NewProp_bScaleTargetingRingsToDigimonCapsule_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_TargetingRingReferenceCapsuleRadius = { "TargetingRingReferenceCapsuleRadius", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, TargetingRingReferenceCapsuleRadius), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingRingReferenceCapsuleRadius_MetaData), NewProp_TargetingRingReferenceCapsuleRadius_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_TargetingRingMinimumAutoScale = { "TargetingRingMinimumAutoScale", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, TargetingRingMinimumAutoScale), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingRingMinimumAutoScale_MetaData), NewProp_TargetingRingMinimumAutoScale_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_TargetingRingMaximumAutoScale = { "TargetingRingMaximumAutoScale", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, TargetingRingMaximumAutoScale), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingRingMaximumAutoScale_MetaData), NewProp_TargetingRingMaximumAutoScale_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_TargetingVisualTranslucentSortPriority = { "TargetingVisualTranslucentSortPriority", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, TargetingVisualTranslucentSortPriority), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetingVisualTranslucentSortPriority_MetaData), NewProp_TargetingVisualTranslucentSortPriority_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowEnemyTargetArrow = { "bShowEnemyTargetArrow", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowEnemyTargetArrow_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowEnemyTargetArrow_MetaData), NewProp_bShowEnemyTargetArrow_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bPreferNiagaraEnemyTargetArrow = { "bPreferNiagaraEnemyTargetArrow", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bPreferNiagaraEnemyTargetArrow_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bPreferNiagaraEnemyTargetArrow_MetaData), NewProp_bPreferNiagaraEnemyTargetArrow_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowNiagaraSystem = { "EnemyTargetArrowNiagaraSystem", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowNiagaraSystem), Z_Construct_UClass_UNiagaraSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowNiagaraSystem_MetaData), NewProp_EnemyTargetArrowNiagaraSystem_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowCascadeSystem = { "EnemyTargetArrowCascadeSystem", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowCascadeSystem), Z_Construct_UClass_UParticleSystem, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowCascadeSystem_MetaData), NewProp_EnemyTargetArrowCascadeSystem_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowHeightOffset = { "EnemyTargetArrowHeightOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowHeightOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowHeightOffset_MetaData), NewProp_EnemyTargetArrowHeightOffset_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowScale = { "EnemyTargetArrowScale", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowScale), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowScale_MetaData), NewProp_EnemyTargetArrowScale_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowRotation = { "EnemyTargetArrowRotation", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowRotation), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowRotation_MetaData), NewProp_EnemyTargetArrowRotation_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowBobAmplitude = { "EnemyTargetArrowBobAmplitude", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowBobAmplitude), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowBobAmplitude_MetaData), NewProp_EnemyTargetArrowBobAmplitude_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_EnemyTargetArrowBobFrequencyHz = { "EnemyTargetArrowBobFrequencyHz", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, EnemyTargetArrowBobFrequencyHz), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EnemyTargetArrowBobFrequencyHz_MetaData), NewProp_EnemyTargetArrowBobFrequencyHz_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings = { "bEnableDefaultCombatInputBindings", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultCombatInputBindings_MetaData), NewProp_bEnableDefaultCombatInputBindings_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultClickTargetInput = { "bEnableDefaultClickTargetInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultClickTargetInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultClickTargetInput_MetaData), NewProp_bEnableDefaultClickTargetInput_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultAbilitySlotInput = { "bEnableDefaultAbilitySlotInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultAbilitySlotInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultAbilitySlotInput_MetaData), NewProp_bEnableDefaultAbilitySlotInput_MetaData) };
@@ -1733,6 +2070,32 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionSoundVolumeMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionSoundPitchMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeCombatQuickBar,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableCombatTargetingVisuals,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowActivePartnerTargetingRing,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActivePartnerTargetingRingSprite,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActivePartnerTargetingRingScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActivePartnerTargetingRingGroundOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActivePartnerTargetingRingRotationDegreesPerSecond,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowEnemyTargetingRing,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetingRingSprite,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetingRingScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetingRingGroundOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetingRingRotationDegreesPerSecond,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingRingSpriteRelativeRotation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bScaleTargetingRingsToDigimonCapsule,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingRingReferenceCapsuleRadius,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingRingMinimumAutoScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingRingMaximumAutoScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetingVisualTranslucentSortPriority,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowEnemyTargetArrow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bPreferNiagaraEnemyTargetArrow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowNiagaraSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowCascadeSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowHeightOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowScale,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowRotation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowBobAmplitude,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EnemyTargetArrowBobFrequencyHz,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultCombatInputBindings,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultClickTargetInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultAbilitySlotInput,
@@ -1819,10 +2182,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2196813048U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2885438718U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_08ab868e831ccf86745fda057827a79543f30f81{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_5073b29574e3884a6d80f427f6f05f73e24fa809{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

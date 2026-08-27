@@ -17,6 +17,7 @@ public class DigimonMMOFramework : ModuleRules
             "SlateCore",
             "DeveloperSettings",
             "Niagara",
+            "Paper2D",
             "AIModule",
             "NavigationSystem"
         });

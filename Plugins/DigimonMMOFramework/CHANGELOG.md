@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.14.3-alpha — Local Targeting Visibility Runtime Fix
+
+### Fixed — local targeting markers could be culled for their owning player
+- Fixed the v0.14.2 blue active-partner ring, hostile target ring and Niagara/Cascade arrow all remaining invisible even with valid Project Settings assets and a valid selected target.
+- Root cause: the presentation actor is already local-only/non-replicated, but its visual components redundantly enabled Unreal's `Only Owner See` render filter. The active camera/view-owner chain can differ from the PlayerController owner chain, causing those local components to fail the owner-visibility test.
+- Targeting sprite/VFX components now render normally inside the local-only presentation actor (`OnlyOwnerSee=false`, `OwnerNoSee=false`) while retaining zero replication and zero shared marker state. Other players therefore still cannot see another player's markers.
+- Added runtime asset self-healing: if a targeting sprite/Niagara/Cascade asset is assigned after PIE has started, the local presentation actor detects the previously missing asset and reloads Project Settings automatically.
+- The tiny local presentation actor is now created regardless of the master targeting-visual switch; while disabled it simply hides its components. This lets the global switch be enabled during PIE without requiring a level restart.
+
+### Regression contract
+- No combat targeting authority or RPC behavior changed. `CommandTarget` remains owner-only replicated and server validated.
+- Projectile execution/homing/impact, DigiDex, Digivolution, Party/Bank, Care/healer, chat/nameplates, camera/music/footsteps, account persistence and SaveGame schema are unchanged.
+
+## 0.14.2-alpha — Polished Owner-Only Combat Targeting Visuals
+
+### Added — local MMO targeting presentation
+- Added native local-only `ADMFTargetingPresentationActor`, spawned only for a locally controlled framework PlayerController and never replicated.
+- Added a configurable blue active-partner PaperSprite ring that is visible only to the owning player and automatically follows the summoned active partner at capsule-bottom height.
+- Added a separate configurable enemy-target PaperSprite ring plus Niagara-preferred/Cascade-fallback hovering down-arrow for the owner's current authoritative command target.
+- Partner and enemy rings use separate world-Z pivot rotation with different default speeds/directions (`+28°/s` and `-42°/s`) and optional capsule-radius scaling for tiny/large Digimon forms.
+- Added Project Settings controls for ring assets, scale, ground offsets, sprite orientation, auto-size bounds, sort priority, arrow VFX selection, height, scale, rotation and native hover bob.
+- Added `RefreshTargetingVisuals` / `GetTargetingPresentationActor` controller APIs and local presentation refresh/inspection hooks.
+
+### Networking / compatibility
+- Targeting visuals add **no RPC, no replicated marker state and no SaveGame fields**. They consume the already owner-only `ActivePartnerActor` and `CommandTarget`, so other players cannot see another client's selection markers.
+- Existing server-authoritative target validation, ability commands, projectile execution/homing/impact, Party/Bank, DigiDex, Digivolution, Care/healer and all previous network contracts remain unchanged.
+- Added the Paper2D runtime dependency because the requested selection-ring assets are native `PaperSprite` assets.
+
+### Documentation
+- Added `Docs/SETUP_COMBAT_TARGETING_VISUALS.md` and updated README, architecture, networking, roadmap, test plan, validation report and config template.
+
 ## 0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening
 
 ### Added — real server-authoritative projectile execution

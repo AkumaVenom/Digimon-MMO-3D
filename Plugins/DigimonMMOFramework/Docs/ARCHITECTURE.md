@@ -254,3 +254,14 @@ Player username display uses `APlayerState::PlayerName`, which is the public dis
 The native DigiDex is a **read-only local presentation layer** inside `UDMFDigimonInventoryWidget`. It enumerates `DMFDigimonSpecies` Primary Assets through `UAssetManager`, resolves the same `UDMFDigimonSpeciesData` records already used by combat/Scan/Digivolution, and derives discovery badges from the owning `UDMFPlayerDigimonComponent`'s existing Party, Bank and Scan state. No parallel species database, SaveGame field, server mutation path, or replicated DigiDex state exists.
 
 `EDMFDigimonMenuTab::DigiDex` is appended after the v0.13 values so historical enum serialization remains stable. The native visual row may present tabs in a different order than their serialized enum values.
+
+## v0.14.2 — local owner-only targeting presentation
+
+### v0.14.3 visibility hardening
+The local targeting presentation actor remains non-replicated and local-controller-owned, but its render components deliberately avoid Unreal `OnlyOwnerSee` filtering. Privacy comes from actor locality and owner-only gameplay state, not renderer ownership heuristics. This avoids camera/view-target ownership mismatches that can cull a local player's own markers. Missing soft assets are also refreshed lazily at runtime.
+
+`ADMFTargetingPresentationActor` is a deliberately non-replicated local presentation actor spawned by the locally controlled `ADMFMMOPlayerController`. It reads the owning `UDMFPlayerDigimonComponent`'s already owner-only `ActivePartnerActor` and `CommandTarget` and reconstructs active-partner/selected-enemy visuals locally.
+
+PaperSprite rings are moved from capsule dimensions rather than species-authored sockets, and optional capsule-radius scaling supports widely different Digimon sizes. A Niagara-preferred/Cascade-fallback target-arrow component follows the target capsule top. Marker rotation/bob are local cosmetic ticks only.
+
+This layer never selects a target, does not call damage APIs, and introduces no marker replication. Server-authoritative target validation and ability execution remain in `UDMFPlayerDigimonComponent` / `UDMFDigimonCombatComponent`.
