@@ -7,6 +7,7 @@
 #include "UObject/GeneratedCppIncludes.h"
 #include "Components/DMFDigimonCombatComponent.h"
 #include "DMFTypes.h"
+#include "Engine/NetSerialization.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compiled with !UE_WITH_CONSTINIT_UOBJECT");
@@ -14,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeDMFDigimonCombatComponent() {}
 
 // ********** Begin Cross Module References ********************************************************
 ENGINE_API UClass* Z_Construct_UClass_UActorComponent(ETypeConstructPhase);
+ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FVector_NetQuantize(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_AActor(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
@@ -1564,6 +1566,79 @@ DEFINE_FUNCTION(UDMFDigimonCombatComponent::execMulticastPlayAbilityCue)
 }
 // ********** End Class UDMFDigimonCombatComponent Function MulticastPlayAbilityCue ****************
 
+// ********** Begin Class UDMFDigimonCombatComponent Function MulticastPlayProjectileImpactCue *****
+struct DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms
+{
+	FName AbilityId;
+	FVector_NetQuantize ImpactLocation;
+};
+static FName NAME_UDMFDigimonCombatComponent_MulticastPlayProjectileImpactCue = FName(TEXT("MulticastPlayProjectileImpactCue"));
+void UDMFDigimonCombatComponent::MulticastPlayProjectileImpactCue(FName AbilityId, FVector_NetQuantize ImpactLocation)
+{
+	DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms Parms;
+	Parms.AbilityId=AbilityId;
+	Parms.ImpactLocation=ImpactLocation;
+	UFunction* Func = FindFunctionChecked(NAME_UDMFDigimonCombatComponent_MulticastPlayProjectileImpactCue);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastPlayProjectileImpactCue_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Transient projectile impact presentation. Gameplay damage has already been accepted by authority before this cue. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Transient projectile impact presentation. Gameplay damage has already been accepted by authority before this cue." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function MulticastPlayProjectileImpactCue constinit property declarations ******
+	static const UECodeGen_Private::FNamePropertyParams NewProp_AbilityId;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_ImpactLocation;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function MulticastPlayProjectileImpactCue constinit property declarations ********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function MulticastPlayProjectileImpactCue Property Definitions *****************
+const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_AbilityId = { "AbilityId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Name, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms, AbilityId), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ImpactLocation = { "ImpactLocation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms, ImpactLocation), Z_Construct_UScriptStruct_FVector_NetQuantize, METADATA_PARAMS(0, nullptr) }; // 360b775a5cdccbf04648aaedc65b3c6a0a2c5ffc
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AbilityId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ImpactLocation,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function MulticastPlayProjectileImpactCue Property Definitions *******************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonCombatComponent, nullptr, "MulticastPlayProjectileImpactCue", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00044C41, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFDigimonCombatComponent_eventMulticastPlayProjectileImpactCue_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastPlayProjectileImpactCue(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonCombatComponent::execMulticastPlayProjectileImpactCue)
+{
+	P_GET_PROPERTY(FNameProperty,Z_Param_AbilityId);
+	P_GET_STRUCT(FVector_NetQuantize,Z_Param_ImpactLocation);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->MulticastPlayProjectileImpactCue_Implementation(Z_Param_AbilityId,Z_Param_ImpactLocation);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonCombatComponent Function MulticastPlayProjectileImpactCue *******
+
 // ********** Begin Class UDMFDigimonCombatComponent Function MulticastVictoryCue ******************
 struct DMFDigimonCombatComponent_eventMulticastVictoryCue_Parms
 {
@@ -2322,6 +2397,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("IsRetaliationEnabled"), .Pointer = &UDMFDigimonCombatComponent::execIsRetaliationEnabled },
 		{ .NameUTF8 = UTF8TEXT("MulticastDefeatedCue"), .Pointer = &UDMFDigimonCombatComponent::execMulticastDefeatedCue },
 		{ .NameUTF8 = UTF8TEXT("MulticastPlayAbilityCue"), .Pointer = &UDMFDigimonCombatComponent::execMulticastPlayAbilityCue },
+		{ .NameUTF8 = UTF8TEXT("MulticastPlayProjectileImpactCue"), .Pointer = &UDMFDigimonCombatComponent::execMulticastPlayProjectileImpactCue },
 		{ .NameUTF8 = UTF8TEXT("MulticastVictoryCue"), .Pointer = &UDMFDigimonCombatComponent::execMulticastVictoryCue },
 		{ .NameUTF8 = UTF8TEXT("NotifyAuthoritativeVictory"), .Pointer = &UDMFDigimonCombatComponent::execNotifyAuthoritativeVictory },
 		{ .NameUTF8 = UTF8TEXT("OnRep_CombatState"), .Pointer = &UDMFDigimonCombatComponent::execOnRep_CombatState },
@@ -2359,6 +2435,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsRetaliationEnabled, "IsRetaliationEnabled" }, // b0b00a1382fdba32637b0bdac8735f26d2f3629e
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastDefeatedCue, "MulticastDefeatedCue" }, // 38aa6ae8c0b2bbfb8ce0a0ccbe5d589e45a3fa07
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastPlayAbilityCue, "MulticastPlayAbilityCue" }, // 31dff5f309c97de53d7d468ac81514d8c95b6205
+		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastPlayProjectileImpactCue, "MulticastPlayProjectileImpactCue" }, // cffc6a915184f68151e42235af7b10ecc6632377
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_MulticastVictoryCue, "MulticastVictoryCue" }, // 2666f5be7c4de65332a0ae8eb2d6a0d35f71bf58
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_NotifyAuthoritativeVictory, "NotifyAuthoritativeVictory" }, // 3f371bec592a342c0e4cae1ed64e6b7c61733601
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_OnRep_CombatState, "OnRep_CombatState" }, // 269737e2bc5f37e8dda31e32efff32194c6246d6
@@ -2496,10 +2573,10 @@ UDMFDigimonCombatComponent::~UDMFDigimonCombatComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 2396538576U) },
+		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 1098409119U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_6179511a3304f5098e2bc7858157a8dcccff2ba6{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_eb3ecd358b18bbaf2e490dbdd2999538c09f3c58{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

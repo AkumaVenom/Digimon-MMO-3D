@@ -1,4 +1,4 @@
-# Real-Time Combat Setup — v0.2.0-alpha
+# Real-Time Combat Setup — v0.14.1-alpha
 
 ## v0.5.0 owned-partner control defaults
 
@@ -15,8 +15,11 @@ Create `DMFDigimonAbilityData` assets under `/Game/DigimonData`. For each abilit
 - Base power, STR or INT scaling, and defense scaling.
 - Whether it is eligible for auto battle.
 - Montage, Cascade particle, optional Niagara particle and attack sound.
+- `Execution Mode`: keep **Timed / Instant Impact** for direct attacks, or choose **Replicated Projectile** for fireballs/bolts/rockets that must physically travel to the enemy.
+- Projectile mode exposes launch socket/offset, moving Niagara/Cascade/mesh, speed, homing, visual rotation correction, impact radius, hard lifetime cleanup, impact VFX/audio and an optional custom projectile Blueprint class.
+- Timed presentation VFX now have a forced `Presentation VFX Lifetime Seconds` cleanup guard, so looping Niagara/Cascade systems cannot accumulate indefinitely.
 
-The server owns damage, SP costs, cooldowns, target validation and defeat state. The multicast cue is presentation only.
+The server owns damage, SP costs, cooldowns, target validation, projectile arrival and defeat state. Multicast cues remain presentation only. See `SETUP_ABILITY_PROJECTILES.md` for the full projectile workflow.
 
 ## 2. Configure species
 On each `DMFDigimonSpeciesData`:

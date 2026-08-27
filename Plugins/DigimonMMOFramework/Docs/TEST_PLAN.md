@@ -534,3 +534,15 @@ The baseline should not be treated as networking-accepted until it passes a pack
 6. Confirm there are no summon, recall, storage, materialize, care or digivolve actions on DigiDex.
 7. Host + remote client: implemented species list is identical, while private ownership/Scan badges reflect only each client's own account.
 8. Disable `UI|DigiDex -> Enable DigiDex`; verify the native tab hides and no account/species data changes.
+## v0.14.1 replicated projectile / VFX lifecycle acceptance
+1. Create or duplicate a `DMFDigimonAbilityData`, set `Execution Mode = Replicated Projectile`, assign a valid attack/Projectile Spawn socket and a visible fireball Niagara system.
+2. Host PIE: use the attack at a stationary hostile target. Verify exactly one projectile leaves the configured socket, faces/travels toward the target, damage occurs on visible arrival, and the projectile disappears.
+3. Remote client PIE: issue the same attack. Verify host and remote client observe the same projectile flight and target arrival while SP/cooldown/damage remain authoritative.
+4. Enable homing and move the target during flight. Verify authoritative flight turns toward the moving target without snapping the caster/socket VFX.
+5. Disable homing and repeat. Verify the projectile retains launch direction and expires cleanly when it misses.
+6. Change `Projectile Visual Rotation Offset` and confirm visual orientation changes without changing travel direction.
+7. Assign a looping projectile Niagara/Cascade system, set a short `Projectile Max Lifetime Seconds`, deliberately miss, and verify no projectile/VFX remains after the hard lifetime.
+8. Assign optional impact Niagara/Cascade/Sound and verify it plays once at arrival on host + remote client and cleans after `Projectile Impact VFX Lifetime Seconds`.
+9. Keep another ability in Timed Impact mode, assign a deliberately looping Niagara/Cascade system, set `Presentation VFX Lifetime Seconds`, and verify the transient cue is forcibly removed.
+10. Regression: repeat manual slots/auto battle, retaliation, combat facing, Party/Bank, DigiDex, Digivolution, Care, healer, world chat/nameplates and persistence tests; no pre-v0.14.1 gameplay authority path should change.
+

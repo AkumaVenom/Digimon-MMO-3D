@@ -2,6 +2,7 @@
 #include "Data/DMFDigimonAbilityData.h"
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Game/DMFDigimonCharacter.h"
+#include "Game/DMFAbilityProjectileActor.h"
 #include "Game/DMFPlayerState.h"
 #include "Components/DMFPlayerDigimonComponent.h"
 #include "Settings/DMFFrameworkSettings.h"
@@ -16,7 +17,9 @@
 #include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Sound/SoundBase.h"
 #include "TimerManager.h"
 
@@ -506,24 +509,40 @@ bool UDMFDigimonCombatComponent::TryExecuteAbilityById(const FName AbilityId, AD
     MulticastPlayAbilityCue(EffectiveAbilityId, EffectiveTarget);
 
     const float ImpactDelay = FMath::Max(0.0f, Ability->ImpactDelaySeconds);
+    const bool bProjectileExecution = Ability->ExecutionMode == EDMFAbilityExecutionMode::Projectile;
     if (ImpactDelay <= KINDA_SMALL_NUMBER)
     {
-        ApplyAbilityImpact(EffectiveAbilityId, EffectiveTarget);
+        if (bProjectileExecution)
+        {
+            SpawnAuthoritativeProjectile(EffectiveAbilityId, EffectiveTarget);
+        }
+        else
+        {
+            ApplyAbilityImpact(EffectiveAbilityId, EffectiveTarget);
+        }
     }
     else
     {
         TWeakObjectPtr<UDMFDigimonCombatComponent> WeakThis(this);
         TWeakObjectPtr<ADMFDigimonCharacter> WeakTarget(EffectiveTarget);
         FTimerHandle OneShot;
-        GetWorld()->GetTimerManager().SetTimer(OneShot, FTimerDelegate::CreateLambda([WeakThis, WeakTarget, EffectiveAbilityId]()
+        GetWorld()->GetTimerManager().SetTimer(OneShot, FTimerDelegate::CreateLambda([WeakThis, WeakTarget, EffectiveAbilityId, bProjectileExecution]()
         {
             if (WeakThis.IsValid())
             {
-                WeakThis->ApplyAbilityImpact(EffectiveAbilityId, WeakTarget);
+                if (bProjectileExecution)
+                {
+                    WeakThis->SpawnAuthoritativeProjectile(EffectiveAbilityId, WeakTarget);
+                }
+                else
+                {
+                    WeakThis->ApplyAbilityImpact(EffectiveAbilityId, WeakTarget);
+                }
             }
         }), ImpactDelay, false);
     }
 
+    // Recovery is the caster's animation/action lock. Projectile flight continues independently after launch.
     const float RecoveryDelay = FMath::Max(0.01f, ImpactDelay + FMath::Max(0.0f, Ability->RecoverySeconds));
     GetWorld()->GetTimerManager().SetTimer(RecoveryTimer, this, &UDMFDigimonCombatComponent::FinishRecovery, RecoveryDelay, false);
     Self->ForceNetUpdate();
@@ -591,6 +610,253 @@ void UDMFDigimonCombatComponent::ApplyAbilityImpact(const FName AbilityId, TWeak
     if (!IsDefeated())
     {
         SetCombatState(EDMFCombatState::Recovering);
+    }
+}
+
+
+void UDMFDigimonCombatComponent::SpawnAuthoritativeProjectile(const FName AbilityId, TWeakObjectPtr<ADMFDigimonCharacter> Target)
+{
+    ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());
+    ADMFDigimonCharacter* TargetDigimon = Target.Get();
+    UWorld* World = GetWorld();
+    if (!Self || !Self->HasAuthority() || !World || IsDefeated())
+    {
+        return;
+    }
+
+    UDMFDigimonAbilityData* Ability = ResolveAbilityData(AbilityId);
+    if (!Ability || Ability->ExecutionMode != EDMFAbilityExecutionMode::Projectile)
+    {
+        return;
+    }
+
+    if (Ability->bRequiresTarget && (!TargetDigimon || !CanAttackTarget(TargetDigimon)))
+    {
+        return;
+    }
+
+    const FName LaunchSocket = !Ability->ProjectileSpawnSocketName.IsNone()
+        ? Ability->ProjectileSpawnSocketName
+        : Ability->VFXSocketName;
+
+    FTransform LaunchTransform = Self->GetActorTransform();
+    if (!LaunchSocket.IsNone() && Self->GetMesh() && Self->GetMesh()->DoesSocketExist(LaunchSocket))
+    {
+        LaunchTransform = Self->GetMesh()->GetSocketTransform(LaunchSocket, RTS_World);
+    }
+
+    const FVector SpawnLocation = LaunchTransform.TransformPosition(Ability->ProjectileSpawnOffset);
+    const FVector AimPoint = TargetDigimon
+        ? TargetDigimon->GetActorLocation() + Ability->ProjectileTargetOffset
+        : SpawnLocation + Self->GetActorForwardVector() * FMath::Max(100.0f, Ability->MaxRange);
+    FVector InitialDirection = (AimPoint - SpawnLocation).GetSafeNormal();
+    if (InitialDirection.IsNearlyZero())
+    {
+        InitialDirection = Self->GetActorForwardVector().GetSafeNormal();
+    }
+
+    TSubclassOf<ADMFAbilityProjectileActor> ProjectileClass = ADMFAbilityProjectileActor::StaticClass();
+    if (UClass* AuthoredClass = Ability->ProjectileClass.LoadSynchronous())
+    {
+        if (AuthoredClass->IsChildOf(ADMFAbilityProjectileActor::StaticClass()))
+        {
+            ProjectileClass = AuthoredClass;
+        }
+    }
+
+    const FTransform SpawnTransform(InitialDirection.Rotation(), SpawnLocation);
+    ADMFAbilityProjectileActor* Projectile = World->SpawnActorDeferred<ADMFAbilityProjectileActor>(
+        ProjectileClass, SpawnTransform, Self, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+    if (!Projectile)
+    {
+        return;
+    }
+
+    Projectile->InitializeProjectile(AbilityId, Self, TargetDigimon, InitialDirection);
+    UGameplayStatics::FinishSpawningActor(Projectile, SpawnTransform);
+}
+
+void UDMFDigimonCombatComponent::HandleAuthoritativeProjectileImpact(const FName AbilityId, ADMFDigimonCharacter* Target, const FVector& ImpactLocation)
+{
+    ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());
+    if (!Self || !Self->HasAuthority() || IsDefeated())
+    {
+        return;
+    }
+
+    UDMFDigimonAbilityData* Ability = ResolveAbilityData(AbilityId);
+    if (!Ability || Ability->ExecutionMode != EDMFAbilityExecutionMode::Projectile)
+    {
+        return;
+    }
+
+    // Range was validated when the cast was accepted. Projectile damage is now gated by actual
+    // authoritative arrival instead of a second cast-range check, so a moving target can be hit by
+    // a projectile that visibly reaches it.
+    if (Ability->bRequiresTarget)
+    {
+        if (!Target || !CanAttackTarget(Target) || !Target->CombatComponent)
+        {
+            return;
+        }
+
+        const int32 Damage = CalculateDamage(*Ability, *Target);
+        Target->CombatComponent->ApplyAuthoritativeDamage(Damage, Self);
+    }
+
+    MulticastPlayProjectileImpactCue(AbilityId, ImpactLocation);
+}
+
+void UDMFDigimonCombatComponent::SpawnTransientAbilityVFX(const UDMFDigimonAbilityData& Ability, ADMFDigimonCharacter* Target)
+{
+    if (GetNetMode() == NM_DedicatedServer)
+    {
+        return;
+    }
+    ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());
+    UWorld* World = GetWorld();
+    if (!Self || !World)
+    {
+        return;
+    }
+
+    UParticleSystem* Cascade = Ability.CascadeParticle.LoadSynchronous();
+    UNiagaraSystem* Niagara = Ability.NiagaraParticle.LoadSynchronous();
+
+    // Preserve the original species Attack1/Attack2 presentation fallback for legacy content.
+    if ((!Cascade || !Niagara) && Self->ResolveSpeciesData())
+    {
+        UDMFDigimonSpeciesData* Species = Self->ResolveSpeciesData();
+        const FName EffectiveId = Ability.AbilityId.IsNone() ? Ability.GetPrimaryAssetId().PrimaryAssetName : Ability.AbilityId;
+        const int32 SlotIndex = Self->ReplicatedAbilityIds.IndexOfByKey(EffectiveId);
+        if (SlotIndex == 0)
+        {
+            if (!Cascade) Cascade = Species->Attack1CascadeParticle.LoadSynchronous();
+            if (!Niagara) Niagara = Species->Attack1NiagaraParticle.LoadSynchronous();
+        }
+        else if (SlotIndex == 1)
+        {
+            if (!Cascade) Cascade = Species->Attack2CascadeParticle.LoadSynchronous();
+            if (!Niagara) Niagara = Species->Attack2NiagaraParticle.LoadSynchronous();
+        }
+    }
+
+    if (!Cascade && !Niagara)
+    {
+        return;
+    }
+
+    FVector FXLocation = Ability.bSpawnVFXAtTarget && Target ? Target->GetActorLocation() : Self->GetActorLocation();
+    FRotator FXRotation = Self->GetActorRotation();
+    if (!Ability.bSpawnVFXAtTarget && !Ability.VFXSocketName.IsNone() && Self->GetMesh() && Self->GetMesh()->DoesSocketExist(Ability.VFXSocketName))
+    {
+        const FTransform SocketTransform = Self->GetMesh()->GetSocketTransform(Ability.VFXSocketName, RTS_World);
+        FXLocation = SocketTransform.GetLocation();
+        FXRotation = SocketTransform.Rotator();
+    }
+
+    if (Target)
+    {
+        const FVector ToTarget = (Target->GetActorLocation() - FXLocation).GetSafeNormal();
+        if (!ToTarget.IsNearlyZero())
+        {
+            FXRotation = ToTarget.Rotation();
+        }
+    }
+    FXRotation = (FXRotation.Quaternion() * Ability.PresentationVFXRotationOffset.Quaternion()).Rotator();
+
+    const float Lifetime = FMath::Clamp(Ability.PresentationVFXLifetimeSeconds, 0.05f, 30.0f);
+
+    if (Niagara)
+    {
+        if (UNiagaraComponent* Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+            this, Niagara, FXLocation, FXRotation, Ability.PresentationVFXScale, true, true, ENCPoolMethod::None, true))
+        {
+            TWeakObjectPtr<UNiagaraComponent> WeakComponent(Component);
+            FTimerHandle CleanupTimer;
+            World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
+            {
+                if (WeakComponent.IsValid())
+                {
+                    WeakComponent->Deactivate();
+                    WeakComponent->DestroyComponent();
+                }
+            }), Lifetime, false);
+        }
+    }
+    else if (Cascade)
+    {
+        if (UParticleSystemComponent* Component = UGameplayStatics::SpawnEmitterAtLocation(
+            this, Cascade, FXLocation, FXRotation, Ability.PresentationVFXScale, true, EPSCPoolMethod::None, true))
+        {
+            TWeakObjectPtr<UParticleSystemComponent> WeakComponent(Component);
+            FTimerHandle CleanupTimer;
+            World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
+            {
+                if (WeakComponent.IsValid())
+                {
+                    WeakComponent->DeactivateSystem();
+                    WeakComponent->DestroyComponent();
+                }
+            }), Lifetime, false);
+        }
+    }
+}
+
+void UDMFDigimonCombatComponent::SpawnTransientProjectileImpactVFX(const UDMFDigimonAbilityData& Ability, const FVector& ImpactLocation)
+{
+    if (GetNetMode() == NM_DedicatedServer)
+    {
+        return;
+    }
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return;
+    }
+
+    UNiagaraSystem* Niagara = Ability.ProjectileImpactNiagaraSystem.LoadSynchronous();
+    UParticleSystem* Cascade = Ability.ProjectileImpactCascadeParticle.LoadSynchronous();
+    const float Lifetime = FMath::Clamp(Ability.ProjectileImpactVFXLifetimeSeconds, 0.05f, 30.0f);
+
+    if (Niagara)
+    {
+        if (UNiagaraComponent* Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+            this, Niagara, ImpactLocation, FRotator::ZeroRotator, FVector::OneVector, true, true, ENCPoolMethod::None, true))
+        {
+            TWeakObjectPtr<UNiagaraComponent> WeakComponent(Component);
+            FTimerHandle CleanupTimer;
+            World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
+            {
+                if (WeakComponent.IsValid())
+                {
+                    WeakComponent->Deactivate();
+                    WeakComponent->DestroyComponent();
+                }
+            }), Lifetime, false);
+        }
+    }
+    else if (Cascade)
+    {
+        if (UParticleSystemComponent* Component = UGameplayStatics::SpawnEmitterAtLocation(
+            this, Cascade, ImpactLocation, FRotator::ZeroRotator, FVector::OneVector, true, EPSCPoolMethod::None, true))
+        {
+            TWeakObjectPtr<UParticleSystemComponent> WeakComponent(Component);
+            FTimerHandle CleanupTimer;
+            World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
+            {
+                if (WeakComponent.IsValid())
+                {
+                    WeakComponent->DeactivateSystem();
+                    WeakComponent->DestroyComponent();
+                }
+            }), Lifetime, false);
+        }
+    }
+
+    if (USoundBase* ImpactSound = Ability.ProjectileImpactSound.LoadSynchronous())
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, ImpactLocation);
     }
 }
 
@@ -1151,6 +1417,14 @@ void UDMFDigimonCombatComponent::MulticastPlayAbilityCue_Implementation(const FN
     BP_OnAbilityCosmeticCue(AbilityId, Target);
 }
 
+void UDMFDigimonCombatComponent::MulticastPlayProjectileImpactCue_Implementation(const FName AbilityId, const FVector_NetQuantize ImpactLocation)
+{
+    if (UDMFDigimonAbilityData* Ability = ResolveAbilityData(AbilityId))
+    {
+        SpawnTransientProjectileImpactVFX(*Ability, ImpactLocation);
+    }
+}
+
 void UDMFDigimonCombatComponent::MulticastDefeatedCue_Implementation(ADMFDigimonCharacter* Killer)
 {
     // IMPORTANT: do not start the durable Death Montage from this multicast. A multicast can arrive
@@ -1190,24 +1464,18 @@ void UDMFDigimonCombatComponent::PlayNativeAbilityPresentation(const FName Abili
     }
 
     UAnimMontage* Montage = Ability->Montage.LoadSynchronous();
-    UParticleSystem* Cascade = Ability->CascadeParticle.LoadSynchronous();
-    UNiagaraSystem* Niagara = Ability->NiagaraParticle.LoadSynchronous();
 
-    // Backward-compatible per-species Attack1/Attack2 presentation overrides from v0.1.0.
+    // Backward-compatible per-species Attack1/Attack2 montage override from the original framework.
     if (UDMFDigimonSpeciesData* Species = Self->ResolveSpeciesData())
     {
         const int32 SlotIndex = Self->ReplicatedAbilityIds.IndexOfByKey(AbilityId);
-        if (SlotIndex == 0)
+        if (SlotIndex == 0 && !Montage)
         {
-            if (!Montage) Montage = Species->Attack1Montage.LoadSynchronous();
-            if (!Cascade) Cascade = Species->Attack1CascadeParticle.LoadSynchronous();
-            if (!Niagara) Niagara = Species->Attack1NiagaraParticle.LoadSynchronous();
+            Montage = Species->Attack1Montage.LoadSynchronous();
         }
-        else if (SlotIndex == 1)
+        else if (SlotIndex == 1 && !Montage)
         {
-            if (!Montage) Montage = Species->Attack2Montage.LoadSynchronous();
-            if (!Cascade) Cascade = Species->Attack2CascadeParticle.LoadSynchronous();
-            if (!Niagara) Niagara = Species->Attack2NiagaraParticle.LoadSynchronous();
+            Montage = Species->Attack2Montage.LoadSynchronous();
         }
     }
 
@@ -1219,21 +1487,16 @@ void UDMFDigimonCombatComponent::PlayNativeAbilityPresentation(const FName Abili
         }
     }
 
-    FVector FXLocation = Ability->bSpawnVFXAtTarget && Target ? Target->GetActorLocation() : Self->GetActorLocation();
-    if (!Ability->bSpawnVFXAtTarget && !Ability->VFXSocketName.IsNone() && Self->GetMesh())
+    // Projectile execution owns the moving fireball/rocket/etc through a replicated projectile actor.
+    // Do not also spawn the old Niagara/Cascade cue at the socket, which was the static VFX defect.
+    if (Ability->ExecutionMode != EDMFAbilityExecutionMode::Projectile)
     {
-        FXLocation = Self->GetMesh()->GetSocketLocation(Ability->VFXSocketName);
+        SpawnTransientAbilityVFX(*Ability, Target);
     }
-    if (Cascade)
-    {
-        UGameplayStatics::SpawnEmitterAtLocation(this, Cascade, FXLocation, FRotator::ZeroRotator, true);
-    }
-    if (Niagara)
-    {
-        UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, Niagara, FXLocation);
-    }
+
     if (USoundBase* Sound = Ability->AttackSound.LoadSynchronous())
     {
         UGameplayStatics::PlaySoundAtLocation(this, Sound, Self->GetActorLocation());
     }
 }
+

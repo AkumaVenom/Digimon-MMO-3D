@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening
+
+### Added — real server-authoritative projectile execution
+- Added `EDMFAbilityExecutionMode` with backward-compatible **Timed / Instant Impact** and opt-in **Replicated Projectile** modes on every `DMFDigimonAbilityData`. Existing ability assets default to Timed Impact and therefore do not silently change behavior when upgrading.
+- Added the native Blueprintable replicated `ADMFAbilityProjectileActor`. Authority launches it from the authored projectile socket (falling back to the existing VFX socket), rotates travel toward the validated target, optionally homes with a bounded turn rate, replicates world movement to observers, and owns a hard lifetime cleanup guard.
+- Projectile-mode damage is applied only when the authoritative projectile reaches the still-valid hostile target. Initial cast range/SP/cooldown/facing/leash remain server-validated through the existing combat path; clients cannot submit damage, hit position, arrival time or projectile class authority.
+- Added Data Asset controls for optional projectile Blueprint class, Niagara/Cascade/Static Mesh visuals, local visual rotation/scale correction, launch offset, speed, homing, turn rate, target offset, impact radius, max lifetime and optional impact Niagara/Cascade/Sound.
+- Ability Niagara/Cascade and legacy species Attack1/Attack2 particles remain projectile-visual fallbacks, allowing existing fireball content to opt into Projectile mode without duplicating assets.
+- Added an unreliable replicated projectile-impact presentation cue; durable gameplay damage is committed by authority before the cue.
+
+### Fixed — attack VFX rotation and cleanup
+- Projectile travel direction is derived from launch point → authoritative target instead of inheriting arbitrary skeleton socket rotation. `Projectile Visual Rotation Offset` corrects assets authored along a different local axis without corrupting travel direction.
+- Projectile actor destruction now guarantees cleanup of attached Niagara/Cascade/mesh presentation after impact, invalid source/target or max-lifetime expiry.
+- Timed/instant Niagara and Cascade cues now use a forced `Presentation VFX Lifetime Seconds` cleanup timer so looping attack systems cannot remain permanently at the attack socket or accumulate over long play sessions.
+- Timed socket-origin VFX are aimed toward the selected target and expose presentation rotation/scale offsets.
+
+### Documentation / regression contract
+- Added `Docs/SETUP_ABILITY_PROJECTILES.md` and updated combat setup, README, architecture, networking, roadmap, test plan and validation report.
+- v0.14.0 DigiDex, v0.13 Digivolution, Party/Bank, Scan/Materialization, Care/healer, chat/nameplates, camera, music, footsteps, accounts and frontend authority contracts remain additive and unchanged.
+
 ## 0.14.0-alpha — Polished Native DigiDex Species Encyclopedia
 
 ### Added — read-only implemented-species encyclopedia

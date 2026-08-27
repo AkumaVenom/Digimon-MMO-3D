@@ -96,6 +96,16 @@ The v0.10.1 chat/quickbar separation fix is **presentation-only**. `WorldChatBot
 - SP is deducted once only when the server starts the ability.
 - Cooldown end times replicate for HUD presentation; the authority validates/prunes against its own world clock while clients display remaining time using synchronized GameState server time.
 
+## v0.14.1 projectile ability networking contract
+
+- Projectile ability input is still only an owning-client request routed through `UDMFPlayerDigimonComponent`; the existing server validates target, SP, cooldown, initial range, leash and combat-facing before accepting the cast.
+- `ImpactDelaySeconds` becomes launch timing for Projectile mode. The server spawns the replicated `ADMFAbilityProjectileActor`; clients never spawn authoritative projectiles or provide the projectile class/damage/arrival position.
+- The projectile actor replicates its world transform and minimal definition state. Server Tick owns homing/travel and target-arrival testing. Projectile cosmetic components are local children reconstructed from the same cooked ability/species data.
+- Damage is applied by `UDMFDigimonCombatComponent::HandleAuthoritativeProjectileImpact` only after server arrival. The old second cast-range check is intentionally not used for projectile impact; the visible projectile reaching the still-valid hostile target is the hit condition.
+- Optional impact VFX/audio uses one **Unreliable NetMulticast** cosmetic cue after authority accepts the arrival. Missing a transient impact effect under packet loss is preferable to queuing stale visual effects.
+- Projectile actor destruction (impact, invalid source/target, lifetime expiry) removes its attached VFX on every client. Timed-impact VFX cleanup is local presentation and adds no replicated state.
+- Dedicated servers skip projectile/timed cosmetic asset presentation while retaining projectile authority and damage.
+
 ## Intended topology
 
 This baseline is intentionally **multiplayer gameplay only**:

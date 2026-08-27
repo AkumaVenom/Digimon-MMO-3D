@@ -163,3 +163,10 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Read-only Asset-Manager-backed implemented-species registry.
 - Search + Stage/Attribute filters, discovery badges, base profile, Scan/ownership status, evolution-family links and species descriptions.
 - No new replication or persistence channel; designed to scale as the project begins mass species population.
+## Completed — v0.14.1 Replicated Ability Projectiles & VFX Lifecycle
+- Added opt-in server-authoritative replicated projectile execution for fireballs, bolts, rockets and similar attacks.
+- Added per-ability projectile socket/offset, speed, homing, turn-rate, target offset, visual rotation/scale, Niagara/Cascade/mesh, max lifetime and impact VFX/audio authoring.
+- Projectile damage now follows visible authoritative arrival rather than leaving a static socket particle while timed damage occurs separately.
+- Added hard cleanup for projectile actors and all timed/impact attack VFX, including looping Niagara/Cascade systems.
+- Existing Timed Impact abilities remain backward compatible by default.
+

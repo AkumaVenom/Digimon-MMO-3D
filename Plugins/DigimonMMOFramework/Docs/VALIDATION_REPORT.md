@@ -1,13 +1,14 @@
-# v0.14.0-alpha validation summary
+# v0.14.1-alpha validation summary
 
-- Built directly on the compiling/runtime UI-polished v0.13.1 Digivolution baseline.
-- Final static gate: **76 source/header/build files, 22,294 source/build lines, 40 UCLASS, 14 UENUM, 16 USTRUCT, 410 UFUNCTION and 704 UPROPERTY declarations**.
-- All **41 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies; DigiDex adds no RPC.
-- Comparison against v0.13.1 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
-- New reflected DigiDex surface is additive: `RefreshDigiDexData`, `GetDigiDexSpeciesIds`, `GetSelectedDigiDexSpeciesId`, `BP_OnDigiDexSelectionChanged` plus native UI event handlers.
-- Generated-header include ordering, changed-source delimiter balance, runtime TODO/FIXME scan and the UE5.8 local `Slot` shadowing regression check pass.
-- `EDMFDigimonMenuTab::DigiDex` is appended after v0.13 values so Party/Scan/Care/Bank/Digivolution serialized enum values remain unchanged.
-- DigiDex uses static Asset Manager species content plus existing owner-only Party/Bank/Scan state; no SaveGame schema change, replicated property, or authority mutation path is introduced.
+- Built directly on the accepted/runtime-validated v0.14.0 DigiDex baseline.
+- Final static gate: **78 source/header/build files, 23,051 source/build lines, 41 UCLASS, 15 UENUM, 16 USTRUCT, 417 UFUNCTION and 735 UPROPERTY declarations**.
+- All **42 Server/Client/NetMulticast RPC declarations** have matching `_Implementation` bodies; v0.14.1 adds only `MulticastPlayProjectileImpactCue` for transient impact presentation.
+- Comparison against v0.14.0 finds **zero baseline files removed** and **zero existing reflected UFUNCTION names removed**.
+- Added native Blueprintable `ADMFAbilityProjectileActor` plus opt-in `EDMFAbilityExecutionMode::Projectile`; all existing ability assets remain Timed Impact by default.
+- Projectile launch/direction/homing/arrival/damage are authority-owned. Clients receive replicated projectile movement and cosmetic impact presentation only.
+- Timed/instant and impact Niagara/Cascade cues have forced lifetime cleanup; projectile-attached visuals are removed with the replicated projectile actor on impact/invalid state/lifetime expiry.
+- Generated-header include ordering, changed-source delimiter balance, runtime TODO/FIXME scan and UE5.8 local `Slot` shadowing regression checks pass.
+- SaveGame schema, DigiDex, Digivolution, Party/Bank, Scan/Materialization, Care/healer and all previous account/network authority contracts are unchanged.
 
 # Validation Report
 
@@ -694,3 +695,17 @@ This maintenance release replaces all three obsolete include occurrences in the 
 - DigiDex has no mutation button/API path and adds no RPC/replicated state. Owner discovery badges reuse existing owner-only Party/Bank/Scan data.
 - Native portraits use fixed viewports with aspect-preserving ScaleBox presentation. Search and Stage/Attribute filters rebuild only local UI.
 - Final source/API/archive counts are recorded at packaging time below.
+## v0.14.1-alpha projectile / VFX lifecycle validation
+- `EDMFAbilityExecutionMode` is additive and defaults to `TimedImpact`, preserving existing authored ability behavior.
+- Projectile mode routes the accepted cast into `SpawnAuthoritativeProjectile`; no client RPC or Blueprint path can author damage, hit position or projectile target authority.
+- `ADMFAbilityProjectileActor` is replicated with replicated movement and minimal definition state. Authority alone updates homing/travel and segment-based target arrival.
+- Projectile launch rotation is derived from launch point to target; `ProjectileVisualRotationOffset` affects only the child visual root.
+- Projectile arrival calls back into the existing combat component for authoritative damage math/defeat/reward handling.
+- The old timed-impact range recheck remains for Timed Impact. Projectile arrival deliberately uses physical arrival instead of a second cast-range check.
+- `ProjectileMaxLifetimeSeconds` destroys the actor and every attached projectile visual even when VFX loop indefinitely.
+- Timed attack VFX and projectile impact VFX each use forced cleanup timers with weak component references; already-auto-destroyed effects are safely ignored.
+- Niagara-preferred/Cascade-fallback behavior is retained; legacy species Attack1/Attack2 particles remain valid migration fallbacks.
+- Dedicated servers skip the new cosmetic rendering paths while retaining projectile authority.
+- Static baseline comparison: zero v0.14.0 files removed, zero existing reflected UFUNCTION names removed, and all 42 RPC declarations have matching implementations.
+- UnrealBuildTool/PIE execution is not available in this environment; UE5.8.x Editor compile plus host/remote-client projectile tests remain the authoritative runtime gate.
+

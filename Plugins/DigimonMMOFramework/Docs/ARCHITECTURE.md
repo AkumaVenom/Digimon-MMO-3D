@@ -73,6 +73,16 @@ A late joiner requests history once after local gameplay controller initializati
 
 `UDMFDigimonCombatComponent` owns the authoritative quick-slot lifecycle. A client-owned request reaches the server through `UDMFPlayerDigimonComponent`, then resolves the equipped ability and validates target, leash and current SP. If the move cannot execute immediately because the Digimon is attacking/recovering, the ability is cooling down, the target is out of range, or target-facing is incomplete, the **latest valid command remains buffered on the server**. Automation revalidates the buffer until execution becomes legal or a bounded timeout/permanent invalidation clears it. SP and cooldown mutation happen only inside the successful authoritative execution path. Expired cooldown records are pruned instead of accumulating indefinitely.
 
+## Replicated ability projectile architecture (v0.14.1)
+
+`UDMFDigimonCombatComponent` now supports two execution models from the same authoritative ability Data Asset. **Timed Impact** preserves the original delayed-damage path. **Projectile** uses the same accepted cast validation/SP/cooldown/facing path but replaces the delayed damage callback with a delayed authoritative projectile launch.
+
+`ADMFAbilityProjectileActor` is a replicated, Blueprintable cosmetic carrier whose movement is authored only by the server. The actor stores only the ability identity, source/target Digimon references and travel direction needed to reconstruct presentation. The server rotates/moves it toward the target (with optional bounded homing), detects arrival by segment-to-target distance, then calls back into the source combat component. Damage math and defeat/reward handling therefore stay in the same combat authority instead of moving into a client-visible projectile Blueprint.
+
+Projectile visual orientation is decoupled from travel orientation through a child `VisualRoot`; designers can rotate/scale a fireball asset without changing the direction used for authoritative movement. Niagara is preferred, Cascade is fallback, and an optional Static Mesh may be carried by the same actor. Actor destruction on impact/invalid target/max lifetime guarantees cleanup of all attached projectile visuals. Optional impact VFX/audio are reconstructed from a lightweight multicast after authority accepts the arrival.
+
+The legacy timed-impact presentation path now creates explicitly bounded transient VFX. Niagara/Cascade cues receive a forced cleanup timer even when the assigned effect loops forever. This prevents attack-socket particle accumulation without changing gameplay state or introducing replicated cosmetic components.
+
 ## Persistent identity
 
 Species are immutable definitions (`UDMFDigimonSpeciesData`). Captured/materialized/starter Digimon are mutable instances (`FDMFDigimonInstance`) with a unique `FGuid`.

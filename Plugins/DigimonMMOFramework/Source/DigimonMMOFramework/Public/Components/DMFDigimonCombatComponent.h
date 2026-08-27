@@ -126,6 +126,9 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void NotifyAuthoritativeVictory(ADMFDigimonCharacter* DefeatedDigimon);
 
+    /** Native projectile callback. Damage remains authority-only and is accepted only for the projectile's authored ability/target. */
+    void HandleAuthoritativeProjectileImpact(FName AbilityId, ADMFDigimonCharacter* Target, const FVector& ImpactLocation);
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Combat|Abilities")
     UDMFDigimonAbilityData* ResolveAbilityData(FName AbilityId) const;
 
@@ -183,6 +186,10 @@ private:
     UFUNCTION(NetMulticast, Unreliable)
     void MulticastPlayAbilityCue(FName AbilityId, ADMFDigimonCharacter* Target);
 
+    /** Transient projectile impact presentation. Gameplay damage has already been accepted by authority before this cue. */
+    UFUNCTION(NetMulticast, Unreliable)
+    void MulticastPlayProjectileImpactCue(FName AbilityId, FVector_NetQuantize ImpactLocation);
+
     UFUNCTION(NetMulticast, Reliable)
     void MulticastDefeatedCue(ADMFDigimonCharacter* Killer);
 
@@ -208,6 +215,9 @@ private:
     int32 GetEffectiveSPCost(const UDMFDigimonAbilityData& Ability) const;
     int32 CalculateDamage(const UDMFDigimonAbilityData& Ability, const ADMFDigimonCharacter& Target) const;
     void ApplyAbilityImpact(FName AbilityId, TWeakObjectPtr<ADMFDigimonCharacter> Target);
+    void SpawnAuthoritativeProjectile(FName AbilityId, TWeakObjectPtr<ADMFDigimonCharacter> Target);
+    void SpawnTransientAbilityVFX(const UDMFDigimonAbilityData& Ability, ADMFDigimonCharacter* Target);
+    void SpawnTransientProjectileImpactVFX(const UDMFDigimonAbilityData& Ability, const FVector& ImpactLocation);
     void FinishRecovery();
     void SetCombatState(EDMFCombatState NewState);
     void PlayNativeAbilityPresentation(FName AbilityId, ADMFDigimonCharacter* Target);

@@ -20,14 +20,17 @@ class AActor;
 class ADMFDigimonCharacter;
 class UDMFDigimonAbilityData;
 enum class EDMFCombatState : uint8;
+struct FVector_NetQuantize;
 
 // ********** Begin Class UDMFDigimonCombatComponent ***********************************************
 #define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h_25_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual void MulticastVictoryCue_Implementation(ADMFDigimonCharacter* DefeatedDigimon); \
 	virtual void MulticastDefeatedCue_Implementation(ADMFDigimonCharacter* Killer); \
+	virtual void MulticastPlayProjectileImpactCue_Implementation(FName AbilityId, FVector_NetQuantize ImpactLocation); \
 	virtual void MulticastPlayAbilityCue_Implementation(FName AbilityId, ADMFDigimonCharacter* Target); \
 	DECLARE_FUNCTION(execMulticastVictoryCue); \
 	DECLARE_FUNCTION(execMulticastDefeatedCue); \
+	DECLARE_FUNCTION(execMulticastPlayProjectileImpactCue); \
 	DECLARE_FUNCTION(execMulticastPlayAbilityCue); \
 	DECLARE_FUNCTION(execOnRep_CombatState); \
 	DECLARE_FUNCTION(execOnRep_CurrentTarget); \

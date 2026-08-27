@@ -1,8 +1,16 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.14.0-alpha — Polished Native DigiDex Species Encyclopedia`
+**Version:** `0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.14.1-alpha — Replicated Ability Projectiles & VFX Lifecycle Hardening
+
+Combat abilities can now explicitly choose **Timed / Instant Impact** or **Replicated Projectile** execution. Projectile attacks such as fireballs, energy bolts and rockets no longer need to fake movement with a Niagara system spawned at an attack socket: the authoritative server launches a real replicated `DMFAbilityProjectileActor` from the configured socket, points its travel direction at the validated enemy, optionally homes toward a moving target, applies damage only when the projectile visibly reaches that target, then destroys the projectile and its attached VFX.
+
+`DMFDigimonAbilityData` exposes projectile class, launch socket/offset, dedicated Niagara/Cascade/Static Mesh visuals, speed, homing + turn rate, target offset, impact radius, visual rotation/scale correction, hard maximum lifetime, impact Niagara/Cascade/Sound and impact-VFX cleanup lifetime. Leaving the projectile class empty uses the polished native projectile actor automatically; projects may assign a Blueprint subclass for additional cosmetic presentation without gaining damage authority. Existing ability Niagara/Cascade assets and the legacy species Attack1/Attack2 particle overrides remain valid fallbacks so current content can migrate without rebuilding every effect.
+
+The original timed-impact path is also hardened: all native transient Niagara/Cascade attack cues now have a forced `Presentation VFX Lifetime Seconds` cleanup guard, including accidentally looping systems, and socket-origin cues are rotated toward the selected target with configurable visual rotation/scale offsets. Existing abilities remain Timed Impact by default, so v0.14.0 behavior is preserved until a designer opts an ability into Projectile execution. See `Docs/SETUP_ABILITY_PROJECTILES.md` for the full fireball/projectile workflow.
 
 ## New in v0.14.0-alpha — Polished Native DigiDex Species Encyclopedia
 
@@ -427,7 +435,7 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
    - `Networking → Admin Hosting → Set Admin Hosting Password` (enter a project-specific password; the setter clears after hashing)
    - `Player Avatar → Footsteps → Player Footstep Sound` (assign a spatial Sound Cue; optional cadence/gain controls are alongside it)
    - optional `Default Player Skin` when skin selection is not mandatory
-10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets.
+10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets. For fireballs/bolts/rockets that must visibly travel, set `Execution Mode = Replicated Projectile` and configure the projectile socket/VFX/speed/homing/cleanup fields described in `Docs/SETUP_ABILITY_PROJECTILES.md`.
 11. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
 12. Every playable/summonable species should provide a `WorldActorClass` derived from `ADMFDigimonCharacter`.
 13. Create a `DMFStarterRosterData` asset under `/Game/DigimonData` and add the desired starter species.
