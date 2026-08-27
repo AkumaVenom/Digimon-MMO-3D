@@ -50,7 +50,7 @@ The game is being developed as a true multiplayer
 experience, allowing players to host and join worlds while maintaining
 their own account and Digimon progression.
 
-<img width="1920" height="1080" alt="MainScreen" src="https://github.com/user-attachments/assets/0a2ce8a8-498d-4800-9aec-ba0b662130b2" />
+<img width="1920" height="1080" alt="MainScreen" src="https://github.com/user-attachments/assets/b44dadc3-24c4-4202-a84f-15b5f98cfa2b" />
 
 ---
 
