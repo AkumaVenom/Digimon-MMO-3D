@@ -20,20 +20,6 @@ their Digimon.
 
 ---
 
-# 🧪 Current Accepted Development Baseline
-
-The current accepted development baseline is:
-
-**v0.14.0-alpha_PolishedNativeDigiDex**
-
-This baseline establishes the polished **native DigiDex** as a working in-game system while retaining the complete **persistent, server-authoritative and replicated Digivolution system** introduced in v0.13.0 and polished in v0.13.1, alongside the previously established multiplayer, account, collection, Scan Data, partner, native UI, care and healer foundations.
-
-The project remains in active Alpha development, but this build is the current reference point for ongoing Digimon MMO 3D development.
-
-Key inherited progression milestones include **v0.13.0-alpha_PolishedReplicatedDigivolution**, which established the complete persistent replicated Digivolution layer, and **v0.13.1-alpha_DigivolutionOwnedRosterAspectFix**, which polished the native Digivolution owned-roster presentation before v0.14.0 added the DigiDex.
-
----
-
 ## 🌐 Welcome to the Digital World
 
 Digimon MMO 3D is designed around one simple idea:
@@ -144,8 +130,6 @@ of the wider progression experience.
 
 # 📖 Native DigiDex
 
-The **v0.14.0-alpha_PolishedNativeDigiDex** baseline introduces a polished native **DigiDex** directly into the shared Digimon Menu.
-
 The DigiDex is a read-only encyclopedia and discovery interface. It presents registered species without becoming a second gameplay authority or bypassing the existing ownership, Materialization or Digivolution systems.
 
 The native DigiDex can present species information including:
@@ -217,10 +201,6 @@ Your partner is intended to become the center of your adventure.
 
 # 🔄 Persistent Replicated Digivolution
 
-Digivolution is already a major working system in Digimon MMO 3D.
-
-Introduced in **v0.13.0-alpha_PolishedReplicatedDigivolution** and retained by the current v0.14.0 baseline, the system adds persistent, server-authoritative evolution directly to owned Digimon.
-
 Digivolution is **data-driven rather than hard-coded to a single linear chain**. Species can expose zero, one or many outgoing paths, allowing branching families such as one Rookie Digimon progressing toward different Champion forms. Reverse or de-Digivolution paths can also be deliberately authored when desired.
 
 The framework supports the project's normal Digimon stages:
@@ -260,8 +240,6 @@ The **DIGIVOLUTION** page includes:
 - Requirement summaries
 - Destination portrait and form information
 - A protected **DIGIVOLVE TO SELECTED FORM** action
-
-The v0.13.1 polish pass also corrected the owned-roster presentation with fixed centered three-column cards and square aspect-safe portrait viewports so sparse Party/Bank rows remain clean and readable.
 
 ### Replicated Active-Partner Transformation
 
@@ -503,8 +481,6 @@ Existing account information can be loaded so that supported persistent progress
 # 🚧 Current Development Status
 
 **Digimon MMO 3D is currently an Alpha project.**
-
-The current accepted baseline is **v0.14.0-alpha_PolishedNativeDigiDex**.
 
 A large amount of the game's underlying multiplayer and
 progression technology is already functional, but the complete game is
