@@ -1,8 +1,34 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.16.1-alpha — Replicated World Clock Quick-Access HUD`
+**Version:** `0.17.3-alpha — Network-Smoothing-Compatible Replicated Swim Presentation Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.17.3-alpha — Network-Smoothing-Compatible Replicated Swim Presentation Fix
+
+v0.17.3 fixes the final multiplayer presentation defect in the native no-animation swim fallback: remote players could move through water correctly yet appear upright to other peers, and the first unaccepted direct-mesh proxy attempt could visibly shake on a listen server. The root cause is Unreal CharacterMovement **network smoothing owning the remote character mesh relative transform**. Writing a fallback rotation directly to that same `USkeletalMeshComponent` competes with `SmoothClientPosition`, so the engine repeatedly restores its cached mesh offset.
+
+The framework now replicates only one compact server-authored `None / Surface / Underwater` presentation state and integrates the remote fallback with `ACharacter::CacheInitialMeshOffset`, the engine-supported runtime mesh-offset target used by CharacterMovement smoothing. Non-owning client proxies and listen-server views of remote autonomous clients therefore let CharacterMovement perform its normal interpolation **toward the horizontal swim offset** instead of fighting a second transform writer. The owning player keeps immediate overlap/depth prediction and the existing local fallback. No skeletal-mesh transform RPC, per-frame rotation replication, SaveGame field or movement-authority change is added; all 47 existing RPCs remain unchanged.
+
+## New in v0.17.2-alpha — Persistent Water Reload State Reconstruction Fix
+
+v0.17.2 closes the save/load edge case where an authenticated player could restore at a valid surface/underwater location but never re-enter the framework swimming state. The root cause was lifecycle timing: `TeleportTo` could place the pawn directly inside `DMFSwimmableWater` before Unreal delivered a usable `BeginOverlap`, leaving CharacterMovement in Falling and leaving the local underwater post-process/fog without an active water reference.
+
+The server now performs an explicit **one-shot water-state reconstruction immediately after initial world-location restore**. It geometrically checks the current avatar transform against all enabled DMF water bounds, resolves the same priority rules used during ordinary overlaps, switches back into the established replicated 3D swimming movement path before the next gravity frame, resolves Surface/Underwater immediately, and clears stale movement velocity for restored underwater teleports. The authoritative water pointer/underwater state then replicate normally; owner-side correction is hardened for either property-arrival order, so the swim pose and local camera post-process/distance fog recover cleanly. No transient swimming flag or water actor pointer is serialized: account SaveGame remains schema v6. `Rebuild Swimming State From World` is Blueprint-callable for custom server teleport systems and is never run as a per-frame scan.
+
+## New in v0.17.1-alpha — Polished Underwater Post-Process + Distance Fog Presentation
+
+v0.17.1 adds the visual layer that completes the accepted v0.17.0 swimming system. Every **`DMFSwimmableWater`** now owns a replicated, Blueprint-authored underwater presentation profile: color tint/strength, saturation, contrast, gamma, exposure, vignette, subtle chromatic aberration, camera-waterline hysteresis, depth-response weight, blend speeds, a built-in **native exponential distance-fog layer**, priority and an optional project Post Process material. Different lakes/oceans can therefore have different underwater looks without changing the player class or requiring a global level PostProcessVolume.
+
+The effect is driven by the **actual local third-person camera crossing the replicated water surface**, not simply by the character-origin underwater boolean. Near the surface the camera can remain above water while the avatar swims below it; the view stays clear until the camera itself submerges. Once underwater, the profile blends smoothly from a configurable shallow-water weight toward full strength as camera depth increases, then fades cleanly back out above the waterline. Built-in grading shapes the image while the new local exponential fog supplies real scene-distance extinction so distant terrain fades into the authored water color. An optional Post Process material can still add caustics/refraction/stylized distortion. Rendering remains local-only and adds no RPC, SaveGame state or client gameplay authority. See `Docs/SETUP_UNDERWATER_POST_PROCESS.md`.
+
+## New in v0.17.0-alpha — Replicated Swimmable Water & Underwater Locomotion
+
+v0.17.0 adds a ready-to-place **`DMFSwimmableWater`** actor: Blueprint-derivable, replicated, zero-tick, sized from one exposed X/Y surface value plus depth, with an automatically matched Pawn overlap volume and project-selectable water plane mesh/material. Authority owns the active water body while the owning client predicts the same local overlap for responsive entry; actual movement continues through Unreal `ACharacter`/CharacterMovement prediction and replication rather than a bespoke per-frame swim RPC.
+
+`DMFPlayerAvatarCharacter` now supports **surface swimming and full underwater camera-directed swimming**. Forward input uses camera direction, camera-down Forward dives from the surface, underwater Forward follows pitch, Space ascends, C descends and Shift uses the water body's sprint-swim speed. A tunable surface assist keeps ordinary swimmers near the plane without fighting an intentional dive. Surface/Underwater uses replicated hysteresis state and exposes Blueprint calls/events for animation, audio, camera and post-process integration.
+
+Projects without swim animations get a polished native fallback: the collision capsule remains upright/stable while **only the skeletal mesh** smoothly rotates flat/face-forward, so existing run locomotion can visually read as swimming. Rotation/location offsets and interpolation are Blueprint exposed and the fallback can be disabled when a real swim AnimBP is supplied. See `Docs/SETUP_SWIMMABLE_WATER.md`.
 
 ## New in v0.16.1-alpha — Replicated World Clock Quick-Access HUD
 

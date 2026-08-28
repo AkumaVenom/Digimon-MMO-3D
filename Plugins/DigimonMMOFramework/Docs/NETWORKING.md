@@ -318,3 +318,42 @@ Canonical Digivolution stage wording is presentation-only. The authoritative spe
 
 The 12-hour HUD clock is **presentation-only**. `DMFCombatQuickBarWidget` reads the local replicated `DMFDayNightSky` and formats its smooth interpolated world time. Host-PC mode therefore follows the authority machine via the existing v0.16.0 time anchor; Simulated mode follows the persistent authoritative simulated clock. No client system-time read, clock RPC, replicated widget text, or additional replicated property was added.
 
+
+## v0.17.0 swimmable-water networking contract
+
+- `ADMFSwimmableWater` is a replicated world actor, but it does not send per-frame water traffic and has no Tick. It is always network-relevant so a very large lake cannot lose its active-water actor reference merely because its origin is far from a swimmer; runtime dimensions/enabled/movement tuning are sparse replicated properties.
+- `ADMFPlayerAvatarCharacter::ActiveSwimmableWater` and its underwater-state boolean are server-owned replicated state. Clients cannot submit a water actor, underwater flag or destination transform through a framework RPC.
+- The owning client also consumes the local overlap for immediate movement prediction. `OnRep_ActiveSwimmableWater` is an explicit authority correction path and covers late join/save-location restoration where the local overlap event may predate possession.
+- Actual swimming motion uses the existing CharacterMovement client prediction/server correction/replicated movement pipeline. **No new swimming RPC is introduced.**
+- The no-animation flattened mesh pose is local presentation reconstructed from replicated swim state. The capsule remains upright and authoritative.
+- Water material/mesh assets are authored cooked content. They do not grant gameplay authority. The plane itself has no collision; only the Pawn overlap volume participates in swim-state detection.
+- Account SaveGame schema remains v6. Only player world transform is persisted; swim state is recovered from world overlap after restore.
+
+
+## v0.17.3 remote swim presentation networking contract
+
+- Authority publishes one replicated `EDMFPlayerSwimState` presentation value (`None`, `Surface`, `Underwater`) for observers. It is a sparse state-boundary update, not a per-frame transform stream.
+- The owning autonomous client continues using local water/depth prediction for responsiveness. Non-owning client proxies consume the replicated state; the listen server uses the same authoritative state for its rendered copy of a remote client.
+- Remote skeletal-mesh transforms are **not replicated** and are not driven by a custom RPC. DMF changes the Character network-smoothing base via `CacheInitialMeshOffset`, allowing `SmoothClientPosition` to remain the sole remote mesh interpolation writer.
+- The first unaccepted direct-mesh proxy implementation is not part of this release because direct relative-transform writes can fight listen-server/simulated-proxy mesh smoothing.
+- Existing movement authority, active-water selection, v0.17.2 persistence reconstruction, local underwater PP/fog and all 47 RPCs are unchanged.
+
+## v0.17.1 underwater post-process + distance fog networking contract
+
+- `FDMFUnderwaterPostProcessSettings` is replicated as sparse configuration on the already-replicated `DMFSwimmableWater` actor so runtime authority changes produce the same authored water profile on clients.
+- The player's actual camera transform, camera-underwater boolean and current blend weight are **never replicated and never sent by RPC**. They are local presentation only.
+- `Is Swimming In Water` / `Is Swimming Underwater` remain the authoritative gameplay-facing state. `Is Local Camera Underwater` must not be used for damage, abilities, breath/oxygen authority or persistence.
+- Remote player proxies keep their `UnderwaterPostProcessComponent` disabled and skip the per-frame local PP path. A remote swimmer can therefore never tint another client's viewport.
+- Dedicated servers perform no post-process rendering. Water actors remain zero-tick.
+- Networking RPC declaration count is unchanged from v0.17.0. Account SaveGame remains schema v6 and shared Day/Night world-state persistence is unchanged.
+
+- Underwater exponential fog is strictly local presentation. Fog visibility/density are never replicated and no camera transform is sent over the network. The active water profile replicates as existing sparse configuration only; each owning client derives its own local fog blend from its camera.
+
+## v0.17.2 persisted-water restoration networking contract
+
+- Save/load continues to persist only the authenticated player's authoritative map/location/rotation in account schema v6. No water pointer, swim mode, underwater flag, camera state or fog state is serialized.
+- After the server applies the restored transform, it performs a one-shot world-geometry reconciliation and authors the existing replicated `ActiveSwimmableWater` / underwater state before normal gameplay proceeds. Clients still cannot submit a water actor or underwater state.
+- `RebuildSwimmingStateFromWorld` is callable for custom teleport integration but does not add an RPC. On a client it can only rebuild local prediction from real water containment; authority remains the only writer of replicated water state.
+- The owning client's OnRep path is hardened against property ordering, so the water pointer and underwater correction converge immediately. Post-process/fog stays local and is reconstructed from the local camera after that correction.
+- Water actors remain zero-tick and no periodic world scan was added; the scan occurs only at explicit restore/teleport/Blueprint refresh boundaries.
+

@@ -1,5 +1,77 @@
 # Changelog
 
+## 0.17.3-alpha — Network-Smoothing-Compatible Replicated Swim Presentation Fix
+
+### Fixed — remote swim fallback now composes with CharacterMovement network smoothing
+- Fixed remote swimmers appearing upright to other clients/listen-host observers even though replicated movement and water state were correct. The previous unaccepted direct-proxy mesh write was intentionally discarded because it competed with Unreal's remote mesh network smoothing and could introduce visible shake.
+- Added one compact replicated `EDMFPlayerSwimState` presentation property (`None`, `Surface`, `Underwater`). It changes only at swim-state boundaries; skeletal-mesh transforms themselves are **not** replicated.
+- Non-local rendered avatars now apply the native fallback through `ACharacter::CacheInitialMeshOffset`, changing the base location/rotation CharacterMovement smooths toward instead of calling `SetRelativeTransform` against the same mesh every frame. This covers both simulated proxies on clients and listen-server smoothing of remote autonomous clients.
+- When a replicated swim-state transition occurs while the remote pawn is stationary, the CharacterMovement smoothing path is explicitly woken so the new mesh-base target is consumed without waiting for another movement correction.
+- Remote underwater travel pitch still derives from already replicated/simulated CharacterMovement velocity; the owner retains immediate local prediction.
+- Hardened base-mesh capture so a transient network-smoothing offset cannot be accidentally recaptured as the skin's authored rest transform. Runtime skin application also refreshes ACharacter's cached mesh base.
+
+### Compatibility / networking
+- New swimming RPCs: **0**. Existing RPC count remains **47**.
+- No SaveGame schema change; account persistence remains v6 and v0.17.2 water reload reconstruction is unchanged.
+- No serialized enum layout changed. The existing `EDMFPlayerSwimState` enum is reused exactly as-is.
+- Water actors remain zero-tick. No per-frame replicated mesh rotation or transform traffic is introduced.
+
+
+## 0.17.2-alpha — Persistent Water Reload State Reconstruction Fix
+
+### Fixed — save/load restoration inside swimmable water
+- Fixed returning players who saved at the surface or underwater being restored into the water transform while `CharacterMovement` remained in normal falling/walking logic. The authoritative initial-location handoff now performs a one-shot geometric water reconciliation immediately after the saved transform is applied, before partner restoration and before another movement frame can apply gravity.
+- Water reconstruction no longer depends on a post-teleport `BeginOverlap` callback. `DMFPlayerAvatarCharacter::RebuildSwimmingStateFromWorld` scans the authored `DMFSwimmableWater` bounds at the avatar's current transform, resolves the same priority/surface winner, reapplies the existing replicated swimming movement contract, resolves Surface/Underwater immediately, and optionally clears stale movement velocity for teleport/load paths.
+- Hardened `RegisterSwimmableWaterOverlap` so a geometrically-contained avatar is accepted even when Unreal's component overlap cache has not caught up after teleport. Ordinary overlap validation remains intact for players that are not actually inside the water bounds.
+
+### Fixed — replicated owner presentation after underwater restore
+- Hardened owner correction when `ActiveSwimmableWater` and the replicated underwater boolean arrive in either order. The local predicted water/underwater state now mirrors the latest authoritative pair immediately, preventing a restored underwater player from presenting as Surface for an avoidable frame.
+- Reconstructed local water state immediately refreshes the existing swim fallback pose and underwater post-process/distance-fog path. No camera state is replicated; the local camera still independently determines whether the view is physically below the waterline.
+
+### Teleport / persistence / compatibility
+- Initial login restoration now reconciles water state for both saved and normal spawn transforms. Return Home performs the same one-shot reconciliation after teleport so stale swimming/fog cannot survive a teleport out of water, while a deliberately water-placed Home spawn is also handled correctly.
+- Added Blueprint-callable `Rebuild Swimming State From World` for project-authored authoritative teleport systems. This is an explicit refresh operation, not a per-frame scan; water actors remain zero-tick.
+- No swimming state was added to SaveGame. Account schema remains v6, world-time schema is unchanged, CharacterMovement remains the movement transport, and no new RPC is introduced.
+
+## 0.17.1-alpha — Polished Underwater Post-Process + Distance Fog Presentation
+
+### Added — per-water underwater visual profile
+- Added replicated `FDMFUnderwaterPostProcessSettings` to `DMFSwimmableWater`. Every derived water Blueprint can author its own underwater color tint/strength, saturation, contrast, gamma, exposure compensation, vignette, subtle chromatic aberration, waterline hysteresis, depth-response strength, blend speeds, post-process priority and optional custom Post Process material. Runtime profile replacement/enabled/material helpers are authority-gated and replicate as sparse configuration changes.
+- Added a dedicated local `UnderwaterPostProcessComponent` to `DMFPlayerAvatarCharacter`. It is enabled only for the locally controlled player and never becomes gameplay/network authority; remote avatar copies do not perform per-frame post-process work.
+
+### Added — camera-correct waterline, depth response and real visibility falloff
+- Underwater rendering is determined from the **actual third-person camera location** against the active water body's replicated surface/bounds, not merely the avatar-origin underwater flag. A swimmer can therefore remain visually clear while the camera is above the waterline and transition only when the camera itself submerges.
+- Added camera enter-depth / exit-height hysteresis to stop waterline flicker, exponential blend-in/out, a configurable shallow-water starting weight and a full-strength camera depth. The effect becomes richer as the camera descends without a hard visual pop.
+- Built-in native grading works without any project material: tint/gain, saturation, contrast, gamma, exposure, vignette and restrained chromatic aberration are composed into one local post-process profile.
+- Added a native **local exponential underwater distance-fog** component driven by the same camera/depth blend. Per-water settings expose fog enablement, color, density, height falloff, start distance, maximum opacity and blend exponent. This produces actual scene-distance extinction instead of relying on color grading to fake haze; distant terrain now fades into water color while nearby character readability is preserved. Optional project Post Process materials remain available for caustics/refraction/digital distortion rather than being required for basic underwater fog.
+
+### Blueprint / multiplayer / performance
+- Added player Blueprint queries `Is Local Camera Underwater`, `Get Underwater Post Process Blend Weight`, `Refresh Underwater Post Process Presentation`, plus local camera-waterline delegate/event hooks for bubbles/audio/custom presentation. These values are intentionally local presentation, not replicated gameplay state.
+- Water actors remain zero-tick. The local post-process/fog update reuses the existing player Tick only on the locally controlled avatar; dedicated servers render nothing and remote proxies keep both presentation components disabled. Stable fog settings are cached so render-state setters are not redundantly called every frame. No new RPC, movement authority, SaveGame field or account/world-time schema was added.
+- Added `Docs/SETUP_UNDERWATER_POST_PROCESS.md` and updated swimming, architecture, networking, roadmap, test and validation documentation.
+
+## 0.17.0-alpha — Replicated Swimmable Water & Underwater Locomotion
+
+### Added — Blueprint-derivable swimmable water actor
+- Added zero-tick replicated `ADMFSwimmableWater` with a visible plane mesh plus automatically matched query-only Pawn `SwimmingBounds`. `WaterSurfaceSize`, depth, above-surface overlap allowance, surface Z offset, priority, enabled state and movement tuning are exposed; runtime authority size/depth/enabled changes replicate and rebuild client geometry.
+- The native Engine Plane is supplied as a ready-to-use fallback. Projects may assign any flat water mesh and exposed `WaterMaterial`; automatic mesh scaling derives from the assigned mesh bounds so plane and collision remain matched.
+- Added Blueprint helpers for surface/bottom Z, depth below surface, point-in-water testing, geometry refresh, material changes and water overlap events.
+
+### Added — replicated surface/underwater player swimming
+- `DMFPlayerAvatarCharacter` now resolves overlapping water bodies deterministically by priority and uses a replicated authority-owned active-water reference plus replicated underwater threshold state. Owning clients predict local overlap for responsive entry while the server remains authoritative. No custom swimming RPC was added.
+- Swimming uses CharacterMovement's mature replicated 3D movement path with water-specific speed/acceleration/braking. Forward input follows the camera; surface upward motion is constrained, camera-down Forward intentionally dives, underwater Forward includes camera pitch, Space ascends, C descends and sprint uses the water body's sprint speed.
+- Added configurable surface buoyancy/ride-depth assist and separate Underwater Enter/Exit depths for hysteresis, preventing noisy Surface/Underwater toggling.
+- Added Blueprint-pure `Is Swimming In Water`, `Is Swimming Underwater`, `Get Player Swim State`, `Get Active Swimmable Water`, `Add Swim Vertical Input`, state delegates and Blueprint events for AnimBP/audio/post-process integration.
+
+### Added — animation-free swim presentation fallback
+- The authoritative collision capsule remains upright. When no swim animation exists, the framework smoothly rotates only the player skeletal mesh into a horizontal face-forward fallback pose, compensating around the imported mesh bounds center instead of the usual foot/root pivot and optionally pitching with underwater travel direction. Rotation, location correction and interpolation speed are exposed on the avatar Blueprint.
+- Real swim-animation projects can disable the fallback and consume the same replicated swimming state/events without replacing movement/networking. Skin changes preserve a clean base relative mesh transform so entering/exiting water does not permanently corrupt authored skin offsets.
+
+### Persistence / performance / compatibility
+- Water actors do not Tick. Swimming reuses the existing player Tick and Unreal CharacterMovement prediction/replication. Replicated water configuration changes are sparse property updates, not per-frame traffic.
+- Existing account SaveGame remains schema v6. Swimming state is derived from world overlap after the already-persisted player transform restores, so no account migration is required. Return Home naturally exits water and checkpoints Home using the existing location system.
+- Added `Docs/SETUP_SWIMMABLE_WATER.md`; updated architecture, networking, roadmap, test plan and validation documentation.
+
 ## 0.16.1-alpha — Replicated World Clock Quick-Access HUD
 
 ### Added — polished 12-hour world clock in the ability quick-access bar

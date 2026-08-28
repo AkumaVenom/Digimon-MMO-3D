@@ -1,6 +1,8 @@
 #include "Game/DMFPlayerAvatarCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/ExponentialHeightFogComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DMFPlayerAvatarComponent.h"
 #include "Components/DMFPlayerDigimonComponent.h"
@@ -8,6 +10,7 @@
 #include "Components/InputComponent.h"
 #include "Components/MeshComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Data/DMFPlayerSkinData.h"
@@ -16,7 +19,10 @@
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFHealerActor.h"
 #include "Game/DMFMMOPlayerController.h"
+#include "Game/DMFSwimmableWater.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/SkeletalMesh.h"
+#include "EngineUtils.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
@@ -61,6 +67,25 @@ ADMFPlayerAvatarCharacter::ADMFPlayerAvatarCharacter()
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
 
+    UnderwaterPostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("UnderwaterPostProcess"));
+    UnderwaterPostProcessComponent->SetupAttachment(FollowCamera);
+    UnderwaterPostProcessComponent->bUnbound = true;
+    UnderwaterPostProcessComponent->Priority = 1000.0f;
+    UnderwaterPostProcessComponent->BlendWeight = 0.0f;
+    UnderwaterPostProcessComponent->bEnabled = false;
+
+    // A native exponential fog layer supplies the distance extinction that color grading alone cannot create.
+    // It follows the local swimmer so the tiny height falloff remains effectively camera-relative, and starts
+    // invisible/zero-density so remote proxies and normal gameplay contribute no fog presentation.
+    UnderwaterDistanceFogComponent = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("UnderwaterDistanceFog"));
+    UnderwaterDistanceFogComponent->SetMobility(EComponentMobility::Movable);
+    UnderwaterDistanceFogComponent->SetupAttachment(RootComponent);
+    UnderwaterDistanceFogComponent->SetFogDensity(0.0f);
+    UnderwaterDistanceFogComponent->SetFogHeightFalloff(0.001f);
+    UnderwaterDistanceFogComponent->SetFogMaxOpacity(0.0f);
+    UnderwaterDistanceFogComponent->SetStartDistance(0.0f);
+    UnderwaterDistanceFogComponent->SetVisibility(false, true);
+
     NameplateWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerNameplateWidget"));
     NameplateWidgetComponent->SetupAttachment(RootComponent);
     NameplateWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
@@ -88,7 +113,21 @@ void ADMFPlayerAvatarCharacter::BeginPlay()
     RefreshFrameworkCustomDepth();
     RefreshCameraCollisionPolicy();
     RefreshSkinFromPlayerState();
+    CaptureBasePlayerMeshRelativeTransform();
     RefreshWorldNameplate();
+
+    if (UnderwaterPostProcessComponent)
+    {
+        UnderwaterPostProcessComponent->BlendWeight = 0.0f;
+        UnderwaterPostProcessComponent->bEnabled = false;
+    }
+    if (UnderwaterDistanceFogComponent)
+    {
+        UnderwaterDistanceFogComponent->SetFogDensity(0.0f);
+        UnderwaterDistanceFogComponent->SetVisibility(false, true);
+        AppliedUnderwaterDistanceFogDensity = 0.0f;
+        bUnderwaterDistanceFogVisible = false;
+    }
 
     // Warm the configured footstep asset on rendering clients so the first actual step does not incur a synchronous-load hitch.
     if (GetNetMode() != NM_DedicatedServer)
@@ -109,18 +148,31 @@ void ADMFPlayerAvatarCharacter::Tick(const float DeltaSeconds)
     UpdateCameraZoom(DeltaSeconds);
 
     // Footsteps are independent of the framework's legacy input bindings so Enhanced Input/custom movement projects
-    // still receive automatic footsteps from actual replicated CharacterMovement velocity.
+    // still receive automatic footsteps from actual replicated CharacterMovement velocity. Swimming naturally suppresses
+    // them because CharacterMovement is no longer grounded while a DMFSwimmableWater body owns movement.
     UpdateAutomaticPlayerFootsteps(DeltaSeconds);
 
-    if (!IsLocallyControlled() || !bEnableNativeThirdPersonInput)
+    if (IsLocallyControlled() && bEnableNativeThirdPersonInput)
     {
-        return;
+        const float ForwardValue = (bForwardPressed ? 1.0f : 0.0f) - (bBackwardPressed ? 1.0f : 0.0f);
+        const float RightValue = (bRightPressed ? 1.0f : 0.0f) - (bLeftPressed ? 1.0f : 0.0f);
+        MoveForward(ForwardValue);
+        MoveRight(RightValue);
+        if (IsSwimmingInWater())
+        {
+            const float VerticalValue = (bSwimAscendPressed ? 1.0f : 0.0f) - (bSwimDescendPressed ? 1.0f : 0.0f);
+            AddSwimVerticalInput(VerticalValue);
+        }
     }
 
-    const float ForwardValue = (bForwardPressed ? 1.0f : 0.0f) - (bBackwardPressed ? 1.0f : 0.0f);
-    const float RightValue = (bRightPressed ? 1.0f : 0.0f) - (bLeftPressed ? 1.0f : 0.0f);
-    MoveForward(ForwardValue);
-    MoveRight(RightValue);
+    UpdateSwimmingState(DeltaSeconds);
+
+    // Underwater color/PP is private local camera presentation. The server still owns swimming state, but no camera
+    // transform, blend weight or render setting is replicated. Remote avatar copies never spend per-frame PP work.
+    if (IsLocallyControlled() || UnderwaterPostProcessBlendWeight > KINDA_SMALL_NUMBER)
+    {
+        UpdateUnderwaterPostProcessPresentation(DeltaSeconds);
+    }
 }
 
 void ADMFPlayerAvatarCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -230,12 +282,34 @@ void ADMFPlayerAvatarCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ADMFPlayerAvatarCharacter, bIsSprinting);
+    DOREPLIFETIME(ADMFPlayerAvatarCharacter, ActiveSwimmableWater);
+    DOREPLIFETIME(ADMFPlayerAvatarCharacter, bIsUnderwaterSwimming);
+    DOREPLIFETIME(ADMFPlayerAvatarCharacter, ReplicatedSwimPresentationState);
 }
 
 void ADMFPlayerAvatarCharacter::MoveForward(const float Value)
 {
     if (!Controller || FMath::IsNearlyZero(Value))
     {
+        return;
+    }
+
+    if (ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater())
+    {
+        const FRotator ControlRotation = Controller->GetControlRotation();
+        FVector SwimDirection = FRotationMatrix(ControlRotation).GetUnitAxis(EAxis::X);
+
+        // At the surface, looking upward cannot drive the collision capsule out of the water. Looking downward remains
+        // fully three-dimensional so pressing Forward naturally dives exactly like a modern third-person MMO.
+        if (!IsSwimmingUnderwater() && SwimDirection.Z > 0.0f)
+        {
+            SwimDirection.Z = 0.0f;
+            SwimDirection = SwimDirection.GetSafeNormal();
+        }
+
+        LastSwimForwardInput = Value;
+        LastSwimForwardInputWorldSeconds = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+        AddMovementInput(SwimDirection, Value);
         return;
     }
 
@@ -248,6 +322,13 @@ void ADMFPlayerAvatarCharacter::MoveRight(const float Value)
 {
     if (!Controller || FMath::IsNearlyZero(Value))
     {
+        return;
+    }
+
+    if (ResolveEffectiveSwimmableWater())
+    {
+        const FRotator ControlRotation = Controller->GetControlRotation();
+        AddMovementInput(FRotationMatrix(ControlRotation).GetUnitAxis(EAxis::Y), Value);
         return;
     }
 
@@ -419,6 +500,8 @@ void ADMFPlayerAvatarCharacter::ResetNativeInputState()
     bBackwardPressed = false;
     bLeftPressed = false;
     bRightPressed = false;
+    bSwimAscendPressed = false;
+    bSwimDescendPressed = false;
     StopSprinting();
 }
 
@@ -829,6 +912,945 @@ void ADMFPlayerAvatarCharacter::ReportInteractionResult(const bool bSuccess, AAc
     OnInteractionResult.Broadcast(bSuccess, TargetActor, InteractionType, Message);
 }
 
+bool ADMFPlayerAvatarCharacter::IsSwimmingInWater() const
+{
+    if (IsLocallyControlled() && bLocalWaterOverlapPredictionInitialized)
+    {
+        return LocalPredictedSwimmableWater.IsValid();
+    }
+
+    // Remote observers consume one compact authoritative state. This remains valid even if the replicated
+    // water-actor reference is temporarily unresolved/reordered on that connection.
+    if (!HasAuthority())
+    {
+        return ReplicatedSwimPresentationState != EDMFPlayerSwimState::None;
+    }
+
+    return ActiveSwimmableWater != nullptr;
+}
+
+bool ADMFPlayerAvatarCharacter::IsSwimmingUnderwater() const
+{
+    if (IsLocallyControlled() && bLocalWaterOverlapPredictionInitialized)
+    {
+        return LocalPredictedSwimmableWater.IsValid() && bLocalPredictedUnderwater;
+    }
+
+    if (!HasAuthority())
+    {
+        return ReplicatedSwimPresentationState == EDMFPlayerSwimState::Underwater;
+    }
+
+    return ActiveSwimmableWater != nullptr && bIsUnderwaterSwimming;
+}
+
+ADMFSwimmableWater* ADMFPlayerAvatarCharacter::GetActiveSwimmableWater() const
+{
+    return ResolveEffectiveSwimmableWater();
+}
+
+EDMFPlayerSwimState ADMFPlayerAvatarCharacter::GetPlayerSwimState() const
+{
+    if (IsLocallyControlled() && bLocalWaterOverlapPredictionInitialized)
+    {
+        if (!LocalPredictedSwimmableWater.IsValid())
+        {
+            return EDMFPlayerSwimState::None;
+        }
+        return bLocalPredictedUnderwater ? EDMFPlayerSwimState::Underwater : EDMFPlayerSwimState::Surface;
+    }
+
+    if (!HasAuthority())
+    {
+        return ReplicatedSwimPresentationState;
+    }
+
+    if (!ActiveSwimmableWater)
+    {
+        return EDMFPlayerSwimState::None;
+    }
+    return bIsUnderwaterSwimming ? EDMFPlayerSwimState::Underwater : EDMFPlayerSwimState::Surface;
+}
+
+void ADMFPlayerAvatarCharacter::AddSwimVerticalInput(const float Value)
+{
+    ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater();
+    if (!WaterBody || FMath::IsNearlyZero(Value))
+    {
+        return;
+    }
+
+    LastExplicitVerticalSwimInput = FMath::Clamp(Value, -1.0f, 1.0f);
+    LastExplicitVerticalSwimInputWorldSeconds = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+
+    // Surface swimmers may always descend. Ascending beyond the water plane is intentionally suppressed;
+    // walking/jumping resumes naturally after the overlap volume is actually exited at a shore/edge.
+    if (Value > 0.0f && !IsSwimmingUnderwater())
+    {
+        const float Depth = WaterBody->GetDepthBelowSurface(GetActorLocation());
+        if (Depth <= WaterBody->SurfaceRideDepth + 25.0f)
+        {
+            return;
+        }
+    }
+
+    AddMovementInput(FVector::UpVector, Value);
+}
+
+void ADMFPlayerAvatarCharacter::RegisterSwimmableWaterOverlap(ADMFSwimmableWater* WaterBody, const bool bEntered)
+{
+    if (!IsValid(WaterBody))
+    {
+        return;
+    }
+
+    OverlappingSwimmableWaters.RemoveAll([](const TWeakObjectPtr<ADMFSwimmableWater>& Candidate)
+    {
+        return !Candidate.IsValid();
+    });
+
+    // A custom Blueprint may call this integration point, but even owner-side prediction must correspond to real
+    // water containment. Teleport/load restoration can place a pawn inside a volume before Unreal has emitted its
+    // BeginOverlap callback, so geometric containment is an intentional fallback to overlap-cache state.
+    const bool bOverlapCacheContainsAvatar = WaterBody->SwimmingBounds && WaterBody->SwimmingBounds->IsOverlappingActor(this);
+    const bool bGeometricallyInsideWater = WaterBody->IsWorldLocationInsideSwimmingBounds(GetActorLocation());
+    if (bEntered && !bOverlapCacheContainsAvatar && !bGeometricallyInsideWater)
+    {
+        return;
+    }
+
+    if (bEntered && WaterBody->IsSwimmingEnabled())
+    {
+        OverlappingSwimmableWaters.AddUnique(TWeakObjectPtr<ADMFSwimmableWater>(WaterBody));
+    }
+    else
+    {
+        OverlappingSwimmableWaters.RemoveAll([WaterBody](const TWeakObjectPtr<ADMFSwimmableWater>& Candidate)
+        {
+            return Candidate.Get() == WaterBody;
+        });
+    }
+
+    if (IsLocallyControlled())
+    {
+        bLocalWaterOverlapPredictionInitialized = true;
+    }
+
+    ReevaluateSwimmingWaterSelection();
+}
+
+void ADMFPlayerAvatarCharacter::RebuildSwimmingStateFromWorld(const bool bStopMovementIfSwimming)
+{
+    UWorld* World = GetWorld();
+    if (!World || (!HasAuthority() && !IsLocallyControlled()))
+    {
+        return;
+    }
+
+    // Do not trust overlap event history here. A persisted transform/TeleportTo can put the avatar directly inside
+    // water before BeginOverlap has populated either the component cache or this array. Reconstruct from the actual
+    // authored water bounds in one bounded, event-independent pass. This is called only for explicit refresh/teleport
+    // paths, never every frame.
+    OverlappingSwimmableWaters.Reset();
+    for (TActorIterator<ADMFSwimmableWater> It(World); It; ++It)
+    {
+        ADMFSwimmableWater* WaterBody = *It;
+        if (!IsValid(WaterBody) || !WaterBody->IsSwimmingEnabled())
+        {
+            continue;
+        }
+
+        const bool bOverlapCacheContainsAvatar = WaterBody->SwimmingBounds && WaterBody->SwimmingBounds->IsOverlappingActor(this);
+        const bool bGeometricallyInsideWater = WaterBody->IsWorldLocationInsideSwimmingBounds(GetActorLocation());
+        if (bOverlapCacheContainsAvatar || bGeometricallyInsideWater)
+        {
+            OverlappingSwimmableWaters.AddUnique(TWeakObjectPtr<ADMFSwimmableWater>(WaterBody));
+        }
+    }
+
+    if (IsLocallyControlled())
+    {
+        bLocalWaterOverlapPredictionInitialized = true;
+        LocalPredictedSwimmableWater.Reset();
+        bLocalPredictedUnderwater = false;
+    }
+
+    ReevaluateSwimmingWaterSelection();
+
+    ADMFSwimmableWater* EffectiveWater = ResolveEffectiveSwimmableWater();
+    if (bStopMovementIfSwimming && IsValid(EffectiveWater))
+    {
+        if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+        {
+            Movement->StopMovementImmediately();
+        }
+    }
+
+    // Resolve Surface/Underwater immediately instead of waiting for the next actor Tick. This is what prevents a
+    // restored submerged pawn spending a frame in Falling and sinking to the floor before MOVE_Flying is reinstated.
+    UpdateSwimmingState(0.0f);
+
+    if (IsLocallyControlled())
+    {
+        // Teleport/load paths should not leave the previous view profile alive or wait for an arbitrary overlap event.
+        // Reconfigure from the reconstructed water and snap only this one initial refresh to the correct camera state.
+        UnderwaterPostProcessConfiguredWater.Reset();
+        UpdateUnderwaterPostProcessPresentation(0.0f, true);
+    }
+
+    ForceNetUpdate();
+}
+
+void ADMFPlayerAvatarCharacter::RefreshSwimmingPresentation()
+{
+    // Never recapture a simulated/listen-server proxy's live smoothed mesh transform as its authored base.
+    // CharacterMovement deliberately offsets that mesh during interpolation; capturing it would bake a transient
+    // smoothing correction into the fallback pose and is one source of visible proxy shake.
+    if (!IsSwimmingInWater() && !bSwimmingPresentationApplied
+        && (!UsesNetworkSmoothingSwimPresentation() || !bBasePlayerMeshRelativeTransformCaptured))
+    {
+        CaptureBasePlayerMeshRelativeTransform();
+    }
+    UpdateSwimmingPresentationInternal(0.0f, true);
+}
+
+void ADMFPlayerAvatarCharacter::RefreshUnderwaterPostProcessPresentation()
+{
+    // Force a profile rebuild on the next/local update while preserving the current blend weight for a smooth
+    // transition. This is safe to call from replicated water OnRep callbacks on every peer; only the locally
+    // controlled avatar can enable the render component.
+    UnderwaterPostProcessConfiguredWater.Reset();
+    UpdateUnderwaterPostProcessPresentation(0.0f, false);
+}
+
+ADMFSwimmableWater* ADMFPlayerAvatarCharacter::ResolveEffectiveSwimmableWater() const
+{
+    if (IsLocallyControlled() && bLocalWaterOverlapPredictionInitialized)
+    {
+        return LocalPredictedSwimmableWater.Get();
+    }
+    return ActiveSwimmableWater.Get();
+}
+
+ADMFSwimmableWater* ADMFPlayerAvatarCharacter::SelectBestOverlappingSwimmableWater() const
+{
+    ADMFSwimmableWater* BestWater = nullptr;
+    for (const TWeakObjectPtr<ADMFSwimmableWater>& CandidatePtr : OverlappingSwimmableWaters)
+    {
+        ADMFSwimmableWater* Candidate = CandidatePtr.Get();
+        if (!IsValid(Candidate) || !Candidate->IsSwimmingEnabled())
+        {
+            continue;
+        }
+
+        if (!BestWater
+            || Candidate->WaterPriority > BestWater->WaterPriority
+            || (Candidate->WaterPriority == BestWater->WaterPriority && Candidate->GetWaterSurfaceWorldZ() > BestWater->GetWaterSurfaceWorldZ()))
+        {
+            BestWater = Candidate;
+        }
+    }
+    return BestWater;
+}
+
+void ADMFPlayerAvatarCharacter::ReevaluateSwimmingWaterSelection()
+{
+    ADMFSwimmableWater* BestWater = SelectBestOverlappingSwimmableWater();
+
+    // Owning-client prediction is resolved first so listen-host Blueprint events see the same effective water
+    // that gameplay input will use in this frame.
+    ADMFSwimmableWater* PreviousPredictedWater = nullptr;
+    if (IsLocallyControlled())
+    {
+        PreviousPredictedWater = LocalPredictedSwimmableWater.Get();
+        LocalPredictedSwimmableWater = BestWater;
+        if (!BestWater)
+        {
+            bLocalPredictedUnderwater = false;
+        }
+    }
+
+    if (HasAuthority())
+    {
+        const bool bChanged = ActiveSwimmableWater != BestWater;
+        if (bChanged)
+        {
+            ActiveSwimmableWater = BestWater;
+            if (!ActiveSwimmableWater)
+            {
+                SetAuthoritativeUnderwaterState(false);
+            }
+            RefreshAuthoritativeSwimPresentationState();
+            ForceNetUpdate();
+            NotifySwimmingStateChanged();
+        }
+    }
+    else if (IsLocallyControlled() && PreviousPredictedWater != BestWater)
+    {
+        NotifySwimmingStateChanged();
+    }
+
+    if (ADMFSwimmableWater* EffectiveWater = ResolveEffectiveSwimmableWater())
+    {
+        ApplySwimmingMovementMode(EffectiveWater);
+    }
+    else
+    {
+        RestoreNonSwimmingMovementMode();
+    }
+}
+
+void ADMFPlayerAvatarCharacter::ApplySwimmingMovementMode(ADMFSwimmableWater* WaterBody)
+{
+    if (!WaterBody || (!HasAuthority() && !IsLocallyControlled()))
+    {
+        return;
+    }
+
+    UCharacterMovementComponent* Movement = GetCharacterMovement();
+    if (!Movement)
+    {
+        return;
+    }
+
+    if (!bSwimmingMovementModeApplied)
+    {
+        PreSwimmingMovementMode = Movement->MovementMode;
+        PreSwimmingCustomMovementMode = Movement->CustomMovementMode;
+        PreSwimmingGravityScale = Movement->GravityScale;
+        PreSwimmingMaxFlySpeed = Movement->MaxFlySpeed;
+        PreSwimmingMaxAcceleration = Movement->MaxAcceleration;
+        PreSwimmingBrakingDecelerationFlying = Movement->BrakingDecelerationFlying;
+        bPreSwimmingOrientRotationToMovement = Movement->bOrientRotationToMovement;
+        bPreSwimmingUseControllerRotationYaw = bUseControllerRotationYaw;
+        bSwimmingMovementModeApplied = true;
+    }
+
+    if (bIsCrouched)
+    {
+        UnCrouch();
+    }
+
+    // MOVE_Flying gives CharacterMovement's mature replicated 3D prediction/correction path without requiring an
+    // engine PhysicsVolume/brush. The water actor remains a scalable Blueprint-friendly Box + plane implementation.
+    Movement->GravityScale = 0.0f;
+    Movement->MaxAcceleration = FMath::Max(0.0f, WaterBody->SwimAcceleration);
+    Movement->BrakingDecelerationFlying = FMath::Max(0.0f, WaterBody->SwimBrakingDeceleration);
+    Movement->bOrientRotationToMovement = false;
+    bUseControllerRotationYaw = true;
+
+    if (Movement->MovementMode != MOVE_Flying)
+    {
+        Movement->SetMovementMode(MOVE_Flying);
+    }
+
+    ApplyMovementSpeed();
+}
+
+void ADMFPlayerAvatarCharacter::RestoreNonSwimmingMovementMode()
+{
+    if (!bSwimmingMovementModeApplied || (!HasAuthority() && !IsLocallyControlled()))
+    {
+        return;
+    }
+
+    if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+    {
+        Movement->GravityScale = PreSwimmingGravityScale;
+        Movement->MaxFlySpeed = PreSwimmingMaxFlySpeed;
+        Movement->MaxAcceleration = PreSwimmingMaxAcceleration;
+        Movement->BrakingDecelerationFlying = PreSwimmingBrakingDecelerationFlying;
+        Movement->bOrientRotationToMovement = bPreSwimmingOrientRotationToMovement;
+        bUseControllerRotationYaw = bPreSwimmingUseControllerRotationYaw;
+
+        EMovementMode RestoreMode = PreSwimmingMovementMode;
+        uint8 RestoreCustomMode = PreSwimmingCustomMovementMode;
+        if (RestoreMode == MOVE_Walking || RestoreMode == MOVE_NavWalking || RestoreMode == MOVE_Swimming || RestoreMode == MOVE_Flying)
+        {
+            // Let normal gravity/floor detection reacquire land cleanly after leaving a shore/volume instead of
+            // forcing a walking mode while the capsule may still be above the floor.
+            RestoreMode = MOVE_Falling;
+            RestoreCustomMode = 0;
+        }
+        Movement->SetMovementMode(RestoreMode, RestoreCustomMode);
+    }
+
+    bSwimmingMovementModeApplied = false;
+    ApplyMovementSpeed();
+}
+
+void ADMFPlayerAvatarCharacter::UpdateSwimmingState(const float DeltaSeconds)
+{
+    ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater();
+    if (!IsValid(WaterBody) || !WaterBody->IsSwimmingEnabled())
+    {
+        if (HasAuthority() && (ActiveSwimmableWater || bIsUnderwaterSwimming || ReplicatedSwimPresentationState != EDMFPlayerSwimState::None))
+        {
+            ActiveSwimmableWater = nullptr;
+            SetAuthoritativeUnderwaterState(false);
+            RefreshAuthoritativeSwimPresentationState();
+            ForceNetUpdate();
+            NotifySwimmingStateChanged();
+        }
+        if (IsLocallyControlled())
+        {
+            LocalPredictedSwimmableWater.Reset();
+            bLocalPredictedUnderwater = false;
+        }
+        RestoreNonSwimmingMovementMode();
+        UpdateSwimmingPresentationInternal(DeltaSeconds);
+        return;
+    }
+
+    ApplySwimmingMovementMode(WaterBody);
+
+    const float Depth = WaterBody->GetDepthBelowSurface(GetActorLocation());
+    const float EnterDepth = FMath::Max(WaterBody->UnderwaterExitDepth, WaterBody->UnderwaterEnterDepth);
+    const float ExitDepth = FMath::Min(WaterBody->UnderwaterExitDepth, EnterDepth);
+
+    if (IsLocallyControlled())
+    {
+        const bool bPreviousPredictedUnderwater = bLocalPredictedUnderwater;
+        bLocalPredictedUnderwater = bLocalPredictedUnderwater ? Depth > ExitDepth : Depth >= EnterDepth;
+        if (!HasAuthority() && bPreviousPredictedUnderwater != bLocalPredictedUnderwater)
+        {
+            OnUnderwaterStateChanged.Broadcast(bLocalPredictedUnderwater);
+            BP_OnUnderwaterStateChanged(bLocalPredictedUnderwater);
+            NotifySwimmingStateChanged();
+        }
+    }
+
+    if (HasAuthority())
+    {
+        const bool bShouldBeUnderwater = bIsUnderwaterSwimming ? Depth > ExitDepth : Depth >= EnterDepth;
+        SetAuthoritativeUnderwaterState(bShouldBeUnderwater);
+    }
+
+    ApplyMovementSpeed();
+    UpdateSurfaceAssist(DeltaSeconds, WaterBody);
+    UpdateSwimmingPresentationInternal(DeltaSeconds);
+}
+
+void ADMFPlayerAvatarCharacter::UpdateSurfaceAssist(const float DeltaSeconds, ADMFSwimmableWater* WaterBody)
+{
+    if (!WaterBody || !WaterBody->bEnableSurfaceAssist || IsSwimmingUnderwater() || (!HasAuthority() && !IsLocallyControlled()))
+    {
+        return;
+    }
+
+    UCharacterMovementComponent* Movement = GetCharacterMovement();
+    if (!Movement)
+    {
+        return;
+    }
+
+    const double Now = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+    const bool bRecentVerticalInput = (Now - LastExplicitVerticalSwimInputWorldSeconds) <= 0.20;
+    const bool bExplicitDive = bRecentVerticalInput && LastExplicitVerticalSwimInput < -KINDA_SMALL_NUMBER;
+
+    bool bCameraDive = false;
+    const bool bRecentForwardInput = (Now - LastSwimForwardInputWorldSeconds) <= 0.20 && FMath::Abs(LastSwimForwardInput) > KINDA_SMALL_NUMBER;
+    if (bRecentForwardInput && Controller)
+    {
+        const FVector CameraForward = FRotationMatrix(Controller->GetControlRotation()).GetUnitAxis(EAxis::X);
+        bCameraDive = LastSwimForwardInput > 0.0f && CameraForward.Z <= WaterBody->DiveCameraForwardZThreshold;
+    }
+
+    // For remote autonomous proxies, the server receives the client's three-dimensional acceleration through
+    // CharacterMovement even though it does not run that client's local key handlers. Respecting downward
+    // acceleration here keeps authoritative surface assist from fighting Space/C/custom Enhanced Input dives.
+    const bool bMovementDive = Movement->GetCurrentAcceleration().Z < -KINDA_SMALL_NUMBER;
+    if (bExplicitDive || bCameraDive || bMovementDive)
+    {
+        return;
+    }
+
+    const float TargetZ = WaterBody->GetWaterSurfaceWorldZ() - FMath::Max(0.0f, WaterBody->SurfaceRideDepth);
+    const float Error = TargetZ - GetActorLocation().Z;
+    const float DesiredVerticalSpeed = FMath::Clamp(
+        Error * FMath::Max(0.0f, WaterBody->SurfaceAssistStrength),
+        -FMath::Max(0.0f, WaterBody->MaximumSurfaceAssistSpeed),
+        FMath::Max(0.0f, WaterBody->MaximumSurfaceAssistSpeed));
+
+    const float InterpSpeed = FMath::Max(0.0f, WaterBody->SurfaceAssistStrength);
+    Movement->Velocity.Z = InterpSpeed <= KINDA_SMALL_NUMBER
+        ? DesiredVerticalSpeed
+        : FMath::FInterpTo(Movement->Velocity.Z, DesiredVerticalSpeed, FMath::Max(0.0f, DeltaSeconds), InterpSpeed);
+}
+
+void ADMFPlayerAvatarCharacter::CaptureBasePlayerMeshRelativeTransform()
+{
+    if (USkeletalMeshComponent* MeshComponent = GetMesh())
+    {
+        BasePlayerMeshRelativeTransform = MeshComponent->GetRelativeTransform();
+        bBasePlayerMeshRelativeTransformCaptured = true;
+
+        // Keep ACharacter's own network-smoothing base aligned with runtime skin/Blueprint mesh offsets. Unreal's
+        // CharacterMovement smoothing uses this cached location/rotation as its visual target on remote proxies.
+        CacheInitialMeshOffset(BasePlayerMeshRelativeTransform.GetLocation(), BasePlayerMeshRelativeTransform.Rotator());
+    }
+}
+
+bool ADMFPlayerAvatarCharacter::UsesNetworkSmoothingSwimPresentation() const
+{
+    // Non-local characters rendered on a client are simulated proxies. A listen server also performs mesh smoothing
+    // for its view of remote autonomous clients. In both cases CharacterMovement owns the mesh relative transform,
+    // so the swim fallback must alter ACharacter's cached smoothing base instead of writing the mesh transform itself.
+    return !IsLocallyControlled() && GetNetMode() != NM_DedicatedServer;
+}
+
+void ADMFPlayerAvatarCharacter::ApplyNetworkSmoothingSwimPresentation(const FTransform& DesiredTransform, const float DeltaSeconds, const bool bInstant)
+{
+    USkeletalMeshComponent* MeshComponent = GetMesh();
+    if (!MeshComponent)
+    {
+        return;
+    }
+
+    const float InterpSpeed = FMath::Max(0.0f, SwimFallbackPoseInterpolationSpeed);
+    FVector NewBaseLocation = DesiredTransform.GetLocation();
+    FQuat NewBaseRotation = DesiredTransform.GetRotation().GetNormalized();
+
+    if (!bInstant && InterpSpeed > KINDA_SMALL_NUMBER)
+    {
+        const float Alpha = 1.0f - FMath::Exp(-InterpSpeed * FMath::Max(0.0f, DeltaSeconds));
+        NewBaseLocation = FMath::Lerp(GetBaseTranslationOffset(), DesiredTransform.GetLocation(), Alpha);
+        NewBaseRotation = FQuat::Slerp(GetBaseRotationOffset(), DesiredTransform.GetRotation(), Alpha).GetNormalized();
+    }
+
+    // This is the engine-supported runtime path for changing the mesh offset CharacterMovement smooths toward.
+    // It avoids competing SetRelativeTransform writes between DMF presentation and SmoothClientPosition. Only
+    // invalidate smoothing when the base actually changed, so a stationary swimmer adds no needless proxy work.
+    const bool bBaseLocationChanged = !GetBaseTranslationOffset().Equals(NewBaseLocation, 0.01f);
+    const bool bBaseRotationChanged = GetBaseRotationOffset().AngularDistance(NewBaseRotation) > FMath::DegreesToRadians(0.01f);
+    if (bBaseLocationChanged || bBaseRotationChanged)
+    {
+        CacheInitialMeshOffset(NewBaseLocation, NewBaseRotation.Rotator());
+        if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+        {
+            // SmoothClientPosition normally stops once the previous target is complete. A replicated swim-state
+            // change may happen while the remote pawn is stationary, so explicitly wake visual smoothing for the
+            // new base offset instead of waiting for another movement correction packet.
+            Movement->bNetworkSmoothingComplete = false;
+        }
+    }
+
+    // Scale is not part of Character's smoothing-base API. DMF never changes scale for swimming, but preserve a
+    // skin-authored scale in case a Blueprint skin uses one.
+    if (!MeshComponent->GetRelativeScale3D().Equals(BasePlayerMeshRelativeTransform.GetScale3D(), 0.001f))
+    {
+        MeshComponent->SetRelativeScale3D(BasePlayerMeshRelativeTransform.GetScale3D());
+    }
+}
+
+void ADMFPlayerAvatarCharacter::UpdateSwimmingPresentationInternal(const float DeltaSeconds, const bool bInstant)
+{
+    USkeletalMeshComponent* MeshComponent = GetMesh();
+    if (!MeshComponent)
+    {
+        return;
+    }
+
+    if (!bBasePlayerMeshRelativeTransformCaptured)
+    {
+        CaptureBasePlayerMeshRelativeTransform();
+    }
+
+    const bool bSwimming = IsSwimmingInWater();
+    if (!bSwimming && !bSwimmingPresentationApplied)
+    {
+        return;
+    }
+
+    FTransform DesiredTransform = BasePlayerMeshRelativeTransform;
+    if (bSwimming && bUseNativeSwimFallbackPose)
+    {
+        FRotator SwimOffset = SwimFallbackMeshRotationOffset;
+        if (bPitchSwimFallbackWithTravelDirection && IsSwimmingUnderwater())
+        {
+            const FVector VelocityDirection = GetVelocity().GetSafeNormal();
+            if (!VelocityDirection.IsNearlyZero())
+            {
+                const float TravelPitch = FMath::RadiansToDegrees(FMath::Asin(FMath::Clamp(VelocityDirection.Z, -1.0f, 1.0f)));
+                SwimOffset.Pitch += FMath::Clamp(TravelPitch, -MaximumSwimFallbackTravelPitch, MaximumSwimFallbackTravelPitch);
+            }
+        }
+
+        const FQuat DesiredRotation = (FQuat(SwimOffset) * BasePlayerMeshRelativeTransform.GetRotation()).GetNormalized();
+        DesiredTransform.SetRotation(DesiredRotation);
+
+        // Rotate around the imported mesh-bounds center rather than the component origin (commonly located at
+        // the character's feet). This keeps a horizontal fallback body centered near its original visual position.
+        FVector DesiredLocation = BasePlayerMeshRelativeTransform.GetLocation() + SwimFallbackMeshLocationOffset;
+        if (const USkeletalMesh* SkeletalMeshAsset = MeshComponent->GetSkeletalMeshAsset())
+        {
+            const FVector LocalVisualPivot = SkeletalMeshAsset->GetImportedBounds().Origin;
+            const FVector BaseVisualPivot = BasePlayerMeshRelativeTransform.TransformPosition(LocalVisualPivot);
+            const FVector ScaledLocalPivot = LocalVisualPivot * BasePlayerMeshRelativeTransform.GetScale3D();
+            DesiredLocation = BaseVisualPivot + SwimFallbackMeshLocationOffset - DesiredRotation.RotateVector(ScaledLocalPivot);
+        }
+        DesiredTransform.SetLocation(DesiredLocation);
+        bSwimmingPresentationApplied = true;
+    }
+
+    if (!bUseNativeSwimFallbackPose && bSwimming)
+    {
+        // Animation-driven Blueprint children still receive the replicated state/events without native mesh rotation.
+        return;
+    }
+
+    if (UsesNetworkSmoothingSwimPresentation())
+    {
+        // Critical multiplayer path: never fight CharacterMovement's SmoothClientPosition by directly rotating a
+        // remote mesh. Move the smoothing base itself, so normal network interpolation and the swim pose compose.
+        ApplyNetworkSmoothingSwimPresentation(DesiredTransform, DeltaSeconds, bInstant);
+
+        if (!bSwimming)
+        {
+            const bool bLocationDone = GetBaseTranslationOffset().Equals(BasePlayerMeshRelativeTransform.GetLocation(), 0.1f);
+            const bool bRotationDone = GetBaseRotationOffset().AngularDistance(BasePlayerMeshRelativeTransform.GetRotation()) <= FMath::DegreesToRadians(0.25f);
+            if (bInstant || (bLocationDone && bRotationDone))
+            {
+                CacheInitialMeshOffset(BasePlayerMeshRelativeTransform.GetLocation(), BasePlayerMeshRelativeTransform.Rotator());
+                bSwimmingPresentationApplied = false;
+            }
+        }
+        return;
+    }
+
+    const float InterpSpeed = FMath::Max(0.0f, SwimFallbackPoseInterpolationSpeed);
+    if (bInstant || InterpSpeed <= KINDA_SMALL_NUMBER)
+    {
+        MeshComponent->SetRelativeTransform(DesiredTransform);
+    }
+    else
+    {
+        const FTransform CurrentTransform = MeshComponent->GetRelativeTransform();
+        const float Alpha = 1.0f - FMath::Exp(-InterpSpeed * FMath::Max(0.0f, DeltaSeconds));
+        const FVector NewLocation = FMath::Lerp(CurrentTransform.GetLocation(), DesiredTransform.GetLocation(), Alpha);
+        const FVector NewScale = FMath::Lerp(CurrentTransform.GetScale3D(), DesiredTransform.GetScale3D(), Alpha);
+        const FQuat NewRotation = FQuat::Slerp(CurrentTransform.GetRotation(), DesiredTransform.GetRotation(), Alpha).GetNormalized();
+        MeshComponent->SetRelativeTransform(FTransform(NewRotation, NewLocation, NewScale));
+    }
+
+    if (!bSwimming)
+    {
+        const FTransform CurrentTransform = MeshComponent->GetRelativeTransform();
+        const bool bLocationDone = CurrentTransform.GetLocation().Equals(BasePlayerMeshRelativeTransform.GetLocation(), 0.1f);
+        const bool bScaleDone = CurrentTransform.GetScale3D().Equals(BasePlayerMeshRelativeTransform.GetScale3D(), 0.001f);
+        const bool bRotationDone = CurrentTransform.GetRotation().AngularDistance(BasePlayerMeshRelativeTransform.GetRotation()) <= FMath::DegreesToRadians(0.25f);
+        if (bInstant || (bLocationDone && bScaleDone && bRotationDone))
+        {
+            MeshComponent->SetRelativeTransform(BasePlayerMeshRelativeTransform);
+            bSwimmingPresentationApplied = false;
+        }
+    }
+}
+
+void ADMFPlayerAvatarCharacter::ConfigureUnderwaterPostProcessFromWater(ADMFSwimmableWater* WaterBody)
+{
+    if (!UnderwaterPostProcessComponent || !IsValid(WaterBody))
+    {
+        return;
+    }
+
+    const FDMFUnderwaterPostProcessSettings& Profile = WaterBody->UnderwaterPostProcessSettings;
+
+    FPostProcessSettings Settings;
+    Settings.bOverride_ColorSaturation = true;
+    Settings.ColorSaturation = FVector4(Profile.Saturation, Profile.Saturation, Profile.Saturation, 1.0f);
+
+    Settings.bOverride_ColorContrast = true;
+    Settings.ColorContrast = FVector4(Profile.Contrast, Profile.Contrast, Profile.Contrast, 1.0f);
+
+    Settings.bOverride_ColorGamma = true;
+    Settings.ColorGamma = FVector4(Profile.Gamma, Profile.Gamma, Profile.Gamma, 1.0f);
+
+    const FLinearColor Tint = FMath::Lerp(FLinearColor::White, Profile.ColorTint, FMath::Clamp(Profile.ColorTintStrength, 0.0f, 1.0f));
+    Settings.bOverride_ColorGain = true;
+    Settings.ColorGain = FVector4(Tint.R, Tint.G, Tint.B, 1.0f);
+
+    Settings.bOverride_AutoExposureBias = true;
+    Settings.AutoExposureBias = Profile.ExposureCompensation;
+
+    Settings.bOverride_VignetteIntensity = true;
+    Settings.VignetteIntensity = Profile.VignetteIntensity;
+
+    Settings.bOverride_SceneFringeIntensity = true;
+    Settings.SceneFringeIntensity = Profile.ChromaticAberrationIntensity;
+
+    if (Profile.PostProcessMaterial && Profile.PostProcessMaterialWeight > KINDA_SMALL_NUMBER)
+    {
+        FWeightedBlendable Blendable;
+        Blendable.Weight = FMath::Clamp(Profile.PostProcessMaterialWeight, 0.0f, 1.0f);
+        Blendable.Object = Profile.PostProcessMaterial.Get();
+        Settings.WeightedBlendables.Array.Add(Blendable);
+    }
+
+    UnderwaterPostProcessComponent->Settings = Settings;
+    UnderwaterPostProcessComponent->Priority = Profile.Priority;
+
+    if (UnderwaterDistanceFogComponent)
+    {
+        UnderwaterDistanceFogComponent->SetFogInscatteringColor(Profile.DistanceFogColor);
+        UnderwaterDistanceFogComponent->SetFogHeightFalloff(FMath::Max(0.001f, Profile.DistanceFogHeightFalloff));
+        UnderwaterDistanceFogComponent->SetStartDistance(FMath::Max(0.0f, Profile.DistanceFogStartDistance));
+        UnderwaterDistanceFogComponent->SetFogMaxOpacity(FMath::Clamp(Profile.DistanceFogMaxOpacity, 0.0f, 1.0f));
+    }
+
+    UnderwaterPostProcessConfiguredWater = WaterBody;
+}
+
+void ADMFPlayerAvatarCharacter::UpdateUnderwaterPostProcessPresentation(const float DeltaSeconds, const bool bInstant)
+{
+    if (!UnderwaterPostProcessComponent)
+    {
+        return;
+    }
+
+    const bool bCanRenderLocalPresentation = IsLocallyControlled() && GetNetMode() != NM_DedicatedServer;
+    if (!bCanRenderLocalPresentation)
+    {
+        UnderwaterPostProcessComponent->BlendWeight = 0.0f;
+        UnderwaterPostProcessComponent->bEnabled = false;
+        if (UnderwaterDistanceFogComponent)
+        {
+            if (AppliedUnderwaterDistanceFogDensity > KINDA_SMALL_NUMBER)
+            {
+                UnderwaterDistanceFogComponent->SetFogDensity(0.0f);
+                AppliedUnderwaterDistanceFogDensity = 0.0f;
+            }
+            if (bUnderwaterDistanceFogVisible)
+            {
+                UnderwaterDistanceFogComponent->SetVisibility(false, true);
+                bUnderwaterDistanceFogVisible = false;
+            }
+        }
+        UnderwaterPostProcessBlendWeight = 0.0f;
+        bLocalCameraUnderwater = false;
+        LocalCameraUnderwaterWater.Reset();
+        return;
+    }
+
+    ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater();
+    const bool bValidWater = IsValid(WaterBody) && WaterBody->IsSwimmingEnabled();
+    const bool bProfileEnabled = bValidWater && WaterBody->UnderwaterPostProcessSettings.bEnabled;
+
+    if (bProfileEnabled && UnderwaterPostProcessConfiguredWater.Get() != WaterBody)
+    {
+        ConfigureUnderwaterPostProcessFromWater(WaterBody);
+    }
+
+    bool bCameraShouldBeUnderwater = false;
+    float CameraUnderwaterTargetWeight = 0.0f;
+    if (bProfileEnabled && FollowCamera)
+    {
+        const FVector CameraLocation = FollowCamera->GetComponentLocation();
+        const bool bCameraInsideWaterBounds = WaterBody->IsWorldLocationInsideSwimmingBounds(CameraLocation);
+        if (bCameraInsideWaterBounds)
+        {
+            const FDMFUnderwaterPostProcessSettings& Profile = WaterBody->UnderwaterPostProcessSettings;
+            const float CameraDepth = WaterBody->GetDepthBelowSurface(CameraLocation);
+            const bool bSameWaterWasUnderwater = bLocalCameraUnderwater && LocalCameraUnderwaterWater.Get() == WaterBody;
+            bCameraShouldBeUnderwater = bSameWaterWasUnderwater
+                ? CameraDepth > -FMath::Max(0.0f, Profile.CameraExitHeight)
+                : CameraDepth >= FMath::Max(0.0f, Profile.CameraEnterDepth);
+
+            if (bCameraShouldBeUnderwater)
+            {
+                const float ShallowWeight = FMath::Clamp(Profile.ShallowWaterBlendWeight, 0.0f, 1.0f);
+                const float FullDepth = FMath::Max(Profile.CameraEnterDepth + 1.0f, Profile.FullStrengthDepth);
+                const float DepthAlpha = FMath::Clamp((CameraDepth - Profile.CameraEnterDepth) / (FullDepth - Profile.CameraEnterDepth), 0.0f, 1.0f);
+                CameraUnderwaterTargetWeight = FMath::Lerp(ShallowWeight, 1.0f, DepthAlpha);
+            }
+        }
+    }
+
+    ADMFSwimmableWater* NewCameraWater = bCameraShouldBeUnderwater ? WaterBody : nullptr;
+    if (bLocalCameraUnderwater != bCameraShouldBeUnderwater || LocalCameraUnderwaterWater.Get() != NewCameraWater)
+    {
+        bLocalCameraUnderwater = bCameraShouldBeUnderwater;
+        LocalCameraUnderwaterWater = NewCameraWater;
+        OnLocalCameraUnderwaterChanged.Broadcast(bLocalCameraUnderwater, NewCameraWater);
+        BP_OnLocalCameraUnderwaterChanged(bLocalCameraUnderwater, NewCameraWater);
+    }
+
+    const float TargetWeight = bCameraShouldBeUnderwater ? CameraUnderwaterTargetWeight : 0.0f;
+    const ADMFSwimmableWater* BlendProfileWater = bValidWater ? WaterBody : UnderwaterPostProcessConfiguredWater.Get();
+    const FDMFUnderwaterPostProcessSettings* BlendProfile = BlendProfileWater ? &BlendProfileWater->UnderwaterPostProcessSettings : nullptr;
+    const float BlendSpeed = TargetWeight > UnderwaterPostProcessBlendWeight
+        ? (BlendProfile ? FMath::Max(0.0f, BlendProfile->BlendInSpeed) : 5.0f)
+        : (BlendProfile ? FMath::Max(0.0f, BlendProfile->BlendOutSpeed) : 7.0f);
+
+    if (bInstant || BlendSpeed <= KINDA_SMALL_NUMBER)
+    {
+        UnderwaterPostProcessBlendWeight = TargetWeight;
+    }
+    else
+    {
+        const float Alpha = 1.0f - FMath::Exp(-BlendSpeed * FMath::Max(0.0f, DeltaSeconds));
+        UnderwaterPostProcessBlendWeight = FMath::Lerp(UnderwaterPostProcessBlendWeight, TargetWeight, Alpha);
+        if (FMath::IsNearlyEqual(UnderwaterPostProcessBlendWeight, TargetWeight, 0.001f))
+        {
+            UnderwaterPostProcessBlendWeight = TargetWeight;
+        }
+    }
+
+    UnderwaterPostProcessBlendWeight = FMath::Clamp(UnderwaterPostProcessBlendWeight, 0.0f, 1.0f);
+    UnderwaterPostProcessComponent->BlendWeight = UnderwaterPostProcessBlendWeight;
+    UnderwaterPostProcessComponent->bEnabled = UnderwaterPostProcessBlendWeight > KINDA_SMALL_NUMBER || TargetWeight > KINDA_SMALL_NUMBER;
+
+    // Color grading cannot hide distant terrain by itself. Blend a local exponential fog from the exact same
+    // camera-waterline/depth weight so visibility falls off naturally without a level-global PostProcessVolume or
+    // project-authored material. The exponent lets shallow water become convincingly hazy before full PP strength.
+    if (UnderwaterDistanceFogComponent)
+    {
+        const bool bUseDistanceFog = BlendProfile
+            && BlendProfile->bEnabled
+            && BlendProfile->bEnableDistanceFog
+            && UnderwaterPostProcessBlendWeight > KINDA_SMALL_NUMBER;
+
+        if (bUseDistanceFog)
+        {
+            const float FogBlend = FMath::Pow(UnderwaterPostProcessBlendWeight, FMath::Clamp(BlendProfile->DistanceFogBlendExponent, 0.1f, 4.0f));
+            const float FogDensity = FMath::Max(0.0f, BlendProfile->DistanceFogDensity) * FogBlend;
+            if (!FMath::IsNearlyEqual(AppliedUnderwaterDistanceFogDensity, FogDensity, 0.0005f))
+            {
+                UnderwaterDistanceFogComponent->SetFogDensity(FogDensity);
+                AppliedUnderwaterDistanceFogDensity = FogDensity;
+            }
+            if (!bUnderwaterDistanceFogVisible)
+            {
+                UnderwaterDistanceFogComponent->SetVisibility(true, true);
+                bUnderwaterDistanceFogVisible = true;
+            }
+        }
+        else
+        {
+            if (AppliedUnderwaterDistanceFogDensity > KINDA_SMALL_NUMBER)
+            {
+                UnderwaterDistanceFogComponent->SetFogDensity(0.0f);
+                AppliedUnderwaterDistanceFogDensity = 0.0f;
+            }
+            if (bUnderwaterDistanceFogVisible)
+            {
+                UnderwaterDistanceFogComponent->SetVisibility(false, true);
+                bUnderwaterDistanceFogVisible = false;
+            }
+        }
+    }
+
+    if (UnderwaterPostProcessBlendWeight <= KINDA_SMALL_NUMBER && !bValidWater)
+    {
+        UnderwaterPostProcessConfiguredWater.Reset();
+    }
+}
+
+void ADMFPlayerAvatarCharacter::NotifySwimmingStateChanged()
+{
+    ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater();
+    const bool bSwimming = WaterBody != nullptr;
+    const bool bUnderwater = bSwimming && IsSwimmingUnderwater();
+    OnSwimmingStateChanged.Broadcast(bSwimming, bUnderwater, WaterBody);
+    BP_OnSwimmingStateChanged(bSwimming, bUnderwater, WaterBody);
+}
+
+void ADMFPlayerAvatarCharacter::SetAuthoritativeUnderwaterState(const bool bNewUnderwater)
+{
+    if (!HasAuthority() || bIsUnderwaterSwimming == bNewUnderwater)
+    {
+        return;
+    }
+
+    bIsUnderwaterSwimming = bNewUnderwater;
+    RefreshAuthoritativeSwimPresentationState();
+    ForceNetUpdate();
+    OnUnderwaterStateChanged.Broadcast(bIsUnderwaterSwimming);
+    BP_OnUnderwaterStateChanged(bIsUnderwaterSwimming);
+    NotifySwimmingStateChanged();
+}
+
+void ADMFPlayerAvatarCharacter::RefreshAuthoritativeSwimPresentationState()
+{
+    if (!HasAuthority())
+    {
+        return;
+    }
+
+    const EDMFPlayerSwimState NewState = ActiveSwimmableWater
+        ? (bIsUnderwaterSwimming ? EDMFPlayerSwimState::Underwater : EDMFPlayerSwimState::Surface)
+        : EDMFPlayerSwimState::None;
+
+    if (ReplicatedSwimPresentationState != NewState)
+    {
+        ReplicatedSwimPresentationState = NewState;
+        ForceNetUpdate();
+    }
+}
+
+void ADMFPlayerAvatarCharacter::OnRep_ActiveSwimmableWater()
+{
+    if (IsLocallyControlled())
+    {
+        // The owner normally predicts from local overlap, but a replicated authority correction also covers
+        // save/load teleports and late joins where the local BeginOverlap may have occurred before possession.
+        LocalPredictedSwimmableWater = ActiveSwimmableWater.Get();
+        bLocalWaterOverlapPredictionInitialized = true;
+        bLocalPredictedUnderwater = ActiveSwimmableWater != nullptr && bIsUnderwaterSwimming;
+        if (ActiveSwimmableWater && ActiveSwimmableWater->SwimmingBounds && ActiveSwimmableWater->SwimmingBounds->IsOverlappingActor(this))
+        {
+            OverlappingSwimmableWaters.AddUnique(TWeakObjectPtr<ADMFSwimmableWater>(ActiveSwimmableWater.Get()));
+        }
+        else if (!ActiveSwimmableWater)
+        {
+            bLocalPredictedUnderwater = false;
+        }
+    }
+
+    if (ResolveEffectiveSwimmableWater())
+    {
+        ApplySwimmingMovementMode(ResolveEffectiveSwimmableWater());
+    }
+    else
+    {
+        RestoreNonSwimmingMovementMode();
+    }
+
+    NotifySwimmingStateChanged();
+    RefreshSwimmingPresentation();
+}
+
+void ADMFPlayerAvatarCharacter::OnRep_UnderwaterSwimming()
+{
+    if (IsLocallyControlled() && ActiveSwimmableWater)
+    {
+        // Replication ordering between the water pointer and underwater bool is not guaranteed. Mirror the latest
+        // server correction into owner prediction immediately so save/load restoration cannot present Surface for a
+        // frame merely because the underwater property arrived after ActiveSwimmableWater.
+        LocalPredictedSwimmableWater = ActiveSwimmableWater.Get();
+        bLocalWaterOverlapPredictionInitialized = true;
+        bLocalPredictedUnderwater = bIsUnderwaterSwimming;
+    }
+
+    OnUnderwaterStateChanged.Broadcast(bIsUnderwaterSwimming);
+    BP_OnUnderwaterStateChanged(bIsUnderwaterSwimming);
+    NotifySwimmingStateChanged();
+    ApplyMovementSpeed();
+    RefreshSwimmingPresentation();
+}
+
+void ADMFPlayerAvatarCharacter::OnRep_ReplicatedSwimPresentationState()
+{
+    // The owning autonomous proxy keeps immediate local overlap/depth prediction. Remote viewers rebuild their
+    // smoothing-compatible fallback pose from this tiny server-authored state, with no mesh-transform RPC.
+    if (!IsLocallyControlled())
+    {
+        // Snap the cached smoothing target to the new authoritative state; CharacterMovement still performs the
+        // visible interpolation, so this does not snap the rendered remote mesh.
+        UpdateSwimmingPresentationInternal(0.0f, true);
+    }
+}
+
 void ADMFPlayerAvatarCharacter::ServerSetSprinting_Implementation(const bool bNewSprinting)
 {
     bIsSprinting = bNewSprinting;
@@ -845,6 +1867,12 @@ void ADMFPlayerAvatarCharacter::ApplyMovementSpeed()
     if (UCharacterMovementComponent* Movement = GetCharacterMovement())
     {
         Movement->MaxWalkSpeed = bIsSprinting ? FMath::Max(WalkSpeed, SprintSpeed) : WalkSpeed;
+
+        if (ADMFSwimmableWater* WaterBody = ResolveEffectiveSwimmableWater())
+        {
+            const float BaseSwimSpeed = IsSwimmingUnderwater() ? WaterBody->UnderwaterSwimSpeed : WaterBody->SurfaceSwimSpeed;
+            Movement->MaxFlySpeed = bIsSprinting ? FMath::Max(BaseSwimSpeed, WaterBody->SprintSwimSpeed) : BaseSwimSpeed;
+        }
     }
 }
 
@@ -865,6 +1893,8 @@ bool ADMFPlayerAvatarCharacter::ApplyPlayerSkinData(UDMFPlayerSkinData* SkinData
     MeshComponent->EmptyOverrideMaterials();
     MeshComponent->SetSkeletalMesh(NewMesh, true);
     MeshComponent->SetRelativeTransform(SkinData->MeshRelativeTransform);
+    BasePlayerMeshRelativeTransform = SkinData->MeshRelativeTransform;
+    bBasePlayerMeshRelativeTransformCaptured = true;
 
     UClass* NewAnimClass = SkinData->AnimClass.LoadSynchronous();
     MeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -885,6 +1915,12 @@ bool ADMFPlayerAvatarCharacter::ApplyPlayerSkinData(UDMFPlayerSkinData* SkinData
 
     AppliedPlayerSkinId = SkinData->GetPrimaryAssetId();
     BP_OnPlayerSkinApplied(SkinData);
+    // Blueprint skin presentation may apply an additional relative offset; preserve that authored result as the
+    // non-swimming base before composing the native fallback pose.
+    BasePlayerMeshRelativeTransform = MeshComponent->GetRelativeTransform();
+    bBasePlayerMeshRelativeTransformCaptured = true;
+    CacheInitialMeshOffset(BasePlayerMeshRelativeTransform.GetLocation(), BasePlayerMeshRelativeTransform.Rotator());
+    RefreshSwimmingPresentation();
     return true;
 }
 
@@ -924,12 +1960,12 @@ void ADMFPlayerAvatarCharacter::HandleLeftPressed() { bLeftPressed = true; }
 void ADMFPlayerAvatarCharacter::HandleLeftReleased() { bLeftPressed = false; }
 void ADMFPlayerAvatarCharacter::HandleRightPressed() { bRightPressed = true; }
 void ADMFPlayerAvatarCharacter::HandleRightReleased() { bRightPressed = false; }
-void ADMFPlayerAvatarCharacter::HandleJumpPressed() { Jump(); }
-void ADMFPlayerAvatarCharacter::HandleJumpReleased() { StopJumping(); }
+void ADMFPlayerAvatarCharacter::HandleJumpPressed() { if (IsSwimmingInWater()) bSwimAscendPressed = true; else Jump(); }
+void ADMFPlayerAvatarCharacter::HandleJumpReleased() { bSwimAscendPressed = false; if (!IsSwimmingInWater()) StopJumping(); }
 void ADMFPlayerAvatarCharacter::HandleSprintPressed() { StartSprinting(); }
 void ADMFPlayerAvatarCharacter::HandleSprintReleased() { StopSprinting(); }
-void ADMFPlayerAvatarCharacter::HandleCrouchPressed() { Crouch(); }
-void ADMFPlayerAvatarCharacter::HandleCrouchReleased() { UnCrouch(); }
+void ADMFPlayerAvatarCharacter::HandleCrouchPressed() { if (IsSwimmingInWater()) bSwimDescendPressed = true; else Crouch(); }
+void ADMFPlayerAvatarCharacter::HandleCrouchReleased() { bSwimDescendPressed = false; if (!IsSwimmingInWater()) UnCrouch(); }
 void ADMFPlayerAvatarCharacter::HandleInteractionPressed() { Interact(); }
 void ADMFPlayerAvatarCharacter::HandleMouseX(const float Value) { LookYaw(Value * MouseYawScale); }
 void ADMFPlayerAvatarCharacter::HandleMouseY(const float Value) { LookPitch(-Value * MousePitchScale); }

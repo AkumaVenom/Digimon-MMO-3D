@@ -3,11 +3,15 @@
 #include "CoreMinimal.h"
 #include "UObject/PrimaryAssetId.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "DMFTypes.h"
+#include "Game/DMFSwimmableWater.h"
 #include "DMFPlayerAvatarCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+class UPostProcessComponent;
+class UExponentialHeightFogComponent;
 class UWidgetComponent;
 class UDMFPlayerSkinData;
 class ADMFDigimonCharacter;
@@ -16,6 +20,9 @@ class AActor;
 class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDMFPlayerInteractionResult, bool, bSuccess, AActor*, TargetActor, EDMFPlayerInteractionType, InteractionType, FText, Message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFPlayerSwimmingStateChanged, bool, bSwimming, bool, bUnderwater, ADMFSwimmableWater*, WaterBody);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFPlayerUnderwaterStateChanged, bool, bUnderwater);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFLocalCameraUnderwaterChanged, bool, bCameraUnderwater, ADMFSwimmableWater*, WaterBody);
 
 /**
  * Ready-to-use replicated third-person player character for Digimon MMO Framework.
@@ -44,6 +51,20 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|Player Avatar|Camera")
     TObjectPtr<UCameraComponent> FollowCamera;
+
+    /**
+     * Dedicated local-only underwater presentation component. It is unbound so it affects only this viewport when
+     * enabled, and framework code keeps every non-local avatar's copy disabled to avoid cross-player contamination.
+     */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process")
+    TObjectPtr<UPostProcessComponent> UnderwaterPostProcessComponent;
+
+    /**
+     * Local-only exponential underwater fog used for real scene-distance visibility falloff. Remote avatar copies
+     * keep this disabled; the owning camera alone drives density from the active water body's replicated profile.
+     */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process")
+    TObjectPtr<UExponentialHeightFogComponent> UnderwaterDistanceFogComponent;
 
     /** Automatic client-side MMO username plate. It reads the replicated APlayerState display name and adds no custom RPC traffic. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Digimon MMO|UI|World Nameplates")
@@ -227,6 +248,101 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Movement")
     bool IsSprinting() const { return bIsSprinting; }
 
+    // ---- Replicated swimming -------------------------------------------------------------
+
+    /** True when the authoritative/predicted avatar is currently inside a DMFSwimmableWater body. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming")
+    bool IsSwimmingInWater() const;
+
+    /** True once the avatar has crossed the active water body's underwater depth threshold. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming")
+    bool IsSwimmingUnderwater() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming")
+    ADMFSwimmableWater* GetActiveSwimmableWater() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming")
+    EDMFPlayerSwimState GetPlayerSwimState() const;
+
+    /** Adds explicit vertical swim input. Positive ascends, negative descends. Useful for Enhanced Input projects. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Swimming|Input")
+    void AddSwimVerticalInput(float Value);
+
+    /**
+     * Water-volume integration point used by DMFSwimmableWater. Custom Blueprint water implementations may call
+     * this on overlap too; clients only gain local prediction while authority still owns the replicated state.
+     */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Swimming")
+    void RegisterSwimmableWaterOverlap(ADMFSwimmableWater* WaterBody, bool bEntered);
+
+    /**
+     * Rebuilds water occupancy from the avatar's current world transform instead of relying on BeginOverlap timing.
+     * Use this after server-authoritative teleports/load restores into or out of water. Authority rebuilds replicated
+     * water state; the owning client may also use it for safe local prediction. Optional movement reset prevents a
+     * restored underwater avatar from carrying a stale Falling velocity before swimming physics is re-established.
+     */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Swimming")
+    void RebuildSwimmingStateFromWorld(bool bStopMovementIfSwimming = false);
+
+    /** Re-applies the current no-animation swim fallback pose immediately. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Swimming|Presentation")
+    void RefreshSwimmingPresentation();
+
+    /** True only for the locally controlled player's camera while it is physically below the active water surface. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process")
+    bool IsLocalCameraUnderwater() const { return bLocalCameraUnderwater; }
+
+    /** Current local blend weight (0-1) of the water body's underwater post-process profile. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process")
+    float GetUnderwaterPostProcessBlendWeight() const { return UnderwaterPostProcessBlendWeight; }
+
+    /** Rebuilds the local camera profile from the current water body without changing replicated swimming state. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process")
+    void RefreshUnderwaterPostProcessPresentation();
+
+    /** Keeps the collision capsule upright while rotating only the skeletal mesh into a horizontal swim fallback. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation")
+    bool bUseNativeSwimFallbackPose = true;
+
+    /** Actor-space rotation added to the normal skin-relative mesh transform while swimming. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation", meta=(EditCondition="bUseNativeSwimFallbackPose"))
+    FRotator SwimFallbackMeshRotationOffset = FRotator(-90.0f, 0.0f, 0.0f);
+
+    /** Optional skin-specific positional correction applied while the native fallback pose is active. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation", meta=(EditCondition="bUseNativeSwimFallbackPose"))
+    FVector SwimFallbackMeshLocationOffset = FVector::ZeroVector;
+
+    /** Smooth local transition speed into/out of the fallback swim pose. Set to zero for instant changes. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation", meta=(EditCondition="bUseNativeSwimFallbackPose", ClampMin="0.0", ClampMax="100.0"))
+    float SwimFallbackPoseInterpolationSpeed = 10.0f;
+
+    /** Underwater only: visually pitches the flattened mesh with vertical travel while leaving the capsule upright. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation", meta=(EditCondition="bUseNativeSwimFallbackPose"))
+    bool bPitchSwimFallbackWithTravelDirection = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Player Avatar|Swimming|Presentation", meta=(EditCondition="bUseNativeSwimFallbackPose && bPitchSwimFallbackWithTravelDirection", ClampMin="0.0", ClampMax="89.0"))
+    float MaximumSwimFallbackTravelPitch = 45.0f;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Player Avatar|Swimming|Events")
+    FDMFPlayerSwimmingStateChanged OnSwimmingStateChanged;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Player Avatar|Swimming|Events")
+    FDMFPlayerUnderwaterStateChanged OnUnderwaterStateChanged;
+
+    /** Local presentation event; never replicated and never used as gameplay authority. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process|Events")
+    FDMFLocalCameraUnderwaterChanged OnLocalCameraUnderwaterChanged;
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Player Avatar|Swimming|Events")
+    void BP_OnSwimmingStateChanged(bool bSwimming, bool bUnderwater, ADMFSwimmableWater* WaterBody);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Player Avatar|Swimming|Events")
+    void BP_OnUnderwaterStateChanged(bool bUnderwater);
+
+    /** Local-only camera waterline event for project-authored bubbles/audio/material presentation. */
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Player Avatar|Swimming|Underwater Post Process|Events")
+    void BP_OnLocalCameraUnderwaterChanged(bool bCameraUnderwater, ADMFSwimmableWater* WaterBody);
+
     /** Applies presentation only. Authoritative selection must go through UDMFPlayerAvatarComponent::ServerSetPlayerSkin. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar|Skin")
     bool ApplyPlayerSkinData(UDMFPlayerSkinData* SkinData);
@@ -258,9 +374,25 @@ private:
     bool bBackwardPressed = false;
     bool bLeftPressed = false;
     bool bRightPressed = false;
+    bool bSwimAscendPressed = false;
+    bool bSwimDescendPressed = false;
 
     UPROPERTY(ReplicatedUsing=OnRep_Sprinting)
     bool bIsSprinting = false;
+
+    UPROPERTY(ReplicatedUsing=OnRep_ActiveSwimmableWater)
+    TObjectPtr<ADMFSwimmableWater> ActiveSwimmableWater;
+
+    UPROPERTY(ReplicatedUsing=OnRep_UnderwaterSwimming)
+    bool bIsUnderwaterSwimming = false;
+
+    /**
+     * Compact server-authored swim presentation state for remote observers. The owning client still predicts
+     * immediately, while non-owning copies use this state without depending on water-actor reference ordering.
+     * Remote mesh rotation itself is never replicated.
+     */
+    UPROPERTY(ReplicatedUsing=OnRep_ReplicatedSwimPresentationState)
+    EDMFPlayerSwimState ReplicatedSwimPresentationState = EDMFPlayerSwimState::None;
 
     UPROPERTY(Transient)
     FPrimaryAssetId AppliedPlayerSkinId;
@@ -275,6 +407,35 @@ private:
     float PlayerFootstepDistanceAccumulator = 0.0f;
     bool bWasGeneratingPlayerFootsteps = false;
 
+    TArray<TWeakObjectPtr<ADMFSwimmableWater>> OverlappingSwimmableWaters;
+    TWeakObjectPtr<ADMFSwimmableWater> LocalPredictedSwimmableWater;
+    bool bLocalWaterOverlapPredictionInitialized = false;
+    bool bLocalPredictedUnderwater = false;
+    bool bSwimmingMovementModeApplied = false;
+    bool bSwimmingPresentationApplied = false;
+    bool bLocalCameraUnderwater = false;
+    float UnderwaterPostProcessBlendWeight = 0.0f;
+    float AppliedUnderwaterDistanceFogDensity = 0.0f;
+    bool bUnderwaterDistanceFogVisible = false;
+    TWeakObjectPtr<ADMFSwimmableWater> UnderwaterPostProcessConfiguredWater;
+    TWeakObjectPtr<ADMFSwimmableWater> LocalCameraUnderwaterWater;
+    float LastSwimForwardInput = 0.0f;
+    double LastSwimForwardInputWorldSeconds = -1000.0;
+    float LastExplicitVerticalSwimInput = 0.0f;
+    double LastExplicitVerticalSwimInputWorldSeconds = -1000.0;
+
+    EMovementMode PreSwimmingMovementMode = MOVE_Walking;
+    uint8 PreSwimmingCustomMovementMode = 0;
+    float PreSwimmingGravityScale = 1.0f;
+    float PreSwimmingMaxFlySpeed = 600.0f;
+    float PreSwimmingMaxAcceleration = 2048.0f;
+    float PreSwimmingBrakingDecelerationFlying = 0.0f;
+    bool bPreSwimmingOrientRotationToMovement = true;
+    bool bPreSwimmingUseControllerRotationYaw = false;
+
+    FTransform BasePlayerMeshRelativeTransform = FTransform::Identity;
+    bool bBasePlayerMeshRelativeTransformCaptured = false;
+
     float DesiredCameraBoomLength = 400.0f;
     bool bCameraZoomInitialized = false;
 
@@ -285,6 +446,22 @@ private:
     void UpdateAutomaticPlayerFootsteps(float DeltaSeconds);
     float ResolvePlayerFootstepStrideDistance() const;
     FVector GetPlayerFootstepAudioLocation() const;
+    ADMFSwimmableWater* ResolveEffectiveSwimmableWater() const;
+    ADMFSwimmableWater* SelectBestOverlappingSwimmableWater() const;
+    void ReevaluateSwimmingWaterSelection();
+    void ApplySwimmingMovementMode(ADMFSwimmableWater* WaterBody);
+    void RestoreNonSwimmingMovementMode();
+    void UpdateSwimmingState(float DeltaSeconds);
+    void UpdateSwimmingPresentationInternal(float DeltaSeconds, bool bInstant = false);
+    void UpdateUnderwaterPostProcessPresentation(float DeltaSeconds, bool bInstant = false);
+    void ConfigureUnderwaterPostProcessFromWater(ADMFSwimmableWater* WaterBody);
+    void UpdateSurfaceAssist(float DeltaSeconds, ADMFSwimmableWater* WaterBody);
+    void CaptureBasePlayerMeshRelativeTransform();
+    bool UsesNetworkSmoothingSwimPresentation() const;
+    void ApplyNetworkSmoothingSwimPresentation(const FTransform& DesiredTransform, float DeltaSeconds, bool bInstant);
+    void NotifySwimmingStateChanged();
+    void SetAuthoritativeUnderwaterState(bool bNewUnderwater);
+    void RefreshAuthoritativeSwimPresentationState();
 
     UFUNCTION(NetMulticast, Unreliable)
     void MulticastPlayPlayerFootstep();
@@ -294,6 +471,15 @@ private:
 
     UFUNCTION()
     void OnRep_Sprinting();
+
+    UFUNCTION()
+    void OnRep_ActiveSwimmableWater();
+
+    UFUNCTION()
+    void OnRep_UnderwaterSwimming();
+
+    UFUNCTION()
+    void OnRep_ReplicatedSwimPresentationState();
 
     void HandleForwardPressed();
     void HandleForwardReleased();

@@ -647,7 +647,7 @@ The baseline should not be treated as networking-accepted until it passes a pack
 4. Enable homing and move the target during flight. Verify authoritative flight turns toward the moving target without snapping the caster/socket VFX.
 5. Disable homing and repeat. Verify the projectile retains launch direction and expires cleanly when it misses.
 6. Change `Projectile Visual Rotation Offset` and confirm visual orientation changes without changing travel direction.
-7. Assign a looping projectile Niagara/Cascade system, set a short `Projectile Max Lifetime Seconds`, deliberately miss, and verify no projectile/VFX remains after the hard lifetime.
+10. Assign a looping projectile Niagara/Cascade system, set a short `Projectile Max Lifetime Seconds`, deliberately miss, and verify no projectile/VFX remains after the hard lifetime.
 8. Assign optional impact Niagara/Cascade/Sound and verify it plays once at arrival on host + remote client and cleans after `Projectile Impact VFX Lifetime Seconds`.
 9. Keep another ability in Timed Impact mode, assign a deliberately looping Niagara/Cascade system, set `Presentation VFX Lifetime Seconds`, and verify the transient cue is forcibly removed.
 10. Regression: repeat manual slots/auto battle, retaliation, combat facing, Party/Bank, DigiDex, Digivolution, Care, healer, world chat/nameplates and persistence tests; no pre-v0.14.1 gameplay authority path should change.
@@ -720,3 +720,67 @@ Test Party and Bank + buttons, exact one-point/one-stat mutation, zero-point dis
 7. Disable `Show Combat Quick Bar World Clock Phase`, then `Show Combat Quick Bar World Clock`, and confirm the native layout collapses cleanly.
 8. Regression-test ability clicks, cooldown presentation, partner HP/SP, target text, Party Quick Access, Home, world chat and Day/Night spawner swapping.
 
+
+## v0.17.0 — replicated swimmable-water acceptance
+
+1. Create `BP_DMFWater_Test` deriving from `DMFSwimmableWater`, assign a visible project water material, set Surface Size to at least 5000 x 5000 and Water Depth to at least 1000, then place it with the actor origin at the desired water surface.
+2. In editor, change Surface Size and Water Depth and confirm the visible plane and `SwimmingBounds` remain aligned. Confirm the plane itself has no collision and the bounds overlap Pawn only.
+3. Listen-host avatar walks into the surface. Confirm `Is Swimming In Water=true`, `Get Player Swim State=Surface`, ordinary footsteps stop and the skeletal mesh smoothly lays forward while the capsule remains upright.
+4. Hold Forward while looking horizontally. Confirm camera-yaw surface swimming and stable Surface Ride Depth rather than free sinking.
+5. Look down past the configured dive threshold and hold Forward. Confirm the player dives, replicated state becomes Underwater, and Forward now follows full camera pitch.
+6. Underwater, look upward/downward while holding Forward and confirm true 3D camera-directed movement. Hold Space to ascend and C to descend. Hold Shift and confirm Sprint Swim Speed.
+7. Observe the swimming player from a remote client. Confirm movement, facing, Surface/Underwater transitions and flattened fallback pose are coherent without a custom swim RPC.
+8. Repeat entry/movement from the remote owning client while the listen host observes. Confirm responsive local entry and normal server correction with no permanent rubber-banding.
+9. Exit the water at an edge/shore. Confirm gravity/floor acquisition, walking/sprint speeds, controller orientation, mesh-relative skin transform and automatic footsteps restore.
+10. Disable `Use Native Swim Fallback Pose` on the avatar Blueprint. Confirm swimming movement/state remains functional and Blueprint swim events still fire, allowing a real AnimBP to own presentation.
+11. Test two overlapping water actors with different `Water Priority`. Confirm the highest-priority overlapping water controls speed/surface parameters and leaving it falls back to the remaining water rather than leaving swimming entirely.
+12. On authority, call `Set Water Surface Size`, `Set Water Depth` and `Set Swimming Enabled`. Confirm client geometry/config updates and players leave cleanly when water is disabled.
+13. Disconnect while inside water after player-location autosave, reconnect, and confirm the saved world position restores inside the volume and v0.17.2 world reconciliation re-establishes swimming without a SaveGame schema change.
+14. Invoke Return Home while swimming. Confirm water state clears, ordinary movement/mesh presentation restores, the partner/Home workflow still succeeds and the Home checkpoint persists.
+15. Regression: combat/ability quickbar, v0.16.1 world clock, Day/Night sky/populations, Party/Bank, Digivolution, Care and player-location persistence remain functional on host + remote client.
+
+
+## v0.17.3 — replicated swim presentation / network smoothing acceptance
+
+1. Start 2-player PIE as listen host + remote client with normal CharacterMovement network smoothing enabled. Put the **client** into Surface swimming while the host watches. Confirm the host sees the remote client's skeletal mesh flattened forward and the capsule/movement remain smooth.
+2. Keep the remote client stationary at the surface after entering water. Confirm the host still transitions to the flattened pose without requiring another movement packet and without oscillation/shake.
+3. Dive the client underwater and swim upward/downward. Confirm the host sees `Underwater` presentation and optional travel-pitch changes while ordinary replicated movement remains smooth.
+4. Exit water and stand still. Confirm the host sees the mesh return cleanly to the authored skin transform with no residual rotation/location offset.
+5. Reverse roles: host swims while the remote client watches. Confirm the remote simulated proxy shows the same Surface/Underwater fallback states.
+6. Add a third client if available and confirm both non-owning observers see the same swimmer presentation without any observer affecting another viewport.
+7. Repeat after changing Player Skin / mesh-relative transform. Confirm the swim pose composes from the authored skin base and returns to that exact base after exit.
+8. Test an underwater save/reload from accepted v0.17.2. Confirm reconstructed swimming immediately drives the remote fallback pose as well as the owner's post process/fog.
+9. Disable **Use Native Swim Fallback Pose**. Confirm no native mesh rotation is applied on owner or remote proxies while replicated swim-state Blueprint/AnimBP data remains valid.
+10. Regression: no visible remote shake during walking, swimming, shore transitions or network corrections; all 47 RPCs, v6 account persistence, Day/Night, clock, combat, Party/Bank and water PP/fog remain unchanged.
+
+## v0.17.2 — persisted water restore / teleport reconstruction acceptance
+
+1. Enable player world-location persistence and autosave. Surface-swim until the saved actor origin is clearly inside `DMFSwimmableWater`, wait for autosave, disconnect, reconnect and confirm the avatar starts in `Surface` swim state without dropping toward the floor.
+2. Dive well below `Underwater Enter Depth`, wait for autosave, disconnect and reconnect. Before giving movement input, confirm `Is Swimming In Water=true`, `Is Swimming Underwater=true`, CharacterMovement is in the framework swim path, and the horizontal fallback pose is active.
+3. On the same underwater restore, put the third-person camera below the surface and confirm the v0.17.1 color grading + distance fog return automatically. Raise only the camera above water and confirm local presentation clears while gameplay can remain underwater.
+4. Repeat the underwater restore on a remote client connected to a listen host. Confirm the host sees the remote avatar remain at the restored depth rather than falling, and the remote client alone receives its underwater PP/fog.
+5. Repeat with two overlapping water actors and confirm the normal highest `Water Priority` / highest-surface tiebreak selects the same controlling water immediately after restore.
+6. Save near the water surface within the overlap allowance and reconnect repeatedly. Confirm there is no one-frame fall/sink, no Surface/Underwater replication-order flicker that persists, and movement responds immediately.
+7. Save on land and reconnect. Confirm reconciliation resolves no active water and normal walking/falling behavior is unchanged.
+8. While swimming, invoke Return Home. Confirm stale water state, horizontal pose, post process and fog clear even if the teleport bypasses a visible EndOverlap transition. If Home is intentionally placed inside a DMF water volume, confirm it enters the correct swim state instead.
+9. From an authority Blueprint teleport, move a player directly from land to underwater, then call `Rebuild Swimming State From World(true)`. Confirm swimming/post-process recover without manually calling `Register Swimmable Water Overlap`. Teleport back to land and call the same function; confirm state clears.
+10. Regression: ordinary walk-in/walk-out overlap swimming, camera-directed dive/ascend/descend, v0.17.1 fog, v0.16.1 clock, Day/Night, Party/Bank, combat, persistence and packaged host/client behavior remain unchanged.
+
+## v0.17.1 — underwater post-process / distance-fog acceptance
+
+1. Compile/package in UE5.8 and confirm `BP_DMFWater_Test` exposes the complete `Underwater Post Process Settings` profile, including the `Distance Fog` subsection, with defaults and no Blueprint asset breakage.
+2. Surface-swim while keeping the third-person camera above the water plane. Confirm swimming may be Surface/Underwater as appropriate but `Is Local Camera Underwater=false` and the viewport remains ungraded/unfogged.
+3. Lower the camera through the surface. Confirm presentation engages only after `Camera Enter Depth`, blends smoothly, and `On Local Camera Underwater Changed(true)` fires once.
+4. Hover around the waterline. Confirm the separate `Camera Exit Height` prevents rapid on/off flicker.
+5. Dive from shallow to deeper than `Full Strength Depth`; confirm `Get Underwater Post Process Blend Weight` ramps from approximately `Shallow Water Blend Weight` to 1.0.
+6. With no custom Post Process material assigned, confirm native Distance Fog causes distant terrain/shore geometry to fade into `Distance Fog Color`; nearby avatar geometry must remain readable. Raise/lower `Distance Fog Density` and confirm visibility range responds.
+7. Set `Distance Fog Start Distance` higher and confirm a larger clear pocket around the camera; set `Distance Fog Max Opacity` lower and confirm far scenery remains partially visible.
+8. Disable only `Enable Distance Fog`; confirm color grading remains active but long-range extinction disappears.
+9. Verify default color tint, saturation, contrast, gamma, exposure, vignette and chromatic-aberration values affect only the local camera and restore cleanly on exit.
+10. Assign a valid Material Domain=Post Process material. Confirm it blends with the same profile weight; clear it and confirm built-in grading + native distance fog remain functional.
+11. Disable `Underwater Post Process Settings.bEnabled`; confirm swimming movement, replicated Surface/Underwater state and fallback pose remain unchanged with no local underwater presentation.
+12. Run listen host + remote client. Put only the remote player's camera underwater and confirm the host viewport is not affected. Repeat in reverse. Confirm both clients use the same authored profile.
+13. On authority, call `Set Underwater Post Process Settings`, `Set Underwater Post Process Enabled` and `Set Underwater Post Process Material`; confirm sparse profile updates reach clients and active local swimmers refresh without an RPC or reconnect.
+14. Test overlapping waters with different priority/profiles. Confirm the selected active water also supplies both color grading and distance fog, transitioning cleanly when control changes.
+15. Dedicated-server/static check: no render dependency is required for authority simulation; no new RPC, account SaveGame field, world-time field, combat state or movement mode is introduced.
+16. Regression: v0.17.0 swimming/shore exit, v0.16.1 clock, Day/Night sky/populations, combat, Party/Bank, Care, DigiDex, Digivolution and Return Home still work host + client.

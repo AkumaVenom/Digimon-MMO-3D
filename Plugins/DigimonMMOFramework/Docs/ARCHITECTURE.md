@@ -337,3 +337,41 @@ The persistence path deliberately reuses the existing account transaction. `UDMF
 ## Canonical species presentation contract (v0.15.3)
 
 `DMFDigimonSpeciesData` is the source of truth for species identity, including `Stage`. Presentation code must not infer evolution stage from a species name, evolution path, slot, or serialized enum identifier. `UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText` is the canonical runtime formatter used by native UI and exposed Blueprint-pure for project UI. This preserves serialized enum compatibility while guaranteeing user-facing Fresh / In-Training / Rookie / Champion / Ultimate / Mega / Ultra / Armor / Hybrid terminology.
+
+## v0.17.0 — replicated swimmable-water architecture
+
+`ADMFSwimmableWater` is a replicated, Blueprint-derivable world actor composed of a visible `UStaticMeshComponent` surface and a query-only `UBoxComponent` swimming volume. The actor is deliberately **zero-tick**. Surface dimensions, depth, above-surface overlap height and surface offset rebuild both components from one authored geometry contract; movement-relevant runtime values are replicated only when they change.
+
+Player swimming remains inside the existing `ADMFPlayerAvatarCharacter` instead of introducing a second pawn class. Water overlap is evaluated on the server and on the owning client. Authority owns `ActiveSwimmableWater` and the hysteresis-based underwater boolean; the owner may predict the same local overlap for responsive entry, but a replicated authority correction always wins. Other peers reconstruct presentation from the replicated player/water state.
+
+The character uses CharacterMovement's `MOVE_Flying` physics path **only while a DMF water body owns it**. This is intentional: it provides mature Unreal 3D movement prediction/correction for a Blueprint-friendly Box water actor without requiring a BSP/`APhysicsVolume` brush. The framework snapshots gravity, movement mode, acceleration, braking and orientation settings on entry, applies water-specific values, then restores the previous contract on exit (walking-like modes reacquire the floor through Falling first).
+
+Surface assist is a bounded vertical velocity correction toward the water plane minus `SurfaceRideDepth`. A recent explicit downward input or camera-down Forward input disables the correction so intentional dives are never fought by buoyancy. Underwater Enter/Exit depths are separate to prevent threshold chatter.
+
+The collision capsule never rotates for swimming. Native no-animation fallback presentation composes an exposed mesh-relative rotation/location offset onto the currently applied player-skin transform and interpolates only the `USkeletalMeshComponent`. This keeps collision/network prediction stable and lets a later AnimBP disable the fallback while continuing to consume the same `Is Swimming In Water`, `Is Swimming Underwater`, swim-state delegate and Blueprint event contract.
+
+Player world-location persistence is unchanged. Swimming is reconstructed from the loaded pawn transform intersecting authoritative world water; no transient water actor pointer or swim mode is serialized into the account record.
+
+### v0.17.2 persistence/teleport reconciliation
+
+`TeleportTo` is not treated as a reliable source of immediate Begin/EndOverlap ordering for persistence. After the authoritative initial world transform is chosen/applied, `ADMFMMOGameMode` calls `ADMFPlayerAvatarCharacter::RebuildSwimmingStateFromWorld`. That one-shot function scans enabled DMF water actors, evaluates actual geometric containment from the current avatar transform, rebuilds the overlap candidate set, resolves the normal water priority contract, reapplies `MOVE_Flying` swimming before the next movement frame and resolves Surface/Underwater immediately. Saved-water restores request a movement stop first so a stale Falling velocity cannot continue to the lake floor. Return Home uses the same reconciliation after teleport.
+
+This reconstruction is lifecycle-driven, not Tick-driven. The server continues to own `ActiveSwimmableWater` / `bIsUnderwaterSwimming`; the owning client only predicts and consumes the replicated correction. Owner-side OnRep handling mirrors the latest authoritative underwater flag regardless of property arrival order, after which the local camera independently rebuilds post process/fog.
+
+### v0.17.3 network-smoothing-compatible remote swim presentation
+
+Remote `ACharacter` rendering has an additional ownership rule: CharacterMovement's network smoothing writes the skeletal mesh relative transform to visually interpolate replicated capsule movement. A direct DMF `SetRelativeTransform` on the same remote mesh therefore creates two competing writers. v0.17.3 removes that conflict. Authority publishes one compact `EDMFPlayerSwimState` presentation property, while each non-owning rendered avatar converts that state into the same native fallback target used locally.
+
+For simulated proxies and listen-server views of remote autonomous clients, DMF does **not** write the mesh transform. Instead it updates `ACharacter::CacheInitialMeshOffset`, which is the Character-owned base translation/rotation consumed by `SmoothClientPosition`. CharacterMovement remains the sole writer of the smoothed remote mesh, but its target now includes the horizontal swim pose and optional underwater travel pitch. The owning autonomous proxy is unchanged and keeps immediate local prediction/direct presentation. This keeps movement interpolation, skin offsets and swim presentation in one coherent visual chain without transform RPCs.
+
+## v0.17.1 — underwater post-process + distance fog presentation architecture
+
+Underwater visuals deliberately remain separate from swimming authority. `ADMFSwimmableWater` now owns one replicated `FDMFUnderwaterPostProcessSettings` profile containing the authored look and waterline/depth-response tuning. Those values are sparse world configuration: they replicate when authority changes them, but they never carry a player's camera transform or local render result.
+
+`ADMFPlayerAvatarCharacter` owns a dedicated `UPostProcessComponent`. Every replicated avatar class instance has the component structurally, but framework code enables/updates it only on the locally controlled player and disables it on dedicated servers/remote proxies. The existing player Tick performs the local camera-waterline calculation, so water actors remain zero-tick and no new global subsystem/timer is required.
+
+The visual state is camera-correct: `FollowCamera` must be inside the active water bounds and cross below the water plane. Separate camera enter-depth / exit-height values provide hysteresis. While submerged, the presentation target weight interpolates from a shallow-water strength to full strength based on camera depth, then an exponential blend smooths transitions. The same local blend drives both the unbound `UPostProcessComponent` and a local `UExponentialHeightFogComponent`. The latter supplies real scene-distance extinction that grading alone cannot provide. This is intentionally independent from the replicated actor-origin `bIsUnderwaterSwimming` gameplay state.
+
+The native profile builds color saturation/contrast/gamma/gain, exposure, vignette and subtle scene-fringe settings. An optional authored Post Process material is added as a weighted blendable for project-specific SceneDepth haze/refraction/caustics. Because all rendering is local, these additions cannot influence movement/combat/server simulation.
+
+The underwater fog component is present on avatar instances but constructor-disabled. Only the locally controlled rendering avatar may enable it. Its profile values come from the replicated active water actor; camera state and applied fog density stay local. Stable density is cached to avoid repeatedly dirtying the fog render state after a blend reaches equilibrium.

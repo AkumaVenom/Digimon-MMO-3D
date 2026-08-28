@@ -395,6 +395,11 @@ bool ADMFMMOGameMode::ReturnAuthenticatedPlayerHome(APlayerController* PlayerCon
         Movement->StopMovementImmediately();
     }
 
+    // Teleports can bypass normal overlap transition timing. Reconcile from world geometry immediately so Home
+    // cannot leave a stale swimming/fog state if the source was underwater (and also supports a deliberately
+    // water-placed Home spawn without waiting for a later overlap callback).
+    AvatarPawn->RebuildSwimmingStateFromWorld(true);
+
     if (DigimonComponent)
     {
         DigimonComponent->ServerSetCommandTarget(nullptr);
@@ -600,6 +605,11 @@ bool ADMFMMOGameMode::ApplyInitialPlayerWorldLocation(APlayerController* PlayerC
             bRestoredSavedLocation = false;
         }
     }
+
+    // Initial restore may teleport directly into a swimmable volume before UE has delivered BeginOverlap. Rebuild
+    // from authoritative water geometry now, before partner restoration and before another CharacterMovement frame
+    // can apply Falling gravity. This also correctly clears stale water state when a transform restores onto land.
+    AvatarPawn->RebuildSwimmingStateFromWorld(bRestoredSavedLocation);
 
     InitialWorldLocationApplied.Add(PlayerKey);
     AvatarPawn->ForceNetUpdate();

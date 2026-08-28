@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1601,
-  "VersionName": "0.16.1-alpha",
+  "Version": 1730,
+  "VersionName": "0.17.3-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with replicated persistent Day/Night world time, a native replicated 12-hour quick-access world clock HUD, Host-PC or simulated GTA-style clock modes, digital inner-sky layering, day/night wild populations, canonical species stages, Return Home, player-location persistence, progression, combat, DigiDex, Digivolution, Party/Bank, Care, Scan/Materialization and account persistence.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with network-smoothing-compatible replicated swim presentation, persistent water-state reconstruction, swimmable water, polished local underwater post-process/color + native distance fog, camera-directed swimming, persistent Day/Night world time, native 12-hour world clock HUD, day/night wild populations, Return Home, progression, combat, DigiDex, Digivolution, Party/Bank, Care, Scan/Materialization and account persistence.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

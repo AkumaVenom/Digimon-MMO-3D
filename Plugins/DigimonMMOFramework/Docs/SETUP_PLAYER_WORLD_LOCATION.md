@@ -117,3 +117,7 @@ Temporarily remove/disable every `DMFNewPlayerStart`, use a fresh test account, 
 The same `DMFNewPlayerStart` is now the authoritative **Home** destination. Pressing Tab and clicking the Party Quick Access `HOME` button does not restore an arbitrary old checkpoint and does not trust a client transform; the server runs `ChooseNewPlayerSpawnPoint`, performs the teleport, then immediately writes the resulting transform through `SaveAuthenticatedPlayerWorldLocationNow`. The next login therefore restores Home if no later movement checkpoint supersedes it.
 
 A missing or obstructed `DMFNewPlayerStart` rejects the request with owner feedback. The framework also ends the active partner encounter and removes framework projectiles already targeting that partner before repositioning it beside the player, preventing combat from following the long-distance teleport. See `SETUP_RETURN_HOME_HUD.md`.
+## Swimmable-water restore integration (v0.17.2)
+
+When the saved transform resolves inside an enabled `DMFSwimmableWater`, the server no longer waits for a post-teleport overlap callback. It immediately rebuilds water occupancy from world geometry, reinstates swimming movement and Surface/Underwater state, and then lets those existing replicated fields correct the owning client. Underwater post process/distance fog is still local-camera presentation and rebuilds from the restored active water. No swimming flag is added to the account record.
+

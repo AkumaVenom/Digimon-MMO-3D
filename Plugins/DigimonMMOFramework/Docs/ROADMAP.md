@@ -1,5 +1,9 @@
 # Production Roadmap
+- [x] **v0.17.3** Network-smoothing-compatible replicated swim presentation: remote/listen-server observers receive the flattened Surface/Underwater fallback without mesh-transform fighting or per-frame transform replication.
 
+- [x] v0.17.2 — persisted water restore/teleport reconciliation: immediate server water-state reconstruction, movement-mode recovery and local underwater presentation recovery without SaveGame swim flags.
+- [x] **v0.17.1** Camera-correct local underwater post-process/color grading plus native per-water exponential distance fog, depth response, smooth waterline blending and optional custom Post Process materials.
+- [x] **v0.17.0** Replicated Blueprint-derivable swimmable water, surface/underwater camera-directed player locomotion, native no-animation swim pose fallback, and persistence-safe water re-entry.
 - [x] **v0.16.1** Replicated 12-hour world clock integrated into the combat/ability quick-access HUD, with optional Day/Night status and Blueprint formatting/bindings.
 - [x] **v0.16.0** Replicated persistent Day/Night world clock/sky, Host-PC or simulated time, always-visible digital inner-sky layer, and authoritative Day/Night wild population sets.
 
