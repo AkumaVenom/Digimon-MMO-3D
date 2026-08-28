@@ -1,5 +1,14 @@
 # Architecture
 
+## v0.16 shared Day/Night world-time architecture
+
+`ADMFDayNightSky` is one replicated map actor and the authority boundary for world time. The server/host owns either the authority PC clock or the accelerated simulated anchor. Clients receive only compact time-source/hour/day/server-timestamp/day-phase state and interpolate presentation locally from `AGameStateBase::GetServerWorldTimeSeconds()`. Sun/moon transforms and material parameter updates are local presentation; they are not replicated component-by-component.
+
+Simulated time persists in `UDMFWorldStateSaveGame`, keyed by map + stable `PersistenceId`, instead of being copied into every `FDMFAccountRecord`. This keeps shared-world persistence separate from private account persistence and leaves account schema v6 untouched.
+
+Time-aware `ADMFWildDigimonSpawner` instances read the authoritative sky phase on the server. Their active Day/Night table is selected before the existing server-only rarity/species/level/spawn pipeline. Old-phase record ownership is tracked server-side so transition retirement cannot schedule the wrong population, and engaged old-phase actors may finish combat without counting against new-phase population capacity. Only the resulting actors and small spawner runtime phase/count state replicate.
+
+
 ## Return Home / persistent spawn architecture (v0.15.2)
 
 The Party Quick Access `HOME` button is an owner-local presentation surface over an authoritative GameMode service. `ADMFMMOPlayerController` owns the request/result RPC pair and server-only request cooldown; `ADMFMMOGameMode` owns destination selection, collision-aware avatar teleport, partner encounter cleanup/repositioning and immediate v6 world-location checkpointing. The destination is always selected through the existing `ChooseNewPlayerSpawnPoint`/`DMFNewPlayerStart` path introduced in v0.15.1.
@@ -324,3 +333,7 @@ Attribute Point spending is an owned-Digimon persistence mutation on `UDMFPlayer
 `ADMFMMOGameMode` resolves initial placement once per authenticated controller. A genuinely fresh onboarding account with no checkpoint may use `ADMFNewPlayerStart`; an established legacy account with no v6 checkpoint uses normal PlayerStart once; native selection chooses the enabled actor with the highest priority and exposes a BlueprintNativeEvent override for future project rules. An account with a valid checkpoint on the current gameplay map is restored before active-partner spawning and remote-client restart repair. Invalid/non-finite/mismatched saved data keeps Unreal's normal PlayerStart result.
 
 The persistence path deliberately reuses the existing account transaction. `UDMFPlayerDigimonComponent`'s periodic authoritative autosave now also asks `UDMFPlayerAvatarComponent` to apply current avatar identity/world location to the same record. GameMode logout repeats the capture, while a first-login spawn commits immediately. There is no parallel location file, no client-supplied vector and no new network RPC.
+
+## Canonical species presentation contract (v0.15.3)
+
+`DMFDigimonSpeciesData` is the source of truth for species identity, including `Stage`. Presentation code must not infer evolution stage from a species name, evolution path, slot, or serialized enum identifier. `UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText` is the canonical runtime formatter used by native UI and exposed Blueprint-pure for project UI. This preserves serialized enum compatibility while guaranteeing user-facing Fresh / In-Training / Rookie / Champion / Ultimate / Mega / Ultra / Armor / Hybrid terminology.

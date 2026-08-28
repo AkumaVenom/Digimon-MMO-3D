@@ -1,6 +1,15 @@
 # Wild Digimon Proximity / Rarity Spawner Setup — current through v0.14.5-alpha
 
 
+## v0.16 Day / Night population sets
+
+The spawner can now use the replicated `DMFDayNightSky` as a server-authoritative population scheduler. Existing maps remain unchanged because `Population Schedule Mode` defaults to **Always / Legacy Spawn Table**.
+
+To swap populations with world time, choose **Day / Night Population Sets** and fill `Day Rarity Weights` + `Day Spawn Entries` and `Night Rarity Weights` + `Night Spawn Entries`. The arrays use the exact existing `FDMFWildSpawnEntry` contract, including rarity, `Selection Weight Multiplier`, live caps, level ranges, AI overrides and emergence overrides. Rarity remains a two-stage roll: one active rarity tier is selected once, then one eligible species within that tier is selected from its entry multiplier.
+
+Leave `Day Night Sky Override` empty to auto-discover the world `DMFDayNightSky`, or assign a specific placed sky. At a phase transition, non-combat old-phase Digimon retire using the normal ground-despawn path; engaged encounters finish by default and retire after combat ends; the new table then repopulates through the existing staggered queue. Empty phase arrays may fall back to the legacy table. See `SETUP_DAY_NIGHT_SKY.md` for the complete clock/material/population contract.
+
+
 ## v0.4.1 placement correction
 
 The spawner treats a traced/NavMesh point as the **floor**, not as the Character actor origin. It automatically reads the selected `BP_Wild_<Species>` capsule half-height and raises the actor origin so the capsule bottom rests on the ground. Do not manually add capsule half-height to `Spawn Ground Offset`; that field should remain a small surface clearance such as `2.0`.

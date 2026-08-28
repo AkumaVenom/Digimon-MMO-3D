@@ -1,4 +1,5 @@
 #include "UI/DMFDigimonInventoryWidget.h"
+#include "Utility/DMFDigimonPresentationLibrary.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -1799,7 +1800,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedBankDetails()
     if (BankSelectedNameText) BankSelectedNameText->SetText(DisplayName);
     if (BankSelectedMetaText)
     {
-        const FText Stage = Species ? DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)) : FText::GetEmpty();
+        const FText Stage = Species ? UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage) : FText::GetEmpty();
         const FText Attribute = Species ? DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)) : FText::GetEmpty();
         BankSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF", "BankSelectedMetaFormat", "Lv.{0}  •  {1}  •  {2}"), FText::AsNumber(Digimon.Stats.Level), Stage, Attribute));
     }
@@ -1938,7 +1939,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
     if (SelectedStageText)
     {
         const FText StageText = Species
-            ? DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage))
+            ? UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage)
             : FText::GetEmpty();
         const FText AttributeText = Species
             ? DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute))
@@ -2162,7 +2163,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedScanDetails()
     if (MaterializeDigimonButton) MaterializeDigimonButton->SetIsEnabled(bReady && bHasSpace);
     if (ScanSelectedPortraitImage) { if(UTexture2D* Texture=Species->Portrait.LoadSynchronous()){ScanSelectedPortraitImage->SetBrushFromTexture(Texture,true);ScanSelectedPortraitImage->SetVisibility(ESlateVisibility::Visible);}else ScanSelectedPortraitImage->SetVisibility(ESlateVisibility::Hidden); }
     if (ScanSelectedNameText) ScanSelectedNameText->SetText(Species->DisplayName.IsEmpty()?FText::FromName(SelectedScanSpeciesId.PrimaryAssetName):Species->DisplayName);
-    if (ScanSelectedMetaText) ScanSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF","ScanSpeciesMeta","{0}  •  {1}  •  START Lv.{2}"),DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(),static_cast<int64>(Species->Stage)),DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(),static_cast<int64>(Species->Attribute)),FText::AsNumber(Species->StartingLevel)));
+    if (ScanSelectedMetaText) ScanSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF","ScanSpeciesMeta","{0}  •  {1}  •  START Lv.{2}"),UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage),DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(),static_cast<int64>(Species->Attribute)),FText::AsNumber(Species->StartingLevel)));
     if (ScanSelectedProgressText)
     {
         ScanSelectedProgressText->SetText(bReady
@@ -2212,7 +2213,7 @@ void UDMFDigimonInventoryWidget::RefreshCareData()
     }
     const FText DisplayName = !Instance.Nickname.IsEmpty() ? FText::FromString(Instance.Nickname) : (Species->DisplayName.IsEmpty() ? FText::FromName(Instance.SpeciesId.PrimaryAssetName) : Species->DisplayName);
     if (CareNameText) CareNameText->SetText(DisplayName);
-    if (CareMetaText) CareMetaText->SetText(FText::Format(NSLOCTEXT("DMF","CareMetaFormat","{0}  •  {1}  •  Lv.{2}  •  {3}"), DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(),static_cast<int64>(Species->Stage)), DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(),static_cast<int64>(Species->Attribute)), FText::AsNumber(Instance.Stats.Level), bSummoned ? NSLOCTEXT("DMF","CareSummoned","SUMMONED") : NSLOCTEXT("DMF","CareRecalled","RECALLED")));
+    if (CareMetaText) CareMetaText->SetText(FText::Format(NSLOCTEXT("DMF","CareMetaFormat","{0}  •  {1}  •  Lv.{2}  •  {3}"), UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage), DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(),static_cast<int64>(Species->Attribute)), FText::AsNumber(Instance.Stats.Level), bSummoned ? NSLOCTEXT("DMF","CareSummoned","SUMMONED") : NSLOCTEXT("DMF","CareRecalled","RECALLED")));
 
     const float Hunger = FMath::Clamp(Care.Hunger,0.0f,100.0f);
     if (CareHungerText) CareHungerText->SetText(Hunger >= 99.99f ? NSLOCTEXT("DMF","CareHungerFull","100%  •  FULL") : FText::Format(NSLOCTEXT("DMF","CareHungerFormat","{0}% / 100%"),FText::AsNumber(FMath::RoundToInt(Hunger))));
@@ -2373,7 +2374,7 @@ void UDMFDigimonInventoryWidget::RefreshDigiDexData()
         }
         if (!DigiDexSearchQuery.IsEmpty())
         {
-            const FString StageName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)).ToString();
+            const FString StageName = UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage).ToString();
             const FString AttributeName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)).ToString();
             const FString ElementName = DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonElement>(), static_cast<int64>(Species->Element)).ToString();
             const FString DisplayName = Species->DisplayName.IsEmpty() ? SpeciesId.PrimaryAssetName.ToString() : Species->DisplayName.ToString();
@@ -2402,7 +2403,7 @@ void UDMFDigimonInventoryWidget::RefreshDigiDexData()
     {
         DigiDexStageFilterText->SetText(DigiDexStageFilterIndex == INDEX_NONE
             ? NSLOCTEXT("DMF", "DigiDexAllStages", "ALL STAGES")
-            : DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), DigiDexStageFilterIndex));
+            : UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(static_cast<EDMFDigimonStage>(DigiDexStageFilterIndex)));
     }
     if (DigiDexAttributeFilterText)
     {
@@ -2521,7 +2522,7 @@ void UDMFDigimonInventoryWidget::RefreshDigiDexData()
         FooterColumn->AddChildToVerticalBox(NameText);
         UTextBlock* MetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
         MetaText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexCardMeta", "{0}  •  {1}"),
-            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)),
+            UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage),
             DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute))));
         MetaText->SetJustification(ETextJustify::Center);
         DMFNativeUI::StyleText(MetaText, 9, DMFNativeUI::Gold(), true);
@@ -2580,7 +2581,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDigiDexDetails()
     {
         DigiDexSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF", "DigiDexSelectedMeta", "#{0}  •  {1}  •  {2}  •  {3}"),
             FText::AsNumber(FMath::Max(1, RegistryIndex)),
-            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)),
+            UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage),
             DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)),
             DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonElement>(), static_cast<int64>(Species->Element))));
     }
@@ -2880,7 +2881,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDigivolutionDetails()
     {
         DigivolutionCurrentMetaText->SetText(FText::Format(
             NSLOCTEXT("DMF","DigivolutionCurrentMetaFormat","{0}  •  {1}  •  Lv.{2}\n{3}  •  HP {4}/{5}  •  ABI {6}  •  CAM {7}"),
-            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(SourceSpecies->Stage)),
+            UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(SourceSpecies->Stage),
             DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(SourceSpecies->Attribute)),
             FText::AsNumber(Digimon.Stats.Level),
             Location == EDMFDigimonStorageLocation::Party ? NSLOCTEXT("DMF","DigivolutionLocationParty","PARTY") : NSLOCTEXT("DMF","DigivolutionLocationBank","BANK"),
@@ -2948,7 +2949,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDigivolutionDetails()
             PathTextColumn->AddChildToVerticalBox(PathName);
             UTextBlock* PathMeta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
             PathMeta->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionPathMeta","{0}  •  {1}"),
-                DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(TargetSpecies->Stage)),
+                UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(TargetSpecies->Stage),
                 DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(TargetSpecies->Attribute))));
             DMFNativeUI::StyleText(PathMeta, 10, DMFNativeUI::Gold(), true);
             PathTextColumn->AddChildToVerticalBox(PathMeta);
@@ -2986,7 +2987,7 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDigivolutionDetails()
     if (DigivolutionTargetMetaText)
     {
         DigivolutionTargetMetaText->SetText(FText::Format(NSLOCTEXT("DMF","DigivolutionTargetMetaFormat","{0}  •  {1}\nWorld class: {2}"),
-            DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(TargetSpecies->Stage)),
+            UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(TargetSpecies->Stage),
             DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(TargetSpecies->Attribute)),
             TargetSpecies->WorldActorClass.IsNull() ? NSLOCTEXT("DMF","DigivolutionWorldClassMissing","NOT ASSIGNED") : NSLOCTEXT("DMF","DigivolutionWorldClassReady","READY")));
     }

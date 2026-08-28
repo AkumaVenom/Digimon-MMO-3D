@@ -27,6 +27,7 @@ UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFAbilityCooldownState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFAccountRecord(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFBattleReward(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDayNightPersistentState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonCareState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
@@ -39,6 +40,8 @@ DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFScanDataEnt
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDamageScaling(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttribute(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonElement(ETypeConstructPhase);
@@ -48,6 +51,7 @@ DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimon
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType(ETypeConstructPhase);
 // ********** End Same Module References ***********************************************************
@@ -344,6 +348,206 @@ UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity(ETypeConstructP
 }
 #undef UHT_STATICS
 // ********** End Enum EDMFWildSpawnRarity *********************************************************
+
+// ********** Begin Enum EDMFDayNightTimeSource ****************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDayNightTimeSource>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Authoritative world-time source used by DMFDayNightSky. */" },
+#endif
+		{ "HostSystemTime.Comment", "/** The authority machine's local PC clock drives world time. Listen servers therefore follow the host PC clock. */" },
+		{ "HostSystemTime.DisplayName", "Host PC System Time" },
+		{ "HostSystemTime.Name", "EDMFDayNightTimeSource::HostSystemTime" },
+		{ "HostSystemTime.ToolTip", "The authority machine's local PC clock drives world time. Listen servers therefore follow the host PC clock." },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "Simulated.Comment", "/** A persistent accelerated game clock. Default tuning can emulate a GTA-style compressed day. */" },
+		{ "Simulated.DisplayName", "Simulated / GTA Style" },
+		{ "Simulated.Name", "EDMFDayNightTimeSource::Simulated" },
+		{ "Simulated.ToolTip", "A persistent accelerated game clock. Default tuning can emulate a GTA-style compressed day." },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Authoritative world-time source used by DMFDayNightSky." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFDayNightTimeSource::HostSystemTime", (int64)EDMFDayNightTimeSource::HostSystemTime },
+		{ "EDMFDayNightTimeSource::Simulated", (int64)EDMFDayNightTimeSource::Simulated },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFDayNightTimeSource",
+	"EDMFDayNightTimeSource",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFDayNightTimeSource;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFDayNightTimeSource.OuterSingleton)
+		{
+			ZRIE_EDMFDayNightTimeSource.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFDayNightTimeSource"));
+		}
+		return ZRIE_EDMFDayNightTimeSource.OuterSingleton;
+	}
+	if (!ZRIE_EDMFDayNightTimeSource.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFDayNightTimeSource.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFDayNightTimeSource.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFDayNightTimeSource ******************************************************
+
+// ********** Begin Enum EDMFDayNightPhase *********************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDayNightPhase>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Canonical replicated day/night phase shared by the sky and time-aware wild spawners. */" },
+#endif
+		{ "Day.Name", "EDMFDayNightPhase::Day" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "Night.Name", "EDMFDayNightPhase::Night" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Canonical replicated day/night phase shared by the sky and time-aware wild spawners." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFDayNightPhase::Day", (int64)EDMFDayNightPhase::Day },
+		{ "EDMFDayNightPhase::Night", (int64)EDMFDayNightPhase::Night },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFDayNightPhase",
+	"EDMFDayNightPhase",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFDayNightPhase;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFDayNightPhase.OuterSingleton)
+		{
+			ZRIE_EDMFDayNightPhase.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFDayNightPhase"));
+		}
+		return ZRIE_EDMFDayNightPhase.OuterSingleton;
+	}
+	if (!ZRIE_EDMFDayNightPhase.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFDayNightPhase.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFDayNightPhase.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFDayNightPhase ***********************************************************
+
+// ********** Begin Enum EDMFWildPopulationScheduleMode ********************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFWildPopulationScheduleMode>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Always.DisplayName", "Always / Legacy Spawn Table" },
+		{ "Always.Name", "EDMFWildPopulationScheduleMode::Always" },
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Population policy for a wild spawner. Existing Always behavior remains the compatibility default. */" },
+#endif
+		{ "DayNight.DisplayName", "Day / Night Population Sets" },
+		{ "DayNight.Name", "EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Population policy for a wild spawner. Existing Always behavior remains the compatibility default." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFWildPopulationScheduleMode::Always", (int64)EDMFWildPopulationScheduleMode::Always },
+		{ "EDMFWildPopulationScheduleMode::DayNight", (int64)EDMFWildPopulationScheduleMode::DayNight },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFWildPopulationScheduleMode",
+	"EDMFWildPopulationScheduleMode",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFWildPopulationScheduleMode;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFWildPopulationScheduleMode.OuterSingleton)
+		{
+			ZRIE_EDMFWildPopulationScheduleMode.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFWildPopulationScheduleMode"));
+		}
+		return ZRIE_EDMFWildPopulationScheduleMode.OuterSingleton;
+	}
+	if (!ZRIE_EDMFWildPopulationScheduleMode.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFWildPopulationScheduleMode.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFWildPopulationScheduleMode.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFWildPopulationScheduleMode **********************************************
 
 // ********** Begin Enum EDMFPlayerInteractionType *************************************************
 #ifdef UHT_STATICS
@@ -2020,6 +2224,120 @@ UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression(ETypeC
 #undef UHT_STATICS
 // ********** End ScriptStruct FDMFDigimonExperienceProgression ************************************
 
+// ********** Begin ScriptStruct FDMFDayNightPersistentState ***************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFDayNightPersistentState_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFDayNightPersistentState>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFDayNightPersistentState); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persisted authority-owned state for one DMFDayNightSky simulated clock. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persisted authority-owned state for one DMFDayNightSky simulated clock." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHasSavedState_MetaData[] = {
+		{ "Category", "Day Night" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TimeOfDayHours_MetaData[] = {
+		{ "Category", "Day Night" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Saved 0-24 game clock. Host-system-time mode ignores this as an authority source. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Saved 0-24 game clock. Host-system-time mode ignores this as an authority source." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DayIndex_MetaData[] = {
+		{ "Category", "Day Night" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent simulated day counter. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent simulated day counter." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SavedUtcTicks_MetaData[] = {
+		{ "Category", "Day Night" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFDayNightPersistentState constinit property declarations *******
+	static void NewProp_bHasSavedState_SetBit(void* Obj)
+	{
+		((FDMFDayNightPersistentState*)Obj)->bHasSavedState = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHasSavedState;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_TimeOfDayHours;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_DayIndex;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_SavedUtcTicks;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFDayNightPersistentState constinit property declarations *********
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFDayNightPersistentState>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFDayNightPersistentState Property Definitions ******************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bHasSavedState = { "bHasSavedState", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFDayNightPersistentState), &UHT_STATICS::NewProp_bHasSavedState_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHasSavedState_MetaData), NewProp_bHasSavedState_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_TimeOfDayHours = { "TimeOfDayHours", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDayNightPersistentState, TimeOfDayHours), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TimeOfDayHours_MetaData), NewProp_TimeOfDayHours_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DayIndex = { "DayIndex", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDayNightPersistentState, DayIndex), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DayIndex_MetaData), NewProp_DayIndex_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_SavedUtcTicks = { "SavedUtcTicks", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDayNightPersistentState, SavedUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SavedUtcTicks_MetaData), NewProp_SavedUtcTicks_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bHasSavedState,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TimeOfDayHours,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DayIndex,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SavedUtcTicks,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFDayNightPersistentState Property Definitions ********************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFDayNightPersistentState",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFDayNightPersistentState>(),
+	alignof(FDMFDayNightPersistentState),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFDayNightPersistentState(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFDayNightPersistentState, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFDayNightPersistentState"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFDayNightPersistentState *****************************************
+
 // ********** Begin ScriptStruct FDMFPlayerWorldLocationState **************************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2487,6 +2805,9 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttribute, TEXT("EDMFDigimonAttribute"), &ZRIE_EDMFDigimonAttribute, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2643934090U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonElement, TEXT("EDMFDigimonElement"), &ZRIE_EDMFDigimonElement, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2271857953U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity, TEXT("EDMFWildSpawnRarity"), &ZRIE_EDMFWildSpawnRarity, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2039231156U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource, TEXT("EDMFDayNightTimeSource"), &ZRIE_EDMFDayNightTimeSource, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2584868163U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, TEXT("EDMFDayNightPhase"), &ZRIE_EDMFDayNightPhase, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2025563883U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode, TEXT("EDMFWildPopulationScheduleMode"), &ZRIE_EDMFWildPopulationScheduleMode, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1125248795U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 785946822U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
@@ -2507,13 +2828,14 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFAbilityCooldownState, Z_Construct_UScriptStruct_FDMFAbilityCooldownState_Statics::NewStructOps, TEXT("DMFAbilityCooldownState"),&Z_Registration_Info_UScriptStruct_FDMFAbilityCooldownState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAbilityCooldownState), 758764662U) },
 		{ Z_Construct_UScriptStruct_FDMFBattleReward, Z_Construct_UScriptStruct_FDMFBattleReward_Statics::NewStructOps, TEXT("DMFBattleReward"),&Z_Registration_Info_UScriptStruct_FDMFBattleReward, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFBattleReward), 2382040011U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression_Statics::NewStructOps, TEXT("DMFDigimonExperienceProgression"),&Z_Registration_Info_UScriptStruct_FDMFDigimonExperienceProgression, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonExperienceProgression), 2497719822U) },
+		{ Z_Construct_UScriptStruct_FDMFDayNightPersistentState, Z_Construct_UScriptStruct_FDMFDayNightPersistentState_Statics::NewStructOps, TEXT("DMFDayNightPersistentState"),&Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDayNightPersistentState), 1517771470U) },
 		{ Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState_Statics::NewStructOps, TEXT("DMFPlayerWorldLocationState"),&Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFPlayerWorldLocationState), 1033967660U) },
 		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 3938075674U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics::NewStructOps, TEXT("DMFReplicatedDigimonEntry"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonEntry), 4015387757U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 1241286755U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_ee6e618c5c2a474f965913f31ce68271789124d3{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_232fc7e25fa98851f42d3039a5703206e2783982{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

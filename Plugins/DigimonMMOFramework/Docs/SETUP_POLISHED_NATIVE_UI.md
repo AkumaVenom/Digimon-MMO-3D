@@ -225,3 +225,12 @@ The v0.14 native shell includes a read-only **DIGIDEX** page using the same fixe
 Party and Bank selected-Digimon stat cards expose compact `+ HP`, `+ SP`, `+ STR`, `+ INT`, `+ DEF`, `+ SPD` buttons whenever the selected Digimon has legal unspent Attribute Points. Buttons route only to `ServerSpendDigimonAttributePoint`; native UMG never mutates stats locally.
 
 The native modal now hard-clips to its window bounds and uses a 1240x900 logical canvas. Several portrait/detail minimums were tightened so every tab's footer/action lane remains inside the shell on short/DPI-scaled viewports. Party has an explicit bounded detail-body `ScrollBox` for stats/progression/actions; the other existing tab-internal scroll regions continue to handle variable descriptions, rules and large data sets.
+
+## Species stage text contract (v0.15.3)
+
+All native UI surfaces use `DMFDigimonSpeciesData::Stage` plus `UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText`. This prevents cooked/runtime UI from exposing legacy enum identifiers (`BabyI`, `BabyII`) and keeps stage wording consistent across Party, Bank, Scan, Care, DigiDex, Digivolution, Starter Selection and world nameplates. Custom Blueprint UI should call **Get Digimon Stage Display Text** instead of formatting the enum name manually.
+
+## Combat quick-access world clock (v0.16.1)
+
+The native ability quickbar header now reserves a compact center card for `h:mm AM/PM` plus optional `DAY` / `NIGHT`. It is sourced from `DMFDayNightSky`, not from the client PC. Blueprint children may bind `WorldClockText` and `WorldClockPhaseText`; see `SETUP_WORLD_CLOCK_HUD.md`.
+

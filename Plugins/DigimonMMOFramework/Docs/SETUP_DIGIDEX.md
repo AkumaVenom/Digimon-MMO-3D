@@ -125,3 +125,7 @@ DigiDex adds no RPC and no replicated property. Registered species data is stati
 8. Confirm there is no summon/recall/storage/materialize/digivolve action on DigiDex.
 9. Run host + second client. Each client should see the same implemented species list but only their own OWNED/SCANNED status.
 10. Add a third `DMFDigimonSpeciesData` beneath the scanned directory, restart PIE if needed for Asset Manager discovery, and confirm the entry appears without editing DigiDex code.
+
+## Canonical stage presentation (v0.15.3)
+
+DigiDex cards, detail metadata, stage search matching and the native stage filter all derive from each species' `Stage` field and the shared `Get Digimon Stage Display Text` formatter. A Fresh species therefore displays/searches as **Fresh**, and an In-Training species as **In-Training**, even though legacy serialized enum identifiers are preserved internally for asset compatibility.

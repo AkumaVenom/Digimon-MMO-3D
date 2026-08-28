@@ -7,6 +7,7 @@
 #include "DMFWildDigimonSpawner.generated.h"
 
 class ADMFDigimonCharacter;
+class ADMFDayNightSky;
 class ADMFWildDigimonCharacter;
 class UDMFDigimonSpeciesData;
 class USceneComponent;
@@ -259,8 +260,48 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Rarity")
     FDMFWildSpawnRarityWeights RarityWeights;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Spawn Table")
+    /** Existing always-available/legacy population. Used directly when Population Schedule Mode is Always. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Spawn Table", meta=(DisplayName="Always / Legacy Spawn Entries"))
     TArray<FDMFWildSpawnEntry> SpawnEntries;
+
+    /** Optional day/night population swap. The authoritative DMFDayNightSky decides which table is eligible. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population")
+    EDMFWildPopulationScheduleMode PopulationScheduleMode = EDMFWildPopulationScheduleMode::Always;
+
+    /** Optional explicit sky actor for this spawner. Leave unset to auto-discover the first authoritative DMFDayNightSky in the world. */
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    TObjectPtr<ADMFDayNightSky> DayNightSkyOverride;
+
+    /** Day-specific rarity tier weights. Species-count normalization remains identical to the legacy table. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Day", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    FDMFWildSpawnRarityWeights DayRarityWeights;
+
+    /** Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Day. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Day", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    TArray<FDMFWildSpawnEntry> DaySpawnEntries;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Night", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    FDMFWildSpawnRarityWeights NightRarityWeights;
+
+    /** Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Night. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Night", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    TArray<FDMFWildSpawnEntry> NightSpawnEntries;
+
+    /** Compatibility safety: an empty Day/Night table falls back to Always / Legacy Spawn Entries instead of producing no population. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    bool bFallbackToLegacyPopulationWhenPhaseTableEmpty = true;
+
+    /** Retire old-phase Digimon and stagger replacements from the newly active table when Day/Night changes. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Transition", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    bool bRetirePreviousPopulationOnPhaseChange = true;
+
+    /** Polished MMO default: old-phase Digimon already in a battle finish that encounter before being retired. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Transition", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight && bRetirePreviousPopulationOnPhaseChange"))
+    bool bKeepEngagedWildUntilCombatEnds = true;
+
+    /** If the selected sky cannot be resolved, use the Day population instead of disabling the spawner. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon MMO|Wild Spawner|Day Night Population|Safety", meta=(EditCondition="PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight"))
+    bool bTreatMissingDayNightSkyAsDay = true;
 
     UPROPERTY(ReplicatedUsing=OnRep_SpawnerState, BlueprintReadOnly, Category="Digimon MMO|Wild Spawner|Runtime")
     bool bSpawnerActive = false;
@@ -271,6 +312,10 @@ public:
     UPROPERTY(ReplicatedUsing=OnRep_SpawnerState, BlueprintReadOnly, Category="Digimon MMO|Wild Spawner|Runtime")
     int32 ReplicatedTargetPopulation = 0;
 
+    /** Current authoritative population phase. Meaningful when PopulationScheduleMode is DayNight. */
+    UPROPERTY(ReplicatedUsing=OnRep_PopulationPhase, BlueprintReadOnly, Category="Digimon MMO|Wild Spawner|Runtime")
+    EDMFDayNightPhase ReplicatedPopulationPhase = EDMFDayNightPhase::Day;
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Wild Spawner")
     bool IsSpawnerActive() const { return bSpawnerActive; }
 
@@ -279,6 +324,10 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Wild Spawner")
     int32 GetTargetPopulation() const { return ReplicatedTargetPopulation; }
+
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Wild Spawner|Day Night Population")
+    EDMFDayNightPhase GetPopulationPhase() const { return ReplicatedPopulationPhase; }
 
     /** Re-runs proximity logic immediately on the authority. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Wild Spawner")
@@ -301,9 +350,16 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Wild Spawner|Events")
     void BP_OnWildDigimonSpawned(ADMFWildDigimonCharacter* SpawnedDigimon, FName SpawnEntryId, EDMFWildSpawnRarity Rarity);
 
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Wild Spawner|Events")
+    void BP_OnPopulationPhaseChanged(EDMFDayNightPhase NewPhase, EDMFDayNightPhase PreviousPhase);
+
 protected:
     UFUNCTION()
     void OnRep_SpawnerState();
+
+    UFUNCTION()
+    void OnRep_PopulationPhase(EDMFDayNightPhase PreviousPhase);
 
     UFUNCTION()
     void HandleManagedWildDestroyed(AActor* DestroyedActor);
@@ -316,6 +372,7 @@ private:
     {
         TWeakObjectPtr<ADMFWildDigimonCharacter> Actor;
         int32 EntryIndex = INDEX_NONE;
+        EDMFDayNightPhase SpawnPhase = EDMFDayNightPhase::Day;
         bool bDefeated = false;
         bool bPendingSpawnerDespawn = false;
         bool bSuppressRespawn = false;
@@ -330,8 +387,20 @@ private:
     bool bLastNotifiedActive = false;
     int32 LastNotifiedAliveCount = INDEX_NONE;
     int32 LastNotifiedTargetPopulation = INDEX_NONE;
+    bool bAuthorityPopulationPhaseInitialized = false;
+    bool bWarnedMissingDayNightSky = false;
+    TWeakObjectPtr<ADMFDayNightSky> CachedDayNightSky;
 
     void EvaluatePlayerProximity();
+    void RefreshDayNightPopulationPhase();
+    ADMFDayNightSky* ResolveDayNightSky();
+    void HandlePopulationPhaseTransition(EDMFDayNightPhase PreviousPhase, EDMFDayNightPhase NewPhase);
+    void RetireInactivePhaseWild();
+    bool ShouldRecordCountForCurrentPopulation(const FManagedWildRecord& Record) const;
+    bool IsUsingLegacyFallbackForActivePhase() const;
+    const TArray<FDMFWildSpawnEntry>& GetActiveSpawnEntries() const;
+    const FDMFWildSpawnRarityWeights& GetActiveRarityWeights() const;
+    int32 RollTargetPopulationForActiveSet() const;
     int32 CountNearbyPlayers(float Radius) const;
     bool IsSpawnLocationTooCloseToPlayer(const FVector& Location) const;
     void ActivateSpawnerInternal();

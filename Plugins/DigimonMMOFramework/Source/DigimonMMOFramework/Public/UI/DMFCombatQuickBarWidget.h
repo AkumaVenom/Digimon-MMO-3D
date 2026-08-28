@@ -12,6 +12,7 @@ class USizeBox;
 class UDMFCombatQuickSlotButton;
 class UDMFPlayerDigimonComponent;
 class ADMFDigimonCharacter;
+class ADMFDayNightSky;
 
 UCLASS()
 class DIGIMONMMOFRAMEWORK_API UDMFCombatQuickSlotButton : public UButton
@@ -62,6 +63,14 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UTextBlock> VitalsText;
 
+    /** Optional binding for Blueprint reskins. Native fallback displays canonical replicated 12-hour world time here. */
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> WorldClockText;
+
+    /** Optional binding for Blueprint reskins. Native fallback displays DAY / NIGHT here. */
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> WorldClockPhaseText;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFPlayerDigimonComponent> BoundDigimonComponent;
@@ -74,8 +83,14 @@ private:
 
     TArray<TWeakObjectPtr<USizeBox>> NativeSlotIconContainers;
 
+    TWeakObjectPtr<ADMFDayNightSky> BoundDayNightSky;
+    TWeakObjectPtr<USizeBox> NativeWorldClockContainer;
+    double NextDayNightSkyResolveAttemptSeconds = 0.0;
+
     FTimerHandle RefreshTimer;
 
     void BuildNativeFallback();
+    void RefreshWorldClock();
+    ADMFDayNightSky* ResolveDayNightSky();
     UDMFPlayerDigimonComponent* ResolveDigimonComponent() const;
 };

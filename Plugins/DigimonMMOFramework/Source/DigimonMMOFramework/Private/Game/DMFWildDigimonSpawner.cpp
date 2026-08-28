@@ -6,9 +6,11 @@
 #include "Components/SphereComponent.h"
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/Pawn.h"
+#include "Game/DMFDayNightSky.h"
 #include "Game/DMFWildDigimonCharacter.h"
 #include "DigimonMMOFramework.h"
 #include "Kismet/GameplayStatics.h"
@@ -70,6 +72,7 @@ void ADMFWildDigimonSpawner::BeginPlay()
 
     if (HasAuthority() && GetWorld())
     {
+        RefreshDayNightPopulationPhase();
         const float Interval = FMath::Max(0.1f, ProximityCheckInterval);
         GetWorld()->GetTimerManager().SetTimer(ProximityTimer, this, &ADMFWildDigimonSpawner::EvaluatePlayerProximity, Interval, true, 0.1f);
     }
@@ -91,12 +94,14 @@ void ADMFWildDigimonSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
     DOREPLIFETIME(ADMFWildDigimonSpawner, bSpawnerActive);
     DOREPLIFETIME(ADMFWildDigimonSpawner, ReplicatedAliveCount);
     DOREPLIFETIME(ADMFWildDigimonSpawner, ReplicatedTargetPopulation);
+    DOREPLIFETIME(ADMFWildDigimonSpawner, ReplicatedPopulationPhase);
 }
 
 void ADMFWildDigimonSpawner::RefreshSpawnerNow()
 {
     if (HasAuthority())
     {
+        RefreshDayNightPopulationPhase();
         EvaluatePlayerProximity();
     }
 }
@@ -105,6 +110,7 @@ void ADMFWildDigimonSpawner::ForceActivateSpawner()
 {
     if (HasAuthority())
     {
+        RefreshDayNightPopulationPhase();
         ActivateSpawnerInternal();
     }
 }
@@ -124,6 +130,8 @@ void ADMFWildDigimonSpawner::EvaluatePlayerProximity()
         return;
     }
 
+    RefreshDayNightPopulationPhase();
+    RetireInactivePhaseWild();
     CleanupInvalidManagedWild();
 
     if (!bSpawnerEnabled)
@@ -221,6 +229,258 @@ bool ADMFWildDigimonSpawner::IsSpawnLocationTooCloseToPlayer(const FVector& Loca
     return false;
 }
 
+ADMFDayNightSky* ADMFWildDigimonSpawner::ResolveDayNightSky()
+{
+    if (PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight)
+    {
+        return nullptr;
+    }
+
+    if (IsValid(DayNightSkyOverride))
+    {
+        CachedDayNightSky = DayNightSkyOverride;
+        return DayNightSkyOverride;
+    }
+    if (CachedDayNightSky.IsValid())
+    {
+        return CachedDayNightSky.Get();
+    }
+
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return nullptr;
+    }
+    for (TActorIterator<ADMFDayNightSky> It(World); It; ++It)
+    {
+        if (IsValid(*It))
+        {
+            CachedDayNightSky = *It;
+            return *It;
+        }
+    }
+    return nullptr;
+}
+
+bool ADMFWildDigimonSpawner::IsUsingLegacyFallbackForActivePhase() const
+{
+    if (PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight || !bFallbackToLegacyPopulationWhenPhaseTableEmpty)
+    {
+        return PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight;
+    }
+    return ReplicatedPopulationPhase == EDMFDayNightPhase::Day ? DaySpawnEntries.IsEmpty() : NightSpawnEntries.IsEmpty();
+}
+
+const TArray<FDMFWildSpawnEntry>& ADMFWildDigimonSpawner::GetActiveSpawnEntries() const
+{
+    if (PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight || IsUsingLegacyFallbackForActivePhase())
+    {
+        return SpawnEntries;
+    }
+    return ReplicatedPopulationPhase == EDMFDayNightPhase::Day ? DaySpawnEntries : NightSpawnEntries;
+}
+
+const FDMFWildSpawnRarityWeights& ADMFWildDigimonSpawner::GetActiveRarityWeights() const
+{
+    if (PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight || IsUsingLegacyFallbackForActivePhase())
+    {
+        return RarityWeights;
+    }
+    return ReplicatedPopulationPhase == EDMFDayNightPhase::Day ? DayRarityWeights : NightRarityWeights;
+}
+
+bool ADMFWildDigimonSpawner::ShouldRecordCountForCurrentPopulation(const FManagedWildRecord& Record) const
+{
+    return PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight || Record.SpawnPhase == ReplicatedPopulationPhase;
+}
+
+int32 ADMFWildDigimonSpawner::RollTargetPopulationForActiveSet() const
+{
+    const int32 MinCount = FMath::Max(0, MinimumSpawnCount);
+    const int32 MaxCount = FMath::Max(MinCount, MaximumSpawnCount);
+    int32 Target = FMath::RandRange(MinCount, MaxCount);
+    const int32 ConfiguredCapacity = ComputeConfiguredPopulationCapacity();
+    if (ConfiguredCapacity >= 0)
+    {
+        Target = FMath::Min(Target, ConfiguredCapacity);
+    }
+    return Target;
+}
+
+void ADMFWildDigimonSpawner::RefreshDayNightPopulationPhase()
+{
+    if (!HasAuthority())
+    {
+        return;
+    }
+
+    EDMFDayNightPhase NewPhase = EDMFDayNightPhase::Day;
+    if (PopulationScheduleMode == EDMFWildPopulationScheduleMode::DayNight)
+    {
+        if (ADMFDayNightSky* Sky = ResolveDayNightSky())
+        {
+            bWarnedMissingDayNightSky = false;
+            NewPhase = Sky->GetDayNightPhase();
+        }
+        else
+        {
+            if (!bWarnedMissingDayNightSky)
+            {
+                bWarnedMissingDayNightSky = true;
+                UE_LOG(LogDigimonMMOFramework, Warning, TEXT("Wild spawner %s is configured for Day/Night populations but could not resolve DMFDayNightSky. Using the configured missing-sky fallback phase until a sky becomes available."), *GetName());
+            }
+            NewPhase = bTreatMissingDayNightSkyAsDay ? EDMFDayNightPhase::Day : EDMFDayNightPhase::Night;
+        }
+    }
+
+    const EDMFDayNightPhase PreviousPhase = ReplicatedPopulationPhase;
+    const bool bWasInitialized = bAuthorityPopulationPhaseInitialized;
+    bAuthorityPopulationPhaseInitialized = true;
+    if (PreviousPhase == NewPhase && bWasInitialized)
+    {
+        return;
+    }
+
+    ReplicatedPopulationPhase = NewPhase;
+    ForceNetUpdate();
+    if (PreviousPhase != NewPhase)
+    {
+        BP_OnPopulationPhaseChanged(NewPhase, PreviousPhase);
+    }
+
+    if (bWasInitialized && PreviousPhase != NewPhase && bSpawnerActive)
+    {
+        HandlePopulationPhaseTransition(PreviousPhase, NewPhase);
+    }
+}
+
+void ADMFWildDigimonSpawner::HandlePopulationPhaseTransition(const EDMFDayNightPhase PreviousPhase, const EDMFDayNightPhase NewPhase)
+{
+    if (!HasAuthority() || PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight)
+    {
+        return;
+    }
+
+    PendingInitialSpawns = 0;
+    PendingRespawnReadyTimes.Reset();
+    ReplicatedTargetPopulation = RollTargetPopulationForActiveSet();
+
+    // If an unusually long encounter survived an entire opposite phase and this phase has returned,
+    // let that still-valid actor rejoin its own population contract instead of remaining permanently suppress-respawn.
+    for (FManagedWildRecord& Record : ManagedWild)
+    {
+        if (Record.SpawnPhase == NewPhase && Record.Actor.IsValid() && !Record.bDefeated && !Record.bPendingSpawnerDespawn)
+        {
+            Record.bSuppressRespawn = false;
+        }
+    }
+
+    if (bRetirePreviousPopulationOnPhaseChange)
+    {
+        TArray<TWeakObjectPtr<ADMFWildDigimonCharacter>> ActorsToRetire;
+        for (FManagedWildRecord& Record : ManagedWild)
+        {
+            ADMFWildDigimonCharacter* Wild = Record.Actor.Get();
+            if (!IsValid(Wild) || Record.SpawnPhase == NewPhase || Record.bDefeated || Record.bPendingSpawnerDespawn)
+            {
+                continue;
+            }
+
+            Record.bSuppressRespawn = true;
+            const bool bEngaged = Wild->CombatComponent && Wild->CombatComponent->IsBattleEncounterActive();
+            if (bKeepEngagedWildUntilCombatEnds && bEngaged)
+            {
+                continue;
+            }
+
+            Record.bPendingSpawnerDespawn = true;
+            ActorsToRetire.Add(Wild);
+        }
+
+        for (const TWeakObjectPtr<ADMFWildDigimonCharacter>& WeakWild : ActorsToRetire)
+        {
+            if (ADMFWildDigimonCharacter* Wild = WeakWild.Get())
+            {
+                if (bUseGroundDespawnWhenInactive)
+                {
+                    Wild->BeginGroundDespawn(Wild->GroundEmergenceDepth, GroundDespawnDuration);
+                }
+                else
+                {
+                    Wild->Destroy();
+                }
+            }
+        }
+    }
+    else
+    {
+        // Old-phase actors may remain naturally, but they never consume new-phase capacity or schedule replacements.
+        for (FManagedWildRecord& Record : ManagedWild)
+        {
+            if (Record.SpawnPhase != NewPhase)
+            {
+                Record.bSuppressRespawn = true;
+            }
+        }
+    }
+
+    PendingInitialSpawns = FMath::Max(0, ReplicatedTargetPopulation - CountAliveManagedWild());
+    UpdateReplicatedRuntimeState();
+    if (PendingInitialSpawns > 0)
+    {
+        SchedulePopulationProcessing(FMath::Max(0.05f, PopulationSpawnInterval));
+    }
+
+    UE_LOG(LogDigimonMMOFramework, Log, TEXT("Wild spawner %s swapped population phase %s -> %s; target %d, active entries %d."),
+        *GetName(),
+        PreviousPhase == EDMFDayNightPhase::Day ? TEXT("Day") : TEXT("Night"),
+        NewPhase == EDMFDayNightPhase::Day ? TEXT("Day") : TEXT("Night"),
+        ReplicatedTargetPopulation,
+        GetActiveSpawnEntries().Num());
+}
+
+void ADMFWildDigimonSpawner::RetireInactivePhaseWild()
+{
+    if (!HasAuthority() || PopulationScheduleMode != EDMFWildPopulationScheduleMode::DayNight || !bRetirePreviousPopulationOnPhaseChange)
+    {
+        return;
+    }
+
+    TArray<TWeakObjectPtr<ADMFWildDigimonCharacter>> ActorsToRetire;
+    for (FManagedWildRecord& Record : ManagedWild)
+    {
+        ADMFWildDigimonCharacter* Wild = Record.Actor.Get();
+        if (!IsValid(Wild) || Record.SpawnPhase == ReplicatedPopulationPhase || Record.bDefeated || Record.bPendingSpawnerDespawn)
+        {
+            continue;
+        }
+
+        Record.bSuppressRespawn = true;
+        if (bKeepEngagedWildUntilCombatEnds && Wild->CombatComponent && Wild->CombatComponent->IsBattleEncounterActive())
+        {
+            continue;
+        }
+
+        Record.bPendingSpawnerDespawn = true;
+        ActorsToRetire.Add(Wild);
+    }
+
+    for (const TWeakObjectPtr<ADMFWildDigimonCharacter>& WeakWild : ActorsToRetire)
+    {
+        if (ADMFWildDigimonCharacter* Wild = WeakWild.Get())
+        {
+            if (bUseGroundDespawnWhenInactive)
+            {
+                Wild->BeginGroundDespawn(Wild->GroundEmergenceDepth, GroundDespawnDuration);
+            }
+            else
+            {
+                Wild->Destroy();
+            }
+        }
+    }
+}
+
 void ADMFWildDigimonSpawner::ActivateSpawnerInternal()
 {
     if (!HasAuthority() || bSpawnerActive || !bSpawnerEnabled)
@@ -228,16 +488,9 @@ void ADMFWildDigimonSpawner::ActivateSpawnerInternal()
         return;
     }
 
-    const int32 MinCount = FMath::Max(0, MinimumSpawnCount);
-    const int32 MaxCount = FMath::Max(MinCount, MaximumSpawnCount);
     bSpawnerActive = true;
     PlayersOutsideSinceTime = -1.0;
-    ReplicatedTargetPopulation = FMath::RandRange(MinCount, MaxCount);
-    const int32 ConfiguredCapacity = ComputeConfiguredPopulationCapacity();
-    if (ConfiguredCapacity >= 0)
-    {
-        ReplicatedTargetPopulation = FMath::Min(ReplicatedTargetPopulation, ConfiguredCapacity);
-    }
+    ReplicatedTargetPopulation = RollTargetPopulationForActiveSet();
     PendingInitialSpawns = FMath::Max(0, ReplicatedTargetPopulation - CountAliveManagedWild());
     PendingRespawnReadyTimes.Reset();
     if (ReplicatedTargetPopulation <= 0 && MaximumSpawnCount > 0)
@@ -245,7 +498,7 @@ void ADMFWildDigimonSpawner::ActivateSpawnerInternal()
         UE_LOG(LogDigimonMMOFramework, Warning, TEXT("Wild spawner %s activated with no eligible spawn-table capacity. Check enabled entries, classes, species references, rarity weights and live caps."), *GetName());
     }
     UpdateReplicatedRuntimeState();
-    UE_LOG(LogDigimonMMOFramework, Log, TEXT("Wild spawner %s activated: target population %d, configured entries %d."), *GetName(), ReplicatedTargetPopulation, SpawnEntries.Num());
+    UE_LOG(LogDigimonMMOFramework, Log, TEXT("Wild spawner %s activated: target population %d, configured active entries %d, phase %s."), *GetName(), ReplicatedTargetPopulation, GetActiveSpawnEntries().Num(), ReplicatedPopulationPhase == EDMFDayNightPhase::Day ? TEXT("Day") : TEXT("Night"));
     SchedulePopulationProcessing(0.05f);
 }
 
@@ -423,8 +676,9 @@ ADMFWildDigimonCharacter* ADMFWildDigimonSpawner::SpawnOneWildDigimon()
         return nullptr;
     }
 
+    const TArray<FDMFWildSpawnEntry>& ActiveEntries = GetActiveSpawnEntries();
     const int32 EntryIndex = SelectWeightedSpawnEntryIndex();
-    if (!SpawnEntries.IsValidIndex(EntryIndex))
+    if (!ActiveEntries.IsValidIndex(EntryIndex))
     {
         UE_LOG(LogDigimonMMOFramework, Warning, TEXT("Wild spawner %s has no eligible spawn entry. Check Enabled, Species, Wild Character Class, rarity weight/multiplier, and Max Alive caps."), *GetName());
         return nullptr;
@@ -471,10 +725,12 @@ int32 ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex() const
     };
 
     TArray<FEligibleRarityBucket> Buckets;
+    const TArray<FDMFWildSpawnEntry>& ActiveEntries = GetActiveSpawnEntries();
+    const FDMFWildSpawnRarityWeights& ActiveRarityWeights = GetActiveRarityWeights();
 
-    for (int32 Index = 0; Index < SpawnEntries.Num(); ++Index)
+    for (int32 Index = 0; Index < ActiveEntries.Num(); ++Index)
     {
-        const FDMFWildSpawnEntry& Entry = SpawnEntries[Index];
+        const FDMFWildSpawnEntry& Entry = ActiveEntries[Index];
         if (!Entry.bEnabled || Entry.Species.IsNull() || !Entry.WildCharacterClass)
         {
             continue;
@@ -485,7 +741,7 @@ int32 ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex() const
             continue;
         }
 
-        const float RarityWeight = RarityWeights.GetWeight(Entry.Rarity);
+        const float RarityWeight = ActiveRarityWeights.GetWeight(Entry.Rarity);
         const float EntryWeight = FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
         if (RarityWeight <= 0.0f || EntryWeight <= 0.0f)
         {
@@ -573,11 +829,13 @@ int32 ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex() const
 
 int32 ADMFWildDigimonSpawner::ComputeConfiguredPopulationCapacity() const
 {
+    const TArray<FDMFWildSpawnEntry>& ActiveEntries = GetActiveSpawnEntries();
+    const FDMFWildSpawnRarityWeights& ActiveRarityWeights = GetActiveRarityWeights();
     int32 Capacity = 0;
     bool bHasEligibleEntry = false;
-    for (const FDMFWildSpawnEntry& Entry : SpawnEntries)
+    for (const FDMFWildSpawnEntry& Entry : ActiveEntries)
     {
-        const float RarityWeight = RarityWeights.GetWeight(Entry.Rarity);
+        const float RarityWeight = ActiveRarityWeights.GetWeight(Entry.Rarity);
         const float EntryWeight = FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
         if (!Entry.bEnabled || Entry.Species.IsNull() || !Entry.WildCharacterClass || RarityWeight <= 0.0f || EntryWeight <= 0.0f)
         {
@@ -596,12 +854,13 @@ int32 ADMFWildDigimonSpawner::ComputeConfiguredPopulationCapacity() const
 
 float ADMFWildDigimonSpawner::GetSpawnCapsuleHalfHeight(const int32 EntryIndex) const
 {
-    if (!SpawnEntries.IsValidIndex(EntryIndex) || !SpawnEntries[EntryIndex].WildCharacterClass)
+    const TArray<FDMFWildSpawnEntry>& ActiveEntries = GetActiveSpawnEntries();
+    if (!ActiveEntries.IsValidIndex(EntryIndex) || !ActiveEntries[EntryIndex].WildCharacterClass)
     {
         return 0.0f;
     }
 
-    const UClass* WildClass = SpawnEntries[EntryIndex].WildCharacterClass.Get();
+    const UClass* WildClass = ActiveEntries[EntryIndex].WildCharacterClass.Get();
     const ADMFWildDigimonCharacter* WildCDO = WildClass ? WildClass->GetDefaultObject<ADMFWildDigimonCharacter>() : nullptr;
     const UCapsuleComponent* Capsule = WildCDO ? WildCDO->GetCapsuleComponent() : nullptr;
     return Capsule ? FMath::Max(0.0f, Capsule->GetScaledCapsuleHalfHeight()) : 0.0f;
@@ -681,12 +940,13 @@ bool ADMFWildDigimonSpawner::FindSpawnTransform(const int32 EntryIndex, FTransfo
 
 ADMFWildDigimonCharacter* ADMFWildDigimonSpawner::SpawnEntryAtTransform(const int32 EntryIndex, const FTransform& SpawnTransform)
 {
-    if (!SpawnEntries.IsValidIndex(EntryIndex) || !GetWorld())
+    const TArray<FDMFWildSpawnEntry>& ActiveEntries = GetActiveSpawnEntries();
+    if (!ActiveEntries.IsValidIndex(EntryIndex) || !GetWorld())
     {
         return nullptr;
     }
 
-    const FDMFWildSpawnEntry& Entry = SpawnEntries[EntryIndex];
+    const FDMFWildSpawnEntry& Entry = ActiveEntries[EntryIndex];
     if (!Entry.WildCharacterClass || Entry.Species.IsNull())
     {
         return nullptr;
@@ -752,6 +1012,7 @@ ADMFWildDigimonCharacter* ADMFWildDigimonSpawner::SpawnEntryAtTransform(const in
     FManagedWildRecord& Record = ManagedWild.AddDefaulted_GetRef();
     Record.Actor = Wild;
     Record.EntryIndex = EntryIndex;
+    Record.SpawnPhase = ReplicatedPopulationPhase;
     Wild->OnDestroyed.AddDynamic(this, &ADMFWildDigimonSpawner::HandleManagedWildDestroyed);
     if (Wild->CombatComponent)
     {
@@ -779,9 +1040,13 @@ void ADMFWildDigimonSpawner::HandleManagedWildDefeated(ADMFDigimonCharacter* Def
         return;
     }
 
+    const bool bShouldReplace = ShouldRecordCountForCurrentPopulation(ManagedWild[RecordIndex]);
     ManagedWild[RecordIndex].bDefeated = true;
     UpdateReplicatedRuntimeState();
-    QueueReplacementSpawn();
+    if (bShouldReplace)
+    {
+        QueueReplacementSpawn();
+    }
 
     if (!GetWorld() || !IsValid(Wild))
     {
@@ -815,7 +1080,7 @@ void ADMFWildDigimonSpawner::HandleManagedWildDestroyed(AActor* DestroyedActor)
 
     const FManagedWildRecord Removed = ManagedWild[RecordIndex];
     ManagedWild.RemoveAtSwap(RecordIndex);
-    if (bSpawnerActive && !Removed.bSuppressRespawn && !Removed.bDefeated)
+    if (bSpawnerActive && !Removed.bSuppressRespawn && !Removed.bDefeated && ShouldRecordCountForCurrentPopulation(Removed))
     {
         QueueReplacementSpawn();
     }
@@ -828,7 +1093,7 @@ void ADMFWildDigimonSpawner::CleanupInvalidManagedWild()
     {
         if (!ManagedWild[Index].Actor.IsValid())
         {
-            const bool bShouldReplace = bSpawnerActive && !ManagedWild[Index].bSuppressRespawn && !ManagedWild[Index].bDefeated;
+            const bool bShouldReplace = bSpawnerActive && !ManagedWild[Index].bSuppressRespawn && !ManagedWild[Index].bDefeated && ShouldRecordCountForCurrentPopulation(ManagedWild[Index]);
             ManagedWild.RemoveAtSwap(Index);
             if (bShouldReplace)
             {
@@ -844,7 +1109,7 @@ int32 ADMFWildDigimonSpawner::CountAliveManagedWild() const
     int32 Count = 0;
     for (const FManagedWildRecord& Record : ManagedWild)
     {
-        if (Record.Actor.IsValid() && !Record.bDefeated && !Record.bPendingSpawnerDespawn)
+        if (ShouldRecordCountForCurrentPopulation(Record) && Record.Actor.IsValid() && !Record.bDefeated && !Record.bPendingSpawnerDespawn)
         {
             ++Count;
         }
@@ -857,7 +1122,7 @@ int32 ADMFWildDigimonSpawner::CountAliveForEntry(const int32 EntryIndex) const
     int32 Count = 0;
     for (const FManagedWildRecord& Record : ManagedWild)
     {
-        if (Record.EntryIndex == EntryIndex && Record.Actor.IsValid() && !Record.bDefeated && !Record.bPendingSpawnerDespawn)
+        if (ShouldRecordCountForCurrentPopulation(Record) && Record.EntryIndex == EntryIndex && Record.Actor.IsValid() && !Record.bDefeated && !Record.bPendingSpawnerDespawn)
         {
             ++Count;
         }
@@ -908,6 +1173,14 @@ void ADMFWildDigimonSpawner::UpdateReplicatedRuntimeState()
 void ADMFWildDigimonSpawner::OnRep_SpawnerState()
 {
     BP_OnSpawnerStateChanged(bSpawnerActive, ReplicatedAliveCount, ReplicatedTargetPopulation);
+}
+
+void ADMFWildDigimonSpawner::OnRep_PopulationPhase(const EDMFDayNightPhase PreviousPhase)
+{
+    if (PreviousPhase != ReplicatedPopulationPhase)
+    {
+        BP_OnPopulationPhaseChanged(ReplicatedPopulationPhase, PreviousPhase);
+    }
 }
 
 double ADMFWildDigimonSpawner::GetServerTimeSeconds() const

@@ -676,6 +676,27 @@ struct UHT_STATICS
 		{ "Category", "UI" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowCombatQuickBarWorldClock_MetaData[] = {
+		{ "Category", "UI|Combat Quick Access|World Clock" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shows the replicated/interpolated Day/Night world clock inside the native combat ability quick-access header. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shows the replicated/interpolated Day/Night world clock inside the native combat ability quick-access header." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowCombatQuickBarWorldClockPhase_MetaData[] = {
+		{ "Category", "UI|Combat Quick Access|World Clock" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Adds the compact DAY/NIGHT state beside the 12-hour digital time. The phase comes from DMFDayNightSky. */" },
+#endif
+		{ "EditCondition", "bShowCombatQuickBarWorldClock" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Adds the compact DAY/NIGHT state beside the 12-hour digital time. The phase comes from DMFDayNightSky." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartyQuickBarWidgetClass_MetaData[] = {
 		{ "Category", "UI|Party Quick Access" },
 #if !UE_BUILD_SHIPPING
@@ -1682,6 +1703,16 @@ struct UHT_STATICS
 		{ "ClampMin", "5.0" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldStateSaveSlot_MetaData[] = {
+		{ "Category", "Persistence|World State" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Server-owned world-state slot used by persistent shared systems such as the simulated Day/Night clock. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Server-owned world-state slot used by persistent shared systems such as the simulated Day/Night clock." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnablePlayerWorldLocationPersistence_MetaData[] = {
 		{ "Category", "Persistence|Player World Location" },
 #if !UE_BUILD_SHIPPING
@@ -1855,6 +1886,16 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_LevelUpNotificationHoldSeconds;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceNotificationBottomSafeOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_CombatQuickBarWidgetClass;
+	static void NewProp_bShowCombatQuickBarWorldClock_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowCombatQuickBarWorldClock = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowCombatQuickBarWorldClock;
+	static void NewProp_bShowCombatQuickBarWorldClockPhase_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowCombatQuickBarWorldClockPhase = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowCombatQuickBarWorldClockPhase;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_PartyQuickBarWidgetClass;
 	static void NewProp_bShowNativePartyQuickBar_SetBit(void* Obj)
 	{
@@ -2089,6 +2130,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerPartnerOutgoingDamageMultiplier;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_PlayerPartnerIncomingDamageMultiplier;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_AccountAutosaveInterval;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_WorldStateSaveSlot;
 	static void NewProp_bEnablePlayerWorldLocationPersistence_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bEnablePlayerWorldLocationPersistence = 1;
@@ -2172,6 +2214,8 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNot
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds = { "LevelUpNotificationHoldSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, LevelUpNotificationHoldSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LevelUpNotificationHoldSeconds_MetaData), NewProp_LevelUpNotificationHoldSeconds_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset = { "ExperienceNotificationBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceNotificationBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationBottomSafeOffset_MetaData), NewProp_ExperienceNotificationBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidgetClass = { "CombatQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CombatQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidgetClass_MetaData), NewProp_CombatQuickBarWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock = { "bShowCombatQuickBarWorldClock", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowCombatQuickBarWorldClock_MetaData), NewProp_bShowCombatQuickBarWorldClock_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase = { "bShowCombatQuickBarWorldClockPhase", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowCombatQuickBarWorldClockPhase_MetaData), NewProp_bShowCombatQuickBarWorldClockPhase_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidgetClass = { "PartyQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidgetClass_MetaData), NewProp_PartyQuickBarWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativePartyQuickBar = { "bShowNativePartyQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativePartyQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativePartyQuickBar_MetaData), NewProp_bShowNativePartyQuickBar_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput = { "bEnableDefaultPartyQuickAccessInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultPartyQuickAccessInput_MetaData), NewProp_bEnableDefaultPartyQuickAccessInput_MetaData) };
@@ -2270,6 +2314,7 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PartnerLeashR
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerPartnerOutgoingDamageMultiplier = { "PlayerPartnerOutgoingDamageMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerPartnerOutgoingDamageMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerPartnerOutgoingDamageMultiplier_MetaData), NewProp_PlayerPartnerOutgoingDamageMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_PlayerPartnerIncomingDamageMultiplier = { "PlayerPartnerIncomingDamageMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerPartnerIncomingDamageMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerPartnerIncomingDamageMultiplier_MetaData), NewProp_PlayerPartnerIncomingDamageMultiplier_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_AccountAutosaveInterval = { "AccountAutosaveInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AccountAutosaveInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccountAutosaveInterval_MetaData), NewProp_AccountAutosaveInterval_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_WorldStateSaveSlot = { "WorldStateSaveSlot", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldStateSaveSlot), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldStateSaveSlot_MetaData), NewProp_WorldStateSaveSlot_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerWorldLocationPersistence = { "bEnablePlayerWorldLocationPersistence", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerWorldLocationPersistence_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerWorldLocationPersistence_MetaData), NewProp_bEnablePlayerWorldLocationPersistence_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn = { "bUseDedicatedNewPlayerSpawn", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bUseDedicatedNewPlayerSpawn_MetaData), NewProp_bUseDedicatedNewPlayerSpawn_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_ServerPublicAddress = { "ServerPublicAddress", nullptr, (EPropertyFlags)0x0010000000004001, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ServerPublicAddress), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ServerPublicAddress_MetaData), NewProp_ServerPublicAddress_MetaData) };
@@ -2336,6 +2381,8 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativePartyQuickBar,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultPartyQuickAccessInput,
@@ -2434,6 +2481,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerPartnerOutgoingDamageMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerPartnerIncomingDamageMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AccountAutosaveInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldStateSaveSlot,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerWorldLocationPersistence,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ServerPublicAddress,
@@ -2509,10 +2557,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2708108400U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3814845999U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_18ce4848fed0081c0288eafcaec20875f9922428{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_3e95bcb0135cdcc7d73ed6b0b3fea8ca5adf20f9{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

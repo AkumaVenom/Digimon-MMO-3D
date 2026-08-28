@@ -60,6 +60,33 @@ enum class EDMFWildSpawnRarity : uint8
     Mythic
 };
 
+/** Authoritative world-time source used by DMFDayNightSky. */
+UENUM(BlueprintType)
+enum class EDMFDayNightTimeSource : uint8
+{
+    /** The authority machine's local PC clock drives world time. Listen servers therefore follow the host PC clock. */
+    HostSystemTime UMETA(DisplayName="Host PC System Time"),
+
+    /** A persistent accelerated game clock. Default tuning can emulate a GTA-style compressed day. */
+    Simulated UMETA(DisplayName="Simulated / GTA Style")
+};
+
+/** Canonical replicated day/night phase shared by the sky and time-aware wild spawners. */
+UENUM(BlueprintType)
+enum class EDMFDayNightPhase : uint8
+{
+    Day,
+    Night
+};
+
+/** Population policy for a wild spawner. Existing Always behavior remains the compatibility default. */
+UENUM(BlueprintType)
+enum class EDMFWildPopulationScheduleMode : uint8
+{
+    Always UMETA(DisplayName="Always / Legacy Spawn Table"),
+    DayNight UMETA(DisplayName="Day / Night Population Sets")
+};
+
 /** Result category for the framework-native player interaction layer. */
 UENUM(BlueprintType)
 enum class EDMFPlayerInteractionType : uint8
@@ -396,6 +423,28 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigimonExperienceProgression
 
     UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
     bool bReachedMaxLevel = false;
+};
+
+
+/** Persisted authority-owned state for one DMFDayNightSky simulated clock. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFDayNightPersistentState
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Day Night")
+    bool bHasSavedState = false;
+
+    /** Saved 0-24 game clock. Host-system-time mode ignores this as an authority source. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Day Night")
+    float TimeOfDayHours = 8.0f;
+
+    /** Persistent simulated day counter. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Day Night")
+    int32 DayIndex = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Day Night")
+    int64 SavedUtcTicks = 0;
 };
 
 /** Persisted server-authored gameplay transform for one account. */

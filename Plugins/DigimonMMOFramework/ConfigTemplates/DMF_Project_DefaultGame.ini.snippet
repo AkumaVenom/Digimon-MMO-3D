@@ -10,6 +10,9 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+; v0.16.0 shared server world-state persistence used by DMFDayNightSky simulated clocks.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+WorldStateSaveSlot=DMF_ServerWorldState
 
 ; v0.15.1 persistent per-account player world location + dedicated first-login spawn.
 ; Place DMFNewPlayerStart in the Open World. Location checkpoints reuse AccountAutosaveInterval.
@@ -61,6 +64,8 @@ MaxPartyDigimon=6
 MaxDigimonBankStorage=200
 DigimonBankSlotsPerPage=30
 bAllowPartySwitchingDuringCombat=False
+bShowCombatQuickBarWorldClock=True
+bShowCombatQuickBarWorldClockPhase=True
 bShowNativePartyQuickBar=True
 bEnableDefaultPartyQuickAccessInput=True
 PartyQuickBarBottomSafeOffset=176.0

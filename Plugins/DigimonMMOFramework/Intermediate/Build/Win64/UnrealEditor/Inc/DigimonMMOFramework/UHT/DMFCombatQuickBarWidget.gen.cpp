@@ -326,6 +326,30 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFCombatQuickBarWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldClockText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFCombatQuickBarWidget" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional binding for Blueprint reskins. Native fallback displays canonical replicated 12-hour world time here. */" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFCombatQuickBarWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional binding for Blueprint reskins. Native fallback displays canonical replicated 12-hour world time here." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldClockPhaseText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFCombatQuickBarWidget" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional binding for Blueprint reskins. Native fallback displays DAY / NIGHT here. */" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFCombatQuickBarWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional binding for Blueprint reskins. Native fallback displays DAY / NIGHT here." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BoundDigimonComponent_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFCombatQuickBarWidget.h" },
@@ -344,6 +368,8 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_AbilityBox;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_TargetText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_VitalsText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_WorldClockText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_WorldClockPhaseText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BoundDigimonComponent;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_NativeSlotLabels_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_NativeSlotLabels;
@@ -372,6 +398,8 @@ struct UHT_STATICS
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_AbilityBox = { "AbilityBox", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, AbilityBox), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AbilityBox_MetaData), NewProp_AbilityBox_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_TargetText = { "TargetText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, TargetText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TargetText_MetaData), NewProp_TargetText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_VitalsText = { "VitalsText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, VitalsText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_VitalsText_MetaData), NewProp_VitalsText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_WorldClockText = { "WorldClockText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, WorldClockText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldClockText_MetaData), NewProp_WorldClockText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_WorldClockPhaseText = { "WorldClockPhaseText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, WorldClockPhaseText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldClockPhaseText_MetaData), NewProp_WorldClockPhaseText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BoundDigimonComponent = { "BoundDigimonComponent", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, BoundDigimonComponent), Z_Construct_UClass_UDMFPlayerDigimonComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BoundDigimonComponent_MetaData), NewProp_BoundDigimonComponent_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_NativeSlotLabels_Inner = { "NativeSlotLabels", nullptr, (EPropertyFlags)0x0104000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, 0, Z_Construct_UClass_UTextBlock, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_NativeSlotLabels = { "NativeSlotLabels", nullptr, (EPropertyFlags)0x0144008000002008, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFCombatQuickBarWidget, NativeSlotLabels), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NativeSlotLabels_MetaData), NewProp_NativeSlotLabels_MetaData) };
@@ -381,6 +409,8 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AbilityBox,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TargetText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_VitalsText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldClockText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldClockPhaseText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BoundDigimonComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NativeSlotLabels_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NativeSlotLabels,
@@ -462,10 +492,10 @@ struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
 		{ Z_Construct_UClass_UDMFCombatQuickSlotButton, TEXT("UDMFCombatQuickSlotButton"), &Z_Registration_Info_UClass_UDMFCombatQuickSlotButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFCombatQuickSlotButton), 1639362280U) },
-		{ Z_Construct_UClass_UDMFCombatQuickBarWidget, TEXT("UDMFCombatQuickBarWidget"), &Z_Registration_Info_UClass_UDMFCombatQuickBarWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFCombatQuickBarWidget), 3141615348U) },
+		{ Z_Construct_UClass_UDMFCombatQuickBarWidget, TEXT("UDMFCombatQuickBarWidget"), &Z_Registration_Info_UClass_UDMFCombatQuickBarWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFCombatQuickBarWidget), 997639384U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFCombatQuickBarWidget_h__Script_DigimonMMOFramework_cb13ef3d6c15d2143222e76a56b6f48a7505491a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFCombatQuickBarWidget_h__Script_DigimonMMOFramework_c1e3a655ccd09978341baecdb17b2cb21585c5d5{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

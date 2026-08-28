@@ -1,8 +1,30 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport`
+**Version:** `0.16.1-alpha — Replicated World Clock Quick-Access HUD`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.16.1-alpha — Replicated World Clock Quick-Access HUD
+
+v0.16.1 completes the player-facing side of the accepted Day/Night world clock by integrating a compact **12-hour digital clock directly into the ability quick-access bar**. The native fallback displays `h:mm AM/PM` between the partner vitals and target state, with a small color-coded `DAY` / `NIGHT` status. It reads the same smooth `DMFDayNightSky` time reconstructed from the replicated server anchor, so a listen-server client sees the host's world time and Simulated-mode clients see the same accelerated persistent clock driving the sun and wild populations. No local PC clock is read by the HUD and no extra clock RPC is used.
+
+`DMFDayNightSky` now exposes Blueprint-pure **`Get Formatted Time 12 Hour`** (optional seconds), while custom `DMFCombatQuickBarWidget` Blueprint children can bind optional `WorldClockText` and `WorldClockPhaseText` fields. Project Settings can independently hide the entire clock or only the Day/Night phase label. The native quickbar weak-caches the sky actor and reuses its existing 0.15-second local presentation timer, so the feature adds no per-frame UMG tick and no new replicated state. See `Docs/SETUP_WORLD_CLOCK_HUD.md`.
+
+## New in v0.16.0-alpha — Replicated Persistent Day/Night World & Population System
+
+**Latest presentation correction:** outer sky-dome materials now receive both the canonical `DMF_SunDirection` contract and conventional Unreal sky-sphere `Light direction` / `Sun height` solar parameters (configurable per actor). This keeps a material-authored visible sun disc moving with the authoritative native Sun Light in editor preview and runtime, without rotating the sky mesh/digital layer or adding network traffic.
+
+v0.16.0 adds a Blueprint-derivable **`DMFDayNightSky`** that owns one authoritative MMO world clock and replicates sparse time anchors to every client. Designers can select **Host PC System Time** (listen servers follow the host machine's local clock; dedicated servers follow the server machine) or a **persistent accelerated Simulated / GTA-style clock**. Simulated time uses a separate server-only world-state save, resumes after restart/map reload, exposes `Is Day`, `Is Night`, current hours/day index and phase events to Blueprint, and never trusts a client clock. Clients locally interpolate between synchronized server-time anchors so celestial/material motion remains smooth without per-frame replication. The native sun uses the correct solar orientation (12:00 = sun overhead), and the placed actor previews automatically in the Unreal Editor: Simulated mode follows `Initial Simulated Time Hours` while Host-PC mode uses the editor machine clock, so day/night lighting and material parameters can be authored without entering PIE. The optional native sun/moon/SkyLight/SkyAtmosphere components and Blueprint presentation event make the actor useful out of the box while remaining replaceable by project sky logic. See `Docs/SETUP_DAY_NIGHT_SKY.md`.
+
+The sky also includes a dedicated always-visible **Digital Inner Sky Layer** mesh/material contract for Digimon-style digital-world textures. Projects assign a translucent/unlit two-sided material plus `Digital Inner Layer Texture`; the framework pushes texture, opacity, tint, UV scale/pan, time, day-visual-alpha and sun-direction parameters into runtime MIDs. The texture layer stays enabled during Day and Night, and authored texture alpha reveals the sky behind it rather than replacing the background.
+
+`DMFWildDigimonSpawner` can now remain on its exact legacy table or opt into **Day / Night Population Sets**. Day and Night each expose their own rarity weights and the same familiar spawn-entry array contract. The server reads the authoritative sky phase, retains the corrected two-stage rarity/species weighting, retires old-phase ambient Digimon through the existing ground-despawn presentation, lets already-engaged old-phase encounters finish by default, then staggers the new phase population through the existing queue. Empty phase tables can safely fall back to the legacy table. The current population phase itself replicates for Blueprint presentation/debugging, but clients never select time, rarity, species or level.
+
+## New in v0.15.3-alpha — Canonical Species Stage Presentation Fix
+
+v0.15.3 fixes evolution-stage text being able to fall back to internal serialized enum identifiers such as `BabyI` / `BabyII` in cooked/runtime UI. **`DMFDigimonSpeciesData::Stage` remains the single source of truth** for every species, but all framework-native presentation now routes that authored value through one canonical runtime formatter: `Fresh`, `In-Training`, `Rookie`, `Champion`, `Ultimate`, `Mega`, `Ultra`, `Armor`, `Hybrid`, or `Unknown`. This applies consistently to world nameplates, Starter Selection, Party/Bank details, Scan & Materialize, Care, DigiDex cards/search/filter labels, and Digivolution source/target/path metadata.
+
+The underlying `EDMFDigimonStage` serialized value/order is intentionally unchanged, preserving all existing Species Data Assets, Blueprint pins and persisted data. The new Blueprint-pure `Get Digimon Stage Display Text` helper lets custom project UI use the same canonical stage terminology without depending on runtime enum metadata.
 
 ## New in v0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport
 
@@ -547,7 +569,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)

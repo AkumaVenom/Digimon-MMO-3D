@@ -1,4 +1,5 @@
 #include "UI/DMFStarterSelectionWidget.h"
+#include "Utility/DMFDigimonPresentationLibrary.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -325,7 +326,7 @@ void UDMFStarterSelectionWidget::PopulateChoices()
         NameColumn->AddChildToVerticalBox(NameText);
 
         UTextBlock* StageText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-        StageText->SetText(DMFStarterUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)));
+        StageText->SetText(UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage));
         StageText->SetJustification(ETextJustify::Center);
         DMFNativeUI::StyleText(StageText, 10, DMFNativeUI::Gold(), true);
         NameColumn->AddChildToVerticalBox(StageText);
@@ -444,7 +445,7 @@ void UDMFStarterSelectionWidget::HandleStarterPressed(const FPrimaryAssetId Spec
     {
         SelectedStarterMetaText->SetText(FText::Format(
             NSLOCTEXT("DMF", "StarterMetaFormat", "{0}  •  {1}  •  Lv.{2}"),
-            DMFStarterUI::EnumDisplay(StaticEnum<EDMFDigimonStage>(), static_cast<int64>(Species->Stage)),
+            UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage),
             DMFStarterUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)),
             FText::AsNumber(Species->StartingLevel)));
     }

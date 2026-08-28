@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.16.1-alpha — Replicated World Clock Quick-Access HUD
+
+### Added — polished 12-hour world clock in the ability quick-access bar
+- Added a compact native **12-hour digital world clock** to the combat/ability quick-access header. The default presentation is `h:mm AM/PM` plus a small color-coded `DAY` / `NIGHT` phase label, positioned between partner vitals and target state so it adds useful world information without creating another floating HUD panel.
+- The HUD reads only `ADMFDayNightSky::GetTimeOfDayHours()` / replicated phase state. In Host-PC mode clients therefore display the host/server clock anchor rather than their own computer time; in Simulated mode they display the same smooth locally-interpolated persistent MMO world clock already used by the sky and spawners. No clock RPC, replicated UMG state, or client clock authority was added.
+- Added Blueprint-pure `Get Formatted Time 12 Hour` on `DMFDayNightSky` so project-authored UMG can reuse the exact canonical `12:00 AM` / `12:00 PM` formatting, optionally including seconds.
+- Added optional `WorldClockText` and `WorldClockPhaseText` bindings to `DMFCombatQuickBarWidget` for Blueprint reskins. The native fallback displays `--:-- -- / SYNC` until a local replicated sky actor resolves, then updates from the cached actor; a bounded one-second retry prevents an absent/mid-stream sky from causing an actor search every HUD refresh.
+- Added Project Settings toggles under **UI -> Combat Quick Access -> World Clock** for showing the clock and showing the DAY/NIGHT phase label.
+
+### Performance / multiplayer contract
+- Reuses the combat quickbar's existing local 0.15-second refresh timer; no additional per-frame widget tick, network timer, RPC, SaveGame field, or replicated property is introduced.
+- The sky actor is resolved once and weak-cached. Actor discovery retries at most once per second only while no valid sky exists.
+- Existing v0.16.0 Day/Night authority, persistence, solar presentation, day/night wild population swapping and all v0.15.x systems remain unchanged.
+
+## 0.16.0-alpha — Replicated Persistent Day/Night World & Population System
+
+### Runtime/editor sky presentation correction
+- Fixed outer-sky **visible sun-disc desynchronization** for conventional Unreal/marketplace sky-sphere materials. The framework now pushes the same canonical solar solution into configurable `Light direction` (light-ray vector) and `Sun height` (solar elevation) compatibility parameters on the outer Sky Dome MID every local visual update, so a material-authored sun disc moves with the authoritative Directional Light instead of remaining fixed. This does not rotate the sky mesh or digital layer and adds no replication/bandwidth cost.
+- Added `Drive Sky Dome Solar Visual Parameters`, `Sky Dome Light Direction Parameter Name` and `Sky Dome Sun Height Parameter Name` under the sky actor's Solar Visual Compatibility settings. Defaults match the conventional Unreal sky-sphere parameter contract and may be renamed per project material.
+- Fixed the native solar rotation sign: midday now places the authoritative/native Sun above the horizon (Directional Light pitch -90 at 12:00) instead of below it. The previous inversion could make a valid daytime clock look permanently night/sunset.
+- `DMFDayNightSky` now previews automatically in the Unreal Editor. In Simulated mode the placed actor/derived Blueprint previews `Initial Simulated Time Hours`; Host PC mode previews the editor machine's current local time. Changing the authored hour immediately rebuilds sun/moon, phase values, dynamic sky materials and the digital inner layer without PIE.
+- Added `Preview Sky In Editor` and made `Refresh Sky Presentation` a **Call In Editor** button for explicit rebuilds after material/mesh changes.
+- Runtime presentation is now created only after the authoritative clock anchor/persisted simulated time has initialized, preventing the native SkyLight/material presentation from being built against a stale default/night anchor during BeginPlay.
+- Added phase-boundary-only native SkyLight recapture (configurable) plus one-shot recapture on explicit/editor presentation refresh. This keeps ambient capture coherent while avoiding any per-tick recapture cost.
+- `DMF_SunDirection` now represents the world-to-sun direction expected by sky materials, while the Directional Light itself keeps the correct ray-travel rotation.
+
+- Added Blueprint-derivable `ADMFDayNightSky` as the shared authoritative world clock/sky actor.
+- Added selectable `Host PC System Time` and persistent `Simulated / GTA Style` clock modes.
+- Added sparse replicated time anchors with local client interpolation based on synchronized GameState server world time; no per-frame time RPCs.
+- Added Blueprint runtime values/calls/events for current time, normalized time, day index, Day/Night phase, `IsDay`, `IsNight`, phase changes and time synchronization.
+- Added separate server-owned `UDMFWorldStateSaveGame` (`SchemaVersion=1`) and configurable `WorldStateSaveSlot` so shared simulated world time is not duplicated into per-account saves. Account save schema remains v6.
+- Added optional native movable Sun/Moon, SkyLight, SkyAtmosphere and outer SkyDome presentation components.
+- Added an always-visible `DigitalInnerSkyLayerComponent` with project-selected mesh/material/texture, opacity/tint/UV controls and MID parameters (`DMF_InnerLayerTexture`, alpha-friendly opacity, UV scale/offset, time/day/sun values).
+- Digital inner-layer UV panning is driven from synchronized server-world time so host and remote clients stay phase-aligned without replicating material parameters.
+- Added `EDMFWildPopulationScheduleMode` and independent Day/Night rarity weights + spawn-entry arrays to `DMFWildDigimonSpawner`. Legacy `SpawnEntries` behavior remains the default.
+- Day/Night spawners preserve the v0.14.5 two-stage rarity normalization inside each active population set.
+- Added polished phase swapping: previous ambient population retires via existing ground despawn; old-phase Digimon already in combat may finish before retirement; new-phase population is cap-checked and staggered through the existing queue.
+- Added replicated `ReplicatedPopulationPhase`, `GetPopulationPhase` and `BP_OnPopulationPhaseChanged` for presentation/debugging only.
+- Added a one-shot server setup warning when a Day/Night spawner cannot resolve a `DMFDayNightSky`; the spawner safely uses its configured missing-sky fallback instead of failing or log-spamming.
+- Added `Docs/SETUP_DAY_NIGHT_SKY.md` and expanded spawner/networking/architecture/test/config documentation.
+
+## 0.15.3-alpha — Canonical Species Stage Presentation Fix
+
+### Fixed — species-authored evolution stage labels
+- Fixed framework-native runtime UI being able to expose the legacy serialized enum identifiers `BabyI` / `BabyII` instead of the canonical Digimon labels **Fresh** / **In-Training**.
+- `DMFDigimonSpeciesData::Stage` remains the authoritative per-species source. World nameplates, Starter Selection, Party/Bank, Scan & Materialize, Care, DigiDex, DigiDex stage search/filter labels and Digivolution source/target/path presentation now all resolve that value through one shared canonical formatter.
+- Added Blueprint-pure `Get Digimon Stage Display Text` in `UDMFDigimonPresentationLibrary` so custom UI can use the exact same runtime-safe label contract.
+
+### Compatibility / networking
+- The serialized `EDMFDigimonStage` enum identifiers, numeric ordering and species asset values are **not renamed or reordered**. Existing assets that store `BabyI`/`BabyII` continue loading exactly as before; only their displayed text is canonicalized to Fresh/In-Training.
+- Presentation-only release: no RPC, replicated gameplay property, SaveGame schema, Digivolution requirement, combat, persistence or authority change.
+
 ## 0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport
 
 ### UE5.8 compile fix

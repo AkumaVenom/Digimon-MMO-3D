@@ -112,6 +112,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Identity", meta=(MultiLine=true))
     FText Description;
 
+    /** Authoritative evolution-stage classification used by every native presentation surface. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Identity")
     EDMFDigimonStage Stage = EDMFDigimonStage::Rookie;
 

@@ -3,6 +3,8 @@
 #include "Components/DMFDigimonCombatComponent.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFPlayerState.h"
+#include "Game/DMFDayNightSky.h"
+#include "Settings/DMFFrameworkSettings.h"
 #include "Data/DMFDigimonAbilityData.h"
 #include "Components/Border.h"
 #include "Components/HorizontalBox.h"
@@ -17,6 +19,7 @@
 #include "Components/VerticalBoxSlot.h"
 #include "Blueprint/WidgetTree.h"
 #include "Engine/Texture2D.h"
+#include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
 #include "UI/DMFNativeUIStyle.h"
@@ -116,13 +119,59 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
     if (UHorizontalBoxSlot* VitalsSlot = InfoRow->AddChildToHorizontalBox(VitalsText))
     {
         VitalsSlot->SetSize(DMFNativeUI::FillSize());
+        VitalsSlot->SetVerticalAlignment(VAlign_Center);
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    USizeBox* ClockSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("WorldClockContainer"));
+    ClockSize->SetWidthOverride(168.0f);
+    ClockSize->SetHeightOverride(28.0f);
+    ClockSize->SetVisibility(!Settings || Settings->bShowCombatQuickBarWorldClock ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    NativeWorldClockContainer = ClockSize;
+    if (UHorizontalBoxSlot* ClockRowSlot = InfoRow->AddChildToHorizontalBox(ClockSize))
+    {
+        ClockRowSlot->SetHorizontalAlignment(HAlign_Center);
+        ClockRowSlot->SetVerticalAlignment(VAlign_Center);
+        ClockRowSlot->SetPadding(FMargin(10.0f, 0.0f));
+    }
+
+    UBorder* ClockBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("WorldClockBorder"));
+    DMFNativeUI::StylePanel(ClockBorder, FLinearColor(0.018f, 0.050f, 0.090f, 0.98f), FMargin(8.0f, 3.0f));
+    ClockSize->AddChild(ClockBorder);
+
+    UHorizontalBox* ClockRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("WorldClockRow"));
+    ClockBorder->AddChild(ClockRow);
+
+    WorldClockText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("WorldClockText"));
+    WorldClockText->SetText(NSLOCTEXT("DMF", "WorldClockSyncing", "--:-- --"));
+    WorldClockText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(WorldClockText, 13, DMFNativeUI::Text(), true);
+    if (UHorizontalBoxSlot* ClockTimeSlot = ClockRow->AddChildToHorizontalBox(WorldClockText))
+    {
+        ClockTimeSlot->SetSize(DMFNativeUI::FillSize());
+        ClockTimeSlot->SetVerticalAlignment(VAlign_Center);
+    }
+
+    WorldClockPhaseText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("WorldClockPhaseText"));
+    WorldClockPhaseText->SetText(NSLOCTEXT("DMF", "WorldClockPhaseSyncing", "SYNC"));
+    WorldClockPhaseText->SetJustification(ETextJustify::Right);
+    WorldClockPhaseText->SetVisibility(!Settings || Settings->bShowCombatQuickBarWorldClockPhase ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    DMFNativeUI::StyleText(WorldClockPhaseText, 9, DMFNativeUI::Muted(), true);
+    if (UHorizontalBoxSlot* ClockPhaseSlot = ClockRow->AddChildToHorizontalBox(WorldClockPhaseText))
+    {
+        ClockPhaseSlot->SetVerticalAlignment(VAlign_Center);
+        ClockPhaseSlot->SetPadding(FMargin(6.0f, 0.0f, 0.0f, 0.0f));
     }
 
     TargetText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("TargetText"));
     TargetText->SetText(NSLOCTEXT("DMF", "NoCombatTargetPolished", "TARGET  •  NONE"));
     TargetText->SetJustification(ETextJustify::Right);
     DMFNativeUI::StyleText(TargetText, 13, DMFNativeUI::Muted(), true);
-    InfoRow->AddChildToHorizontalBox(TargetText)->SetHorizontalAlignment(HAlign_Right);
+    if (UHorizontalBoxSlot* TargetInfoSlot = InfoRow->AddChildToHorizontalBox(TargetText))
+    {
+        TargetInfoSlot->SetHorizontalAlignment(HAlign_Right);
+        TargetInfoSlot->SetVerticalAlignment(VAlign_Center);
+    }
 
     AbilityBox = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("AbilityBox"));
     if (UVerticalBoxSlot* AbilityRowSlot = BarColumn->AddChildToVerticalBox(AbilityBox))
@@ -183,6 +232,96 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
     }
 }
 
+ADMFDayNightSky* UDMFCombatQuickBarWidget::ResolveDayNightSky()
+{
+    if (BoundDayNightSky.IsValid())
+    {
+        return BoundDayNightSky.Get();
+    }
+
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return nullptr;
+    }
+
+    const double WorldSeconds = static_cast<double>(World->GetTimeSeconds());
+    if (WorldSeconds < NextDayNightSkyResolveAttemptSeconds)
+    {
+        return nullptr;
+    }
+    NextDayNightSkyResolveAttemptSeconds = WorldSeconds + 1.0;
+
+    for (TActorIterator<ADMFDayNightSky> It(World); It; ++It)
+    {
+        if (IsValid(*It))
+        {
+            BoundDayNightSky = *It;
+            return *It;
+        }
+    }
+    return nullptr;
+}
+
+void UDMFCombatQuickBarWidget::RefreshWorldClock()
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bShowClock = !Settings || Settings->bShowCombatQuickBarWorldClock;
+    if (USizeBox* ClockContainer = NativeWorldClockContainer.Get())
+    {
+        ClockContainer->SetVisibility(bShowClock ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    }
+    if (WorldClockText)
+    {
+        WorldClockText->SetVisibility(bShowClock ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    }
+    if (WorldClockPhaseText && !bShowClock)
+    {
+        WorldClockPhaseText->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    if (!bShowClock)
+    {
+        return;
+    }
+
+    ADMFDayNightSky* Sky = ResolveDayNightSky();
+    if (!Sky)
+    {
+        if (WorldClockText)
+        {
+            WorldClockText->SetText(NSLOCTEXT("DMF", "WorldClockSyncing", "--:-- --"));
+            WorldClockText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
+        }
+        if (WorldClockPhaseText)
+        {
+            WorldClockPhaseText->SetVisibility(Settings && !Settings->bShowCombatQuickBarWorldClockPhase ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+            WorldClockPhaseText->SetText(NSLOCTEXT("DMF", "WorldClockPhaseSyncing", "SYNC"));
+            WorldClockPhaseText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
+        }
+        return;
+    }
+
+    if (WorldClockText)
+    {
+        WorldClockText->SetText(Sky->GetFormattedTime12Hour(false));
+        WorldClockText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Text()));
+    }
+
+    if (WorldClockPhaseText)
+    {
+        const bool bShowPhase = !Settings || Settings->bShowCombatQuickBarWorldClockPhase;
+        WorldClockPhaseText->SetVisibility(bShowPhase ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+        if (bShowPhase)
+        {
+            const bool bDay = Sky->GetDayNightPhase() == EDMFDayNightPhase::Day;
+            WorldClockPhaseText->SetText(bDay
+                ? NSLOCTEXT("DMF", "WorldClockDay", "DAY")
+                : NSLOCTEXT("DMF", "WorldClockNight", "NIGHT"));
+            WorldClockPhaseText->SetColorAndOpacity(FSlateColor(bDay ? DMFNativeUI::Gold() : DMFNativeUI::Accent()));
+        }
+    }
+}
+
 UDMFPlayerDigimonComponent* UDMFCombatQuickBarWidget::ResolveDigimonComponent() const
 {
     APlayerController* OwningController = GetOwningPlayer();
@@ -192,6 +331,9 @@ UDMFPlayerDigimonComponent* UDMFCombatQuickBarWidget::ResolveDigimonComponent() 
 
 void UDMFCombatQuickBarWidget::RefreshFromPartner()
 {
+    // World time is independent of partner availability and comes exclusively from the replicated Day/Night sky.
+    RefreshWorldClock();
+
     if (!BoundDigimonComponent)
     {
         BoundDigimonComponent = ResolveDigimonComponent();

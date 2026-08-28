@@ -1,3 +1,32 @@
+# UE5.8 Validation Plan — 0.16.0-alpha
+
+## v0.16.0 Day / Night sky + population acceptance
+
+1. Place one Blueprint derived from `DMFDayNightSky` in Open World. **Before PIE**, keep `Preview Sky In Editor=true` and scrub `Initial Simulated Time Hours`: verify 00:00 is night, 06:00 horizon/dawn, 12:00 is full day with the native Sun overhead, 18:00 horizon/dusk, and `bIsDay`/`bIsNight` match the configured phase bounds. The editor must update without Play/Simulate.
+2. Run listen-server PIE plus one remote client. With persistence temporarily disabled/cleared for this initialization test, set `Initial Simulated Time Hours=12.0` and verify both peers start in Day (not the old inverted night/sunset presentation). Then use a 60-second day and confirm host/client time, sun/material motion and Day/Night phase remain synchronized through multiple transitions.
+3. Stop/restart the session and confirm simulated time restores from the shared world-state save.
+4. Host-PC mode: confirm the server follows the host machine local clock and the remote client follows that server-authored time rather than its own PC clock.
+5. Verify `Is Day`, `Is Night`, `Get Time Of Day Hours`, `Get Current Day Index` and phase events on both peers.
+6. Assign a translucent digital inner-layer material/texture with obvious alpha holes. Confirm the texture remains enabled in Day and Night and the outer sky remains visible behind transparent texels.
+7. Configure one wild spawner for Day/Night with clearly different species arrays and rarity weights. Confirm only the correct table produces new Digimon for each phase.
+8. Cross a phase boundary with no combat: old ambient population should ground-despawn and the new population should stagger in.
+9. Cross a boundary while fighting an old-phase Digimon: with the default safety setting, that encounter must remain intact until combat ends, then retire without scheduling an old-phase replacement.
+10. Verify the spawner's normalized rarity behavior still matches v0.14.5 within both Day and Night tables.
+11. Verify no client can change time or choose population entries and that spawned actors remain normally replicated.
+
+
+## S0 — v0.15.3 canonical species-stage presentation acceptance
+
+1. Set a Botamon/Fresh Species Data Asset to **Stage = Fresh** (the editor dropdown display for the preserved first-stage enum value). Spawn it as a wild Digimon and confirm its world nameplate reads **Fresh**, never `BabyI` / `Baby I`.
+2. Set an In-Training species to **Stage = In-Training** and confirm the world nameplate reads **In-Training**, never `BabyII` / `Baby II`.
+3. Verify one species for every configured stage used by the project. World nameplates must exactly follow that species asset's Stage value.
+4. Open Starter Selection, Party, Bank / Boxes, Scan & Materialize, Care, DigiDex and Digivolution. Confirm the same species reports the same canonical stage in every native surface.
+5. In DigiDex, search for `Fresh` and cycle the stage filter to Fresh; verify Fresh species match. Legacy words `BabyI`/`BabyII` must not be required for search/presentation.
+6. Call Blueprint **Get Digimon Stage Display Text** for every `EDMFDigimonStage` value and verify: Fresh, In-Training, Rookie, Champion, Ultimate, Mega, Ultra, Armor, Hybrid, Unknown.
+7. Load existing Species Data Assets authored before v0.15.3 and confirm their saved stage values are unchanged; no asset migration, save wipe or Blueprint enum remapping should be needed.
+8. Listen host + remote client: observe the same wild/partner species from both peers and confirm stage text is consistent while all existing combat/nameplate replication remains unchanged.
+
+
 ## Native Return Home HUD acceptance (v0.15.2)
 
 1. Use the runtime-validated v0.15.1 world setup with one enabled `DMFNewPlayerStart`; set `Enable Party Quick Access Home Button=true`.
@@ -675,3 +704,19 @@ The baseline should not be treated as networking-accepted until it passes a pack
 Test Party and Bank + buttons, exact one-point/one-stat mutation, zero-point disabled state, MaxHP/MaxSP missing-resource preservation, defeated HP remaining zero, active-partner replication without respawn/combat reset, persistence after reconnect, owner privacy in two-client PIE, and every Digimon Menu tab at 16:9/short-height/DPI scaling to confirm no child/action control renders below the modal border.
 
 **Party detail scroll acceptance:** at a short viewport comparable to 1644x864, select one Party Digimon and confirm the right identity/portrait header remains stable while a single vertical scroll lane reaches Stats/EXP -> Attribute Point controls -> species description -> `SET ACTIVE / SUMMON` -> `RECALL ACTIVE PARTNER` -> `MOVE TO BANK`. Confirm mouse-wheel scrolling over the description continues the outer Party body rather than being trapped in a nested scroll box; click each reachable action and verify its existing server-authoritative behavior is unchanged.
+
+
+### v0.16.0 outer sky solar visual regression
+- With a sky material exposing conventional `Light direction` and `Sun height` parameters, accelerate the simulated clock and verify the visible sun disc follows the native Directional Light continuously in editor preview, listen host and remote client. Clouds/digital inner-layer UVs must not rotate as a side effect.
+
+## v0.16.1 — 12-hour replicated world-clock HUD acceptance
+
+1. Use the accepted v0.16.0 sky and set Simulated day length to 60 seconds for accelerated validation.
+2. Run listen host + remote client and confirm both ability quickbars display the same `h:mm AM/PM` time.
+3. Validate midnight (`12:00 AM`), noon (`12:00 PM`) and an afternoon value such as 18:30 (`6:30 PM`).
+4. Confirm DAY/NIGHT label changes at the sky's authored phase boundaries and agrees with sky lighting and active wild population table.
+5. Switch to Host-PC mode; confirm remote clients follow the host/server clock, not the remote machine's local clock.
+6. Temporarily remove/disable the sky and confirm the HUD fails softly to `--:-- -- / SYNC` without log spam or gameplay failure, then restores automatically when a valid sky is available.
+7. Disable `Show Combat Quick Bar World Clock Phase`, then `Show Combat Quick Bar World Clock`, and confirm the native layout collapses cleanly.
+8. Regression-test ability clicks, cooldown presentation, partner HP/SP, target text, Party Quick Access, Home, world chat and Day/Night spawner swapping.
+

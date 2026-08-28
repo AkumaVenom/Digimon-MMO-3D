@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1520,
-  "VersionName": "0.15.2-alpha",
+  "Version": 1601,
+  "VersionName": "0.16.1-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with native Party Quick Access Return Home teleport/notifications, persistent per-account player world locations, dedicated first-login spawn points, framework-owned frontend background layering, Attribute Point spending, species-owned EXP/level progression, full-moveset wild combat, CustomDepth VFX/markers, normalized rarity spawning, persistent battle music, targeting, projectiles, DigiDex, Digivolution, Party/Bank, Care, Scan/Materialization and account persistence.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with replicated persistent Day/Night world time, a native replicated 12-hour quick-access world clock HUD, Host-PC or simulated GTA-style clock modes, digital inner-sky layering, day/night wild populations, canonical species stages, Return Home, player-location persistence, progression, combat, DigiDex, Digivolution, Party/Bank, Care, Scan/Materialization and account persistence.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

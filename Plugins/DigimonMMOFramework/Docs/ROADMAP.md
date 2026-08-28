@@ -1,5 +1,15 @@
 # Production Roadmap
 
+- [x] **v0.16.1** Replicated 12-hour world clock integrated into the combat/ability quick-access HUD, with optional Day/Night status and Blueprint formatting/bindings.
+- [x] **v0.16.0** Replicated persistent Day/Night world clock/sky, Host-PC or simulated time, always-visible digital inner-sky layer, and authoritative Day/Night wild population sets.
+
+
+## Completed — v0.15.3 canonical species stage presentation
+- Species Data Asset `Stage` is now the single presentation source across every native stage label.
+- Fresh / In-Training and all later stages use an explicit runtime-safe canonical formatter, with a Blueprint-pure helper for custom UI.
+- Legacy serialized enum identifiers remain untouched for backward compatibility.
+
+
 The plugin is intentionally being built in dependency order rather than as isolated feature demos.
 
 ## Phase 1 — Foundation (complete in v0.1.0)

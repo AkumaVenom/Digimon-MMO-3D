@@ -279,6 +279,14 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFCombatQuickBarWidget> CombatQuickBarWidgetClass;
 
+    /** Shows the replicated/interpolated Day/Night world clock inside the native combat ability quick-access header. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Combat Quick Access|World Clock")
+    bool bShowCombatQuickBarWorldClock = true;
+
+    /** Adds the compact DAY/NIGHT state beside the 12-hour digital time. The phase comes from DMFDayNightSky. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Combat Quick Access|World Clock", meta=(EditCondition="bShowCombatQuickBarWorldClock"))
+    bool bShowCombatQuickBarWorldClockPhase = true;
+
     /** Persistent six-slot Party HUD. Assign a Blueprint child to reskin it without replacing Party authority. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access")
     TSubclassOf<UDMFPartyQuickBarWidget> PartyQuickBarWidgetClass;
@@ -655,6 +663,10 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence", meta=(ClampMin="5.0"))
     float AccountAutosaveInterval = 30.0f;
+
+    /** Server-owned world-state slot used by persistent shared systems such as the simulated Day/Night clock. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence|World State")
+    FString WorldStateSaveSlot = TEXT("DMF_ServerWorldState");
 
     /**
      * Saves each authenticated player's authoritative gameplay location/rotation into their account and restores it

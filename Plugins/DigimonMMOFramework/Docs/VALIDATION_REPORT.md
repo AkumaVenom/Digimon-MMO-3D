@@ -1,3 +1,52 @@
+# v0.16.1-alpha validation summary
+
+## Replicated 12-hour world-clock quick-access HUD source validation
+- Built directly on the user-runtime-validated v0.16.0 `ReplicatedPersistentDayNightSkyPopulationSystem_SunVisualSyncFix` baseline.
+- Added one Blueprint-pure presentation helper, `ADMFDayNightSky::GetFormattedTime12Hour`, which formats the existing smooth replicated/interpolated world clock as `h:mm AM/PM` or optional `h:mm:ss AM/PM`. Midnight/noon are explicitly handled as `12:xx AM` / `12:xx PM`.
+- Extended the native `DMFCombatQuickBarWidget` header with a compact center clock card between partner vitals and target state. Native presentation is `h:mm AM/PM` plus optional color-coded `DAY` / `NIGHT`; unresolved sky state fails softly to `--:-- -- / SYNC`.
+- The widget resolves `DMFDayNightSky` locally, weak-caches it, and retries actor discovery at most once per second while unresolved. Normal clock text updates reuse the quickbar's existing 0.15-second local refresh timer. There is no new widget Tick, network timer, clock RPC, replicated UMG property or client PC time read.
+- Added two Project Settings booleans under `UI|Combat Quick Access|World Clock`: show the clock and show the phase label. Added optional `WorldClockText` / `WorldClockPhaseText` BindWidget fields for Blueprint quickbar reskins.
+- Multiplayer truth is unchanged: v0.16.0 `DMFDayNightSky` remains the source. Host-PC mode follows the authority machine through the existing replicated anchor; Simulated mode follows the persistent server world clock.
+- Static baseline comparison: **134 -> 135 packaged files**, **92 source/header/build files unchanged**, **28,378 source/build lines**, **48 UCLASS**, **19 UENUM**, **19 USTRUCT**, **484 UFUNCTION**, **926 UPROPERTY**, and **47 RPC declarations**. Zero baseline files, existing reflected UFUNCTION names or RPC names are removed. The only reflected function addition is `GetFormattedTime12Hour`; all serialized enum bodies are byte-equivalent after normalization.
+- Generated-header include ordering passes, changed C++ delimiter counts are balanced, plugin descriptor parses as valid JSON, account schema remains v6, world-state schema remains v1, and no exact `U*Slot* Slot` UI shadow candidate was introduced.
+- UE5.8/UnrealBuildTool is not available in this assembly environment. Required acceptance is `TEST_PLAN.md` section **v0.16.1 — 12-hour replicated world-clock HUD acceptance**, followed by v0.16.0 Day/Night sky/population regression and ability quickbar interaction checks.
+
+# v0.16.0-alpha validation summary
+
+### v0.16.0 sky-dome solar visual compatibility correction
+- Added three presentation-only reflected properties on `ADMFDayNightSky`: the compatibility master toggle plus configurable `Light direction` and `Sun height` parameter names.
+- `ApplySkyVisuals` now pushes those outer-dome MID parameters from the already-existing interpolated solar solution. No RPC, replicated property, SaveGame field, spawner selection, time authority, sky tick rate or persistence behavior changed.
+- The sky mesh and digital inner-layer transforms are not rotated by this compatibility path; only MID parameters are updated locally.
+
+
+## Replicated persistent Day/Night world + population source validation
+- Built directly from the user-runtime-validated v0.15.3 `CanonicalSpeciesStagePresentationFix` baseline. UE5.8/UnrealBuildTool is not installed in this assembly environment, so a clean UE5.8 Editor compile plus listen-host/remote-client runtime test remains the authoritative acceptance gate.
+- Added Blueprint-derivable `ADMFDayNightSky`. The authority owns Host-PC or accelerated Simulated time; clients receive sparse replicated time anchors and interpolate locally from synchronized `GameState` server-world time. There is no per-frame time RPC or client-authored clock path.
+- Added explicit Blueprint-facing `IsDay` / `IsNight`, phase/time/day queries, synchronization/phase events, and authority-only runtime time controls. Host-PC mode reads `FDateTime::Now()` only on authority; its Gregorian whole-day key is derived from the host local date so the exposed day index advances at local midnight (not Julian noon) and remains valid across month/year rollover.
+- Added separate server-owned `UDMFWorldStateSaveGame` schema v1 plus configurable `WorldStateSaveSlot`. Only Simulated time persists; the existing per-account save schema remains **v6** and no account persistence fields are changed.
+- Added optional native Sun/Moon/SkyLight/SkyAtmosphere/SkyDome presentation with local-only 20 Hz default updates and no forced per-update SkyLight recapture. Dedicated servers disable visual actor ticking. The revised candidate corrects the solar rotation so 12:00 places the Sun overhead instead of below the horizon, and `DMF_SunDirection` now represents world-to-sun direction for project materials.
+- Added automatic editor-time sky preview: Simulated mode previews `InitialSimulatedTimeHours`, Host-PC mode previews the local editor clock, editor phase convenience values update, MIDs rebuild automatically, and `RefreshSkyPresentation` is also Call-In-Editor. Runtime presentation now initializes only after the authoritative/persisted time anchor has been established.
+- Added performance-bounded native SkyLight coherence: one recapture on explicit/editor presentation refresh and optional recapture only at Day/Night phase transitions, never at the 20 Hz visual tick rate.
+- Added an always-visible digital inner-sky layer with project-authored translucent material + texture alpha contract, runtime texture/opacity/tint/UV parameters, and synchronized-server-time UV panning. Transparent texels remain the material's responsibility and reveal the outer sky behind them.
+- Extended `DMFWildDigimonSpawner` without replacing its legacy `SpawnEntries`: `Always` remains the default; opt-in Day/Night mode supplies separate Day/Night rarity weights and familiar spawn-entry arrays. Authority chooses the phase/table and retains the accepted v0.14.5 two-stage rarity normalization.
+- Population transitions suppress wrong-phase respawns, retire non-engaged old-phase ambient Digimon through the existing ground-despawn path, allow engaged old-phase encounters to finish by default, and stagger the newly active population through the existing queue. Missing sky configuration produces one server warning and uses the configured fallback phase.
+- The current spawner phase replicates only for presentation/debugging. Time source, table selection, rarity, species, level, placement, retirement and replacement remain server-only decisions.
+- Existing serialized enum bodies are unchanged. v0.16 appends only `EDMFDayNightTimeSource`, `EDMFDayNightPhase` and `EDMFWildPopulationScheduleMode`; no existing enum value is renamed/reordered.
+- Static baseline comparison: **130 -> 134 packaged files**, **89 -> 92 source/header/build files**, **28,148 source/build lines**, **48 UCLASS**, **19 UENUM**, **19 USTRUCT**, **483 UFUNCTION**, **919 UPROPERTY**, and **47 RPC declarations**. Exactly four files are added: the sky header/source, world-state SaveGame header and `SETUP_DAY_NIGHT_SKY.md`. Zero baseline files, existing reflected UFUNCTION names or RPC names are removed; all 47 RPCs retain matching `_Implementation` bodies.
+- Generated-header include ordering passes, changed C++ delimiter counts are balanced, plugin descriptor parses as valid JSON, account schema remains v6, world-state schema is v1, and no TODO/FIXME marker is introduced in changed runtime source.
+- Required runtime acceptance is `TEST_PLAN.md` section **v0.16.0 Day / Night sky + population acceptance**, followed by regression checks for v0.15.3 stage presentation, v0.15.2 Home, v0.15.1 location persistence, combat, Party/Bank/EXP/Attributes, world chat and frontend flow.
+
+# v0.15.3-alpha validation summary
+
+## Canonical species-authored stage presentation source validation
+- Built from the user-runtime-validated v0.15.2 `NativeReturnHomeHUDServerTeleport_UE58CompileFix` baseline.
+- Root issue: user-facing UI was reading runtime enum display metadata directly. The first two serialized identifiers are intentionally retained as `BabyI` / `BabyII` for compatibility, so a metadata fallback could expose those internal names even though their editor display metadata is Fresh / In-Training.
+- Added `UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText`, an explicit localized switch for every `EDMFDigimonStage` value. `DMFDigimonSpeciesData::Stage` remains the source of truth.
+- Rewired all framework-native stage presentation paths: world nameplates, Starter Selection, Party/Bank, Scan, Care, DigiDex details/search/filter, and Digivolution source/target/path labels.
+- The `EDMFDigimonStage` serialized identifiers and order are unchanged. No species asset migration, SaveGame migration, RPC, replicated property or gameplay-authority change is introduced.
+- Runtime acceptance requires `TEST_PLAN.md` section **S0**, especially Fresh/In-Training world nameplates plus cross-surface consistency.
+- Static gate for this candidate: **130 packaged files, 89 source/header/build files, 26,569 source/build lines, 46 UCLASS, 16 UENUM, 18 USTRUCT, 464 UFUNCTION and 841 UPROPERTY declarations**. All **47 RPC declarations** are unchanged from v0.15.2 and retain matching `_Implementation` bodies. Compared with v0.15.2, zero baseline files/reflected functions/RPCs were removed; only the presentation library header/source were added.
+
 # v0.15.2-alpha validation summary
 
 

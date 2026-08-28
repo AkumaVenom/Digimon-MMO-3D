@@ -92,3 +92,7 @@ The widget also exposes:
 ## Dedicated-server note
 
 Widget presentation is disabled on dedicated-server instances. The server still owns authentication, Digimon state and combat normally; connected clients construct their own local nameplate presentation from replicated state.
+
+## Canonical Digivolution stage labels (v0.15.3)
+
+Digimon world nameplates read the stage directly from the resolved `DMFDigimonSpeciesData::Stage`. Native presentation then passes that value through `Get Digimon Stage Display Text`, so runtime/cooked builds always show canonical labels (`Fresh`, `In-Training`, `Rookie`, `Champion`, `Ultimate`, `Mega`, `Ultra`, `Armor`, `Hybrid`, `Unknown`) rather than serialized enum identifiers such as `BabyI`. Configure the **Stage** on each Species Data Asset; do not duplicate stage text in a nameplate Blueprint.

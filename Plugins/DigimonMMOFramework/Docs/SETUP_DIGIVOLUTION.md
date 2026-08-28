@@ -221,3 +221,7 @@ Run a listen host plus second client and verify:
 
 ## DigiDex family links
 The v0.14 DigiDex reads the same authored `Digivolutions` arrays to show incoming/outgoing family context. These links are informational; eligibility and form mutation remain exclusively on the authoritative Digivolution system.
+
+## Stage text source of truth (v0.15.3)
+
+Every Digivolution source/target/path label is derived from the source or target `DMFDigimonSpeciesData::Stage`. Framework UI does not infer stage from species name or evolution-path position. Set the correct **Stage** on each Species Data Asset and the shared canonical formatter will present Fresh / In-Training / Rookie / Champion / Ultimate / Mega / Ultra / Armor / Hybrid consistently across Digivolution and the rest of the native UI.

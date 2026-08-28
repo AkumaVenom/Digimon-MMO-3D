@@ -26,7 +26,10 @@ UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFWildDigimonSpawner(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWildSpawnEntry(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDayNightSky(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCharacter(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonSpeciesData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFWildDigimonCharacter(ETypeConstructPhase);
@@ -396,6 +399,71 @@ UScriptStruct* Z_Construct_UScriptStruct_FDMFWildSpawnEntry(ETypeConstructPhase 
 #undef UHT_STATICS
 // ********** End ScriptStruct FDMFWildSpawnEntry **************************************************
 
+// ********** Begin Class ADMFWildDigimonSpawner Function BP_OnPopulationPhaseChanged **************
+struct DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms
+{
+	EDMFDayNightPhase NewPhase;
+	EDMFDayNightPhase PreviousPhase;
+};
+static FName NAME_ADMFWildDigimonSpawner_BP_OnPopulationPhaseChanged = FName(TEXT("BP_OnPopulationPhaseChanged"));
+void ADMFWildDigimonSpawner::BP_OnPopulationPhaseChanged(EDMFDayNightPhase NewPhase, EDMFDayNightPhase PreviousPhase)
+{
+	DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms Parms;
+	Parms.NewPhase=NewPhase;
+	Parms.PreviousPhase=PreviousPhase;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFWildDigimonSpawner_BP_OnPopulationPhaseChanged);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFWildDigimonSpawner_BP_OnPopulationPhaseChanged_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Events" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BP_OnPopulationPhaseChanged constinit property declarations ***********
+	static const UECodeGen_Private::FBytePropertyParams NewProp_NewPhase_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_NewPhase;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_PreviousPhase_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_PreviousPhase;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BP_OnPopulationPhaseChanged constinit property declarations *************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BP_OnPopulationPhaseChanged Property Definitions **********************
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_NewPhase_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewPhase = { "NewPhase", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms, NewPhase), Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, METADATA_PARAMS(0, nullptr) }; // 78bba6eb7608900637e4f59c3fc53f23bdfcfc40
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_PreviousPhase_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_PreviousPhase = { "PreviousPhase", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms, PreviousPhase), Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, METADATA_PARAMS(0, nullptr) }; // 78bba6eb7608900637e4f59c3fc53f23bdfcfc40
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewPhase_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewPhase,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PreviousPhase_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PreviousPhase,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BP_OnPopulationPhaseChanged Property Definitions ************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFWildDigimonSpawner, nullptr, "BP_OnPopulationPhaseChanged", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x08020800, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFWildDigimonSpawner_eventBP_OnPopulationPhaseChanged_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFWildDigimonSpawner_BP_OnPopulationPhaseChanged(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Class ADMFWildDigimonSpawner Function BP_OnPopulationPhaseChanged ****************
+
 // ********** Begin Class ADMFWildDigimonSpawner Function BP_OnSpawnerStateChanged *****************
 struct DMFWildDigimonSpawner_eventBP_OnSpawnerStateChanged_Parms
 {
@@ -666,6 +734,62 @@ DEFINE_FUNCTION(ADMFWildDigimonSpawner::execGetAliveSpawnCount)
 }
 // ********** End Class ADMFWildDigimonSpawner Function GetAliveSpawnCount *************************
 
+// ********** Begin Class ADMFWildDigimonSpawner Function GetPopulationPhase ***********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFWildDigimonSpawner_GetPopulationPhase_Statics
+struct UHT_STATICS
+{
+	struct DMFWildDigimonSpawner_eventGetPopulationPhase_Parms
+	{
+		EDMFDayNightPhase ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetPopulationPhase constinit property declarations ********************
+	static const UECodeGen_Private::FBytePropertyParams NewProp_ReturnValue_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetPopulationPhase constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetPopulationPhase Property Definitions *******************************
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ReturnValue_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWildDigimonSpawner_eventGetPopulationPhase_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, METADATA_PARAMS(0, nullptr) }; // 78bba6eb7608900637e4f59c3fc53f23bdfcfc40
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetPopulationPhase Property Definitions *********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFWildDigimonSpawner, nullptr, "GetPopulationPhase", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFWildDigimonSpawner_eventGetPopulationPhase_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFWildDigimonSpawner_eventGetPopulationPhase_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFWildDigimonSpawner_GetPopulationPhase(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFWildDigimonSpawner::execGetPopulationPhase)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(EDMFDayNightPhase*)Z_Param__Result=P_THIS->GetPopulationPhase();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFWildDigimonSpawner Function GetPopulationPhase *************************
+
 // ********** Begin Class ADMFWildDigimonSpawner Function GetTargetPopulation **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -886,6 +1010,62 @@ DEFINE_FUNCTION(ADMFWildDigimonSpawner::execIsSpawnerActive)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFWildDigimonSpawner Function IsSpawnerActive ****************************
+
+// ********** Begin Class ADMFWildDigimonSpawner Function OnRep_PopulationPhase ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFWildDigimonSpawner_OnRep_PopulationPhase_Statics
+struct UHT_STATICS
+{
+	struct DMFWildDigimonSpawner_eventOnRep_PopulationPhase_Parms
+	{
+		EDMFDayNightPhase PreviousPhase;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OnRep_PopulationPhase constinit property declarations *****************
+	static const UECodeGen_Private::FBytePropertyParams NewProp_PreviousPhase_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_PreviousPhase;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function OnRep_PopulationPhase constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function OnRep_PopulationPhase Property Definitions ****************************
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_PreviousPhase_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_PreviousPhase = { "PreviousPhase", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWildDigimonSpawner_eventOnRep_PopulationPhase_Parms, PreviousPhase), Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, METADATA_PARAMS(0, nullptr) }; // 78bba6eb7608900637e4f59c3fc53f23bdfcfc40
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PreviousPhase_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PreviousPhase,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function OnRep_PopulationPhase Property Definitions ******************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFWildDigimonSpawner, nullptr, "OnRep_PopulationPhase", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFWildDigimonSpawner_eventOnRep_PopulationPhase_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00080401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFWildDigimonSpawner_eventOnRep_PopulationPhase_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFWildDigimonSpawner_OnRep_PopulationPhase(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFWildDigimonSpawner::execOnRep_PopulationPhase)
+{
+	P_GET_ENUM(EDMFDayNightPhase,Z_Param_PreviousPhase);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OnRep_PopulationPhase(EDMFDayNightPhase(Z_Param_PreviousPhase));
+	P_NATIVE_END;
+}
+// ********** End Class ADMFWildDigimonSpawner Function OnRep_PopulationPhase **********************
 
 // ********** Begin Class ADMFWildDigimonSpawner Function OnRep_SpawnerState ***********************
 #ifdef UHT_STATICS
@@ -1324,7 +1504,117 @@ struct UHT_STATICS
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SpawnEntries_MetaData[] = {
 		{ "Category", "Digimon MMO|Wild Spawner|Spawn Table" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Existing always-available/legacy population. Used directly when Population Schedule Mode is Always. */" },
+#endif
+		{ "DisplayName", "Always / Legacy Spawn Entries" },
 		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Existing always-available/legacy population. Used directly when Population Schedule Mode is Always." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PopulationScheduleMode_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional day/night population swap. The authoritative DMFDayNightSky decides which table is eligible. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional day/night population swap. The authoritative DMFDayNightSky decides which table is eligible." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DayNightSkyOverride_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional explicit sky actor for this spawner. Leave unset to auto-discover the first authoritative DMFDayNightSky in the world. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional explicit sky actor for this spawner. Leave unset to auto-discover the first authoritative DMFDayNightSky in the world." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DayRarityWeights_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Day" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Day-specific rarity tier weights. Species-count normalization remains identical to the legacy table. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Day-specific rarity tier weights. Species-count normalization remains identical to the legacy table." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DaySpawnEntries_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Day" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Day. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Day." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NightRarityWeights_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Night" },
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NightSpawnEntries_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Night" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Night. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Same entry authoring contract as the original SpawnEntries array, but used only while the world sky says Night." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Compatibility safety: an empty Day/Night table falls back to Always / Legacy Spawn Entries instead of producing no population. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Compatibility safety: an empty Day/Night table falls back to Always / Legacy Spawn Entries instead of producing no population." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bRetirePreviousPopulationOnPhaseChange_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Transition" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Retire old-phase Digimon and stagger replacements from the newly active table when Day/Night changes. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Retire old-phase Digimon and stagger replacements from the newly active table when Day/Night changes." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bKeepEngagedWildUntilCombatEnds_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Transition" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Polished MMO default: old-phase Digimon already in a battle finish that encounter before being retired. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight && bRetirePreviousPopulationOnPhaseChange" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Polished MMO default: old-phase Digimon already in a battle finish that encounter before being retired." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bTreatMissingDayNightSkyAsDay_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Day Night Population|Safety" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** If the selected sky cannot be resolved, use the Day population instead of disabling the spawner. */" },
+#endif
+		{ "EditCondition", "PopulationScheduleMode==EDMFWildPopulationScheduleMode::DayNight" },
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "If the selected sky cannot be resolved, use the Day population instead of disabling the spawner." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bSpawnerActive_MetaData[] = {
 		{ "Category", "Digimon MMO|Wild Spawner|Runtime" },
@@ -1337,6 +1627,16 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReplicatedTargetPopulation_MetaData[] = {
 		{ "Category", "Digimon MMO|Wild Spawner|Runtime" },
 		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReplicatedPopulationPhase_MetaData[] = {
+		{ "Category", "Digimon MMO|Wild Spawner|Runtime" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Current authoritative population phase. Meaningful when PopulationScheduleMode is DayNight. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Current authoritative population phase. Meaningful when PopulationScheduleMode is DayNight." },
+#endif
 	};
 #endif // WITH_METADATA
 
@@ -1415,6 +1715,35 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FStructPropertyParams NewProp_RarityWeights;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_SpawnEntries_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_SpawnEntries;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_PopulationScheduleMode_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_PopulationScheduleMode;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_DayNightSkyOverride;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DayRarityWeights;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DaySpawnEntries_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_DaySpawnEntries;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_NightRarityWeights;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_NightSpawnEntries_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_NightSpawnEntries;
+	static void NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty_SetBit(void* Obj)
+	{
+		((ADMFWildDigimonSpawner*)Obj)->bFallbackToLegacyPopulationWhenPhaseTableEmpty = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty;
+	static void NewProp_bRetirePreviousPopulationOnPhaseChange_SetBit(void* Obj)
+	{
+		((ADMFWildDigimonSpawner*)Obj)->bRetirePreviousPopulationOnPhaseChange = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bRetirePreviousPopulationOnPhaseChange;
+	static void NewProp_bKeepEngagedWildUntilCombatEnds_SetBit(void* Obj)
+	{
+		((ADMFWildDigimonSpawner*)Obj)->bKeepEngagedWildUntilCombatEnds = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bKeepEngagedWildUntilCombatEnds;
+	static void NewProp_bTreatMissingDayNightSkyAsDay_SetBit(void* Obj)
+	{
+		((ADMFWildDigimonSpawner*)Obj)->bTreatMissingDayNightSkyAsDay = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bTreatMissingDayNightSkyAsDay;
 	static void NewProp_bSpawnerActive_SetBit(void* Obj)
 	{
 		((ADMFWildDigimonSpawner*)Obj)->bSpawnerActive = 1;
@@ -1422,31 +1751,38 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSpawnerActive;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_ReplicatedAliveCount;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_ReplicatedTargetPopulation;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_ReplicatedPopulationPhase_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_ReplicatedPopulationPhase;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFWildDigimonSpawner constinit property declarations *********************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("ForceActivateSpawner"), .Pointer = &ADMFWildDigimonSpawner::execForceActivateSpawner },
 		{ .NameUTF8 = UTF8TEXT("ForceDeactivateSpawner"), .Pointer = &ADMFWildDigimonSpawner::execForceDeactivateSpawner },
 		{ .NameUTF8 = UTF8TEXT("GetAliveSpawnCount"), .Pointer = &ADMFWildDigimonSpawner::execGetAliveSpawnCount },
+		{ .NameUTF8 = UTF8TEXT("GetPopulationPhase"), .Pointer = &ADMFWildDigimonSpawner::execGetPopulationPhase },
 		{ .NameUTF8 = UTF8TEXT("GetTargetPopulation"), .Pointer = &ADMFWildDigimonSpawner::execGetTargetPopulation },
 		{ .NameUTF8 = UTF8TEXT("HandleManagedWildDefeated"), .Pointer = &ADMFWildDigimonSpawner::execHandleManagedWildDefeated },
 		{ .NameUTF8 = UTF8TEXT("HandleManagedWildDestroyed"), .Pointer = &ADMFWildDigimonSpawner::execHandleManagedWildDestroyed },
 		{ .NameUTF8 = UTF8TEXT("IsSpawnerActive"), .Pointer = &ADMFWildDigimonSpawner::execIsSpawnerActive },
+		{ .NameUTF8 = UTF8TEXT("OnRep_PopulationPhase"), .Pointer = &ADMFWildDigimonSpawner::execOnRep_PopulationPhase },
 		{ .NameUTF8 = UTF8TEXT("OnRep_SpawnerState"), .Pointer = &ADMFWildDigimonSpawner::execOnRep_SpawnerState },
 		{ .NameUTF8 = UTF8TEXT("RefreshSpawnerNow"), .Pointer = &ADMFWildDigimonSpawner::execRefreshSpawnerNow },
 		{ .NameUTF8 = UTF8TEXT("SpawnOneWildDigimon"), .Pointer = &ADMFWildDigimonSpawner::execSpawnOneWildDigimon },
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
+		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_BP_OnPopulationPhaseChanged, "BP_OnPopulationPhaseChanged" }, // 9da90663f92d8193a364e164e565a2c40b321af0
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_BP_OnSpawnerStateChanged, "BP_OnSpawnerStateChanged" }, // 4024cc4ca3778ff36819129425724cd7397fca5d
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_BP_OnWildDigimonSpawned, "BP_OnWildDigimonSpawned" }, // 12314f5f4c223c4c7f7dc6eda50d6479c66d890e
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_ForceActivateSpawner, "ForceActivateSpawner" }, // 2c476f42827977eac48ae3a5b174b913990d7152
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_ForceDeactivateSpawner, "ForceDeactivateSpawner" }, // 0e846015ccf26b30edaf8f2bb8b3408b9fda0e18
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_GetAliveSpawnCount, "GetAliveSpawnCount" }, // f0a22c7cff2a6f6849ef5b8f61b8597c44ad453d
+		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_GetPopulationPhase, "GetPopulationPhase" }, // 76c256e75294500ed786e816870c9a07dce08e11
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_GetTargetPopulation, "GetTargetPopulation" }, // 00b51d3e94c818b7b4a1c418b9f082be4eb2df65
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_HandleManagedWildDefeated, "HandleManagedWildDefeated" }, // 0131d7ae236f1f58815ec933d98286c7e1befdca
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_HandleManagedWildDestroyed, "HandleManagedWildDestroyed" }, // 5dc8cb302df02eb9be5ccd7ebba837a5691149c7
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_IsSpawnerActive, "IsSpawnerActive" }, // da07ed55daff3d375230f8e5b530f16c9ae71597
+		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_OnRep_PopulationPhase, "OnRep_PopulationPhase" }, // 15d5ab9683064b71c128f70c84a4b7b0199623f2
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_OnRep_SpawnerState, "OnRep_SpawnerState" }, // 37e8c0b15fc53deb76520bbc7b90249971077adc
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_RefreshSpawnerNow, "RefreshSpawnerNow" }, // cd417045b7da7b58cb46013408b50c18996354fe
 		{ &Z_Construct_UFunction_ADMFWildDigimonSpawner_SpawnOneWildDigimon, "SpawnOneWildDigimon" }, // d4fc8204b87c1e19aa7f43ddc2fda5daaa888576
@@ -1501,9 +1837,24 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_RoamAcceptanc
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_RarityWeights = { "RarityWeights", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, RarityWeights), Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RarityWeights_MetaData), NewProp_RarityWeights_MetaData) }; // 65355ebe5881c3931b352d536a51864fc1ca6b21
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpawnEntries_Inner = { "SpawnEntries", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWildSpawnEntry, METADATA_PARAMS(0, nullptr) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_SpawnEntries = { "SpawnEntries", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, SpawnEntries), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SpawnEntries_MetaData), NewProp_SpawnEntries_MetaData) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_PopulationScheduleMode_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_PopulationScheduleMode = { "PopulationScheduleMode", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, PopulationScheduleMode), Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PopulationScheduleMode_MetaData), NewProp_PopulationScheduleMode_MetaData) }; // 4311ef1b3dd68bcfc033c3b3af08eb83091bdf5f
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DayNightSkyOverride = { "DayNightSkyOverride", nullptr, (EPropertyFlags)0x0114000000000805, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, DayNightSkyOverride), Z_Construct_UClass_ADMFDayNightSky, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DayNightSkyOverride_MetaData), NewProp_DayNightSkyOverride_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DayRarityWeights = { "DayRarityWeights", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, DayRarityWeights), Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DayRarityWeights_MetaData), NewProp_DayRarityWeights_MetaData) }; // 65355ebe5881c3931b352d536a51864fc1ca6b21
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DaySpawnEntries_Inner = { "DaySpawnEntries", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWildSpawnEntry, METADATA_PARAMS(0, nullptr) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DaySpawnEntries = { "DaySpawnEntries", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, DaySpawnEntries), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DaySpawnEntries_MetaData), NewProp_DaySpawnEntries_MetaData) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_NightRarityWeights = { "NightRarityWeights", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, NightRarityWeights), Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NightRarityWeights_MetaData), NewProp_NightRarityWeights_MetaData) }; // 65355ebe5881c3931b352d536a51864fc1ca6b21
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_NightSpawnEntries_Inner = { "NightSpawnEntries", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWildSpawnEntry, METADATA_PARAMS(0, nullptr) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_NightSpawnEntries = { "NightSpawnEntries", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, NightSpawnEntries), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NightSpawnEntries_MetaData), NewProp_NightSpawnEntries_MetaData) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty = { "bFallbackToLegacyPopulationWhenPhaseTableEmpty", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty_MetaData), NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRetirePreviousPopulationOnPhaseChange = { "bRetirePreviousPopulationOnPhaseChange", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bRetirePreviousPopulationOnPhaseChange_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRetirePreviousPopulationOnPhaseChange_MetaData), NewProp_bRetirePreviousPopulationOnPhaseChange_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bKeepEngagedWildUntilCombatEnds = { "bKeepEngagedWildUntilCombatEnds", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bKeepEngagedWildUntilCombatEnds_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bKeepEngagedWildUntilCombatEnds_MetaData), NewProp_bKeepEngagedWildUntilCombatEnds_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bTreatMissingDayNightSkyAsDay = { "bTreatMissingDayNightSkyAsDay", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bTreatMissingDayNightSkyAsDay_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bTreatMissingDayNightSkyAsDay_MetaData), NewProp_bTreatMissingDayNightSkyAsDay_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSpawnerActive = { "bSpawnerActive", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bSpawnerActive_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bSpawnerActive_MetaData), NewProp_bSpawnerActive_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_ReplicatedAliveCount = { "ReplicatedAliveCount", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, ReplicatedAliveCount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedAliveCount_MetaData), NewProp_ReplicatedAliveCount_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_ReplicatedTargetPopulation = { "ReplicatedTargetPopulation", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, ReplicatedTargetPopulation), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedTargetPopulation_MetaData), NewProp_ReplicatedTargetPopulation_MetaData) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ReplicatedPopulationPhase_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReplicatedPopulationPhase = { "ReplicatedPopulationPhase", "OnRep_PopulationPhase", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, ReplicatedPopulationPhase), Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedPopulationPhase_MetaData), NewProp_ReplicatedPopulationPhase_MetaData) }; // 78bba6eb7608900637e4f59c3fc53f23bdfcfc40
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SceneRoot,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpawnAreaPreview,
@@ -1547,9 +1898,24 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RarityWeights,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpawnEntries_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpawnEntries,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PopulationScheduleMode_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PopulationScheduleMode,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DayNightSkyOverride,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DayRarityWeights,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DaySpawnEntries_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DaySpawnEntries,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NightRarityWeights,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NightSpawnEntries_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NightSpawnEntries,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bFallbackToLegacyPopulationWhenPhaseTableEmpty,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRetirePreviousPopulationOnPhaseChange,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bKeepEngagedWildUntilCombatEnds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bTreatMissingDayNightSkyAsDay,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSpawnerActive,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedAliveCount,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedTargetPopulation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedPopulationPhase_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedPopulationPhase,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End Class ADMFWildDigimonSpawner Property Definitions ********************************
@@ -1617,10 +1983,12 @@ void ADMFWildDigimonSpawner::ValidateGeneratedRepEnums(const TArray<struct FRepR
 	static FName Name_bSpawnerActive(TEXT("bSpawnerActive"));
 	static FName Name_ReplicatedAliveCount(TEXT("ReplicatedAliveCount"));
 	static FName Name_ReplicatedTargetPopulation(TEXT("ReplicatedTargetPopulation"));
+	static FName Name_ReplicatedPopulationPhase(TEXT("ReplicatedPopulationPhase"));
 	const bool bIsValid = true
 		&& Name_bSpawnerActive == ClassReps[(int32)ENetFields_Private::bSpawnerActive].Property->GetFName()
 		&& Name_ReplicatedAliveCount == ClassReps[(int32)ENetFields_Private::ReplicatedAliveCount].Property->GetFName()
-		&& Name_ReplicatedTargetPopulation == ClassReps[(int32)ENetFields_Private::ReplicatedTargetPopulation].Property->GetFName();
+		&& Name_ReplicatedTargetPopulation == ClassReps[(int32)ENetFields_Private::ReplicatedTargetPopulation].Property->GetFName()
+		&& Name_ReplicatedPopulationPhase == ClassReps[(int32)ENetFields_Private::ReplicatedPopulationPhase].Property->GetFName();
 	checkf(bIsValid, TEXT("UHT Generated Rep Indices do not match runtime populated Rep Indices for properties in ADMFWildDigimonSpawner"));
 }
 #endif
@@ -1641,10 +2009,10 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFWildSpawnEntry, Z_Construct_UScriptStruct_FDMFWildSpawnEntry_Statics::NewStructOps, TEXT("DMFWildSpawnEntry"),&Z_Registration_Info_UScriptStruct_FDMFWildSpawnEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWildSpawnEntry), 13553461U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFWildDigimonSpawner, TEXT("ADMFWildDigimonSpawner"), &Z_Registration_Info_UClass_ADMFWildDigimonSpawner, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFWildDigimonSpawner), 1810529664U) },
+		{ Z_Construct_UClass_ADMFWildDigimonSpawner, TEXT("ADMFWildDigimonSpawner"), &Z_Registration_Info_UClass_ADMFWildDigimonSpawner, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFWildDigimonSpawner), 1070636387U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h__Script_DigimonMMOFramework_9221d102654af1153c7f4f06184fcf98171bd6ea{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h__Script_DigimonMMOFramework_9274496f316830ff675e32205cddfd487bf7c252{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

@@ -1,5 +1,14 @@
 # Networking / Host Deployment
 
+## Day / Night world-time authority (v0.16.0)
+
+World time is never client-authored. `ADMFDayNightSky` reads either the authority machine's local system clock or its persistent simulated clock, then replicates sparse time anchors. Clients interpolate between anchors using synchronized GameState server world time. There is no client time RPC and no per-frame light/material replication. `bIsDay` / `bIsNight` are presentation conveniences derived from the replicated authoritative phase.
+
+Simulated time is stored in the server-only `DMF_ServerWorldState` (configurable) save. It is not replicated as private account data and does not change the account schema. Host-system-time mode always re-resolves from the authority PC clock and does not trust a saved/client clock.
+
+Day/night wild populations remain server-only decisions. Spawners select the active phase table, rarity tier, species, level, placement, retirement and replacement on authority. `ReplicatedPopulationPhase` is informational/presentation state only. A client cannot request Day/Night, choose a table, submit a species, or influence random selection.
+
+
 ## Return Home authority (v0.15.2)
 
 `HOME` is a UI action, not a client teleport. The owning `ADMFMMOPlayerController` sends `ServerRequestReturnHome()` with **no location/rotation parameters**. Authority rechecks the project enable switch and a server-only cooldown, resolves the authenticated framework avatar, then asks `ADMFMMOGameMode::ReturnAuthenticatedPlayerHome` to select the enabled `DMFNewPlayerStart`. Only after an authoritative collision-safe teleport does the server checkpoint the v6 account location.
@@ -300,3 +309,12 @@ The attack-VFX and enemy-marker CustomDepth fix adds no network contract. The se
 ## v0.14.9 Attribute Point networking
 
 `ServerSpendDigimonAttributePoint` is the only gameplay mutation entry point. Clients cannot submit a target value or remaining-point count. `ClientAttributePointSpendResult` is owner-only acknowledgement after the server has committed the result. Private Party/Bank stats remain owner-only; a summoned partner exposes the resulting public replicated stats through its existing actor replication. No SaveGame schema bump is required.
+
+## Stage presentation note (v0.15.3)
+
+Canonical Digivolution stage wording is presentation-only. The authoritative species asset already supplies `Stage`; v0.15.3 adds no RPC or replicated field. Peers resolve the same species-authored stage locally through the shared presentation helper, while existing species/actor replication contracts remain unchanged.
+
+## v0.16.1 world-clock HUD
+
+The 12-hour HUD clock is **presentation-only**. `DMFCombatQuickBarWidget` reads the local replicated `DMFDayNightSky` and formats its smooth interpolated world time. Host-PC mode therefore follows the authority machine via the existing v0.16.0 time anchor; Simulated mode follows the persistent authoritative simulated clock. No client system-time read, clock RPC, replicated widget text, or additional replicated property was added.
+

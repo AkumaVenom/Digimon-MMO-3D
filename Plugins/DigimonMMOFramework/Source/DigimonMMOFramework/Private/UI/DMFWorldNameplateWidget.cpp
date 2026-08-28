@@ -1,4 +1,5 @@
 #include "UI/DMFWorldNameplateWidget.h"
+#include "Utility/DMFDigimonPresentationLibrary.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -239,10 +240,9 @@ void UDMFWorldNameplateWidget::RefreshDigimonPresentation()
     }
 
     const int32 Level = FMath::Max(1, Digimon->ReplicatedStats.Level);
-    const UEnum* StageEnum = StaticEnum<EDMFDigimonStage>();
     const UEnum* AttributeEnum = StaticEnum<EDMFDigimonAttribute>();
-    const FText StageText = Species && StageEnum
-        ? StageEnum->GetDisplayNameTextByValue(static_cast<int64>(Species->Stage))
+    const FText StageText = Species
+        ? UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage)
         : NSLOCTEXT("DMF", "UnknownDigimonStageNameplate", "Unknown");
     const FText AttributeText = Species && AttributeEnum
         ? AttributeEnum->GetDisplayNameTextByValue(static_cast<int64>(Species->Attribute))
