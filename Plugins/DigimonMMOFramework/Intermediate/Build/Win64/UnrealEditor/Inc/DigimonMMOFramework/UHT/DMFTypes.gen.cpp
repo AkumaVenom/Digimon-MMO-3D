@@ -16,6 +16,8 @@ void EmptyLinkFunctionForGeneratedCodeDMFTypes() {}
 // ********** Begin Cross Module References ********************************************************
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FGuid(ETypeConstructPhase);
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FPrimaryAssetId(ETypeConstructPhase);
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator(ETypeConstructPhase);
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 NETCORE_API UScriptStruct* Z_Construct_UScriptStruct_FFastArraySerializer(ETypeConstructPhase);
 NETCORE_API UScriptStruct* Z_Construct_UScriptStruct_FFastArraySerializerItem(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -30,6 +32,7 @@ DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExpe
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonStats(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonList(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFScanDataEntry(ETypeConstructPhase);
@@ -2017,6 +2020,133 @@ UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression(ETypeC
 #undef UHT_STATICS
 // ********** End ScriptStruct FDMFDigimonExperienceProgression ************************************
 
+// ********** Begin ScriptStruct FDMFPlayerWorldLocationState **************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFPlayerWorldLocationState>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFPlayerWorldLocationState); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persisted server-authored gameplay transform for one account. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persisted server-authored gameplay transform for one account." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHasSavedLocation_MetaData[] = {
+		{ "Category", "Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** False until the framework has committed the account's first gameplay spawn checkpoint. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "False until the framework has committed the account's first gameplay spawn checkpoint." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MapName_MetaData[] = {
+		{ "Category", "Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** PIE-prefix-free level name used to avoid applying coordinates to the wrong gameplay map. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "PIE-prefix-free level name used to avoid applying coordinates to the wrong gameplay map." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Location_MetaData[] = {
+		{ "Category", "Player World Location" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Rotation_MetaData[] = {
+		{ "Category", "Player World Location" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SavedUtcTicks_MetaData[] = {
+		{ "Category", "Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Server UTC timestamp of the most recent committed position checkpoint. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Server UTC timestamp of the most recent committed position checkpoint." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFPlayerWorldLocationState constinit property declarations ******
+	static void NewProp_bHasSavedLocation_SetBit(void* Obj)
+	{
+		((FDMFPlayerWorldLocationState*)Obj)->bHasSavedLocation = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHasSavedLocation;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_MapName;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Location;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Rotation;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_SavedUtcTicks;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFPlayerWorldLocationState constinit property declarations ********
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFPlayerWorldLocationState>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFPlayerWorldLocationState Property Definitions *****************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bHasSavedLocation = { "bHasSavedLocation", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFPlayerWorldLocationState), &UHT_STATICS::NewProp_bHasSavedLocation_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHasSavedLocation_MetaData), NewProp_bHasSavedLocation_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_MapName = { "MapName", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFPlayerWorldLocationState, MapName), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MapName_MetaData), NewProp_MapName_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Location = { "Location", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFPlayerWorldLocationState, Location), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Location_MetaData), NewProp_Location_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Rotation = { "Rotation", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFPlayerWorldLocationState, Rotation), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Rotation_MetaData), NewProp_Rotation_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_SavedUtcTicks = { "SavedUtcTicks", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFPlayerWorldLocationState, SavedUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SavedUtcTicks_MetaData), NewProp_SavedUtcTicks_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bHasSavedLocation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MapName,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Location,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Rotation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SavedUtcTicks,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFPlayerWorldLocationState Property Definitions *******************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFPlayerWorldLocationState",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFPlayerWorldLocationState>(),
+	alignof(FDMFPlayerWorldLocationState),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFPlayerWorldLocationState"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFPlayerWorldLocationState ****************************************
+
 // ********** Begin ScriptStruct FDMFAccountRecord *************************************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2047,6 +2177,16 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Persistent visual avatar selection. Presentation-only; gameplay pawn class remains authoritative." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerWorldLocation_MetaData[] = {
+		{ "Category", "Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Server-authored gameplay location used for first-spawn vs returning-player restore. Added in SaveGame schema v6. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Server-authored gameplay location used for first-spawn vs returning-player restore. Added in SaveGame schema v6." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonInventory_MetaData[] = {
@@ -2087,6 +2227,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FStrPropertyParams NewProp_Username;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_CredentialDigest;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_SelectedPlayerSkinId;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_PlayerWorldLocation;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInventory_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_DigimonInventory;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonBank_Inner;
@@ -2116,6 +2257,7 @@ struct UHT_STATICS
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "Username", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, Username), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Username_MetaData), NewProp_Username_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_CredentialDigest = { "CredentialDigest", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, CredentialDigest), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CredentialDigest_MetaData), NewProp_CredentialDigest_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SelectedPlayerSkinId = { "SelectedPlayerSkinId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, SelectedPlayerSkinId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SelectedPlayerSkinId_MetaData), NewProp_SelectedPlayerSkinId_MetaData) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PlayerWorldLocation = { "PlayerWorldLocation", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, PlayerWorldLocation), Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerWorldLocation_MetaData), NewProp_PlayerWorldLocation_MetaData) }; // 3da1182c33c10c46f30ec4281e56989e564deb66
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInventory_Inner = { "DigimonInventory", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 90e3d7b8644ae8290e535284f655b83595374193
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DigimonInventory = { "DigimonInventory", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonInventory), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventory_MetaData), NewProp_DigimonInventory_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonBank_Inner = { "DigimonBank", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 90e3d7b8644ae8290e535284f655b83595374193
@@ -2132,6 +2274,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CredentialDigest,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SelectedPlayerSkinId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerWorldLocation,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventory_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventory,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonBank_Inner,
@@ -2364,12 +2507,13 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFAbilityCooldownState, Z_Construct_UScriptStruct_FDMFAbilityCooldownState_Statics::NewStructOps, TEXT("DMFAbilityCooldownState"),&Z_Registration_Info_UScriptStruct_FDMFAbilityCooldownState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAbilityCooldownState), 758764662U) },
 		{ Z_Construct_UScriptStruct_FDMFBattleReward, Z_Construct_UScriptStruct_FDMFBattleReward_Statics::NewStructOps, TEXT("DMFBattleReward"),&Z_Registration_Info_UScriptStruct_FDMFBattleReward, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFBattleReward), 2382040011U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression_Statics::NewStructOps, TEXT("DMFDigimonExperienceProgression"),&Z_Registration_Info_UScriptStruct_FDMFDigimonExperienceProgression, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonExperienceProgression), 2497719822U) },
-		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 679619415U) },
+		{ Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState_Statics::NewStructOps, TEXT("DMFPlayerWorldLocationState"),&Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFPlayerWorldLocationState), 1033967660U) },
+		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 3938075674U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics::NewStructOps, TEXT("DMFReplicatedDigimonEntry"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonEntry), 4015387757U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 1241286755U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_3f1ff9e0ab191219bae9bb696e3afb9c60142dfe{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_ee6e618c5c2a474f965913f31ce68271789124d3{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

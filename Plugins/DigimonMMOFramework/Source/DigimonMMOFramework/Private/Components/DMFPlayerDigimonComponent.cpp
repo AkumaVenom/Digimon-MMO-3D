@@ -1,4 +1,5 @@
 #include "Components/DMFPlayerDigimonComponent.h"
+#include "Components/DMFPlayerAvatarComponent.h"
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Data/DMFStarterRosterData.h"
 #include "Game/DMFDigimonCharacter.h"
@@ -1569,6 +1570,13 @@ void UDMFPlayerDigimonComponent::PersistOwningPlayer()
     }
 
     ApplyToAccountRecord(Record);
+    if (PS->AvatarComponent)
+    {
+        // The existing account autosave is the single authoritative checkpoint transaction for both
+        // private Digimon state and the server-owned player world transform.
+        PS->AvatarComponent->ApplyToAccountRecord(Record);
+        PS->AvatarComponent->ApplyCurrentWorldLocationToAccountRecord(Record);
+    }
     FString Error;
     if (!Persistence->SaveAccount(Record, Error))
     {

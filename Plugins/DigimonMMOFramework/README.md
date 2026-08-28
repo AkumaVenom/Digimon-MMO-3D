@@ -1,8 +1,20 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish`
+**Version:** `0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport
+
+v0.15.2 extends the accepted v0.15.1 world-location system with a polished player-facing **HOME** action. The button is integrated directly into the persistent Party Quick Access bar, so it adds no permanent corner clutter: press **Tab**, the existing cursor/mouse interaction mode opens, and `HOME` appears beside `RECALL`, `OPEN PARTY` and `OPEN BANK`. Clicking it sends only an action request through the owned PlayerController; the client never supplies a transform. The server resolves the same enabled/highest-priority **`DMFNewPlayerStart`** used for first-login placement, collision-validates the teleport and immediately checkpoints the resulting v6 account location.
+
+Return Home is treated as a clean encounter boundary. The player's movement is stopped, the summoned partner's command/combat target and durable battle latch are cleared without healing it or wiping cooldowns, hostile Digimon still targeting that partner are disengaged, and already-launched framework projectiles aimed at **or launched by** it are removed before the partner is repositioned beside the player using the normal `PartnerSpawnOffset`. A configurable server cooldown prevents request spam, and authority rejects the action during an active Care or Digivolution sequence so those transactions cannot be interrupted. On success the Tab interaction closes automatically and an owner-only native `DMFHomeTeleportNotificationWidget` displays **HOME • ARRIVED — Teleported to the Home spawn point**; failures such as a missing/blocked `DMFNewPlayerStart` show a clear `HOME • UNAVAILABLE` result. Custom HUDs can call `RequestReturnHome`, bind `OnHomeTeleportResult`, and assign a Blueprint child notification class without taking over destination or save authority. See `Docs/SETUP_RETURN_HOME_HUD.md`.
+
+## New in v0.15.1-alpha — Persistent Player World Location & First-Login Spawn
+
+v0.15.1 gives authenticated players a real MMO world-position lifecycle. Place a **`DMFNewPlayerStart`** in the Open World map: a genuinely new/onboarding account with no saved gameplay position uses that transform for its first login, while a returning account restores its own last server-saved location/rotation instead of starting over at the entry point. Multiple new-player starts may be authored with priorities, and the GameMode selection hook is Blueprint-overridable for future zone/shard rules.
+
+Player position is part of the same server-authoritative account persistence transaction already used by the framework. The normal `Account Autosave Interval` checkpoints the possessed `DMFPlayerAvatarCharacter` transform, logout saves again, and the very first spawn is committed immediately so an early disconnect cannot repeat first-login placement. Save schema **v6** adds only the private `PlayerWorldLocation` record; clients never submit or replicate saved coordinates. Established pre-v0.15.1 accounts are not treated as new players: on their first v6 login they use the normal PlayerStart once, establish a checkpoint, and then restore normally on later logins. Returning-location restore happens before active-partner restoration, validates that the saved level matches the current gameplay map, rejects non-finite data, and falls back to Unreal's normal collision-safe `PlayerStart` if the old location cannot be used. See `Docs/SETUP_PLAYER_WORLD_LOCATION.md`.
 
 ## New in v0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish
 
@@ -126,7 +138,7 @@ The owned-Digimon progression layer is now a complete **Party + Bank/Box system*
 
 The Bank uses paged six-column Box storage with compact portrait/level cards, KO presentation, full selected-Digimon stats and a live six-slot Party destination strip. If Party has room, a Bank Digimon moves into the first free slot. If Party is full, select an occupied Party slot and the server performs an **atomic swap**, returning the outgoing Party Digimon to Bank. Deposits, swaps and active-partner changes are server-authoritative, owner-only replicated, persisted immediately, and blocked during active combat by default.
 
-The HUD also gains a persistent native **Party Quick Access** bar. Press **Tab** to enter interaction mode: gameplay look/movement is temporarily released, the mouse cursor appears, healthy Party slots become clickable, and `RECALL`, `OPEN PARTY` and `OPEN BANK` actions expand below the roster. Tab again or Escape returns cleanly to gameplay. The bar remains owner-only presentation and all actual switching still goes through the normal server RPC path.
+The HUD also gains a persistent native **Party Quick Access** bar. Press **Tab** to enter interaction mode: gameplay look/movement is temporarily released, the mouse cursor appears, healthy Party slots become clickable, and `HOME`, `RECALL`, `OPEN PARTY` and `OPEN BANK` actions expand below the roster. Tab again or Escape returns cleanly to gameplay. The bar remains owner-only presentation and all actual switching still goes through the normal server RPC path.
 
 Save schema is now **v4**. Existing pre-v0.12 accounts migrate without intentionally losing a collected Digimon: the previous active partner is guaranteed to remain in Party, older collection entries fill Party in stable order, and overflow spills into the existing Bank field with GUID de-duplication. Current six-slot Party order is preserved on later loads. Scan Materialization now fills Party first and automatically routes to Bank when Party is full. See `Docs/SETUP_PARTY_BANK_STORAGE.md`.
 
@@ -281,7 +293,8 @@ The local remote PlayerController also performs a short bounded acknowledgement/
 - GameMode Override = your Blueprint child of `DMFMMOGameMode`.
 - Default Pawn Class = your Blueprint child of `DMFPlayerAvatarCharacter`.
 - Player Controller / Player State = framework defaults or compatible Blueprint children.
-- At least one valid `PlayerStart`.
+- At least one valid normal `PlayerStart` as a collision-safe fallback.
+- Place a `DMFNewPlayerStart` at the intended first-login location for new accounts (v0.15.1).
 
 See `Docs/SETUP_MULTIPLAYER_CLIENT_POSSESSION.md`.
 
@@ -490,10 +503,11 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
 3. Enable **Digimon MMO Framework**.
 4. Set your blank main-menu level to use `DMFFrontendGameMode`.
 5. Set your open-world gameplay level to use `DMFMMOGameMode`.
-6. Create `/Game/DigimonData` for framework Data Assets. Merge `ConfigTemplates/DMF_Project_DefaultGame.ini.snippet` into your project's `Config/DefaultGame.ini` so species/roster/ability/player-skin Primary Assets are discovered and always cooked.
-7. Create a Blueprint derived from `DMFPlayerAvatarCharacter` if you want project-specific camera/movement defaults, and assign it as your MMO GameMode Default Pawn Class. The native class is already the C++ default.
-8. Create one `DMFPlayerSkinData` asset per selectable character under `/Game/DigimonData` and assign each existing skeletal mesh/AnimBP. The skin UI discovers enabled assets automatically.
-9. In **Project Settings → Game → Digimon MMO Framework**, assign:
+6. Place a **`DMFNewPlayerStart`** in the Open World at the first-login/new-account spawn location. Keep at least one ordinary `PlayerStart` as a recovery fallback. Returning accounts with a saved location bypass the new-player start.
+7. Create `/Game/DigimonData` for framework Data Assets. Merge `ConfigTemplates/DMF_Project_DefaultGame.ini.snippet` into your project's `Config/DefaultGame.ini` so species/roster/ability/player-skin Primary Assets are discovered and always cooked.
+8. Create a Blueprint derived from `DMFPlayerAvatarCharacter` if you want project-specific camera/movement defaults, and assign it as your MMO GameMode Default Pawn Class. The native class is already the C++ default.
+9. Create one `DMFPlayerSkinData` asset per selectable character under `/Game/DigimonData` and assign each existing skeletal mesh/AnimBP. The skin UI discovers enabled assets automatically.
+10. In **Project Settings → Game → Digimon MMO Framework**, assign:
    - `Frontend Map`
    - `Open World Map`
    - `Starter Roster`
@@ -502,14 +516,16 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
    - `Networking → Admin Hosting → Set Admin Hosting Password` (enter a project-specific password; the setter clears after hashing)
    - `Player Avatar → Footsteps → Player Footstep Sound` (assign a spatial Sound Cue; optional cadence/gain controls are alongside it)
    - optional `Default Player Skin` when skin selection is not mandatory
-10. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets. For fireballs/bolts/rockets that must visibly travel, set `Execution Mode = Replicated Projectile` and configure the projectile socket/VFX/speed/homing/cleanup fields described in `Docs/SETUP_ABILITY_PROJECTILES.md`.
-11. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
-12. Every playable/summonable species should provide a `WorldActorClass` derived from `ADMFDigimonCharacter`.
-13. Create a `DMFStarterRosterData` asset under `/Game/DigimonData` and add the desired starter species.
-14. Cover the combat/exploration area with a valid `NavMeshBoundsVolume` so authoritative Digimon AI can follow, chase and return to its leash anchor.
-15. For MMO population streaming, create a Blueprint child of `DMFWildDigimonSpawner`, add rarity-weighted spawn entries and place it inside valid NavMesh. See `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`.
-16. Place standalone `ADMFWildDigimonCharacter` Blueprints only for fixed/scripted encounters if desired.
-17. Package normally. The admin can log in, unlock Admin and choose **Host & Play**. Regular users log in and choose **Join Game**.
+   - `Persistence -> Player World Location -> Enable Player World Location Persistence` = enabled (recommended)
+   - `Persistence -> Player World Location -> Use Dedicated New Player Spawn` = enabled when using `DMFNewPlayerStart`
+11. Create `DMFDigimonAbilityData` assets under `/Game/DigimonData` for the basic attack and quick-slot abilities you want to test. Configure SP cost, cooldown, timing, range, damage scaling and presentation assets. For fireballs/bolts/rockets that must visibly travel, set `Execution Mode = Replicated Projectile` and configure the projectile socket/VFX/speed/homing/cleanup fields described in `Docs/SETUP_ABILITY_PROJECTILES.md`.
+12. Create one `DMFDigimonSpeciesData` asset per species under `/Game/DigimonData`; assign `BasicAutoAttack`, `StartingAbilities`, battle rewards and the species presentation assets.
+13. Every playable/summonable species should provide a `WorldActorClass` derived from `ADMFDigimonCharacter`.
+14. Create a `DMFStarterRosterData` asset under `/Game/DigimonData` and add the desired starter species.
+15. Cover the combat/exploration area with a valid `NavMeshBoundsVolume` so authoritative Digimon AI can follow, chase and return to its leash anchor.
+16. For MMO population streaming, create a Blueprint child of `DMFWildDigimonSpawner`, add rarity-weighted spawn entries and place it inside valid NavMesh. See `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`.
+17. Place standalone `ADMFWildDigimonCharacter` Blueprints only for fixed/scripted encounters if desired.
+18. Package normally. The admin can log in, unlock Admin and choose **Host & Play**. Regular users log in and choose **Join Game**.
 
 ## UE5.8 packaging note
 
@@ -531,7 +547,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)

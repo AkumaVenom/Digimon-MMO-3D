@@ -13,6 +13,7 @@ class UDMFPartyQuickBarWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFExperienceNotificationWidget;
+class UDMFHomeTeleportNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFWorldNameplateWidget;
 class UDMFWorldChatWidget;
@@ -293,6 +294,27 @@ public:
     /** Bottom safe-lane offset so Party Quick Access sits above the centered combat quickbar by default. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Presentation", meta=(EditCondition="bShowNativePartyQuickBar", ClampMin="0.0", ClampMax="1000.0"))
     float PartyQuickBarBottomSafeOffset = 176.0f;
+
+
+    /** Master switch for the native/Blueprint Return Home action exposed through Party Quick Access. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Home")
+    bool bEnablePartyQuickAccessHomeButton = true;
+
+    /** Server-side anti-spam cooldown. The client never supplies a destination or bypasses this timer. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Home", meta=(EditCondition="bEnablePartyQuickAccessHomeButton", ClampMin="0.0", ClampMax="300.0", Units="s"))
+    float HomeTeleportRequestCooldownSeconds = 4.0f;
+
+    /** Owner-only native Home result toast. Assign a Blueprint child to fully reskin the presentation. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Home")
+    TSubclassOf<UDMFHomeTeleportNotificationWidget> HomeTeleportNotificationWidgetClass;
+
+    /** Shows a transient owner-only success/failure toast after the authoritative Home request resolves. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Home")
+    bool bShowNativeHomeTeleportNotifications = true;
+
+    /** Hold time for the Home teleport result toast. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Party Quick Access|Home", meta=(EditCondition="bShowNativeHomeTeleportNotifications", ClampMin="0.25", ClampMax="15.0", Units="s"))
+    float HomeTeleportNotificationHoldSeconds = 3.0f;
 
     /** Native roster/partner menu fallback; assign a Blueprint child to fully reskin it. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
@@ -633,6 +655,20 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence", meta=(ClampMin="5.0"))
     float AccountAutosaveInterval = 30.0f;
+
+    /**
+     * Saves each authenticated player's authoritative gameplay location/rotation into their account and restores it
+     * when they return to the same gameplay map. Uses the normal account autosave interval plus logout checkpoints.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence|Player World Location")
+    bool bEnablePlayerWorldLocationPersistence = true;
+
+    /**
+     * Accounts with no saved world location are placed at an enabled DMFNewPlayerStart before their first checkpoint.
+     * Disable only when a project wants Unreal's ordinary PlayerStart flow for brand-new accounts.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Persistence|Player World Location")
+    bool bUseDedicatedNewPlayerSpawn = true;
 
     /**
      * Public IPv4 address or DNS hostname that normal players use when Join Game is pressed.

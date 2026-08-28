@@ -772,6 +772,50 @@ DEFINE_FUNCTION(UDMFDigimonCombatComponent::execConfigureRetaliation)
 }
 // ********** End Class UDMFDigimonCombatComponent Function ConfigureRetaliation *******************
 
+// ********** Begin Class UDMFDigimonCombatComponent Function ForceAuthoritativeDisengage **********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonCombatComponent_ForceAuthoritativeDisengage_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Combat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Cleanly ends the current authoritative encounter without restoring vitals or clearing ability cooldowns.\n     * Used by world-transition conveniences such as Return Home so combat presentation/movement cannot remain latched.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Cleanly ends the current authoritative encounter without restoring vitals or clearing ability cooldowns.\nUsed by world-transition conveniences such as Return Home so combat presentation/movement cannot remain latched." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ForceAuthoritativeDisengage constinit property declarations ***********
+// ********** End Function ForceAuthoritativeDisengage constinit property declarations *************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonCombatComponent, nullptr, "ForceAuthoritativeDisengage", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonCombatComponent_ForceAuthoritativeDisengage(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonCombatComponent::execForceAuthoritativeDisengage)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ForceAuthoritativeDisengage();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonCombatComponent Function ForceAuthoritativeDisengage ************
+
 // ********** Begin Class UDMFDigimonCombatComponent Function GetCombatState ***********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2525,6 +2569,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("ConfigureAutomation"), .Pointer = &UDMFDigimonCombatComponent::execConfigureAutomation },
 		{ .NameUTF8 = UTF8TEXT("ConfigureDamageTuning"), .Pointer = &UDMFDigimonCombatComponent::execConfigureDamageTuning },
 		{ .NameUTF8 = UTF8TEXT("ConfigureRetaliation"), .Pointer = &UDMFDigimonCombatComponent::execConfigureRetaliation },
+		{ .NameUTF8 = UTF8TEXT("ForceAuthoritativeDisengage"), .Pointer = &UDMFDigimonCombatComponent::execForceAuthoritativeDisengage },
 		{ .NameUTF8 = UTF8TEXT("GetCombatState"), .Pointer = &UDMFDigimonCombatComponent::execGetCombatState },
 		{ .NameUTF8 = UTF8TEXT("GetCurrentHP"), .Pointer = &UDMFDigimonCombatComponent::execGetCurrentHP },
 		{ .NameUTF8 = UTF8TEXT("GetCurrentSP"), .Pointer = &UDMFDigimonCombatComponent::execGetCurrentSP },
@@ -2565,6 +2610,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ConfigureAutomation, "ConfigureAutomation" }, // 8b523ff0da1cceabf2e0038ebce3829278f0b715
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ConfigureDamageTuning, "ConfigureDamageTuning" }, // fba829aa2d6a6715ae1d4028d8a702823098fba6
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ConfigureRetaliation, "ConfigureRetaliation" }, // c05c2ec02cee66c3e73262c0dc87a825b6e3a0d3
+		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ForceAuthoritativeDisengage, "ForceAuthoritativeDisengage" }, // 13f1799fbdfc596ec96ec66a173d732f61541557
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_GetCombatState, "GetCombatState" }, // 9ead856ae7bec81a591300f052c6e491db8622b7
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_GetCurrentHP, "GetCurrentHP" }, // 181bbe89dd63e7ff264791f0c36ca1a79b0b88c2
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_GetCurrentSP, "GetCurrentSP" }, // 92349d46b009d84f750b0b46997eb954e3ccdf08
@@ -2723,10 +2769,10 @@ UDMFDigimonCombatComponent::~UDMFDigimonCombatComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 1478134374U) },
+		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 4031930842U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_3f419bf25fc6386c457e1177c99eac70a064d951{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_e3788f000cac9ba538418f842c5120ed28ae0372{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

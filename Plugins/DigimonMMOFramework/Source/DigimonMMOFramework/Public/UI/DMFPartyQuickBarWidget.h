@@ -67,6 +67,10 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UHorizontalBox> PartyActionRow;
 
+    /** Optional Blueprint/native Home button. Native fallback places it in the Tab interaction action row. */
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> ReturnHomeButton;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFPlayerDigimonComponent> BoundDigimonComponent;
@@ -84,6 +88,7 @@ private:
     TArray<TObjectPtr<UDMFPartyQuickSlotButton>> NativeSlotButtons;
 
     bool bInteractionMode = false;
+    bool bHomeTeleportRequestPending = false;
 
     void BuildNativeFallback();
     void BindDigimonComponent();
@@ -96,6 +101,12 @@ private:
 
     UFUNCTION()
     void HandleRecallClicked();
+
+    UFUNCTION()
+    void HandleReturnHomeClicked();
+
+    UFUNCTION()
+    void HandleHomeTeleportResult(bool bSuccess, FText Message);
 
     UFUNCTION()
     void HandleOpenPartyClicked();

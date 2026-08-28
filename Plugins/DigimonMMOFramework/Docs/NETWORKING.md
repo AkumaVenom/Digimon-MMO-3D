@@ -1,5 +1,12 @@
 # Networking / Host Deployment
 
+## Return Home authority (v0.15.2)
+
+`HOME` is a UI action, not a client teleport. The owning `ADMFMMOPlayerController` sends `ServerRequestReturnHome()` with **no location/rotation parameters**. Authority rechecks the project enable switch and a server-only cooldown, resolves the authenticated framework avatar, then asks `ADMFMMOGameMode::ReturnAuthenticatedPlayerHome` to select the enabled `DMFNewPlayerStart`. Only after an authoritative collision-safe teleport does the server checkpoint the v6 account location.
+
+The server also ends encounter state around the summoned partner, disengages authoritative Digimon targeting it and destroys in-flight framework projectiles whose replicated target is that partner before moving the partner beside the owner. `ClientReturnHomeResult` carries only success/failure presentation text back to the owning connection; it cannot author gameplay. Other clients learn the player's/partner's resulting transform through normal actor/CharacterMovement replication and never receive the owner's saved location record or Home toast.
+
+
 ## v0.13.0 Digivolution networking contract
 
 - Party/Bank Digivolution is private durable account state. The client sends only `InstanceId + TargetSpeciesId` through reliable `ServerDigivolveOwnedDigimon`; it never sends authoritative target stats, cost, abilities, Care values, World Actor Class or completion timing.
@@ -164,6 +171,15 @@ The alpha's built-in account gate is appropriate for private development and pac
 
 For a public service, keep the PlayerState/account interfaces and replace the transport with a TLS authentication endpoint that issues short-lived signed session tickets. The game server should validate the ticket before accepting the connection.
 
+
+
+## Player world-location persistence (v0.15.1)
+
+Player world position is **server-authored private account persistence**, not a client replication protocol. The server reads the possessed `DMFPlayerAvatarCharacter` transform during the normal account autosave/logout transaction and stores it in `FDMFAccountRecord::PlayerWorldLocation`. Clients never submit a saved location/rotation value.
+
+On login, `ADMFMMOGameMode` decides initial placement on authority only. Accounts without a checkpoint can use `ADMFNewPlayerStart`; returning accounts restore a finite saved transform only when its saved map matches the current gameplay level. The transform is applied once before partner restoration. Other peers learn the player's final world pose only through standard replicated pawn movement.
+
+This release adds no Server/Client/NetMulticast RPC. The saved map/location/rotation is not replicated owner-only or globally; it remains host-side account data. Host and remote clients therefore persist independent coordinates keyed by authenticated account, with no cross-account location sharing.
 
 ## Wild spawner authority
 

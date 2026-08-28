@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "Game/DMFNewPlayerStart.h"
 #include "DMFTypes.h"
 #include "DMFMMOGameMode.generated.h"
 
@@ -35,6 +36,25 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Networking|Player Spawn")
     bool HasFrameworkPlayerAvatar(APlayerController* PlayerController) const;
 
+    /**
+     * Chooses the dedicated first-login spawn actor for an account with no saved gameplay location.
+     * Native behavior picks the enabled DMFNewPlayerStart with the highest priority. Projects may override in Blueprint.
+     */
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Persistence|Player World Location")
+    ADMFNewPlayerStart* ChooseNewPlayerSpawnPoint(APlayerController* PlayerController) const;
+
+    /** Saves only the controller's current authoritative gameplay location into its existing account record. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Persistence|Player World Location")
+    bool SaveAuthenticatedPlayerWorldLocationNow(APlayerController* PlayerController) const;
+
+
+    /**
+     * Resolves the configured DMFNewPlayerStart on authority and safely returns an authenticated player to it.
+     * The client supplies no transform. Summoned partner combat is disengaged/repositioned and the new location is checkpointed immediately.
+     */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Persistence|Player World Location|Home")
+    bool ReturnAuthenticatedPlayerHome(APlayerController* PlayerController, FText& OutMessage) const;
+
     /** Broadcasts an already-sanitized player message using server-authored identity/timestamp metadata. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
     bool BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderController, const FString& SanitizedMessage);
@@ -51,6 +71,10 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Networking|Player Spawn")
     void BP_OnFrameworkPlayerAvatarRecovered(APlayerController* PlayerController, ADMFPlayerAvatarCharacter* AvatarPawn);
 
+    /** Presentation/analytics hook after the server has resolved this login's initial gameplay transform. */
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Persistence|Player World Location")
+    void BP_OnInitialPlayerWorldLocationApplied(APlayerController* PlayerController, bool bRestoredSavedLocation, bool bFirstLocationCheckpoint, FVector Location, FRotator Rotation);
+
     /** Server-side hook for logging, analytics or future backend/channel integrations after a world-chat message has been accepted. */
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|World Chat")
     void BP_OnWorldChatMessageAccepted(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* SenderController);
@@ -59,7 +83,11 @@ private:
     bool ValidateCredentialsFromOptions(const FString& Options, FString& OutUsername, FString& OutCredentialDigest, bool& bOutCreatedNew, FString& OutError) const;
     UClass* ResolveFrameworkPlayerAvatarClass() const;
     void ScheduleFrameworkPlayerAvatarValidation(APlayerController* PlayerController);
+    bool ApplyInitialPlayerWorldLocation(APlayerController* PlayerController);
+    bool ResolveInitialPlayerWorldTransform(APlayerController* PlayerController, FTransform& OutTransform, bool& bOutHasCustomTransform, bool& bOutRestoredSavedLocation, bool& bOutFirstLocationCheckpoint) const;
     void SavePlayerState(class ADMFPlayerState* PlayerState) const;
+
+    TSet<TWeakObjectPtr<APlayerController>> InitialWorldLocationApplied;
 
     UPROPERTY(Transient)
     TArray<FDMFWorldChatMessage> RecentWorldChatMessages;

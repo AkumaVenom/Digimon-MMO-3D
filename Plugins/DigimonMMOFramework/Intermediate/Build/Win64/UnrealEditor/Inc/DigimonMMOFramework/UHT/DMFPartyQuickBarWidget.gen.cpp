@@ -15,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeDMFPartyQuickBarWidget() {}
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FGuid(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UButton(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UUserWidget(ETypeConstructPhase);
+UMG_API UClass* Z_Construct_UClass_UButton(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UHorizontalBox(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UImage(ETypeConstructPhase);
 UMG_API UClass* Z_Construct_UClass_UProgressBar(ETypeConstructPhase);
@@ -253,6 +254,68 @@ DEFINE_FUNCTION(UDMFPartyQuickBarWidget::execExecutePartySlot)
 }
 // ********** End Class UDMFPartyQuickBarWidget Function ExecutePartySlot **************************
 
+// ********** Begin Class UDMFPartyQuickBarWidget Function HandleHomeTeleportResult ****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleHomeTeleportResult_Statics
+struct UHT_STATICS
+{
+	struct DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms
+	{
+		bool bSuccess;
+		FText Message;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFPartyQuickBarWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleHomeTeleportResult constinit property declarations **************
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleHomeTeleportResult constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleHomeTeleportResult Property Definitions *************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms, Message), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleHomeTeleportResult Property Definitions ***************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPartyQuickBarWidget, nullptr, "HandleHomeTeleportResult", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPartyQuickBarWidget_eventHandleHomeTeleportResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleHomeTeleportResult(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPartyQuickBarWidget::execHandleHomeTeleportResult)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY(FTextProperty,Z_Param_Message);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleHomeTeleportResult(Z_Param_bSuccess,Z_Param_Message);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPartyQuickBarWidget Function HandleHomeTeleportResult ******************
+
 // ********** Begin Class UDMFPartyQuickBarWidget Function HandleOpenBankClicked *******************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -400,6 +463,43 @@ DEFINE_FUNCTION(UDMFPartyQuickBarWidget::execHandleRecallClicked)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFPartyQuickBarWidget Function HandleRecallClicked ***********************
+
+// ********** Begin Class UDMFPartyQuickBarWidget Function HandleReturnHomeClicked *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleReturnHomeClicked_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFPartyQuickBarWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleReturnHomeClicked constinit property declarations ***************
+// ********** End Function HandleReturnHomeClicked constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPartyQuickBarWidget, nullptr, "HandleReturnHomeClicked", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleReturnHomeClicked(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPartyQuickBarWidget::execHandleReturnHomeClicked)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleReturnHomeClicked();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPartyQuickBarWidget Function HandleReturnHomeClicked *******************
 
 // ********** Begin Class UDMFPartyQuickBarWidget Function HandleStorageResult *********************
 #ifdef UHT_STATICS
@@ -667,6 +767,18 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFPartyQuickBarWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReturnHomeButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFPartyQuickBarWidget" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional Blueprint/native Home button. Native fallback places it in the Tab interaction action row. */" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFPartyQuickBarWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional Blueprint/native Home button. Native fallback places it in the Tab interaction action row." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BoundDigimonComponent_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFPartyQuickBarWidget.h" },
@@ -693,6 +805,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PartySlotsBox;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PartyStatusText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PartyActionRow;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_ReturnHomeButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BoundDigimonComponent;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_NativePortraits_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_NativePortraits;
@@ -706,10 +819,12 @@ struct UHT_STATICS
 // ********** End Class UDMFPartyQuickBarWidget constinit property declarations ********************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("ExecutePartySlot"), .Pointer = &UDMFPartyQuickBarWidget::execExecutePartySlot },
+		{ .NameUTF8 = UTF8TEXT("HandleHomeTeleportResult"), .Pointer = &UDMFPartyQuickBarWidget::execHandleHomeTeleportResult },
 		{ .NameUTF8 = UTF8TEXT("HandleOpenBankClicked"), .Pointer = &UDMFPartyQuickBarWidget::execHandleOpenBankClicked },
 		{ .NameUTF8 = UTF8TEXT("HandleOpenPartyClicked"), .Pointer = &UDMFPartyQuickBarWidget::execHandleOpenPartyClicked },
 		{ .NameUTF8 = UTF8TEXT("HandlePartyChanged"), .Pointer = &UDMFPartyQuickBarWidget::execHandlePartyChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleRecallClicked"), .Pointer = &UDMFPartyQuickBarWidget::execHandleRecallClicked },
+		{ .NameUTF8 = UTF8TEXT("HandleReturnHomeClicked"), .Pointer = &UDMFPartyQuickBarWidget::execHandleReturnHomeClicked },
 		{ .NameUTF8 = UTF8TEXT("HandleStorageResult"), .Pointer = &UDMFPartyQuickBarWidget::execHandleStorageResult },
 		{ .NameUTF8 = UTF8TEXT("IsInteractionMode"), .Pointer = &UDMFPartyQuickBarWidget::execIsInteractionMode },
 		{ .NameUTF8 = UTF8TEXT("RefreshParty"), .Pointer = &UDMFPartyQuickBarWidget::execRefreshParty },
@@ -719,10 +834,12 @@ struct UHT_STATICS
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_BP_OnPartyQuickBarRefreshed, "BP_OnPartyQuickBarRefreshed" }, // f0759f9e4a36f8b3bf5ad2bddc8624364ecc081c
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_ExecutePartySlot, "ExecutePartySlot" }, // 871dce920a53543911bd8e7285c7af9a8ea61671
+		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleHomeTeleportResult, "HandleHomeTeleportResult" }, // 54e41a294ef480397bc180285d5a4cc993ca1fd0
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleOpenBankClicked, "HandleOpenBankClicked" }, // 22efd7f99353b5a64b27e4c84dae8ae249b5c743
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleOpenPartyClicked, "HandleOpenPartyClicked" }, // 16d12aa4c245a5dbc561f39fb94ec6536d8b4385
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandlePartyChanged, "HandlePartyChanged" }, // c633a4240b2e45fbdcf6bf21ff019f6406cc3116
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleRecallClicked, "HandleRecallClicked" }, // 857cb586c8441b0d356e2061c3d92036ac31ebcf
+		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleReturnHomeClicked, "HandleReturnHomeClicked" }, // acee355b406b12852852507b843fe64608024201
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_HandleStorageResult, "HandleStorageResult" }, // 2ff39a0d458cc1a5cc1d74b4be29040542a10d81
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_IsInteractionMode, "IsInteractionMode" }, // bd84373e43f218241aaf0783784066e987d06fd7
 		{ &Z_Construct_UFunction_UDMFPartyQuickBarWidget_RefreshParty, "RefreshParty" }, // b5c4f4d57d21464e8a5d9e79467153505b7b6e36
@@ -739,6 +856,7 @@ struct UHT_STATICS
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PartySlotsBox = { "PartySlotsBox", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, PartySlotsBox), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartySlotsBox_MetaData), NewProp_PartySlotsBox_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PartyStatusText = { "PartyStatusText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, PartyStatusText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyStatusText_MetaData), NewProp_PartyStatusText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PartyActionRow = { "PartyActionRow", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, PartyActionRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyActionRow_MetaData), NewProp_PartyActionRow_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ReturnHomeButton = { "ReturnHomeButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, ReturnHomeButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReturnHomeButton_MetaData), NewProp_ReturnHomeButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BoundDigimonComponent = { "BoundDigimonComponent", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, BoundDigimonComponent), Z_Construct_UClass_UDMFPlayerDigimonComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BoundDigimonComponent_MetaData), NewProp_BoundDigimonComponent_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_NativePortraits_Inner = { "NativePortraits", nullptr, (EPropertyFlags)0x0104000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, 0, Z_Construct_UClass_UImage, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_NativePortraits = { "NativePortraits", nullptr, (EPropertyFlags)0x0144008000002008, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPartyQuickBarWidget, NativePortraits), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NativePortraits_MetaData), NewProp_NativePortraits_MetaData) };
@@ -752,6 +870,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartySlotsBox,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyStatusText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyActionRow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnHomeButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BoundDigimonComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NativePortraits_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NativePortraits,
@@ -837,10 +956,10 @@ struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
 		{ Z_Construct_UClass_UDMFPartyQuickSlotButton, TEXT("UDMFPartyQuickSlotButton"), &Z_Registration_Info_UClass_UDMFPartyQuickSlotButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPartyQuickSlotButton), 3429024170U) },
-		{ Z_Construct_UClass_UDMFPartyQuickBarWidget, TEXT("UDMFPartyQuickBarWidget"), &Z_Registration_Info_UClass_UDMFPartyQuickBarWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPartyQuickBarWidget), 3184476930U) },
+		{ Z_Construct_UClass_UDMFPartyQuickBarWidget, TEXT("UDMFPartyQuickBarWidget"), &Z_Registration_Info_UClass_UDMFPartyQuickBarWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPartyQuickBarWidget), 1004713328U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFPartyQuickBarWidget_h__Script_DigimonMMOFramework_8604d9a36d7ee25cf1ed881acf47a21da0db9e4c{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFPartyQuickBarWidget_h__Script_DigimonMMOFramework_3af2c3161c5c833b9819b9798cd87b1164ba8492{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

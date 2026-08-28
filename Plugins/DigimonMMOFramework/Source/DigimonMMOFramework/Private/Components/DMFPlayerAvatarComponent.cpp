@@ -10,6 +10,7 @@
 #include "DigimonMMOFramework.h"
 #include "Engine/AssetManager.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 UDMFPlayerAvatarComponent::UDMFPlayerAvatarComponent()
@@ -122,6 +123,44 @@ void UDMFPlayerAvatarComponent::ApplyToAccountRecord(FDMFAccountRecord& Record) 
     }
 
     Record.SelectedPlayerSkinId = SelectedPlayerSkinId;
+}
+
+bool UDMFPlayerAvatarComponent::ApplyCurrentWorldLocationToAccountRecord(FDMFAccountRecord& Record) const
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnablePlayerWorldLocationPersistence)
+    {
+        return false;
+    }
+
+    const ADMFPlayerState* PlayerState = Cast<ADMFPlayerState>(GetOwner());
+    const ADMFPlayerAvatarCharacter* Avatar = PlayerState ? PlayerState->GetPawn<ADMFPlayerAvatarCharacter>() : nullptr;
+    if (!IsValid(Avatar) || !Avatar->HasAuthority())
+    {
+        return false;
+    }
+
+    const FVector Location = Avatar->GetActorLocation();
+    const FRotator Rotation = Avatar->GetActorRotation();
+    if (Location.ContainsNaN() || Rotation.ContainsNaN())
+    {
+        UE_LOG(LogDigimonMMOFramework, Warning,
+            TEXT("Refusing to persist a non-finite player transform for '%s'."),
+            *Record.Username);
+        return false;
+    }
+
+    Record.PlayerWorldLocation.bHasSavedLocation = true;
+    Record.PlayerWorldLocation.MapName = UGameplayStatics::GetCurrentLevelName(Avatar, true);
+    Record.PlayerWorldLocation.Location = Location;
+    Record.PlayerWorldLocation.Rotation = Rotation.GetNormalized();
+    Record.PlayerWorldLocation.SavedUtcTicks = FDateTime::UtcNow().GetTicks();
+    return true;
 }
 
 void UDMFPlayerAvatarComponent::ServerSetPlayerSkin_Implementation(const FPrimaryAssetId SkinId)

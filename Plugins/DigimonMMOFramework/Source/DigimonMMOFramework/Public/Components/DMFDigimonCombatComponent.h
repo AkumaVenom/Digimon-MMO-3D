@@ -114,6 +114,14 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void SetAuthoritativeTarget(ADMFDigimonCharacter* NewTarget);
 
+
+    /**
+     * Cleanly ends the current authoritative encounter without restoring vitals or clearing ability cooldowns.
+     * Used by world-transition conveniences such as Return Home so combat presentation/movement cannot remain latched.
+     */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
+    void ForceAuthoritativeDisengage();
+
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     bool TryExecuteAbilityById(FName AbilityId, ADMFDigimonCharacter* RequestedTarget);
 

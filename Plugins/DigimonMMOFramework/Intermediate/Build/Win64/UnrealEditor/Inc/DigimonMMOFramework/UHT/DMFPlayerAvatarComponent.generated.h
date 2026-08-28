@@ -28,6 +28,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execOnRep_SelectedPlayerSkinId); \
 	DECLARE_FUNCTION(execResetPlayerSkinSelection); \
 	DECLARE_FUNCTION(execApplySelectedSkinToCurrentPawn); \
+	DECLARE_FUNCTION(execApplyCurrentWorldLocationToAccountRecord); \
 	DECLARE_FUNCTION(execApplyToAccountRecord); \
 	DECLARE_FUNCTION(execInitializeFromAccountRecord); \
 	DECLARE_FUNCTION(execClientPlayerSkinSelectionResult); \

@@ -211,6 +211,14 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 
 Completed: persistent server-authoritative Attribute Point spending for HP/SP/STR/INT/DEF/SPD, native Party/Bank plus-button UX, Blueprint API/result delegate, active-partner in-place replication refresh, and full native Digimon Menu containment/layout polish.
 
+
+## v0.15.1 implemented — persistent player world location + first-login spawn
+- Dedicated placeable `DMFNewPlayerStart` for accounts without a persisted gameplay checkpoint, with enable/priority controls and Blueprint-overridable selection.
+- Save schema v6 per-account map/location/rotation/UTC state.
+- Immediate first-spawn checkpoint plus reuse of the existing account autosave/logout transaction.
+- Returning-player restore before active-partner spawn, with finite/map validation and safe PlayerStart fallback.
+- Zero new RPCs; authoritative pawn transform remains the only persistence source.
+
 ## v0.15.0 implemented — framework-owned frontend background layering
 
 - Project Settings exposes `Frontend Background Widget Class`; consuming projects select their authored Widget Blueprint instead of manually creating it in the Frontend Map.
@@ -219,3 +227,11 @@ Completed: persistent server-authoritative Attribute Point spending for HP/SP/ST
 - Native fallback no longer forces the dark full-screen backdrop; optional dim + opacity remain available in Project Settings.
 - Background creation is non-fatal, and both layers/timers are cleaned up on frontend EndPlay/travel.
 - Presentation-only change: login, hosting, travel, authentication, persistence and multiplayer gameplay authority are unchanged.
+
+
+## v0.15.2 implemented — native Return Home HUD
+
+- Party Quick Access now exposes an interaction-only HOME action under the existing Tab cursor flow.
+- Return Home is server-authoritative and resolves the v0.15.1 `DMFNewPlayerStart`; no client transform is trusted.
+- Successful teleports cleanly terminate the partner encounter/projectiles, reposition the summoned partner, checkpoint v6 location immediately, restore gameplay input, and show an owner-only configurable result toast.
+- Blueprint custom HUDs may request/bind presentation while GameMode retains destination/teleport/save authority.

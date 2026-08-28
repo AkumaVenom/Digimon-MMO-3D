@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.15.2-alpha — Native Return Home HUD & Authoritative Home Teleport
+
+### UE5.8 compile fix
+- Fixed `C4458` in `UDMFHomeTeleportNotificationWidget::BuildNativeFallbackUI` by renaming the local overlay-slot variable so it no longer shadows inherited `UWidget::Slot`. UE5.8 promotes this shadow warning to a build-stopping error under the project warning policy. No runtime, networking, persistence or UI behavior changed.
+
+### Added — Party Quick Access Home action
+- Added a native **HOME** action to the existing Party Quick Access interaction row. It remains out of the way during normal gameplay and becomes clickable only when the local player presses **Tab** to enter the existing mouse/cursor interaction mode.
+- `ADMFMMOPlayerController::RequestReturnHome` is Blueprint-callable for custom HUDs. The request contains **no destination transform**; the owned controller sends only a reliable action request and the server resolves the configured `DMFNewPlayerStart`.
+- Added Project Settings under **UI -> Party Quick Access -> Home** for the master Home action switch, server anti-spam cooldown, owner notification widget class, notification visibility and toast hold time.
+
+### Added — server-authoritative Return Home lifecycle
+- `ADMFMMOGameMode::ReturnAuthenticatedPlayerHome` validates the authenticated framework avatar, resolves the same enabled/highest-priority `DMFNewPlayerStart` contract introduced in v0.15.1, stops residual player movement, performs a collision-aware authoritative teleport and aligns controller facing to the Home transform. Missing/blocked Home spawn points fail cleanly with owner feedback rather than accepting client coordinates or forcing an unsafe transform.
+- A successful Home action immediately checkpoints the resulting v6 `PlayerWorldLocation`, so reconnecting after the teleport restores the Home position even if the process exits before the next 30-second autosave. No SaveGame schema change is required.
+- If the active partner is summoned, its command target and battle encounter are cleanly disengaged without restoring HP/SP or clearing ability cooldowns. Digimon targeting that partner are disengaged, already-launched framework projectiles targeting **or launched by** it are destroyed, and the partner is moved beside the authoritative player using the existing `PartnerSpawnOffset`. This prevents delayed combat/projectiles from following a Home teleport across the map. Return Home is server-rejected while a Care or Digivolution sequence is active so those authoritative transactions cannot be interrupted.
+
+### Added — owner-only Home result notification
+- Added `UDMFHomeTeleportNotificationWidget`, a native top-center transient toast with separate success/failure states (`HOME • ARRIVED` / `HOME • UNAVAILABLE`). Assign a Blueprint child in Project Settings to fully reskin it while keeping teleport authority in C++.
+- Added owner-only `ClientReturnHomeResult` plus `OnHomeTeleportResult` for deterministic UI acknowledgement. On success the Tab interaction mode closes automatically, normal gameplay input/cursor state is restored and the Party/combat HUDs refresh.
+
+### Multiplayer / regression contract
+- Adds one client->server request RPC and one owner-targeted result RPC. The client never submits location, rotation, spawn actor, account record or persistence data. The server owns destination selection, collision validation, combat teardown, teleport and immediate persistence.
+- Save schema remains **v6**. Existing v0.15.1 saved locations, frontend layering, Party/Bank, EXP/levels, Attribute Points, Digivolution, Care, world chat, music, targeting and combat authority remain compatible.
+
+### Documentation
+- Added `SETUP_RETURN_HOME_HUD.md` and updated README, Party Quick Access setup, player-location setup, architecture, networking, config template, roadmap, test plan and validation report.
+
+
+## 0.15.1-alpha — Persistent Player World Location & First-Login Spawn
+
+### Added — dedicated first-login gameplay spawn point
+- Added placeable `ADMFNewPlayerStart` (`DMFNewPlayerStart`) for accounts that do not yet have a persisted gameplay location. Designers place it directly in the Open World map; no tag/string convention is required.
+- Multiple enabled points are supported: highest `SpawnPriority` wins, with deterministic actor-name tie-breaking. `ADMFMMOGameMode::ChooseNewPlayerSpawnPoint` is a BlueprintNativeEvent for projects that want custom shard/zone spawn selection later.
+- If no enabled `DMFNewPlayerStart` exists, brand-new/legacy accounts safely fall back to Unreal's normal `PlayerStart` and that resulting location becomes their first checkpoint.
+
+### Added — server-authoritative per-account world-location persistence
+- Save schema **v6** adds `FDMFPlayerWorldLocationState` to each `FDMFAccountRecord`: saved-map name, player location, player rotation, server UTC checkpoint time and an explicit valid-location flag. Older accounts migrate with `bHasSavedLocation=false`; established pre-v0.15.1 accounts use the normal PlayerStart once and checkpoint there rather than being misclassified as brand-new players. No existing Digimon/account field is discarded.
+- The existing account autosave transaction now captures the authoritative `DMFPlayerAvatarCharacter` transform alongside Party/Bank/Care/avatar state. Logout also captures the latest transform. New accounts commit their first spawn checkpoint immediately so a crash/disconnect before the first periodic autosave does not make them appear new again.
+- Returning players restore their saved transform before active-partner spawning. The saved map must match the current gameplay level and all coordinates must be finite; stale/mismatched/invalid data falls back to Unreal's collision-safe normal `PlayerStart` rather than forcing a bad teleport.
+- Restore is performed once per authenticated controller login, before partner restoration and remote-client `ClientRestart` resynchronization. Movement remains normal server-authoritative CharacterMovement after spawn; no client location is trusted.
+
+### Blueprint / Project Settings
+- Added `Enable Player World Location Persistence` and `Use Dedicated New Player Spawn` under **Project Settings -> Digimon MMO Framework -> Persistence -> Player World Location**. Both default to enabled.
+- Added `SaveAuthenticatedPlayerWorldLocationNow` for server/admin Blueprint checkpoints plus `BP_OnInitialPlayerWorldLocationApplied` for presentation/analytics only.
+- Added `ApplyCurrentWorldLocationToAccountRecord` on the server-authoritative player-avatar component for framework/custom persistence transactions.
+
+### Multiplayer / regression contract
+- Adds **zero RPCs** and no client-authored transform mutation. Every persisted position comes from the authoritative server pawn. Each account stores its own private location in the host-side account database; players never replicate saved coordinates to peers.
+- Existing frontend, authentication, Party/Bank, progression, Attribute Points, Digivolution, Care, combat, world chat, music, spawners and active-partner replication remain unchanged.
+
+### Documentation
+- Added `SETUP_PLAYER_WORLD_LOCATION.md` and updated README, architecture, networking, config template, roadmap, test plan and validation report.
+
+
 ## 0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish
 
 ### Added — framework-owned background widget class

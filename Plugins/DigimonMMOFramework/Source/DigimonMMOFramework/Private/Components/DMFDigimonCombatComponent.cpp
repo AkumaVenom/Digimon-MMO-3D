@@ -187,6 +187,43 @@ void UDMFDigimonCombatComponent::SetAuthoritativeTarget(ADMFDigimonCharacter* Ne
     }
 }
 
+
+void UDMFDigimonCombatComponent::ForceAuthoritativeDisengage()
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        return;
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        World->GetTimerManager().ClearTimer(RecoveryTimer);
+    }
+
+    if (ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner()))
+    {
+        Self->StopCombatFacingTarget();
+        if (AAIController* AI = Cast<AAIController>(Self->GetController()))
+        {
+            AI->StopMovement();
+        }
+    }
+
+    const bool bTargetChanged = CurrentTarget != nullptr;
+    CurrentTarget = nullptr;
+    bRetaliationCombatActive = false;
+    ClearQueuedCommand();
+    ResetAutoBattleAbilityRotation();
+    SetBattleEncounterActive(false);
+    SetCombatState(EDMFCombatState::Idle);
+
+    if (bTargetChanged)
+    {
+        OnTargetChanged.Broadcast(nullptr);
+    }
+    GetOwner()->ForceNetUpdate();
+}
+
 bool UDMFDigimonCombatComponent::CanAttackTarget(const ADMFDigimonCharacter* Candidate) const
 {
     const ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());

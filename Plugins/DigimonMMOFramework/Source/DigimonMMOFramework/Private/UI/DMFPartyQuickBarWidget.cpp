@@ -54,6 +54,16 @@ void UDMFPartyQuickBarWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     BindDigimonComponent();
+    if (ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        PC->OnHomeTeleportResult.RemoveDynamic(this, &UDMFPartyQuickBarWidget::HandleHomeTeleportResult);
+        PC->OnHomeTeleportResult.AddDynamic(this, &UDMFPartyQuickBarWidget::HandleHomeTeleportResult);
+    }
+    if (ReturnHomeButton)
+    {
+        ReturnHomeButton->OnClicked.RemoveDynamic(this, &UDMFPartyQuickBarWidget::HandleReturnHomeClicked);
+        ReturnHomeButton->OnClicked.AddDynamic(this, &UDMFPartyQuickBarWidget::HandleReturnHomeClicked);
+    }
     SetInteractionMode(false);
     RefreshParty();
 }
@@ -66,6 +76,14 @@ void UDMFPartyQuickBarWidget::NativeDestruct()
         BoundDigimonComponent->OnDigimonStorageActionResult.RemoveDynamic(this, &UDMFPartyQuickBarWidget::HandleStorageResult);
     }
     BoundDigimonComponent = nullptr;
+    if (ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        PC->OnHomeTeleportResult.RemoveDynamic(this, &UDMFPartyQuickBarWidget::HandleHomeTeleportResult);
+    }
+    if (ReturnHomeButton)
+    {
+        ReturnHomeButton->OnClicked.RemoveDynamic(this, &UDMFPartyQuickBarWidget::HandleReturnHomeClicked);
+    }
     Super::NativeDestruct();
 }
 
@@ -173,6 +191,15 @@ void UDMFPartyQuickBarWidget::BuildNativeFallback()
 
     PartyActionRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("PartyActionRow"));
     Column->AddChildToVerticalBox(PartyActionRow)->SetPadding(FMargin(2.0f, 7.0f, 2.0f, 0.0f));
+
+    ReturnHomeButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ReturnHomeButton"));
+    DMFNativeUI::StyleButton(ReturnHomeButton, true);
+    UTextBlock* HomeText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+    HomeText->SetText(NSLOCTEXT("DMF", "PartyQuickReturnHome", "HOME"));
+    HomeText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(HomeText, 10, DMFNativeUI::Gold(), true);
+    ReturnHomeButton->AddChild(HomeText);
+    if (UHorizontalBoxSlot* HomeActionSlot = PartyActionRow->AddChildToHorizontalBox(ReturnHomeButton)) { HomeActionSlot->SetSize(DMFNativeUI::FillSize()); HomeActionSlot->SetPadding(FMargin(3.0f,0.0f)); }
 
     UButton* RecallButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("PartyQuickRecall"));
     DMFNativeUI::StyleButton(RecallButton);
@@ -303,12 +330,22 @@ void UDMFPartyQuickBarWidget::RefreshParty()
         }
     }
 
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (ReturnHomeButton)
+    {
+        const bool bHomeEnabled = !Settings || Settings->bEnablePartyQuickAccessHomeButton;
+        ReturnHomeButton->SetVisibility(bHomeEnabled ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        ReturnHomeButton->SetIsEnabled(bHomeEnabled && bInteractionMode && !bHomeTeleportRequestPending);
+    }
+
     if (PartyStatusText)
     {
-        PartyStatusText->SetText(bInteractionMode
-            ? NSLOCTEXT("DMF", "PartyQuickInteractive", "CLICK SLOT TO SWITCH  •  TAB / ESC CLOSE")
-            : NSLOCTEXT("DMF", "PartyQuickHint", "TAB  •  INTERACT"));
-        PartyStatusText->SetColorAndOpacity(FSlateColor(bInteractionMode ? DMFNativeUI::Gold() : DMFNativeUI::Muted()));
+        PartyStatusText->SetText(bHomeTeleportRequestPending
+            ? NSLOCTEXT("DMF", "PartyQuickReturningHome", "RETURNING HOME...")
+            : (bInteractionMode
+                ? NSLOCTEXT("DMF", "PartyQuickInteractive", "CLICK SLOT / HOME  •  TAB / ESC CLOSE")
+                : NSLOCTEXT("DMF", "PartyQuickHint", "TAB  •  INTERACT")));
+        PartyStatusText->SetColorAndOpacity(FSlateColor((bInteractionMode || bHomeTeleportRequestPending) ? DMFNativeUI::Gold() : DMFNativeUI::Muted()));
     }
     BP_OnPartyQuickBarRefreshed();
 }
@@ -349,6 +386,32 @@ void UDMFPartyQuickBarWidget::HandleStorageResult(const bool bSuccess, const FTe
     {
         PartyStatusText->SetText(Message);
         PartyStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger()));
+    }
+}
+
+void UDMFPartyQuickBarWidget::HandleReturnHomeClicked()
+{
+    if (!bInteractionMode || bHomeTeleportRequestPending)
+    {
+        return;
+    }
+
+    if (ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        bHomeTeleportRequestPending = true;
+        RefreshParty();
+        PC->RequestReturnHome();
+    }
+}
+
+void UDMFPartyQuickBarWidget::HandleHomeTeleportResult(const bool bSuccess, const FText Message)
+{
+    bHomeTeleportRequestPending = false;
+    RefreshParty();
+    if (!bSuccess && PartyStatusText && !Message.IsEmpty())
+    {
+        PartyStatusText->SetText(Message);
+        PartyStatusText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Danger()));
     }
 }
 

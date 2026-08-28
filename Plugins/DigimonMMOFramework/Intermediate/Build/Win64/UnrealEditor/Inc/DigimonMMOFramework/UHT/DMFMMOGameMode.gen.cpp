@@ -13,6 +13,8 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 void EmptyLinkFunctionForGeneratedCodeDMFMMOGameMode() {}
 
 // ********** Begin Cross Module References ********************************************************
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator(ETypeConstructPhase);
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_AGameMode(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_APlayerController(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
@@ -23,6 +25,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstruc
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFNewPlayerStart(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFPlayerAvatarCharacter(ETypeConstructPhase);
 // ********** End Same Module References ***********************************************************
 #define UHT_STRUCT_BASE(INIT) UE::CodeGen::ConstInit::TCompiledInObjectPtr<const FStructBaseChain>(UE::Private::AsStructBaseChain(INIT))
@@ -91,6 +94,94 @@ UFunction* Z_Construct_UFunction_ADMFMMOGameMode_BP_OnFrameworkPlayerAvatarRecov
 }
 #undef UHT_STATICS
 // ********** End Class ADMFMMOGameMode Function BP_OnFrameworkPlayerAvatarRecovered ***************
+
+// ********** Begin Class ADMFMMOGameMode Function BP_OnInitialPlayerWorldLocationApplied **********
+struct DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms
+{
+	APlayerController* PlayerController;
+	bool bRestoredSavedLocation;
+	bool bFirstLocationCheckpoint;
+	FVector Location;
+	FRotator Rotation;
+};
+static FName NAME_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied = FName(TEXT("BP_OnInitialPlayerWorldLocationApplied"));
+void ADMFMMOGameMode::BP_OnInitialPlayerWorldLocationApplied(APlayerController* PlayerController, bool bRestoredSavedLocation, bool bFirstLocationCheckpoint, FVector Location, FRotator Rotation)
+{
+	DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms Parms;
+	Parms.PlayerController=PlayerController;
+	Parms.bRestoredSavedLocation=bRestoredSavedLocation ? true : false;
+	Parms.bFirstLocationCheckpoint=bFirstLocationCheckpoint ? true : false;
+	Parms.Location=Location;
+	Parms.Rotation=Rotation;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Persistence|Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Presentation/analytics hook after the server has resolved this login's initial gameplay transform. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Presentation/analytics hook after the server has resolved this login's initial gameplay transform." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BP_OnInitialPlayerWorldLocationApplied constinit property declarations 
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerController;
+	static void NewProp_bRestoredSavedLocation_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms*)Obj)->bRestoredSavedLocation = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bRestoredSavedLocation;
+	static void NewProp_bFirstLocationCheckpoint_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms*)Obj)->bFirstLocationCheckpoint = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bFirstLocationCheckpoint;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Location;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Rotation;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BP_OnInitialPlayerWorldLocationApplied constinit property declarations **
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BP_OnInitialPlayerWorldLocationApplied Property Definitions ***********
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerController = { "PlayerController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms, PlayerController), Z_Construct_UClass_APlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRestoredSavedLocation = { "bRestoredSavedLocation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms), &UHT_STATICS::NewProp_bRestoredSavedLocation_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bFirstLocationCheckpoint = { "bFirstLocationCheckpoint", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms), &UHT_STATICS::NewProp_bFirstLocationCheckpoint_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Location = { "Location", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms, Location), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Rotation = { "Rotation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms, Rotation), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRestoredSavedLocation,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bFirstLocationCheckpoint,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Location,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Rotation,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BP_OnInitialPlayerWorldLocationApplied Property Definitions *************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "BP_OnInitialPlayerWorldLocationApplied", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x08880800, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFMMOGameMode_eventBP_OnInitialPlayerWorldLocationApplied_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Class ADMFMMOGameMode Function BP_OnInitialPlayerWorldLocationApplied ************
 
 // ********** Begin Class ADMFMMOGameMode Function BP_OnPlayerAccountLoaded ************************
 struct DMFMMOGameMode_eventBP_OnPlayerAccountLoaded_Parms
@@ -307,6 +398,92 @@ DEFINE_FUNCTION(ADMFMMOGameMode::execBroadcastWorldChatMessage)
 }
 // ********** End Class ADMFMMOGameMode Function BroadcastWorldChatMessage *************************
 
+// ********** Begin Class ADMFMMOGameMode Function ChooseNewPlayerSpawnPoint ***********************
+struct DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms
+{
+	APlayerController* PlayerController;
+	ADMFNewPlayerStart* ReturnValue;
+
+	/** Constructor, initializes return property only **/
+	DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms()
+		: ReturnValue(NULL)
+	{
+	}
+};
+static FName NAME_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint = FName(TEXT("ChooseNewPlayerSpawnPoint"));
+ADMFNewPlayerStart* ADMFMMOGameMode::ChooseNewPlayerSpawnPoint(APlayerController* PlayerController) const
+{
+	UFunction* Func = FindFunctionChecked(NAME_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint);
+	if (!Func->GetOwnerClass()->HasAnyClassFlags(CLASS_Native))
+	{
+		DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms Parms;
+		Parms.PlayerController=PlayerController;
+		const_cast<ADMFMMOGameMode*>(this)->ProcessEvent(Func,&Parms);
+		return Parms.ReturnValue;
+	}
+	else
+	{
+		return const_cast<ADMFMMOGameMode*>(this)->ChooseNewPlayerSpawnPoint_Implementation(PlayerController);
+	}
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Persistence|Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Chooses the dedicated first-login spawn actor for an account with no saved gameplay location.\n     * Native behavior picks the enabled DMFNewPlayerStart with the highest priority. Projects may override in Blueprint.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Chooses the dedicated first-login spawn actor for an account with no saved gameplay location.\nNative behavior picks the enabled DMFNewPlayerStart with the highest priority. Projects may override in Blueprint." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ChooseNewPlayerSpawnPoint constinit property declarations *************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerController;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ChooseNewPlayerSpawnPoint constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ChooseNewPlayerSpawnPoint Property Definitions ************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerController = { "PlayerController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms, PlayerController), Z_Construct_UClass_APlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms, ReturnValue), Z_Construct_UClass_ADMFNewPlayerStart, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ChooseNewPlayerSpawnPoint Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "ChooseNewPlayerSpawnPoint", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x5C020C04, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execChooseNewPlayerSpawnPoint)
+{
+	P_GET_OBJECT(APlayerController,Z_Param_PlayerController);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(ADMFNewPlayerStart**)Z_Param__Result=P_THIS->ChooseNewPlayerSpawnPoint_Implementation(Z_Param_PlayerController);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function ChooseNewPlayerSpawnPoint *************************
+
 // ********** Begin Class ADMFMMOGameMode Function EnsureFrameworkPlayerAvatar *********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -443,6 +620,147 @@ DEFINE_FUNCTION(ADMFMMOGameMode::execHasFrameworkPlayerAvatar)
 }
 // ********** End Class ADMFMMOGameMode Function HasFrameworkPlayerAvatar **************************
 
+// ********** Begin Class ADMFMMOGameMode Function ReturnAuthenticatedPlayerHome *******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_ReturnAuthenticatedPlayerHome_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms
+	{
+		APlayerController* PlayerController;
+		FText OutMessage;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Persistence|Player World Location|Home" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Resolves the configured DMFNewPlayerStart on authority and safely returns an authenticated player to it.\n     * The client supplies no transform. Summoned partner combat is disengaged/repositioned and the new location is checkpointed immediately.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Resolves the configured DMFNewPlayerStart on authority and safely returns an authenticated player to it.\nThe client supplies no transform. Summoned partner combat is disengaged/repositioned and the new location is checkpointed immediately." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ReturnAuthenticatedPlayerHome constinit property declarations *********
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerController;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_OutMessage;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ReturnAuthenticatedPlayerHome constinit property declarations ***********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ReturnAuthenticatedPlayerHome Property Definitions ********************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerController = { "PlayerController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms, PlayerController), Z_Construct_UClass_APlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_OutMessage = { "OutMessage", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms, OutMessage), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OutMessage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ReturnAuthenticatedPlayerHome Property Definitions **********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "ReturnAuthenticatedPlayerHome", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54420405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOGameMode_eventReturnAuthenticatedPlayerHome_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_ReturnAuthenticatedPlayerHome(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execReturnAuthenticatedPlayerHome)
+{
+	P_GET_OBJECT(APlayerController,Z_Param_PlayerController);
+	P_GET_PROPERTY_REF(FTextProperty,Z_Param_Out_OutMessage);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->ReturnAuthenticatedPlayerHome(Z_Param_PlayerController,Z_Param_Out_OutMessage);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function ReturnAuthenticatedPlayerHome *********************
+
+// ********** Begin Class ADMFMMOGameMode Function SaveAuthenticatedPlayerWorldLocationNow *********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_SaveAuthenticatedPlayerWorldLocationNow_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms
+	{
+		APlayerController* PlayerController;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Persistence|Player World Location" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Saves only the controller's current authoritative gameplay location into its existing account record. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Saves only the controller's current authoritative gameplay location into its existing account record." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function SaveAuthenticatedPlayerWorldLocationNow constinit property declarations 
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerController;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function SaveAuthenticatedPlayerWorldLocationNow constinit property declarations *
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function SaveAuthenticatedPlayerWorldLocationNow Property Definitions **********
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerController = { "PlayerController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms, PlayerController), Z_Construct_UClass_APlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function SaveAuthenticatedPlayerWorldLocationNow Property Definitions ************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "SaveAuthenticatedPlayerWorldLocationNow", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOGameMode_eventSaveAuthenticatedPlayerWorldLocationNow_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_SaveAuthenticatedPlayerWorldLocationNow(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execSaveAuthenticatedPlayerWorldLocationNow)
+{
+	P_GET_OBJECT(APlayerController,Z_Param_PlayerController);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->SaveAuthenticatedPlayerWorldLocationNow(Z_Param_PlayerController);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function SaveAuthenticatedPlayerWorldLocationNow ***********
+
 // ********** Begin Class ADMFMMOGameMode Function SendRecentWorldChatHistory **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -531,18 +849,25 @@ struct UHT_STATICS
 // ********** End Class ADMFMMOGameMode constinit property declarations ****************************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("BroadcastWorldChatMessage"), .Pointer = &ADMFMMOGameMode::execBroadcastWorldChatMessage },
+		{ .NameUTF8 = UTF8TEXT("ChooseNewPlayerSpawnPoint"), .Pointer = &ADMFMMOGameMode::execChooseNewPlayerSpawnPoint },
 		{ .NameUTF8 = UTF8TEXT("EnsureFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execEnsureFrameworkPlayerAvatar },
 		{ .NameUTF8 = UTF8TEXT("HasFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execHasFrameworkPlayerAvatar },
+		{ .NameUTF8 = UTF8TEXT("ReturnAuthenticatedPlayerHome"), .Pointer = &ADMFMMOGameMode::execReturnAuthenticatedPlayerHome },
+		{ .NameUTF8 = UTF8TEXT("SaveAuthenticatedPlayerWorldLocationNow"), .Pointer = &ADMFMMOGameMode::execSaveAuthenticatedPlayerWorldLocationNow },
 		{ .NameUTF8 = UTF8TEXT("SendRecentWorldChatHistory"), .Pointer = &ADMFMMOGameMode::execSendRecentWorldChatHistory },
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnFrameworkPlayerAvatarRecovered, "BP_OnFrameworkPlayerAvatarRecovered" }, // 6f0ea1ae4023958db8fa133b8be0b1c83968dc61
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied, "BP_OnInitialPlayerWorldLocationApplied" }, // d3466876be1a9936c6b4d1848f2693531c190ec9
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnPlayerAccountLoaded, "BP_OnPlayerAccountLoaded" }, // f02a391e4384c986783ae67a84e773493f474b6f
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnWorldChatMessageAccepted, "BP_OnWorldChatMessageAccepted" }, // fca3160cc0add056c954ae9d55e825026fae0c9e
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatMessage, "BroadcastWorldChatMessage" }, // 427ec194ea62c18be7eea2514fba7956455df193
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint, "ChooseNewPlayerSpawnPoint" }, // 1db62d1a8957614b462cb76c54550f9b89e838ac
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_EnsureFrameworkPlayerAvatar, "EnsureFrameworkPlayerAvatar" }, // 7ccb9f3f91f51e0daedd94afae698fc94df920fa
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_HasFrameworkPlayerAvatar, "HasFrameworkPlayerAvatar" }, // 8494791abd92585c160a0fb97479552e9dc7af1c
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_ReturnAuthenticatedPlayerHome, "ReturnAuthenticatedPlayerHome" }, // 5d9e85d70fae7add7c17d44983cabdb87173a37d
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_SaveAuthenticatedPlayerWorldLocationNow, "SaveAuthenticatedPlayerWorldLocationNow" }, // c8a70d51e04800392a0c902fa38be5f03e96bd53
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_SendRecentWorldChatHistory, "SendRecentWorldChatHistory" }, // 1471f7c9b132550e298f97a90ab1d583f94e0d8f
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
@@ -632,10 +957,10 @@ ADMFMMOGameMode::~ADMFMMOGameMode() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 1210380212U) },
+		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 1513580599U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_435941ac4afa54b927dd9bd5bd22f34cbebfdf17{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_ef8c2415404b0d897f9175694ea46a0c44ec9a12{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

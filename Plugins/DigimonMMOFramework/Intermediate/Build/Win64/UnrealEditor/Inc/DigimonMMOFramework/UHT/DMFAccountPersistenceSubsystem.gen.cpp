@@ -126,7 +126,7 @@ struct UHT_STATICS
 
 // ********** Begin Function GetAccount Property Definitions ***************************************
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "Username", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventGetAccount_Parms, Username), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Username_MetaData), NewProp_Username_MetaData) };
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_OutRecord = { "OutRecord", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventGetAccount_Parms, OutRecord), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_OutRecord = { "OutRecord", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventGetAccount_Parms, OutRecord), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // eaba441aff65f24fec113141e40beb31d1511145
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFAccountPersistenceSubsystem_eventGetAccount_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
@@ -195,7 +195,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function SaveAccount Property Definitions **************************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventSaveAccount_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventSaveAccount_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // eaba441aff65f24fec113141e40beb31d1511145
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_OutError = { "OutError", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(DMFAccountPersistenceSubsystem_eventSaveAccount_Parms, OutError), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFAccountPersistenceSubsystem_eventSaveAccount_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
@@ -345,8 +345,8 @@ struct UHT_STATICS
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_Flush, "Flush" }, // a8abd4b68e1ca1426824ec92b004d9d473f02bdd
-		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_GetAccount, "GetAccount" }, // 087f43196eeb00e141b9fae5fe9ab7e7a8ea174f
-		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_SaveAccount, "SaveAccount" }, // 902bcb13f8c2deaab063ebe6de5f88ef786b483a
+		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_GetAccount, "GetAccount" }, // 003d89843afba2b0f6892a9825dae115f5d497c1
+		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_SaveAccount, "SaveAccount" }, // 7ae72d28cc46596c2ef7df5ae889b504d91f0e31
 		{ &Z_Construct_UFunction_UDMFAccountPersistenceSubsystem_ValidateOrRegisterAccount, "ValidateOrRegisterAccount" }, // 4b7ae0373963af29d49499801a0f240bffa583f7
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
@@ -435,10 +435,10 @@ UDMFAccountPersistenceSubsystem::~UDMFAccountPersistenceSubsystem() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFAccountPersistenceSubsystem, TEXT("UDMFAccountPersistenceSubsystem"), &Z_Registration_Info_UClass_UDMFAccountPersistenceSubsystem, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFAccountPersistenceSubsystem), 2017143963U) },
+		{ Z_Construct_UClass_UDMFAccountPersistenceSubsystem, TEXT("UDMFAccountPersistenceSubsystem"), &Z_Registration_Info_UClass_UDMFAccountPersistenceSubsystem, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFAccountPersistenceSubsystem), 1412140674U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Persistence_DMFAccountPersistenceSubsystem_h__Script_DigimonMMOFramework_ed8b9db7e0e62bd1658b1f42fe6361d24219162b{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Persistence_DMFAccountPersistenceSubsystem_h__Script_DigimonMMOFramework_81edc0ac03e1319c5be61d0d909e20070b7cd0bf{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

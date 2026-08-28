@@ -103,6 +103,9 @@ Project Settings:
 - **Party Quick Bar Widget Class** — Blueprint-replaceable presentation class.
 - **Show Native Party Quick Bar** — master visibility switch.
 - **Enable Default Party Quick Access Input** — enables the built-in Tab/Escape flow.
+- **Enable Party Quick Access Home Button** — exposes the server-authoritative `HOME` action in the Tab interaction row.
+- **Home Teleport Request Cooldown Seconds** — server-side anti-spam cooldown (default 4s).
+- **Home Teleport Notification Widget Class / Show Native Home Teleport Notifications / Hold Seconds** — owner-only success/failure presentation; assign a Blueprint child to reskin it.
 - **Party Quick Bar Bottom Safe Offset** — vertical HUD safe-lane offset.
 
 ### Default interaction

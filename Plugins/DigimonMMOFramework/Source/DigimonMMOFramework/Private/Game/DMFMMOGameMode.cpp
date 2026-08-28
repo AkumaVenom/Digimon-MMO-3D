@@ -1,16 +1,22 @@
 #include "Game/DMFMMOGameMode.h"
 #include "Game/DMFPlayerState.h"
 #include "Game/DMFMMOPlayerController.h"
+#include "Game/DMFNewPlayerStart.h"
 #include "Components/DMFPlayerDigimonComponent.h"
+#include "Components/DMFDigimonCombatComponent.h"
 #include "Components/DMFPlayerAvatarComponent.h"
 #include "Game/DMFPlayerAvatarCharacter.h"
+#include "Game/DMFDigimonCharacter.h"
+#include "Game/DMFAbilityProjectileActor.h"
 #include "Persistence/DMFAccountPersistenceSubsystem.h"
 #include "Utility/DMFCredentialUtility.h"
 #include "Settings/DMFFrameworkSettings.h"
 #include "DigimonMMOFramework.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 
 ADMFMMOGameMode::ADMFMMOGameMode()
@@ -259,6 +265,362 @@ void ADMFMMOGameMode::SendRecentWorldChatHistory(ADMFMMOPlayerController* Recipi
     RecipientController->ClientReceiveWorldChatHistory(BoundedHistory);
 }
 
+ADMFNewPlayerStart* ADMFMMOGameMode::ChooseNewPlayerSpawnPoint_Implementation(APlayerController* PlayerController) const
+{
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return nullptr;
+    }
+
+    ADMFNewPlayerStart* BestStart = nullptr;
+    for (TActorIterator<ADMFNewPlayerStart> It(World); It; ++It)
+    {
+        ADMFNewPlayerStart* Candidate = *It;
+        if (!IsValid(Candidate) || !Candidate->bEnabled)
+        {
+            continue;
+        }
+
+        const bool bHigherPriority = !BestStart || Candidate->SpawnPriority > BestStart->SpawnPriority;
+        const bool bDeterministicTieBreak = BestStart
+            && Candidate->SpawnPriority == BestStart->SpawnPriority
+            && Candidate->GetName() < BestStart->GetName();
+        if (bHigherPriority || bDeterministicTieBreak)
+        {
+            BestStart = Candidate;
+        }
+    }
+
+    return BestStart;
+}
+
+bool ADMFMMOGameMode::SaveAuthenticatedPlayerWorldLocationNow(APlayerController* PlayerController) const
+{
+    if (!HasAuthority() || !IsValid(PlayerController))
+    {
+        return false;
+    }
+
+    ADMFPlayerState* PlayerState = PlayerController->GetPlayerState<ADMFPlayerState>();
+    if (!PlayerState || !PlayerState->AvatarComponent || PlayerState->GetAuthenticatedUsername().IsEmpty())
+    {
+        return false;
+    }
+
+    UGameInstance* GameInstance = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GameInstance ? GameInstance->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    if (!Persistence)
+    {
+        return false;
+    }
+
+    FDMFAccountRecord Record;
+    if (!Persistence->GetAccount(PlayerState->GetAuthenticatedUsername(), Record))
+    {
+        return false;
+    }
+
+    if (!PlayerState->AvatarComponent->ApplyCurrentWorldLocationToAccountRecord(Record))
+    {
+        return false;
+    }
+
+    FString Error;
+    if (!Persistence->SaveAccount(Record, Error))
+    {
+        UE_LOG(LogDigimonMMOFramework, Error,
+            TEXT("Player world-location checkpoint failed for '%s': %s"),
+            *PlayerState->GetAuthenticatedUsername(), *Error);
+        return false;
+    }
+
+    return true;
+}
+
+bool ADMFMMOGameMode::ReturnAuthenticatedPlayerHome(APlayerController* PlayerController, FText& OutMessage) const
+{
+    OutMessage = FText::GetEmpty();
+    if (!HasAuthority() || !IsValid(PlayerController))
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomeAuthorityRequired", "Return Home must be validated by the server.");
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnablePartyQuickAccessHomeButton)
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomeDisabled", "Return Home is disabled for this world.");
+        return false;
+    }
+
+    ADMFPlayerState* PlayerState = PlayerController->GetPlayerState<ADMFPlayerState>();
+    ADMFPlayerAvatarCharacter* AvatarPawn = Cast<ADMFPlayerAvatarCharacter>(PlayerController->GetPawn());
+    if (!PlayerState || PlayerState->GetAuthenticatedUsername().IsEmpty() || !IsValid(AvatarPawn))
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomePlayerUnavailable", "Your authenticated player avatar is not ready yet.");
+        return false;
+    }
+
+    UDMFPlayerDigimonComponent* DigimonComponent = PlayerState->DigimonComponent;
+    if (DigimonComponent && (DigimonComponent->IsCareSequenceActive() || DigimonComponent->IsDigivolutionSequenceActive()))
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomePresentationBusy", "Finish the current Digimon care or Digivolution sequence before returning Home.");
+        return false;
+    }
+
+    ADMFNewPlayerStart* HomeStart = ChooseNewPlayerSpawnPoint(PlayerController);
+    if (!IsValid(HomeStart))
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomeSpawnMissing", "No enabled DMFNewPlayerStart is configured for this world.");
+        return false;
+    }
+
+    if (UCharacterMovementComponent* Movement = AvatarPawn->GetCharacterMovement())
+    {
+        Movement->StopMovementImmediately();
+    }
+    AvatarPawn->ResetNativeInputState();
+
+    const FTransform HomeTransform(HomeStart->GetActorRotation(), HomeStart->GetActorLocation(), FVector::OneVector);
+    if (!AvatarPawn->TeleportTo(HomeTransform.GetLocation(), HomeTransform.Rotator(), false, false))
+    {
+        OutMessage = NSLOCTEXT("DMF", "ReturnHomeObstructed", "Home is currently obstructed. Move the DMFNewPlayerStart to a clear location.");
+        return false;
+    }
+
+    PlayerController->SetControlRotation(HomeTransform.Rotator());
+    if (UCharacterMovementComponent* Movement = AvatarPawn->GetCharacterMovement())
+    {
+        Movement->StopMovementImmediately();
+    }
+
+    if (DigimonComponent)
+    {
+        DigimonComponent->ServerSetCommandTarget(nullptr);
+
+        if (ADMFDigimonCharacter* Partner = DigimonComponent->ActivePartnerActor)
+        {
+            if (Partner->CombatComponent)
+            {
+                Partner->CombatComponent->ForceAuthoritativeDisengage();
+            }
+
+            // Return Home is an encounter boundary. Disengage any authoritative Digimon still targeting
+            // this partner and remove already-launched projectiles aimed at it so combat cannot follow the
+            // player across the world and land a delayed hit at the Home spawn.
+            if (UWorld* World = GetWorld())
+            {
+                for (TActorIterator<ADMFDigimonCharacter> It(World); It; ++It)
+                {
+                    ADMFDigimonCharacter* Other = *It;
+                    if (IsValid(Other) && Other != Partner && Other->CombatComponent
+                        && Other->CombatComponent->GetCurrentTarget() == Partner)
+                    {
+                        Other->CombatComponent->ForceAuthoritativeDisengage();
+                    }
+                }
+                for (TActorIterator<ADMFAbilityProjectileActor> It(World); It; ++It)
+                {
+                    ADMFAbilityProjectileActor* Projectile = *It;
+                    if (IsValid(Projectile)
+                        && (Projectile->GetTargetDigimon() == Partner || Projectile->GetSourceDigimon() == Partner))
+                    {
+                        Projectile->Destroy();
+                    }
+                }
+            }
+
+            const FVector PartnerOffset = Settings ? Settings->PartnerSpawnOffset : FVector(150.0, 120.0, 0.0);
+            const FVector DesiredPartnerLocation = AvatarPawn->GetActorTransform().TransformPosition(PartnerOffset);
+            if (!Partner->TeleportTo(DesiredPartnerLocation, AvatarPawn->GetActorRotation(), false, false))
+            {
+                // If the normal offset is blocked, keep the partner coherent with its owner by trying the
+                // authoritative player's safe destination. The follow-anchor can recover naturally if both fail.
+                if (!Partner->TeleportTo(AvatarPawn->GetActorLocation(), AvatarPawn->GetActorRotation(), false, false))
+                {
+                    UE_LOG(LogDigimonMMOFramework, Warning,
+                        TEXT("Return Home could not immediately relocate partner '%s' for account '%s'; normal follow recovery remains active."),
+                        *GetNameSafe(Partner), *PlayerState->GetAuthenticatedUsername());
+                }
+            }
+            Partner->ForceNetUpdate();
+        }
+    }
+
+    // The private command-target state lives on the PlayerState-owned component; flush that owner as well
+    // so the local targeting marker clears promptly after an authoritative Return Home.
+    PlayerState->ForceNetUpdate();
+    AvatarPawn->ForceNetUpdate();
+    PlayerController->ForceNetUpdate();
+
+    // Return Home is an explicit persistent checkpoint. Saving immediately prevents a crash/disconnect
+    // from restoring the pre-teleport location on the next login.
+    if (!SaveAuthenticatedPlayerWorldLocationNow(PlayerController))
+    {
+        UE_LOG(LogDigimonMMOFramework, Warning,
+            TEXT("Return Home succeeded for '%s' but the immediate world-location checkpoint failed; the normal autosave may still recover it."),
+            *PlayerState->GetAuthenticatedUsername());
+    }
+
+    OutMessage = NSLOCTEXT("DMF", "ReturnHomeSuccess", "Teleported to the Home spawn point.");
+    return true;
+}
+
+bool ADMFMMOGameMode::ResolveInitialPlayerWorldTransform(
+    APlayerController* PlayerController,
+    FTransform& OutTransform,
+    bool& bOutHasCustomTransform,
+    bool& bOutRestoredSavedLocation,
+    bool& bOutFirstLocationCheckpoint) const
+{
+    OutTransform = FTransform::Identity;
+    bOutHasCustomTransform = false;
+    bOutRestoredSavedLocation = false;
+    bOutFirstLocationCheckpoint = false;
+
+    const ADMFPlayerState* PlayerState = PlayerController ? PlayerController->GetPlayerState<ADMFPlayerState>() : nullptr;
+    if (!PlayerState || PlayerState->GetAuthenticatedUsername().IsEmpty())
+    {
+        return false;
+    }
+
+    UGameInstance* GameInstance = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GameInstance ? GameInstance->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    if (!Persistence)
+    {
+        return false;
+    }
+
+    FDMFAccountRecord Record;
+    if (!Persistence->GetAccount(PlayerState->GetAuthenticatedUsername(), Record))
+    {
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bLocationPersistenceEnabled = !Settings || Settings->bEnablePlayerWorldLocationPersistence;
+    const bool bHasSavedLocation = Record.PlayerWorldLocation.bHasSavedLocation;
+    bOutFirstLocationCheckpoint = !bHasSavedLocation;
+
+    if (bLocationPersistenceEnabled && bHasSavedLocation)
+    {
+        const FString CurrentMapName = UGameplayStatics::GetCurrentLevelName(this, true);
+        const FDMFPlayerWorldLocationState& Saved = Record.PlayerWorldLocation;
+        const bool bMapMatches = !Saved.MapName.IsEmpty() && Saved.MapName.Equals(CurrentMapName, ESearchCase::IgnoreCase);
+        const bool bFiniteTransform = !Saved.Location.ContainsNaN() && !Saved.Rotation.ContainsNaN();
+
+        if (bMapMatches && bFiniteTransform)
+        {
+            OutTransform = FTransform(Saved.Rotation.GetNormalized(), Saved.Location);
+            bOutHasCustomTransform = true;
+            bOutRestoredSavedLocation = true;
+            return true;
+        }
+
+        UE_LOG(LogDigimonMMOFramework, Warning,
+            TEXT("Saved player location for '%s' was not restored (saved map='%s', current map='%s', finite=%s). Using the normal PlayerStart for this login."),
+            *PlayerState->GetAuthenticatedUsername(), *Saved.MapName, *CurrentMapName, bFiniteTransform ? TEXT("true") : TEXT("false"));
+        return true;
+    }
+
+    const bool bUseDedicatedNewPlayerSpawn = !Settings || Settings->bUseDedicatedNewPlayerSpawn;
+    const bool bFreshOnboardingAccount = !Record.bStarterSelected
+        && !Record.ActivePartnerInstanceId.IsValid()
+        && Record.DigimonInventory.IsEmpty()
+        && Record.DigimonBank.IsEmpty();
+
+    if (!bHasSavedLocation && bUseDedicatedNewPlayerSpawn && bFreshOnboardingAccount)
+    {
+        if (ADMFNewPlayerStart* NewPlayerStart = ChooseNewPlayerSpawnPoint(PlayerController))
+        {
+            OutTransform = NewPlayerStart->GetActorTransform();
+            OutTransform.SetScale3D(FVector::OneVector);
+            bOutHasCustomTransform = true;
+            return true;
+        }
+
+        UE_LOG(LogDigimonMMOFramework, Warning,
+            TEXT("Fresh account '%s' has no saved world location, but no enabled DMFNewPlayerStart exists. Falling back to Unreal's normal PlayerStart and checkpointing that location."),
+            *PlayerState->GetAuthenticatedUsername());
+    }
+    else if (!bHasSavedLocation && !bFreshOnboardingAccount)
+    {
+        // Pre-v0.15.1 established accounts have no world-location field yet, but they are not new players.
+        // Give them the normal PlayerStart once, checkpoint it immediately, then restore normally thereafter.
+        UE_LOG(LogDigimonMMOFramework, Log,
+            TEXT("Established account '%s' has no v6 world-location checkpoint yet. Using the normal PlayerStart once before creating its first checkpoint."),
+            *PlayerState->GetAuthenticatedUsername());
+    }
+
+    return true;
+}
+
+bool ADMFMMOGameMode::ApplyInitialPlayerWorldLocation(APlayerController* PlayerController)
+{
+    if (!HasAuthority() || !IsValid(PlayerController))
+    {
+        return false;
+    }
+
+    const TWeakObjectPtr<APlayerController> PlayerKey(PlayerController);
+    if (InitialWorldLocationApplied.Contains(PlayerKey))
+    {
+        return true;
+    }
+
+    ADMFPlayerAvatarCharacter* AvatarPawn = Cast<ADMFPlayerAvatarCharacter>(PlayerController->GetPawn());
+    if (!IsValid(AvatarPawn))
+    {
+        return false;
+    }
+
+    FTransform DesiredTransform = FTransform::Identity;
+    bool bHasCustomTransform = false;
+    bool bRestoredSavedLocation = false;
+    bool bFirstLocationCheckpoint = false;
+    if (!ResolveInitialPlayerWorldTransform(PlayerController, DesiredTransform, bHasCustomTransform, bRestoredSavedLocation, bFirstLocationCheckpoint))
+    {
+        return false;
+    }
+
+    if (bHasCustomTransform)
+    {
+        const bool bTeleported = AvatarPawn->TeleportTo(
+            DesiredTransform.GetLocation(),
+            DesiredTransform.Rotator(),
+            false,
+            false);
+
+        if (!bTeleported)
+        {
+            UE_LOG(LogDigimonMMOFramework, Warning,
+                TEXT("Initial player transform for '%s' was obstructed; keeping Unreal's collision-safe PlayerStart result instead."),
+                *GetNameSafe(PlayerController));
+            bRestoredSavedLocation = false;
+        }
+    }
+
+    InitialWorldLocationApplied.Add(PlayerKey);
+    AvatarPawn->ForceNetUpdate();
+    PlayerController->ForceNetUpdate();
+
+    if (bFirstLocationCheckpoint)
+    {
+        // Commit the first gameplay spawn immediately so a crash/disconnect before the periodic autosave
+        // cannot make this account appear brand-new again on its next login.
+        SaveAuthenticatedPlayerWorldLocationNow(PlayerController);
+    }
+
+    BP_OnInitialPlayerWorldLocationApplied(
+        PlayerController,
+        bRestoredSavedLocation,
+        bFirstLocationCheckpoint,
+        AvatarPawn->GetActorLocation(),
+        AvatarPawn->GetActorRotation());
+    return true;
+}
+
 bool ADMFMMOGameMode::EnsureFrameworkPlayerAvatar(APlayerController* PlayerController)
 {
     if (!HasAuthority() || !IsValid(PlayerController))
@@ -352,6 +714,10 @@ bool ADMFMMOGameMode::EnsureFrameworkPlayerAvatar(APlayerController* PlayerContr
         return false;
     }
 
+    // Resolve first-login DMFNewPlayerStart or returning-account persisted coordinates before partner
+    // spawning and before we reassert the owning client's possession presentation.
+    ApplyInitialPlayerWorldLocation(PlayerController);
+
     // ClientRestart is intentionally reasserted for remote players even when the server already had the
     // correct pawn. This repairs late-join cases where the owning client is still locally controlling
     // the frontend/default pawn while leaving the already-working listen-host path untouched.
@@ -439,6 +805,7 @@ void ADMFMMOGameMode::SavePlayerState(ADMFPlayerState* PlayerState) const
     if (PlayerState->AvatarComponent)
     {
         PlayerState->AvatarComponent->ApplyToAccountRecord(Record);
+        PlayerState->AvatarComponent->ApplyCurrentWorldLocationToAccountRecord(Record);
     }
     FString Error;
     if (!Persistence->SaveAccount(Record, Error))
@@ -452,6 +819,7 @@ void ADMFMMOGameMode::Logout(AController* Exiting)
     if (APlayerController* PC = Cast<APlayerController>(Exiting))
     {
         SavePlayerState(PC->GetPlayerState<ADMFPlayerState>());
+        InitialWorldLocationApplied.Remove(TWeakObjectPtr<APlayerController>(PC));
     }
 
     Super::Logout(Exiting);

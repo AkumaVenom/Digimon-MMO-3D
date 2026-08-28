@@ -1,3 +1,30 @@
+## Native Return Home HUD acceptance (v0.15.2)
+
+1. Use the runtime-validated v0.15.1 world setup with one enabled `DMFNewPlayerStart`; set `Enable Party Quick Access Home Button=true`.
+2. In gameplay verify no standalone permanent Home widget clutters the screen. Press **Tab** and confirm the Party Quick Access action row exposes **HOME** beside Recall/Party/Bank.
+3. Move the player far from the Home spawn, click HOME and confirm the row shows a pending state, then the authoritative player appears at `DMFNewPlayerStart` and Tab interaction closes automatically.
+4. Confirm an owner-only **HOME • ARRIVED** toast appears and normal movement/look/mouse state returns.
+5. With a summoned partner, start a real battle and launch/receive a projectile, then Home. Confirm battle music can release, partner/enemy target state does not remain latched, targeted framework projectiles do not arrive at Home, partner appears beside the player, HP/SP remain unchanged and existing ability cooldowns are not reset.
+6. Immediately spam Home again and confirm the server cooldown rejects it with **HOME • UNAVAILABLE** feedback rather than accepting another teleport.
+7. Wait for cooldown and repeat; then disconnect/reconnect before the normal autosave interval and verify the immediate Home checkpoint restores the Home position.
+8. Disable/remove every `DMFNewPlayerStart` and confirm Home fails safely without moving the player. Re-enable a start but obstruct it and confirm the collision failure reports cleanly.
+9. Listen host + remote client: place both accounts in different areas, invoke Home separately, confirm each server pawn/partner teleports independently, only the owning player sees each result toast, and normal replication shows the moved actors to the peer.
+10. Regression-check Party slot switching, Recall/Open Party/Open Bank, v0.15.1 normal autosave/returning-player restore, Attribute Point saving, combat, world chat, music and frontend travel.
+
+
+## Persistent player world location / first-login spawn acceptance (v0.15.1)
+
+1. Place one normal `PlayerStart` and one `DMFNewPlayerStart` far apart in the Open World. Keep both persistence settings enabled.
+2. Create a fresh account. Confirm the authoritative player avatar appears at `DMFNewPlayerStart`, not the normal PlayerStart. Complete onboarding as needed and confirm the active partner spawns relative to the final player position.
+3. Move the player to a clearly different location/rotation. Wait longer than `AccountAutosaveInterval` or disconnect normally. Reconnect the same account and confirm it restores that saved location instead of the new-player start.
+4. Move again, disconnect before the next periodic autosave, and confirm Logout captured the latest position.
+5. Fresh-account crash-safety check: enter with a new account, then disconnect immediately after spawn. Rejoin and confirm the first spawn checkpoint prevents the account from being treated as new again.
+6. Two-account PIE/packaged test: host Account A and remote Account B, move them to different areas, save/disconnect, reconnect independently, and confirm each account restores only its own coordinates.
+7. Disable/remove every `DMFNewPlayerStart`, use another fresh account, and confirm normal PlayerStart fallback succeeds and becomes the first saved checkpoint.
+8. Obstruction safety: save a location, then place blocking geometry over it before reconnect. Confirm the framework does not force the avatar into invalid geometry and safely keeps the normal PlayerStart result.
+9. Map-safety: alter the saved/current map identity through a test copy or map rename and confirm mismatched saved coordinates are not applied to the wrong level.
+10. Regression: verify player skin, starter/active partner, Party/Bank, Attribute Points, EXP progression, combat, chat/nameplates, music and frontend login still load normally.
+
 # UE5.8 Validation Plan — 0.14.8-alpha
 
 Run these tests after the plugin compiles in the target UE5.8.1 project. v0.14.8 adds server-authoritative owned-Digimon level progression and owner-only EXP/LEVEL UP presentation over the runtime-accepted v0.14.7 combat baseline. Do not promote v0.14.8 to runtime-accepted until the progression tests below pass on listen host + remote client.

@@ -7,6 +7,7 @@
 #include "UI/DMFPartyQuickBarWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFExperienceNotificationWidget.h"
+#include "UI/DMFHomeTeleportNotificationWidget.h"
 #include "UI/DMFWorldNameplateWidget.h"
 #include "UI/DMFWorldChatWidget.h"
 #include "Utility/DMFCredentialUtility.h"
@@ -23,6 +24,7 @@ UDMFFrameworkSettings::UDMFFrameworkSettings()
     PartyQuickBarWidgetClass = UDMFPartyQuickBarWidget::StaticClass();
     ScanNotificationWidgetClass = UDMFScanNotificationWidget::StaticClass();
     ExperienceNotificationWidgetClass = UDMFExperienceNotificationWidget::StaticClass();
+    HomeTeleportNotificationWidgetClass = UDMFHomeTeleportNotificationWidget::StaticClass();
     WorldChatWidgetClass = UDMFWorldChatWidget::StaticClass();
     PlayerNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     DigimonNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();

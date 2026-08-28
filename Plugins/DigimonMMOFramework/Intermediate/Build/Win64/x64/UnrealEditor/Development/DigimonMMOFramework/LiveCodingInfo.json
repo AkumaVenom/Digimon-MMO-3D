@@ -20,10 +20,12 @@
 			"DMFFrontendGameMode.gen.cpp.obj",
 			"DMFFrontendHUD.gen.cpp.obj",
 			"DMFHealerActor.gen.cpp.obj",
+			"DMFHomeTeleportNotificationWidget.gen.cpp.obj",
 			"DMFLoginMainMenuWidget.gen.cpp.obj",
 			"DMFMMOGameMode.gen.cpp.obj",
 			"DMFMMOPlayerController.gen.cpp.obj",
 			"DMFMusicSubsystem.gen.cpp.obj",
+			"DMFNewPlayerStart.gen.cpp.obj",
 			"DMFPartyDestinationButton.gen.cpp.obj",
 			"DMFPartyQuickBarWidget.gen.cpp.obj",
 			"DMFPlayerAvatarCharacter.gen.cpp.obj",
@@ -46,36 +48,38 @@
 			"DMFWorldChatWidget.gen.cpp.obj",
 			"DMFWorldNameplateWidget.gen.cpp.obj",
 			"PerModuleInline.gen.cpp.obj",
-			"DMFPlayerAvatarComponent.cpp.obj",
 			"DigimonMMOFramework.cpp.obj",
 			"DMFAbilityProjectileActor.cpp.obj",
-			"DMFDigimonCarePropActor.cpp.obj",
 			"DMFDigimonCombatComponent.cpp.obj",
-			"DMFPlayerDigimonComponent.cpp.obj",
-			"DMFDigimonCharacter.cpp.obj"
+			"DMFPlayerAvatarComponent.cpp.obj",
+			"DMFPlayerDigimonComponent.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.2.cpp.obj": [
+			"DMFDigimonCarePropActor.cpp.obj",
+			"DMFDigimonCharacter.cpp.obj",
 			"DMFFrontendGameMode.cpp.obj",
+			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
-			"DMFMMOGameMode.cpp.obj",
 			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
 			"DMFSessionSubsystem.cpp.obj",
 			"DMFTargetingPresentationActor.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFAccountPersistenceSubsystem.cpp.obj",
 			"DMFMusicSubsystem.cpp.obj",
 			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
-			"DMFFrontendHUD.cpp.obj",
+			"DMFDigimonInventoryWidget.cpp.obj",
+			"DMFMMOGameMode.cpp.obj",
 			"DMFMMOPlayerController.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
-			"DMFDigimonInventoryWidget.cpp.obj"
+			"DMFNewPlayerStart.cpp.obj",
+			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.3.cpp.obj": [
+			"DMFExperienceNotificationWidget.cpp.obj",
+			"DMFLoginMainMenuWidget.cpp.obj",
 			"DMFPartyDestinationButton.cpp.obj",
-			"DMFPartyQuickBarWidget.cpp.obj",
 			"DMFPlayerSkinEntryButton.cpp.obj",
 			"DMFPlayerSkinSelectionWidget.cpp.obj",
 			"DMFScanNotificationWidget.cpp.obj",
@@ -85,8 +89,8 @@
 			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DMFExperienceNotificationWidget.cpp.obj",
-			"DMFLoginMainMenuWidget.cpp.obj"
+			"DMFHomeTeleportNotificationWidget.cpp.obj",
+			"DMFPartyQuickBarWidget.cpp.obj"
 		]
 	}
 }

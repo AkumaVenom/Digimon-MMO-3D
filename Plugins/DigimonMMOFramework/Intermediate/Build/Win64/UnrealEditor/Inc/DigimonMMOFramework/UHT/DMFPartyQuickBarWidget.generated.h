@@ -67,6 +67,8 @@ class UDMFPartyQuickSlotButton;
 #define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFPartyQuickBarWidget_h_38_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execHandleOpenBankClicked); \
 	DECLARE_FUNCTION(execHandleOpenPartyClicked); \
+	DECLARE_FUNCTION(execHandleHomeTeleportResult); \
+	DECLARE_FUNCTION(execHandleReturnHomeClicked); \
 	DECLARE_FUNCTION(execHandleRecallClicked); \
 	DECLARE_FUNCTION(execHandleStorageResult); \
 	DECLARE_FUNCTION(execHandlePartyChanged); \

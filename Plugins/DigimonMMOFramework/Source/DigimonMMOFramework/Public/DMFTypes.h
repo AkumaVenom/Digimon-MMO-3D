@@ -398,6 +398,31 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigimonExperienceProgression
     bool bReachedMaxLevel = false;
 };
 
+/** Persisted server-authored gameplay transform for one account. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFPlayerWorldLocationState
+{
+    GENERATED_BODY()
+
+    /** False until the framework has committed the account's first gameplay spawn checkpoint. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    bool bHasSavedLocation = false;
+
+    /** PIE-prefix-free level name used to avoid applying coordinates to the wrong gameplay map. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    FString MapName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    FVector Location = FVector::ZeroVector;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    FRotator Rotation = FRotator::ZeroRotator;
+
+    /** Server UTC timestamp of the most recent committed position checkpoint. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    int64 SavedUtcTicks = 0;
+};
+
 USTRUCT(BlueprintType)
 struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
 {
@@ -412,6 +437,10 @@ struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
     /** Persistent visual avatar selection. Presentation-only; gameplay pawn class remains authoritative. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player Avatar")
     FPrimaryAssetId SelectedPlayerSkinId;
+
+    /** Server-authored gameplay location used for first-spawn vs returning-player restore. Added in SaveGame schema v6. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Player World Location")
+    FDMFPlayerWorldLocationState PlayerWorldLocation;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon")
     TArray<FDMFDigimonInstance> DigimonInventory;

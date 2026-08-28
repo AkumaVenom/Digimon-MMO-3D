@@ -10,6 +10,13 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+
+; v0.15.1 persistent per-account player world location + dedicated first-login spawn.
+; Place DMFNewPlayerStart in the Open World. Location checkpoints reuse AccountAutosaveInterval.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnablePlayerWorldLocationPersistence=True
+bUseDedicatedNewPlayerSpawn=True
+
 ; v0.15.0 framework-owned Frontend background + login/main-menu layering.
 ; Assign FrontendBackgroundWidgetClass in Project Settings; the framework creates it first and
 ; automatically places it 100 Z-order units below the login/main-menu layer. No Level Blueprint race is required.
@@ -57,6 +64,11 @@ bAllowPartySwitchingDuringCombat=False
 bShowNativePartyQuickBar=True
 bEnableDefaultPartyQuickAccessInput=True
 PartyQuickBarBottomSafeOffset=176.0
+bEnablePartyQuickAccessHomeButton=True
+HomeTeleportRequestCooldownSeconds=4.0
+bShowNativeHomeTeleportNotifications=True
+HomeTeleportNotificationHoldSeconds=3.0
+; HomeTeleportNotificationWidgetClass=/Script/DigimonMMOFramework.DMFHomeTeleportNotificationWidget
 
 ; v0.11.1 polished local player camera boom zoom + character-safe camera collision defaults.
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]

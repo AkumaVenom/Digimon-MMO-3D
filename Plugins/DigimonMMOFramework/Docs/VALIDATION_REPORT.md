@@ -1,3 +1,20 @@
+# v0.15.2-alpha validation summary
+
+
+**UE5.8 compile-fix revision:** corrected build-stopping `C4458` local-variable shadowing in `DMFHomeTeleportNotificationWidget.cpp` (`Slot` → `OverlaySlot`). This is source-only naming hygiene; Home behavior and authority contracts are unchanged.
+## Native Return Home HUD / authoritative Home teleport source validation
+- Built directly on the user-runtime-validated v0.15.1 `PersistentPlayerWorldLocationNewPlayerSpawn` baseline. v0.15.2 still requires a clean UE5.8.1 compile plus listen-host/remote-client runtime acceptance before promotion.
+- Added an out-of-the-way native **HOME** action to the existing Tab-driven Party Quick Access action row. Normal gameplay keeps the action row collapsed; entering Party Quick Access exposes HOME beside Recall / Party / Bank while the existing cursor/input mode is active.
+- The owning client sends only `ServerRequestReturnHome`; no destination, rotation, spawn actor, persistence record, partner transform or combat result is client-authored. The authoritative GameMode resolves the same enabled/highest-priority `DMFNewPlayerStart` contract introduced in v0.15.1 and performs collision-aware teleportation.
+- Server validation requires an authenticated framework avatar, enabled Return Home setting, a valid `DMFNewPlayerStart`, request cooldown, and no active Care/Digivolution sequence. Missing/blocked configuration fails without moving the player.
+- Successful Return Home clears the partner command target and authoritative battle encounter without restoring HP/SP or clearing ability cooldowns; hostile Digimon targeting the partner are disengaged, and framework projectiles targeting **or launched by** the partner are destroyed before it is repositioned beside the owner.
+- The resulting player position is checkpointed immediately into the existing schema-v6 `PlayerWorldLocation`, so the next reconnect restores Home even before the normal periodic autosave. No SaveGame schema or serialized enum changes are introduced.
+- Added `UDMFHomeTeleportNotificationWidget` as an owner-only native success/failure toast with a Blueprint presentation hook and Project Settings class override. The native success result closes Party Quick Access and restores normal gameplay input/cursor state.
+- Final static gate: **128 packaged files, 87 source/header/build files, 26,513 source/build lines, 45 UCLASS, 16 UENUM, 18 USTRUCT, 463 UFUNCTION and 841 UPROPERTY declarations**.
+- All **47 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies. Exactly two RPCs are added over v0.15.1: `ServerRequestReturnHome` (action request) and `ClientReturnHomeResult` (owner-only presentation acknowledgement).
+- Comparison against v0.15.1 finds **zero baseline files removed**, **zero existing reflected UFUNCTION names removed**, and exactly three additive files (`SETUP_RETURN_HOME_HUD.md` plus the native Home notification header/source).
+- Generated-header ordering, changed-source structural balance, runtime TODO/FIXME scan, plugin JSON parsing and archive integrity are checked during packaging. Unreal Engine/UnrealBuildTool is not installed in this assembly environment, so runtime/compile validation remains the authoritative acceptance gate.
+
 # v0.14.8-alpha validation summary
 
 ## Owned Digimon Level progression / EXP UI source validation
@@ -858,3 +875,21 @@ The configured reveal delay starts only after background initialization. Local-P
 Final static regression gate against the runtime-accepted v0.14.9 baseline: **121 -> 122 packaged files**, **83 source/header/build files preserved**, **25,339 -> 25,588 source/build lines**, **43 UCLASS**, **16 UENUM**, **17 USTRUCT**, **450 UFUNCTION** declarations, and **815 -> 821 UPROPERTY** declarations. The six-property delta consists of the five v0.15.0 local frontend presentation properties versus v0.14.9 plus the transient HUD-owned background widget reference; no persistent gameplay property was added. All **45 RPC declarations** are unchanged, no existing reflected UFUNCTION or RPC name was removed, generated-header include ordering passes, changed C++ braces/parentheses are balanced, and the plugin descriptor remains valid JSON.
 
 No replicated property, RPC, SaveGame field, serialized gameplay enum, credential/authentication path, hosting permission path or gameplay authority contract is changed. UE5.8 Editor compile and PIE/Standalone/packaged frontend tests remain the authoritative runtime acceptance gate.
+
+## v0.15.1 candidate static validation — persistent player world location + first-login spawn
+
+Source review was performed against the user-runtime-accepted v0.15.0 project-selectable frontend-background baseline. Unreal Engine/UnrealBuildTool is not installed in this assembly environment, so a clean UE5.8 compile plus listen-host/remote-client runtime acceptance remains authoritative.
+
+Validated contracts:
+- SaveGame schema advances from **v5 to v6** only because `FDMFAccountRecord` now gains `FDMFPlayerWorldLocationState`. Existing account/Digimon fields are not removed or reordered; v5-and-older records migrate with `bHasSavedLocation=false`.
+- `ADMFNewPlayerStart` is a dedicated first-login level actor with enable + priority controls. Native selection is deterministic and Blueprint-overridable; absence of the actor is non-fatal because normal Unreal `PlayerStart` remains the fallback.
+- Initial world placement is resolved once per authenticated PlayerController and occurs before active-partner restoration. Returning coordinates require the same gameplay level name plus finite location/rotation values.
+- The authoritative player pawn is the only source for persisted coordinates. Existing periodic account autosave and GameMode Logout now capture avatar world state; first-login placement also writes an immediate crash-safe checkpoint.
+- Position persistence does not create a second save file/timer and does not add a replicated property or network request surface.
+- This release adds **zero RPCs**. All **45** existing reflected Server/Client/NetMulticast declarations remain present with matching `_Implementation` bodies.
+- Baseline reflected API comparison finds **zero removed UFUNCTION names** and adds only `ApplyCurrentWorldLocationToAccountRecord`, `ChooseNewPlayerSpawnPoint`, `SaveAuthenticatedPlayerWorldLocationNow`, and `BP_OnInitialPlayerWorldLocationApplied`.
+- Generated-header include ordering passes for every reflected header; changed runtime C++ delimiter checks pass; plugin descriptor parses as valid JSON; no TODO/FIXME marker was introduced in changed runtime files.
+
+Final candidate metrics: **125 packaged files**, **85 source/header/build files**, **44 UCLASS**, **16 UENUM**, **18 USTRUCT**, **454 UFUNCTION**, **831 UPROPERTY**, and **45 RPC declarations**. The source-file delta is exactly the new `DMFNewPlayerStart.h/.cpp`; the documentation delta adds `SETUP_PLAYER_WORLD_LOCATION.md`.
+
+Required runtime acceptance: perform `TEST_PLAN.md` section **Persistent player world location / first-login spawn acceptance (v0.15.1)** with a fresh account, a returning account, listen host + remote client on separate accounts, autosave/logout restore, missing-NewPlayerStart fallback and obstructed-location fallback. Then regression-check v0.15.0 frontend layering plus v0.14.9 Attribute Point persistence/menu layout.

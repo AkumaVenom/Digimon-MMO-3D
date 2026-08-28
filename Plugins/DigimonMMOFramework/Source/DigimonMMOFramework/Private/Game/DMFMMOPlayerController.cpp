@@ -19,6 +19,7 @@
 #include "UI/DMFDigimonInventoryWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFExperienceNotificationWidget.h"
+#include "UI/DMFHomeTeleportNotificationWidget.h"
 #include "UI/DMFPlayerSkinSelectionWidget.h"
 #include "UI/DMFStarterSelectionWidget.h"
 #include "UI/DMFWorldChatWidget.h"
@@ -1256,6 +1257,101 @@ void ADMFMMOPlayerController::TogglePartyQuickAccessInteraction()
     {
         OpenPartyQuickAccessInteraction();
     }
+}
+
+void ADMFMMOPlayerController::RequestReturnHome()
+{
+    if (!IsLocalController() || IsWorldPresentationActive() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bWorldChatInputActive)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnablePartyQuickAccessHomeButton)
+    {
+        OnHomeTeleportResult.Broadcast(false, NSLOCTEXT("DMF", "ReturnHomeDisabledLocal", "Return Home is disabled for this world."));
+        return;
+    }
+
+    ServerRequestReturnHome();
+}
+
+void ADMFMMOPlayerController::ServerRequestReturnHome_Implementation()
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnablePartyQuickAccessHomeButton)
+    {
+        ClientReturnHomeResult(false, NSLOCTEXT("DMF", "ReturnHomeDisabledServer", "Return Home is disabled for this world."));
+        return;
+    }
+
+    UWorld* World = GetWorld();
+    ADMFMMOGameMode* GameMode = World ? World->GetAuthGameMode<ADMFMMOGameMode>() : nullptr;
+    if (!World || !GameMode)
+    {
+        ClientReturnHomeResult(false, NSLOCTEXT("DMF", "ReturnHomeWorldUnavailable", "Return Home is unavailable in this map."));
+        return;
+    }
+
+    const double Now = World->GetTimeSeconds();
+    const double Cooldown = Settings ? FMath::Max(0.0, static_cast<double>(Settings->HomeTeleportRequestCooldownSeconds)) : 4.0;
+    const double Remaining = (LastReturnHomeAcceptedServerTime + Cooldown) - Now;
+    if (Remaining > KINDA_SMALL_NUMBER)
+    {
+        ClientReturnHomeResult(false, FText::Format(
+            NSLOCTEXT("DMF", "ReturnHomeCooldown", "Return Home will be ready again in {0} seconds."),
+            FText::AsNumber(FMath::CeilToInt(Remaining))));
+        return;
+    }
+
+    FText Message;
+    const bool bSuccess = GameMode->ReturnAuthenticatedPlayerHome(this, Message);
+    if (bSuccess)
+    {
+        LastReturnHomeAcceptedServerTime = Now;
+    }
+    ClientReturnHomeResult(bSuccess, Message.IsEmpty()
+        ? (bSuccess ? NSLOCTEXT("DMF", "ReturnHomeSuccessFallback", "Teleported Home.") : NSLOCTEXT("DMF", "ReturnHomeFailureFallback", "Return Home failed."))
+        : Message);
+}
+
+void ADMFMMOPlayerController::ClientReturnHomeResult_Implementation(const bool bSuccess, const FText& Message)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if ((!Settings || Settings->bShowNativeHomeTeleportNotifications))
+    {
+        if (!HomeTeleportNotificationWidget)
+        {
+            TSubclassOf<UDMFHomeTeleportNotificationWidget> WidgetClass = Settings ? Settings->HomeTeleportNotificationWidgetClass : nullptr;
+            if (!WidgetClass)
+            {
+                WidgetClass = UDMFHomeTeleportNotificationWidget::StaticClass();
+            }
+            HomeTeleportNotificationWidget = CreateWidget<UDMFHomeTeleportNotificationWidget>(this, WidgetClass);
+            if (HomeTeleportNotificationWidget)
+            {
+                HomeTeleportNotificationWidget->AddToViewport(875);
+            }
+        }
+        if (HomeTeleportNotificationWidget)
+        {
+            HomeTeleportNotificationWidget->ShowHomeTeleportResult(bSuccess, Message);
+        }
+    }
+
+    OnHomeTeleportResult.Broadcast(bSuccess, Message);
+
+    if (bSuccess && bPartyQuickAccessInteractionActive)
+    {
+        ClosePartyQuickAccessInteraction();
+    }
+    RefreshPartyQuickBar();
+    RefreshCombatQuickBar();
 }
 
 void ADMFMMOPlayerController::EnsureTargetingPresentation()

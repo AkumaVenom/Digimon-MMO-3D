@@ -43,6 +43,7 @@ struct FVector_NetQuantize;
 	DECLARE_FUNCTION(execQueueOrExecuteAbilitySlot); \
 	DECLARE_FUNCTION(execTryExecuteAbilitySlot); \
 	DECLARE_FUNCTION(execTryExecuteAbilityById); \
+	DECLARE_FUNCTION(execForceAuthoritativeDisengage); \
 	DECLARE_FUNCTION(execSetAuthoritativeTarget); \
 	DECLARE_FUNCTION(execIsAutoBattleEnabled); \
 	DECLARE_FUNCTION(execGetIncomingDamageMultiplier); \

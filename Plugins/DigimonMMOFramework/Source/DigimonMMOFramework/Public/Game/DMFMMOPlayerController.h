@@ -12,6 +12,7 @@ class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
 class UDMFExperienceNotificationWidget;
+class UDMFHomeTeleportNotificationWidget;
 class UDMFWorldChatWidget;
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
@@ -19,6 +20,7 @@ class ADMFTargetingPresentationActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFWorldChatMessageReceived, FDMFWorldChatMessage, ChatMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFHomeTeleportResult, bool, bSuccess, FText, Message);
 
 /**
  * MMO player controller with ready-to-use onboarding, avatar skin and Digimon combat UI routing.
@@ -165,6 +167,21 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Party Quick Access|UI")
     bool IsPartyQuickAccessInteractionActive() const { return bPartyQuickAccessInteractionActive; }
 
+
+    /** Requests a server-authoritative teleport to the configured DMFNewPlayerStart. No client transform is accepted. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Party Quick Access|Home")
+    void RequestReturnHome();
+
+    UFUNCTION(Server, Reliable)
+    void ServerRequestReturnHome();
+
+    UFUNCTION(Client, Reliable)
+    void ClientReturnHomeResult(bool bSuccess, const FText& Message);
+
+    /** Owner-local result/presentation hook for native or custom Blueprint HUDs. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Party Quick Access|Home")
+    FDMFHomeTeleportResult OnHomeTeleportResult;
+
     /** Creates/refreshes the native persistent world-chat HUD when globally enabled. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|World Chat|UI")
     void RefreshWorldChatUI();
@@ -231,6 +248,9 @@ private:
     TObjectPtr<UDMFExperienceNotificationWidget> ExperienceNotificationWidget;
 
     UPROPERTY(Transient)
+    TObjectPtr<UDMFHomeTeleportNotificationWidget> HomeTeleportNotificationWidget;
+
+    UPROPERTY(Transient)
     TObjectPtr<UDMFWorldChatWidget> WorldChatWidget;
 
     /** Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController. */
@@ -249,6 +269,7 @@ private:
     bool bPartyQuickAccessInputLocked = false;
 
     double LastWorldChatAcceptedServerTime = -1000000.0;
+    double LastReturnHomeAcceptedServerTime = -1000000.0;
     TArray<double> RecentWorldChatAcceptedServerTimes;
 
     FTimerHandle StarterUIRetryTimer;

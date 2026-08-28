@@ -56,6 +56,13 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // normalized on authoritative account load so their current species becomes the origin/history seed.
             Database->SchemaVersion = 5;
         }
+
+        if (Database->SchemaVersion < 6)
+        {
+            // v6 adds server-authored persistent player world location. Older accounts intentionally begin with
+            // bHasSavedLocation=false and will use DMFNewPlayerStart once before their first checkpoint is saved.
+            Database->SchemaVersion = 6;
+        }
     }
     else
     {

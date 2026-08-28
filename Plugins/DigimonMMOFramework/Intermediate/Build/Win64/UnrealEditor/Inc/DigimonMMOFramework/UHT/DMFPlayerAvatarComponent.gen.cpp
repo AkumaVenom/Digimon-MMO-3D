@@ -181,6 +181,74 @@ UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPlayerSkinSelect
 #undef UHT_STATICS
 // ********** End Delegate FDMFPlayerSkinSelectionResult *******************************************
 
+// ********** Begin Class UDMFPlayerAvatarComponent Function ApplyCurrentWorldLocationToAccountRecord 
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyCurrentWorldLocationToAccountRecord_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms
+	{
+		FDMFAccountRecord Record;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Player Avatar|Persistence" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Captures the currently possessed framework avatar's authoritative map/location/rotation into the supplied account.\n     * Returns false when no valid gameplay avatar exists or location persistence is disabled.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerAvatarComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Captures the currently possessed framework avatar's authoritative map/location/rotation into the supplied account.\nReturns false when no valid gameplay avatar exists or location persistence is disabled." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ApplyCurrentWorldLocationToAccountRecord constinit property declarations 
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Record;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ApplyCurrentWorldLocationToAccountRecord constinit property declarations 
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ApplyCurrentWorldLocationToAccountRecord Property Definitions *********
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // eaba441aff65f24fec113141e40beb31d1511145
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ApplyCurrentWorldLocationToAccountRecord Property Definitions ***********
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerAvatarComponent, nullptr, "ApplyCurrentWorldLocationToAccountRecord", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54420405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarComponent_eventApplyCurrentWorldLocationToAccountRecord_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyCurrentWorldLocationToAccountRecord(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerAvatarComponent::execApplyCurrentWorldLocationToAccountRecord)
+{
+	P_GET_STRUCT_REF(FDMFAccountRecord,Z_Param_Out_Record);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->ApplyCurrentWorldLocationToAccountRecord(Z_Param_Out_Record);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerAvatarComponent Function ApplyCurrentWorldLocationToAccountRecord 
+
 // ********** Begin Class UDMFPlayerAvatarComponent Function ApplySelectedSkinToCurrentPawn ********
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -270,7 +338,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function ApplyToAccountRecord Property Definitions *****************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // eaba441aff65f24fec113141e40beb31d1511145
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -522,7 +590,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromAccountRecord Property Definitions **********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // 28822b57efe3c389ac57482c3c90a5526bb2cf28
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // eaba441aff65f24fec113141e40beb31d1511145
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -976,6 +1044,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class UDMFPlayerAvatarComponent constinit property declarations ******************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
+		{ .NameUTF8 = UTF8TEXT("ApplyCurrentWorldLocationToAccountRecord"), .Pointer = &UDMFPlayerAvatarComponent::execApplyCurrentWorldLocationToAccountRecord },
 		{ .NameUTF8 = UTF8TEXT("ApplySelectedSkinToCurrentPawn"), .Pointer = &UDMFPlayerAvatarComponent::execApplySelectedSkinToCurrentPawn },
 		{ .NameUTF8 = UTF8TEXT("ApplyToAccountRecord"), .Pointer = &UDMFPlayerAvatarComponent::execApplyToAccountRecord },
 		{ .NameUTF8 = UTF8TEXT("ClientPlayerSkinSelectionResult"), .Pointer = &UDMFPlayerAvatarComponent::execClientPlayerSkinSelectionResult },
@@ -992,12 +1061,13 @@ struct UHT_STATICS
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
+		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyCurrentWorldLocationToAccountRecord, "ApplyCurrentWorldLocationToAccountRecord" }, // db2e22f998effa2eaf0fa2a06384ca785077c578
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplySelectedSkinToCurrentPawn, "ApplySelectedSkinToCurrentPawn" }, // 975e6acdeb0bf4a10fc4c0d4b2a60e6299d7be7b
-		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // 55cc92312108ad5b6704b71566a6d1f2b752e229
+		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // 7286c3a94b139319785190be41e8610893a80a98
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_ClientPlayerSkinSelectionResult, "ClientPlayerSkinSelectionResult" }, // c0d1a190fa5ad11332038ff7d730e65d9fe94072
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_GetAvailablePlayerSkins, "GetAvailablePlayerSkins" }, // 92eaa4761b26d497ac27f7d19aa41d57f8a3aace
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_GetSelectedPlayerSkinId, "GetSelectedPlayerSkinId" }, // fc890e6e9ac99610f35575232980f00179ba52e3
-		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // f7188268382357e6067516be9be68cbed0b5ae7f
+		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // b433387fb887f750bea9424aa7988d4bb9d9c43a
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_IsPlayerSkinSelectionRequired, "IsPlayerSkinSelectionRequired" }, // cb6ac56765d2a3eecc99a87d69caabb93ccd94db
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_OnRep_PlayerSkinSelectionRequired, "OnRep_PlayerSkinSelectionRequired" }, // 483b007a6e8e991cadad9baa3db05e1c0cd82128
 		{ &Z_Construct_UFunction_UDMFPlayerAvatarComponent_OnRep_SelectedPlayerSkinId, "OnRep_SelectedPlayerSkinId" }, // 2073d62c0b15c1221515eec83790d34fa1d6cf28
@@ -1110,10 +1180,10 @@ UDMFPlayerAvatarComponent::~UDMFPlayerAvatarComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFPlayerAvatarComponent, TEXT("UDMFPlayerAvatarComponent"), &Z_Registration_Info_UClass_UDMFPlayerAvatarComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerAvatarComponent), 3396173074U) },
+		{ Z_Construct_UClass_UDMFPlayerAvatarComponent, TEXT("UDMFPlayerAvatarComponent"), &Z_Registration_Info_UClass_UDMFPlayerAvatarComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerAvatarComponent), 4279131888U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_9b571a0d9c5799bc6a70156ee026e94dcc886cef{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerAvatarComponent_h__Script_DigimonMMOFramework_dba74ffa14906a6fa34f41555542010347859534{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

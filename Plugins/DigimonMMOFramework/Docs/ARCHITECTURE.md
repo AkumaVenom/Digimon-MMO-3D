@@ -1,5 +1,12 @@
 # Architecture
 
+## Return Home / persistent spawn architecture (v0.15.2)
+
+The Party Quick Access `HOME` button is an owner-local presentation surface over an authoritative GameMode service. `ADMFMMOPlayerController` owns the request/result RPC pair and server-only request cooldown; `ADMFMMOGameMode` owns destination selection, collision-aware avatar teleport, partner encounter cleanup/repositioning and immediate v6 world-location checkpointing. The destination is always selected through the existing `ChooseNewPlayerSpawnPoint`/`DMFNewPlayerStart` path introduced in v0.15.1.
+
+`UDMFHomeTeleportNotificationWidget` is presentation only. It receives an already-committed result and can be replaced by a Blueprint child. `UDMFDigimonCombatComponent::ForceAuthoritativeDisengage` is a reusable authority-only cleanup primitive that clears target/queue/recovery/encounter movement without restoring vitals or clearing cooldowns, allowing world-transition convenience features to end combat cleanly without becoming a heal/reset exploit.
+
+
 ## Persistent Digivolution architecture (v0.13.0)
 
 `UDMFPlayerDigimonComponent` is the sole durable Digivolution authority for owned Digimon. A path is authored as `FDMFDigivolutionRequirement` on the current `UDMFDigimonSpeciesData`; it references a target species plus progression/Care/economy requirements and mutation/presentation policies. The client may evaluate this data for UI, but the server always resolves the current owned instance and revalidates the path before mutation.
@@ -309,3 +316,11 @@ Framework-owned attack Niagara/Cascade components and the owner-local enemy over
 ## v0.14.9 Attribute-point mutation contract
 
 Attribute Point spending is an owned-Digimon persistence mutation on `UDMFPlayerDigimonComponent`. UI submits only `(InstanceId, EDMFDigimonAttributeStat)`; authority resolves Party/Bank ownership, validates an unspent point, mutates the persistent instance, marks the owner Fast Array item dirty, saves immediately, and refreshes an active world partner in place. The native menu is presentation only and its 1240x900/clipped shell is independent of gameplay authority.
+
+## Persistent player world location / first-login spawn (v0.15.1)
+
+`FDMFAccountRecord` schema v6 adds one private `FDMFPlayerWorldLocationState`. The server stores only the authenticated avatar's PIE-prefix-free map name, actor location, actor rotation and UTC checkpoint time. This data is not replicated as gameplay state; observers simply receive the resulting avatar transform through ordinary CharacterMovement/actor replication after spawn.
+
+`ADMFMMOGameMode` resolves initial placement once per authenticated controller. A genuinely fresh onboarding account with no checkpoint may use `ADMFNewPlayerStart`; an established legacy account with no v6 checkpoint uses normal PlayerStart once; native selection chooses the enabled actor with the highest priority and exposes a BlueprintNativeEvent override for future project rules. An account with a valid checkpoint on the current gameplay map is restored before active-partner spawning and remote-client restart repair. Invalid/non-finite/mismatched saved data keeps Unreal's normal PlayerStart result.
+
+The persistence path deliberately reuses the existing account transaction. `UDMFPlayerDigimonComponent`'s periodic authoritative autosave now also asks `UDMFPlayerAvatarComponent` to apply current avatar identity/world location to the same record. GameMode logout repeats the capture, while a first-login spawn commits immediately. There is no parallel location file, no client-supplied vector and no new network RPC.

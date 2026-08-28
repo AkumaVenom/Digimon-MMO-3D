@@ -65,6 +65,13 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Player Avatar|Persistence")
     void ApplyToAccountRecord(UPARAM(ref) FDMFAccountRecord& Record) const;
 
+    /**
+     * Captures the currently possessed framework avatar's authoritative map/location/rotation into the supplied account.
+     * Returns false when no valid gameplay avatar exists or location persistence is disabled.
+     */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Player Avatar|Persistence")
+    bool ApplyCurrentWorldLocationToAccountRecord(UPARAM(ref) FDMFAccountRecord& Record) const;
+
     /** Re-applies the replicated selected skin to the currently possessed framework avatar pawn. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Player Avatar")
     bool ApplySelectedSkinToCurrentPawn();
