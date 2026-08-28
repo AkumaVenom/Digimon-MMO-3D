@@ -138,6 +138,25 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Progression", meta=(ClampMin="0"))
     int32 AttributePointsPerLevel = 3;
 
+    /** Optional species-specific level cap. Zero uses Project Settings -> Progression -> Default Max Digimon Level. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Progression|Leveling", meta=(ClampMin="0", ClampMax="999"))
+    int32 MaxLevelOverride = 0;
+
+    /**
+     * Species-owned EXP requirement for Level 1 -> 2. This is the starting point of this species' automatic numeric EXP curve.
+     * No CurveFloat asset is required.
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Progression|Leveling", meta=(ClampMin="1"))
+    int64 BaseExperienceRequired = 100;
+
+    /**
+     * Multiplies the previous level requirement for each level above 1.
+     * Formula: BaseExperienceRequired * pow(ExperienceGrowthMultiplierPerLevel, CurrentLevel - 1).
+     * 1.0 = flat requirement, 1.10 = +10% per level, 1.20 = +20% per level.
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Progression|Leveling", meta=(ClampMin="1.0", ClampMax="10.0"))
+    float ExperienceGrowthMultiplierPerLevel = 1.10f;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Abilities")
     TArray<FName> StartingAbilityIds;
 

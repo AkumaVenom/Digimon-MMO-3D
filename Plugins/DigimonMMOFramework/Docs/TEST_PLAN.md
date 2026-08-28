@@ -1,7 +1,37 @@
-# UE5.8 Validation Plan — 0.13.1-alpha
+# UE5.8 Validation Plan — 0.14.8-alpha
 
-Run these tests after the plugin compiles in the target UE5.8.1 project. v0.13.1 is a presentation-only hardening patch over the compiling v0.13.0 persistent server-authoritative Digivolution milestone; all gameplay/network authority contracts remain unchanged.
+Run these tests after the plugin compiles in the target UE5.8.1 project. v0.14.8 adds server-authoritative owned-Digimon level progression and owner-only EXP/LEVEL UP presentation over the runtime-accepted v0.14.7 combat baseline. Do not promote v0.14.8 to runtime-accepted until the progression tests below pass on listen host + remote client.
 
+
+
+## L0 — v0.14.8 owned-Digimon Level / EXP progression acceptance
+
+### Baseline threshold + native UI
+1. On the active partner's `DMFDigimonSpeciesData`, set `Base Experience Required=100`, `Experience Growth Multiplier Per Level=1.20`, and leave `Default Max Digimon Level=99`. Use a Level 1 active partner at `0 EXP`.
+2. Give one wild species `Battle Experience Reward=25` and defeat it once. Confirm the owner Party detail and popup report Level 1, `25 / 100`; no other player's private Party/Bank UI changes.
+3. Defeat the same reward source three more times. Confirm progression is `50 / 100`, `75 / 100`, then **Level 2 / 0 / 120**. The fourth reward must show the distinct LEVEL UP state.
+4. Verify every reward shows the queued owner-only `+EXP` popup with a smooth progress animation and that the normal combat/Party quickbars remain usable beneath its safe-lane offset.
+5. Open **I -> PARTY** and **BANK / BOXES** and inspect Digimon in both storage tiers. Each selected profile must show current Level, `EXP current / required`, a matching progress bar and unspent Attribute Points; max-level Digimon must show `MAX`.
+
+### Growth / combat continuity
+6. Author unmistakable per-level values on the active species (for example HP +10, SP +5, STR/INT/DEF/SPD +2, Attribute Points +3), cross one threshold and confirm each persistent value increases exactly once.
+7. Before the winning reward, damage the partner and spend SP. After level-up, confirm the missing HP/SP amount is preserved relative to the newly increased capacity; the reward must not perform a full heal.
+8. Confirm level-up does not clear the active target prematurely, reset cooldowns, cancel recovery, reset the battle-encounter latch or reinitialize automation/combat state. Battle victory teardown should otherwise behave normally.
+9. With the partner summoned, observe it from the other peer. Confirm public replicated Level/stats/nameplate refresh without respawning the actor solely for progression.
+
+### Species scaling / multi-level / caps
+10. Set one species to `Base Experience Required=80`, `Experience Growth Multiplier Per Level=1.50`; confirm authority and native UI both resolve approximately `80 -> 120 -> 180 -> 270` for Levels 1-4. No CurveFloat asset should be needed anywhere.
+11. Give another species a different base/multiplier (for example `150` / `1.10`) and confirm its required EXP is independent of the first species. Set multiplier to `1.0` and confirm that species has a flat per-level requirement.
+12. Grant one large Battle EXP reward that crosses at least three levels. Confirm all thresholds are subtracted, all per-level stat/Attribute Point growth is multiplied by levels gained, remainder EXP lands in the final level, and the popup animates through the crossed segments.
+13. Set a low `Max Level Override`, reach it, and confirm stored progress becomes `0`, the UI displays `MAX`, further Battle EXP cannot raise Level beyond the cap, and a later lower configured cap never de-levels an already higher persistent Digimon.
+
+### Persistence / migration / networking
+14. Load an account created on v0.14.7 with enough previously banked EXP to cross thresholds. Confirm authority normalizes it once into the earned Level/stat/Attribute Point result without deleting the owned Digimon or changing GUID/Party/Bank placement.
+15. Save/reconnect after normal and multi-level gains. Confirm Level, current-level EXP, grown stats and unspent Attribute Points persist exactly.
+16. Repeat reward + level-up with the **remote client as owner**. Listen host should see the remote partner's public Level/stat result but must not receive that owner's EXP popup or private Party/Bank EXP ledger.
+17. Attempt to spoof progression from client/Blueprint UI. There must be no client RPC that accepts reward amount, new Level, threshold, grown stats, Attribute Points or max-level state.
+18. Bind a Blueprint child to `Experience Notification Widget Class`; verify `BP On Experience Progress Presented` and `BP On Level Up Presented` receive the committed snapshot while changing it locally has no gameplay effect. Disable `Show Native Experience Notifications` and confirm gameplay leveling still works with no native toast.
+19. Regression: after a progression reward, re-run wild full-moveset combat, projectile/VFX CustomDepth, persistent Battle music, rarity-weight spawning, DigiDex, Digivolution, Party/Bank, Scan/Materialization, Care/healer, chat/nameplates, camera/footsteps and account login/reconnect.
 
 ## G0 — v0.13.1 Digivolution owned-roster layout acceptance
 
@@ -343,14 +373,21 @@ The baseline should not be treated as networking-accepted until it passes a pack
 9. Disable one skin Data Asset and confirm the server rejects a request for it.
 10. Package and repeat the two-PC test, verifying `DMFPlayerSkin` assets are cooked/resolvable with no Asset Manager warnings.
 
-## Frontend native UI bootstrap acceptance (0.3.2)
-1. Open the blank MainMenu map and confirm its World Settings GameMode Override is `DMFFrontendGameMode`.
+## Frontend native UI bootstrap acceptance (0.3.2; framework-owned background layering v0.15.0)
+1. Open the MainMenu/Frontend map and confirm its World Settings GameMode Override is `DMFFrontendGameMode`.
 2. Leave `LoginWidgetClass` unset/default so the pure-native fallback path is exercised.
-3. Press Play/Standalone from MainMenu.
-4. Confirm the native login UI is visible immediately over the blank map, the mouse cursor is visible, and username/password fields accept input.
-5. Confirm the Output Log contains `Frontend login/main-menu widget initialized` and contains no frontend widget creation error.
-6. Complete Login -> Admin/Join flow, then verify the native Player Skin Selection, Starter Selection and Combat Quick Bar each render when their respective conditions are met.
-7. Repeat with a Blueprint subclass assigned to each widget-class setting to verify custom designer roots are not overwritten by the native fallback.
+3. Create a test Widget Blueprint such as `WBP_MainMenuBackground` and assign it to **Frontend Background Widget Class** in Project Settings. Do **not** also create that widget from the Level Blueprint.
+4. Temporarily set `Frontend UI Startup Delay Seconds = 1.0`, `Frontend Login/Menu Viewport Z Order = 1000` and `Show Native Frontend Fullscreen Backdrop = False`.
+5. Press Play/Standalone. Confirm exactly one selected background appears first and is not tinted by a framework full-screen color.
+6. After roughly one second, confirm the native login card appears visibly above the full-screen background, the mouse cursor is visible, and username/password fields accept input.
+7. Confirm the Output Log reports both background initialization and `Frontend login/main-menu widget initialized`, with the background Z-order exactly 100 lower than the login/menu Z-order.
+8. Confirm a fully opaque/hit-testable background still cannot visually cover or steal interaction from the higher login card.
+9. Enable `Show Native Frontend Fullscreen Backdrop`, set opacity to `0.34`, restart and confirm the optional dim returns; disable it again for the normal project-background workflow.
+10. Complete Login -> Admin/Join flow, then verify Player Skin Selection, Starter Selection and Combat Quick Bar render when their respective conditions are met.
+11. Travel away from the frontend and confirm both background and login widgets are removed.
+12. Repeat with a Blueprint subclass assigned to `LoginWidgetClass`: foreground Z-order/startup sequencing must still apply.
+13. Restore the desired production delay (commonly `0.15`-`0.50`, or longer for an authored intro) and repeat in a packaged build.
+
 ## Custom Depth / cel-shading acceptance
 
 1. Open a Blueprint derived from `ADMFPlayerAvatarCharacter`; verify the inherited Character mesh reports **Render CustomDepth Pass** enabled after construction.
@@ -605,3 +642,9 @@ The baseline should not be treated as networking-accepted until it passes a pack
 10. Optional owned-partner regression: explicitly enable Player Partner Auto Battle and confirm it also uses the complete eligible moveset; then disable it and confirm manual slot 1–4 commands remain unchanged and take priority.
 11. Run listen host + remote client. Confirm ability selection/damage/cooldowns remain server-authored while the existing replicated/multicast presentation shows the same chosen attacks remotely.
 12. Regression-check v0.14.6 CustomDepth attack VFX/marker enforcement, v0.14.5 rarity weighting, v0.14.4 persistent battle music, projectile homing/impact, combat facing, leash behavior, defeat/reward and Party/Bank persistence.
+
+## v0.14.9 Attribute Point + menu regression
+
+Test Party and Bank + buttons, exact one-point/one-stat mutation, zero-point disabled state, MaxHP/MaxSP missing-resource preservation, defeated HP remaining zero, active-partner replication without respawn/combat reset, persistence after reconnect, owner privacy in two-client PIE, and every Digimon Menu tab at 16:9/short-height/DPI scaling to confirm no child/action control renders below the modal border.
+
+**Party detail scroll acceptance:** at a short viewport comparable to 1644x864, select one Party Digimon and confirm the right identity/portrait header remains stable while a single vertical scroll lane reaches Stats/EXP -> Attribute Point controls -> species description -> `SET ACTIVE / SUMMON` -> `RECALL ACTIVE PARTNER` -> `MOVE TO BANK`. Confirm mouse-wheel scrolling over the description continues the outer Party body rather than being trapped in a nested scroll box; click each reachable action and verify its existing server-authoritative behavior is unchanged.

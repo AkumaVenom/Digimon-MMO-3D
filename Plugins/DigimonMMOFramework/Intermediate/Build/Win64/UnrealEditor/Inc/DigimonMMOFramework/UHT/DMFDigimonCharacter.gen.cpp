@@ -1043,6 +1043,69 @@ DEFINE_FUNCTION(ADMFDigimonCharacter::execRefreshFrameworkCustomDepth)
 }
 // ********** End Class ADMFDigimonCharacter Function RefreshFrameworkCustomDepth ******************
 
+// ********** Begin Class ADMFDigimonCharacter Function RefreshProgressionFromInstance *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFDigimonCharacter_RefreshProgressionFromInstance_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms
+	{
+		FDMFDigimonInstance Instance;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Digimon|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Refreshes persistent Level/EXP/stats on an already spawned partner without resetting its live combat lifecycle. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFDigimonCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Refreshes persistent Level/EXP/stats on an already spawned partner without resetting its live combat lifecycle." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Instance_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshProgressionFromInstance constinit property declarations ********
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Instance;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function RefreshProgressionFromInstance constinit property declarations **********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function RefreshProgressionFromInstance Property Definitions *******************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Instance,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function RefreshProgressionFromInstance Property Definitions *********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFDigimonCharacter, nullptr, "RefreshProgressionFromInstance", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04420405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFDigimonCharacter_RefreshProgressionFromInstance(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFDigimonCharacter::execRefreshProgressionFromInstance)
+{
+	P_GET_STRUCT_REF(FDMFDigimonInstance,Z_Param_Out_Instance);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshProgressionFromInstance(Z_Param_Out_Instance);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFDigimonCharacter Function RefreshProgressionFromInstance ***************
+
 // ********** Begin Class ADMFDigimonCharacter Function RefreshWorldNameplate **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -1569,6 +1632,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("OnRep_DigimonState"), .Pointer = &ADMFDigimonCharacter::execOnRep_DigimonState },
 		{ .NameUTF8 = UTF8TEXT("RefreshCameraCollisionPolicy"), .Pointer = &ADMFDigimonCharacter::execRefreshCameraCollisionPolicy },
 		{ .NameUTF8 = UTF8TEXT("RefreshFrameworkCustomDepth"), .Pointer = &ADMFDigimonCharacter::execRefreshFrameworkCustomDepth },
+		{ .NameUTF8 = UTF8TEXT("RefreshProgressionFromInstance"), .Pointer = &ADMFDigimonCharacter::execRefreshProgressionFromInstance },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldNameplate"), .Pointer = &ADMFDigimonCharacter::execRefreshWorldNameplate },
 		{ .NameUTF8 = UTF8TEXT("ResolveSpeciesData"), .Pointer = &ADMFDigimonCharacter::execResolveSpeciesData },
 		{ .NameUTF8 = UTF8TEXT("SetCombatTeamId"), .Pointer = &ADMFDigimonCharacter::execSetCombatTeamId },
@@ -1596,6 +1660,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy, "RefreshCameraCollisionPolicy" }, // ab4db5a823f707f593372c460034e9f30c054a58
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshProgressionFromInstance, "RefreshProgressionFromInstance" }, // 4db84a85de38f8d91808fe1267d34cbc99a1a5fc
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // 6bd71dc2f39809ecbe83a51eb8aa9897fa31053d
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ResolveSpeciesData, "ResolveSpeciesData" }, // ef9c63bfa88bbcf754437dd5749581017e42c278
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_SetCombatTeamId, "SetCombatTeamId" }, // c8e085c086216ee6ee1e0581032ffa1db9f74954
@@ -1752,10 +1817,10 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3322216920U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3644971814U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_7f6f713d2400e43f4274fa61ff4d21d2b308a090{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_f92d616c1a60a2b1258bc040c1200d07a4228631{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

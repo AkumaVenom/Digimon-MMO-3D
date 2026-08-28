@@ -1,4 +1,4 @@
-# Real-Time Combat Setup — v0.14.7-alpha
+# Real-Time Combat Setup — v0.14.8-alpha
 
 ## v0.5.0 owned-partner control defaults
 
@@ -25,7 +25,9 @@ The server owns damage, SP costs, cooldowns, target validation, projectile arriv
 On each `DMFDigimonSpeciesData`:
 - Add ability assets to `StartingAbilities` (the legacy `StartingAbilityIds` field remains supported).
 - Set `BasicAutoAttack`.
-- Set battle EXP and money rewards.
+- Set battle EXP and money rewards. Battle EXP now drives the server-authoritative owned-Digimon leveling system.
+- Author the existing HP/SP/STR/INT/DEF/SPD Per Level and Attribute Points Per Level values used whenever this species gains a level.
+- Set this species' `Base Experience Required` and `Experience Growth Multiplier Per Level`; optionally set `Max Level Override`. No CurveFloat asset is required.
 - Keep Attack1 / Attack2 montage and Cascade fields if you want species-level presentation overrides for quick slots 1 and 2.
 
 ## 3. Navigation requirement
@@ -65,7 +67,9 @@ When **Player Partner Auto Battle** is deliberately enabled, autonomous partners
 ## 7. Persistence and rewards
 Combat HP/SP is mirrored back into the owner's Fast Array Digimon instance. Account state autosaves on a configurable interval, on battle reward grant, on starter grant, and on logout.
 
-Defeating a Digimon grants its configured Battle Experience to the active partner and Battle Money to the account. Level-up/stat-point logic remains Phase 7 so EXP can accumulate now without prematurely freezing the progression formula.
+Defeating a Digimon grants its configured Battle Experience to the active partner and Battle Money to the account. As of v0.14.8, Battle EXP is consumed through authoritative level thresholds, can cross multiple levels in one reward, applies the species' existing per-level HP/SP/STR/INT/DEF/SPD growth, grants `Attribute Points Per Level`, refreshes the summoned partner's public replicated stats without resetting combat, and persists the owned instance.
+
+The native Party/Bank panels show current EXP / required EXP and the owner receives the queued animated EXP / LEVEL UP presentation. Requirements come directly from each species' numeric base EXP and per-level growth multiplier. See `SETUP_LEVEL_PROGRESSION.md` for the full authoring, migration, UI and networking contract.
 ## Cel-shading Custom Depth
 
 All actors derived from `ADMFDigimonCharacter` automatically force **Render CustomDepth Pass = true** on every owned mesh component. This applies to player partners, wild Digimon, NPC Digimon and future ranked-battle Digimon. The flag is reasserted at construction, BeginPlay, server instance initialization and client replicated-state refresh.

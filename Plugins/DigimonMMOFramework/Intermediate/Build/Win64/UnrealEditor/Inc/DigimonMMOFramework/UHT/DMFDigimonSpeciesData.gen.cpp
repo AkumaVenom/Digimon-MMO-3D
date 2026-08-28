@@ -437,6 +437,41 @@ struct UHT_STATICS
 		{ "ClampMin", "0" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxLevelOverride_MetaData[] = {
+		{ "Category", "Progression|Leveling" },
+		{ "ClampMax", "999" },
+		{ "ClampMin", "0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Optional species-specific level cap. Zero uses Project Settings -> Progression -> Default Max Digimon Level. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional species-specific level cap. Zero uses Project Settings -> Progression -> Default Max Digimon Level." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BaseExperienceRequired_MetaData[] = {
+		{ "Category", "Progression|Leveling" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Species-owned EXP requirement for Level 1 -> 2. This is the starting point of this species' automatic numeric EXP curve.\n     * No CurveFloat asset is required.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Species-owned EXP requirement for Level 1 -> 2. This is the starting point of this species' automatic numeric EXP curve.\nNo CurveFloat asset is required." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ExperienceGrowthMultiplierPerLevel_MetaData[] = {
+		{ "Category", "Progression|Leveling" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Multiplies the previous level requirement for each level above 1.\n     * Formula: BaseExperienceRequired * pow(ExperienceGrowthMultiplierPerLevel, CurrentLevel - 1).\n     * 1.0 = flat requirement, 1.10 = +10% per level, 1.20 = +20% per level.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Multiplies the previous level requirement for each level above 1.\nFormula: BaseExperienceRequired * pow(ExperienceGrowthMultiplierPerLevel, CurrentLevel - 1).\n1.0 = flat requirement, 1.10 = +10% per level, 1.20 = +20% per level." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StartingAbilityIds_MetaData[] = {
 		{ "Category", "Abilities" },
 		{ "ModuleRelativePath", "Public/Data/DMFDigimonSpeciesData.h" },
@@ -817,6 +852,9 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FIntPropertyParams NewProp_StartingLevel;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_BaseStats;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_AttributePointsPerLevel;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxLevelOverride;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_BaseExperienceRequired;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceGrowthMultiplierPerLevel;
 	static const UECodeGen_Private::FNamePropertyParams NewProp_StartingAbilityIds_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_StartingAbilityIds;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_StartingAbilities_Inner;
@@ -912,6 +950,9 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigiDexNumber =
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_StartingLevel = { "StartingLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, StartingLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StartingLevel_MetaData), NewProp_StartingLevel_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_BaseStats = { "BaseStats", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, BaseStats), Z_Construct_UScriptStruct_FDMFDigimonStats, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BaseStats_MetaData), NewProp_BaseStats_MetaData) }; // 520b7c977c816e4f689d80785fbab8bbe48405a6
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_AttributePointsPerLevel = { "AttributePointsPerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, AttributePointsPerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AttributePointsPerLevel_MetaData), NewProp_AttributePointsPerLevel_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxLevelOverride = { "MaxLevelOverride", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, MaxLevelOverride), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxLevelOverride_MetaData), NewProp_MaxLevelOverride_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_BaseExperienceRequired = { "BaseExperienceRequired", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, BaseExperienceRequired), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BaseExperienceRequired_MetaData), NewProp_BaseExperienceRequired_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceGrowthMultiplierPerLevel = { "ExperienceGrowthMultiplierPerLevel", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, ExperienceGrowthMultiplierPerLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceGrowthMultiplierPerLevel_MetaData), NewProp_ExperienceGrowthMultiplierPerLevel_MetaData) };
 const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_StartingAbilityIds_Inner = { "StartingAbilityIds", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Name, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_StartingAbilityIds = { "StartingAbilityIds", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonSpeciesData, StartingAbilityIds), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StartingAbilityIds_MetaData), NewProp_StartingAbilityIds_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_StartingAbilities_Inner = { "StartingAbilities", nullptr, (EPropertyFlags)0x0004000000000000, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, 0, Z_Construct_UClass_UDMFDigimonAbilityData, METADATA_PARAMS(0, nullptr) };
@@ -982,6 +1023,9 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingLevel,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BaseStats,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AttributePointsPerLevel,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxLevelOverride,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BaseExperienceRequired,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceGrowthMultiplierPerLevel,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingAbilityIds_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingAbilityIds,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StartingAbilities_Inner,
@@ -1110,10 +1154,10 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFDigivolutionRequirement, Z_Construct_UScriptStruct_FDMFDigivolutionRequirement_Statics::NewStructOps, TEXT("DMFDigivolutionRequirement"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionRequirement, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionRequirement), 615255075U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 3059787566U) },
+		{ Z_Construct_UClass_UDMFDigimonSpeciesData, TEXT("UDMFDigimonSpeciesData"), &Z_Registration_Info_UClass_UDMFDigimonSpeciesData, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonSpeciesData), 265743388U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_200c1745f1eb221fc3d67b75cde800aa27dbaa37{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Data_DMFDigimonSpeciesData_h__Script_DigimonMMOFramework_31fe15d2b23fd365657652aa82a3a27e620de93d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

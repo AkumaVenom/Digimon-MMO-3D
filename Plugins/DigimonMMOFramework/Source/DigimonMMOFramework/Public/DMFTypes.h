@@ -143,6 +143,18 @@ enum class EDMFDigimonStorageLocation : uint8
     Bank
 };
 
+/** Core persistent stats that may be increased by spending earned Attribute Points. ABI/CAM remain progression/care values and are intentionally not spendable here. */
+UENUM(BlueprintType)
+enum class EDMFDigimonAttributeStat : uint8
+{
+    MaxHP UMETA(DisplayName="Max HP"),
+    MaxSP UMETA(DisplayName="Max SP"),
+    Strength UMETA(DisplayName="Strength"),
+    Intelligence UMETA(DisplayName="Intelligence"),
+    Defense UMETA(DisplayName="Defense"),
+    Speed UMETA(DisplayName="Speed")
+};
+
 
 
 /** Local/owner-only evaluation row for one configured Digivolution path. */
@@ -344,6 +356,46 @@ struct DIGIMONMMOFRAMEWORK_API FDMFBattleReward
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Digimon|Battle")
     int64 Money = 0;
+};
+
+/** Owner-facing snapshot of one authoritative EXP mutation. Durable progression remains in FDMFDigimonInstance. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFDigimonExperienceProgression
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    FGuid DigimonInstanceId;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    FPrimaryAssetId SpeciesId;
+
+    /** EXP actually applied to this Digimon by the authoritative mutation. */
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int64 ExperienceGained = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int32 PreviousLevel = 1;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int32 NewLevel = 1;
+
+    /** EXP bank toward PreviousLevel + 1 before this reward. */
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int64 PreviousExperience = 0;
+
+    /** Remaining EXP bank toward NewLevel + 1 after consuming every completed level threshold. */
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int64 NewExperience = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int32 LevelsGained = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    int32 AttributePointsGained = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Digimon|Progression")
+    bool bReachedMaxLevel = false;
 };
 
 USTRUCT(BlueprintType)

@@ -149,6 +149,18 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     {
         MoveSelectedBankToPartyButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMoveSelectedBankToParty);
     }
+    if (SpendPartyHPButton) SpendPartyHPButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartyHP);
+    if (SpendPartySPButton) SpendPartySPButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartySP);
+    if (SpendPartyStrengthButton) SpendPartyStrengthButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartyStrength);
+    if (SpendPartyIntelligenceButton) SpendPartyIntelligenceButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartyIntelligence);
+    if (SpendPartyDefenseButton) SpendPartyDefenseButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartyDefense);
+    if (SpendPartySpeedButton) SpendPartySpeedButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendPartySpeed);
+    if (SpendBankHPButton) SpendBankHPButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankHP);
+    if (SpendBankSPButton) SpendBankSPButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankSP);
+    if (SpendBankStrengthButton) SpendBankStrengthButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankStrength);
+    if (SpendBankIntelligenceButton) SpendBankIntelligenceButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankIntelligence);
+    if (SpendBankDefenseButton) SpendBankDefenseButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankDefense);
+    if (SpendBankSpeedButton) SpendBankSpeedButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSpendBankSpeed);
 
     BindDigimonComponent();
     RefreshInventory();
@@ -167,6 +179,7 @@ void UDMFDigimonInventoryWidget::NativeDestruct()
         BoundDigimonComponent->OnDigimonInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
         BoundDigimonComponent->OnDigimonStorageActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
+        BoundDigimonComponent->OnAttributePointSpendResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
@@ -184,6 +197,18 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     {
         return;
     }
+
+    auto MakeAttributeSpendButton = [this](const FName WidgetName, const FText& LabelText) -> UButton*
+    {
+        UButton* Button = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), WidgetName);
+        DMFNativeUI::StyleButton(Button);
+        UTextBlock* Label = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Label->SetText(LabelText);
+        Label->SetJustification(ETextJustify::Center);
+        DMFNativeUI::StyleText(Label, 11, DMFNativeUI::Accent(), true);
+        Button->AddChild(Label);
+        return Button;
+    };
 
     UOverlay* RootOverlay = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass(), TEXT("InventoryRootOverlay"));
     WidgetTree->RootWidget = RootOverlay;
@@ -208,11 +233,14 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
 
     USizeBox* WindowSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("InventoryWindowSize"));
     WindowSize->SetWidthOverride(1240.0f);
-    WindowSize->SetHeightOverride(820.0f);
+    WindowSize->SetHeightOverride(900.0f);
     ScreenScale->AddChild(WindowSize);
 
     UBorder* WindowBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("InventoryWindowBorder"));
     DMFNativeUI::StylePanel(WindowBorder, DMFNativeUI::Panel(), FMargin(18.0f));
+    // The menu has grown into a multi-system shell. Hard clipping plus ScaleToFit guarantees that no tab
+    // can visually escape the window on low-height/DPI-scaled viewports even when content is project-authored.
+    WindowBorder->SetClipping(EWidgetClipping::ClipToBoundsAlways);
     WindowSize->AddChild(WindowBorder);
 
     UVerticalBox* WindowColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("InventoryWindowColumn"));
@@ -368,7 +396,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     DetailsColumn->AddChildToVerticalBox(SelectedHeader)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
 
     USizeBox* PortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("SelectedPortraitSize"));
-    PortraitSize->SetHeightOverride(190.0f);
+    PortraitSize->SetHeightOverride(175.0f);
     PortraitSize->SetWidthOverride(320.0f);
     DetailsColumn->AddChildToVerticalBox(PortraitSize)->SetHorizontalAlignment(HAlign_Center);
 
@@ -401,30 +429,63 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     DMFNativeUI::StyleText(SelectedStateText, 13, DMFNativeUI::Muted(), true);
     DetailsColumn->AddChildToVerticalBox(SelectedStateText)->SetPadding(FMargin(0.0f, 2.0f, 0.0f, 10.0f));
 
+    // The Party detail body must remain reachable on short viewports.  Keep the identity/portrait
+    // header fixed and give every interactive detail below it one bounded vertical scroll lane.
+    // This mirrors the Bank tab's mature layout contract and prevents newly-added progression/UI
+    // controls from pushing summon/recall/storage actions outside the modal.
+    UScrollBox* PartyDetailsBodyScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("PartyDetailsBodyScroll"));
+    if (UVerticalBoxSlot* PartyBodyScrollSlot = DetailsColumn->AddChildToVerticalBox(PartyDetailsBodyScroll))
+    {
+        PartyBodyScrollSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    UVerticalBox* PartyDetailsBody = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("PartyDetailsBody"));
+    PartyDetailsBodyScroll->AddChild(PartyDetailsBody);
+
     UBorder* StatsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("SelectedStatsBorder"));
     DMFNativeUI::StylePanel(StatsBorder, DMFNativeUI::PanelSoft(), FMargin(12.0f));
-    DetailsColumn->AddChildToVerticalBox(StatsBorder)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
+    PartyDetailsBody->AddChildToVerticalBox(StatsBorder)->SetPadding(FMargin(0.0f, 0.0f, 4.0f, 8.0f));
 
+    UVerticalBox* StatsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("SelectedStatsColumn"));
+    StatsBorder->AddChild(StatsColumn);
     DigimonDetailsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DigimonDetailsText"));
-    DigimonDetailsText->SetText(NSLOCTEXT("DMF", "DigimonInventoryNoSelection", "LEVEL  --\nHP     -- / --\nSP     -- / --\n\nSTR --     INT --\nDEF --     SPD --\nABI --     CAM --"));
+    DigimonDetailsText->SetText(NSLOCTEXT("DMF", "DigimonInventoryNoSelection", "LEVEL  --        EXP  -- / --\nHP     -- / --\nSP     -- / --\n\nSTR --     INT --\nDEF --     SPD --\nABI --     CAM --\nATTRIBUTE PTS  --"));
     DigimonDetailsText->SetAutoWrapText(true);
     DMFNativeUI::StyleText(DigimonDetailsText, 15, DMFNativeUI::Text());
-    StatsBorder->AddChild(DigimonDetailsText);
+    StatsColumn->AddChildToVerticalBox(DigimonDetailsText);
+    SelectedExperienceProgressBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("SelectedExperienceProgressBar"));
+    SelectedExperienceProgressBar->SetFillColorAndOpacity(DMFNativeUI::Accent());
+    SelectedExperienceProgressBar->SetPercent(0.0f);
+    StatsColumn->AddChildToVerticalBox(SelectedExperienceProgressBar)->SetPadding(FMargin(0.0f, 8.0f, 0.0f, 0.0f));
 
-    USizeBox* SelectedDescriptionViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("SelectedDescriptionViewport"));
-    SelectedDescriptionViewport->SetMinDesiredHeight(54.0f);
-    UScrollBox* SelectedDescriptionScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("SelectedDescriptionScroll"));
-    SelectedDescriptionViewport->AddChild(SelectedDescriptionScroll);
+    UTextBlock* PartyAttributeSpendLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("PartyAttributeSpendLabel"));
+    PartyAttributeSpendLabel->SetText(NSLOCTEXT("DMF", "PartyAttributeSpendLabel", "SPEND ATTRIBUTE POINTS"));
+    DMFNativeUI::StyleText(PartyAttributeSpendLabel, 10, DMFNativeUI::Muted(), true);
+    StatsColumn->AddChildToVerticalBox(PartyAttributeSpendLabel)->SetPadding(FMargin(0,8,0,3));
+    UUniformGridPanel* PartyAttributeSpendGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("PartyAttributeSpendGrid"));
+    PartyAttributeSpendGrid->SetSlotPadding(FMargin(2.0f));
+    StatsColumn->AddChildToVerticalBox(PartyAttributeSpendGrid);
+    SpendPartyHPButton = MakeAttributeSpendButton(TEXT("SpendPartyHPButton"), NSLOCTEXT("DMF", "SpendHPShort", "+ HP"));
+    SpendPartySPButton = MakeAttributeSpendButton(TEXT("SpendPartySPButton"), NSLOCTEXT("DMF", "SpendSPShort", "+ SP"));
+    SpendPartyStrengthButton = MakeAttributeSpendButton(TEXT("SpendPartyStrengthButton"), NSLOCTEXT("DMF", "SpendSTRShort", "+ STR"));
+    SpendPartyIntelligenceButton = MakeAttributeSpendButton(TEXT("SpendPartyIntelligenceButton"), NSLOCTEXT("DMF", "SpendINTShort", "+ INT"));
+    SpendPartyDefenseButton = MakeAttributeSpendButton(TEXT("SpendPartyDefenseButton"), NSLOCTEXT("DMF", "SpendDEFShort", "+ DEF"));
+    SpendPartySpeedButton = MakeAttributeSpendButton(TEXT("SpendPartySpeedButton"), NSLOCTEXT("DMF", "SpendSPDShort", "+ SPD"));
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartyHPButton, 0, 0);
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartySPButton, 0, 1);
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartyStrengthButton, 0, 2);
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartyIntelligenceButton, 1, 0);
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartyDefenseButton, 1, 1);
+    PartyAttributeSpendGrid->AddChildToUniformGrid(SpendPartySpeedButton, 1, 2);
+
+    // The description participates in the same outer scroll lane; avoiding a nested vertical
+    // ScrollBox keeps mouse-wheel/gamepad scrolling deterministic and lets long localized/species
+    // profiles naturally increase the Party detail body's scroll extent.
     SelectedDescriptionText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SelectedDescriptionText"));
     SelectedDescriptionText->SetText(NSLOCTEXT("DMF", "SelectedDigimonDescriptionEmpty", "Select a Digimon to view its species profile and current combat state."));
     SelectedDescriptionText->SetAutoWrapText(true);
     DMFNativeUI::StyleText(SelectedDescriptionText, 12, DMFNativeUI::Muted());
-    SelectedDescriptionScroll->AddChild(SelectedDescriptionText);
-    if (UVerticalBoxSlot* DescriptionSlot = DetailsColumn->AddChildToVerticalBox(SelectedDescriptionViewport))
-    {
-        DescriptionSlot->SetSize(DMFNativeUI::FillSize());
-        DescriptionSlot->SetPadding(FMargin(2.0f, 0.0f, 2.0f, 8.0f));
-    }
+    PartyDetailsBody->AddChildToVerticalBox(SelectedDescriptionText)->SetPadding(FMargin(2.0f, 0.0f, 6.0f, 8.0f));
 
     SummonDigimonButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SummonDigimonButton"));
     DMFNativeUI::StyleButton(SummonDigimonButton, true);
@@ -434,7 +495,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     SummonLabel->SetAutoWrapText(true);
     DMFNativeUI::StyleText(SummonLabel, 15, DMFNativeUI::Text(), true);
     SummonDigimonButton->AddChild(SummonLabel);
-    DetailsColumn->AddChildToVerticalBox(SummonDigimonButton)->SetPadding(FMargin(0.0f, 4.0f));
+    PartyDetailsBody->AddChildToVerticalBox(SummonDigimonButton)->SetPadding(FMargin(0.0f, 4.0f, 4.0f, 4.0f));
 
     RecallDigimonButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("RecallDigimonButton"));
     DMFNativeUI::StyleButton(RecallDigimonButton);
@@ -444,7 +505,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     RecallLabel->SetAutoWrapText(true);
     DMFNativeUI::StyleText(RecallLabel, 14, DMFNativeUI::Text(), true);
     RecallDigimonButton->AddChild(RecallLabel);
-    DetailsColumn->AddChildToVerticalBox(RecallDigimonButton)->SetPadding(FMargin(0.0f, 4.0f, 0.0f, 0.0f));
+    PartyDetailsBody->AddChildToVerticalBox(RecallDigimonButton)->SetPadding(FMargin(0.0f, 4.0f, 4.0f, 0.0f));
 
     MoveSelectedToBankButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("MoveSelectedToBankButton"));
     DMFNativeUI::StyleButton(MoveSelectedToBankButton);
@@ -454,7 +515,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     MoveToBankLabel->SetAutoWrapText(true);
     DMFNativeUI::StyleText(MoveToBankLabel, 14, DMFNativeUI::Gold(), true);
     MoveSelectedToBankButton->AddChild(MoveToBankLabel);
-    DetailsColumn->AddChildToVerticalBox(MoveSelectedToBankButton)->SetPadding(FMargin(0.0f, 6.0f, 0.0f, 0.0f));
+    PartyDetailsBody->AddChildToVerticalBox(MoveSelectedToBankButton)->SetPadding(FMargin(0.0f, 6.0f, 4.0f, 8.0f));
 
     // Bank / Box tab: paged owner-only storage plus an explicit Party destination strip for atomic swaps.
     BankContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("BankContentRow"));
@@ -549,7 +610,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     DMFNativeUI::StyleText(BankSelectedHeader, 13, DMFNativeUI::Gold(), true);
     BankDetailsColumn->AddChildToVerticalBox(BankSelectedHeader)->SetPadding(FMargin(0,0,0,8));
     USizeBox* BankPortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("BankPortraitSize"));
-    BankPortraitSize->SetHeightOverride(170.0f);
+    BankPortraitSize->SetHeightOverride(160.0f);
     UBorder* BankPortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("BankPortraitBorder"));
     DMFNativeUI::StylePanel(BankPortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(5.0f));
     BankPortraitSize->AddChild(BankPortraitBorder);
@@ -577,10 +638,35 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     UBorder* BankStatsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("BankStatsBorder"));
     DMFNativeUI::StylePanel(BankStatsBorder, DMFNativeUI::PanelSoft(), FMargin(12.0f));
     BankDetailsBody->AddChildToVerticalBox(BankStatsBorder);
+    UVerticalBox* BankStatsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("BankStatsColumn"));
+    BankStatsBorder->AddChild(BankStatsColumn);
     BankSelectedStatsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("BankSelectedStatsText"));
     BankSelectedStatsText->SetAutoWrapText(true);
     DMFNativeUI::StyleText(BankSelectedStatsText, 14, DMFNativeUI::Text());
-    BankStatsBorder->AddChild(BankSelectedStatsText);
+    BankStatsColumn->AddChildToVerticalBox(BankSelectedStatsText);
+    BankExperienceProgressBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("BankExperienceProgressBar"));
+    BankExperienceProgressBar->SetFillColorAndOpacity(DMFNativeUI::Accent());
+    BankExperienceProgressBar->SetPercent(0.0f);
+    BankStatsColumn->AddChildToVerticalBox(BankExperienceProgressBar)->SetPadding(FMargin(0.0f, 8.0f, 0.0f, 0.0f));
+    UTextBlock* BankAttributeSpendLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("BankAttributeSpendLabel"));
+    BankAttributeSpendLabel->SetText(NSLOCTEXT("DMF", "BankAttributeSpendLabel", "SPEND ATTRIBUTE POINTS"));
+    DMFNativeUI::StyleText(BankAttributeSpendLabel, 10, DMFNativeUI::Muted(), true);
+    BankStatsColumn->AddChildToVerticalBox(BankAttributeSpendLabel)->SetPadding(FMargin(0,8,0,3));
+    UUniformGridPanel* BankAttributeSpendGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("BankAttributeSpendGrid"));
+    BankAttributeSpendGrid->SetSlotPadding(FMargin(2.0f));
+    BankStatsColumn->AddChildToVerticalBox(BankAttributeSpendGrid);
+    SpendBankHPButton = MakeAttributeSpendButton(TEXT("SpendBankHPButton"), NSLOCTEXT("DMF", "SpendBankHPShort", "+ HP"));
+    SpendBankSPButton = MakeAttributeSpendButton(TEXT("SpendBankSPButton"), NSLOCTEXT("DMF", "SpendBankSPShort", "+ SP"));
+    SpendBankStrengthButton = MakeAttributeSpendButton(TEXT("SpendBankStrengthButton"), NSLOCTEXT("DMF", "SpendBankSTRShort", "+ STR"));
+    SpendBankIntelligenceButton = MakeAttributeSpendButton(TEXT("SpendBankIntelligenceButton"), NSLOCTEXT("DMF", "SpendBankINTShort", "+ INT"));
+    SpendBankDefenseButton = MakeAttributeSpendButton(TEXT("SpendBankDefenseButton"), NSLOCTEXT("DMF", "SpendBankDEFShort", "+ DEF"));
+    SpendBankSpeedButton = MakeAttributeSpendButton(TEXT("SpendBankSpeedButton"), NSLOCTEXT("DMF", "SpendBankSPDShort", "+ SPD"));
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankHPButton, 0, 0);
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankSPButton, 0, 1);
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankStrengthButton, 0, 2);
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankIntelligenceButton, 1, 0);
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankDefenseButton, 1, 1);
+    BankAttributeSpendGrid->AddChildToUniformGrid(SpendBankSpeedButton, 1, 2);
     BankSelectionText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("BankSelectionText"));
     BankSelectionText->SetAutoWrapText(true);
     BankSelectionText->SetJustification(ETextJustify::Center);
@@ -654,7 +740,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     ScanDetailsColumn->AddChildToVerticalBox(MaterializationHeader)->SetPadding(FMargin(0,0,0,8));
 
     USizeBox* ScanPortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("ScanSelectedPortraitSize"));
-    ScanPortraitSize->SetHeightOverride(180.0f); ScanPortraitSize->SetWidthOverride(320.0f);
+    ScanPortraitSize->SetHeightOverride(165.0f); ScanPortraitSize->SetWidthOverride(320.0f);
     ScanDetailsColumn->AddChildToVerticalBox(ScanPortraitSize)->SetHorizontalAlignment(HAlign_Center);
     UBorder* ScanPortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("ScanSelectedPortraitBorder"));
     DMFNativeUI::StylePanel(ScanPortraitBorder,DMFNativeUI::SlotEmpty(),FMargin(5.0f)); ScanPortraitSize->AddChild(ScanPortraitBorder);
@@ -785,7 +871,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
 
     USizeBox* DigiDexPortraitViewport = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("DigiDexPortraitViewport"));
     DigiDexPortraitViewport->SetWidthOverride(300.0f);
-    DigiDexPortraitViewport->SetHeightOverride(210.0f);
+    DigiDexPortraitViewport->SetHeightOverride(185.0f);
     DigiDexDetailsColumn->AddChildToVerticalBox(DigiDexPortraitViewport)->SetHorizontalAlignment(HAlign_Center);
     UBorder* DigiDexPortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("DigiDexPortraitBorder"));
     DMFNativeUI::StylePanel(DigiDexPortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(5.0f));
@@ -1028,7 +1114,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     UHorizontalBox* CareProfileRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("CareProfileRow"));
     CareMainColumn->AddChildToVerticalBox(CareProfileRow)->SetPadding(FMargin(0,0,0,14));
     USizeBox* CarePortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("CarePortraitSize"));
-    CarePortraitSize->SetWidthOverride(220.0f); CarePortraitSize->SetHeightOverride(190.0f);
+    CarePortraitSize->SetWidthOverride(220.0f); CarePortraitSize->SetHeightOverride(170.0f);
     UBorder* CarePortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("CarePortraitBorder"));
     DMFNativeUI::StylePanel(CarePortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(5.0f));
     CarePortraitSize->AddChild(CarePortraitBorder);
@@ -1123,6 +1209,7 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnDigimonInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
         BoundDigimonComponent->OnDigimonStorageActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
+        BoundDigimonComponent->OnAttributePointSpendResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
@@ -1137,6 +1224,7 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
         BoundDigimonComponent->OnDigimonInventoryChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
         BoundDigimonComponent->OnDigimonStorageActionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
+        BoundDigimonComponent->OnAttributePointSpendResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
         BoundDigimonComponent->OnScanDataChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleScanDataChanged);
         BoundDigimonComponent->OnMaterializationResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleMaterializationResult);
@@ -1660,6 +1748,22 @@ void UDMFDigimonInventoryWidget::RefreshSelectedBankDetails()
     {
         MoveSelectedBankToPartyButton->SetIsEnabled(bHasSelection && (bPartyHasRoom || bDestinationChosen));
     }
+    SetBankAttributeSpendEnabled(false);
+    if (bHasSelection)
+    {
+        auto UpdateSpendButton = [&](UButton* Button, const EDMFDigimonAttributeStat Stat)
+        {
+            if (!Button) return;
+            FText Failure;
+            Button->SetIsEnabled(BoundDigimonComponent->CanSpendDigimonAttributePoint(Digimon.InstanceId, Stat, Failure));
+        };
+        UpdateSpendButton(SpendBankHPButton, EDMFDigimonAttributeStat::MaxHP);
+        UpdateSpendButton(SpendBankSPButton, EDMFDigimonAttributeStat::MaxSP);
+        UpdateSpendButton(SpendBankStrengthButton, EDMFDigimonAttributeStat::Strength);
+        UpdateSpendButton(SpendBankIntelligenceButton, EDMFDigimonAttributeStat::Intelligence);
+        UpdateSpendButton(SpendBankDefenseButton, EDMFDigimonAttributeStat::Defense);
+        UpdateSpendButton(SpendBankSpeedButton, EDMFDigimonAttributeStat::Speed);
+    }
 
     if (!bHasSelection)
     {
@@ -1699,12 +1803,21 @@ void UDMFDigimonInventoryWidget::RefreshSelectedBankDetails()
         const FText Attribute = Species ? DMFInventoryUI::EnumDisplay(StaticEnum<EDMFDigimonAttribute>(), static_cast<int64>(Species->Attribute)) : FText::GetEmpty();
         BankSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF", "BankSelectedMetaFormat", "Lv.{0}  •  {1}  •  {2}"), FText::AsNumber(Digimon.Stats.Level), Stage, Attribute));
     }
+    const int64 BankExperienceRequired = BoundDigimonComponent->GetExperienceRequiredForLevel(Digimon.SpeciesId, Digimon.Stats.Level);
+    const bool bBankMaxLevel = BankExperienceRequired <= 0;
     if (BankSelectedStatsText)
     {
-        BankSelectedStatsText->SetText(FText::Format(NSLOCTEXT("DMF", "BankStatsFormat", "HP     {0} / {1}\nSP     {2} / {3}\n\nSTR {4}     INT {5}\nDEF {6}     SPD {7}\nABI {8}     CAM {9}\n\nStored safely in the account-owned Digimon Bank."),
-            FText::AsNumber(Digimon.CurrentHP), FText::AsNumber(Digimon.Stats.MaxHP), FText::AsNumber(Digimon.CurrentSP), FText::AsNumber(Digimon.Stats.MaxSP),
+        const FText ExperienceDisplay = bBankMaxLevel
+            ? NSLOCTEXT("DMF", "BankMaxExperience", "MAX")
+            : FText::Format(NSLOCTEXT("DMF", "BankExperienceFraction", "{0} / {1}"), FText::AsNumber(Digimon.Stats.Experience), FText::AsNumber(BankExperienceRequired));
+        BankSelectedStatsText->SetText(FText::Format(NSLOCTEXT("DMF", "BankStatsFormat", "EXP    {0}\nHP     {1} / {2}\nSP     {3} / {4}\n\nSTR {5}     INT {6}\nDEF {7}     SPD {8}\nABI {9}     CAM {10}\nATTRIBUTE PTS  {11}\n\nStored safely in the account-owned Digimon Bank."),
+            ExperienceDisplay, FText::AsNumber(Digimon.CurrentHP), FText::AsNumber(Digimon.Stats.MaxHP), FText::AsNumber(Digimon.CurrentSP), FText::AsNumber(Digimon.Stats.MaxSP),
             FText::AsNumber(Digimon.Stats.Strength), FText::AsNumber(Digimon.Stats.Intelligence), FText::AsNumber(Digimon.Stats.Defense), FText::AsNumber(Digimon.Stats.Speed),
-            FText::AsNumber(Digimon.Stats.ABI), FText::AsNumber(Digimon.Stats.CAM)));
+            FText::AsNumber(Digimon.Stats.ABI), FText::AsNumber(Digimon.Stats.CAM), FText::AsNumber(Digimon.UnspentAttributePoints)));
+    }
+    if (BankExperienceProgressBar)
+    {
+        BankExperienceProgressBar->SetPercent(bBankMaxLevel ? 1.0f : BoundDigimonComponent->GetExperienceProgressNormalized(Digimon.InstanceId));
     }
     if (BankSelectionText)
     {
@@ -1744,6 +1857,22 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
     {
         MoveSelectedToBankButton->SetIsEnabled(bHasSelection && BoundDigimonComponent->GetPartyDigimon().Num() > 1 && BoundDigimonComponent->GetBankDigimon().Num() < BoundDigimonComponent->GetBankCapacity());
     }
+    SetPartyAttributeSpendEnabled(false);
+    if (bHasSelection)
+    {
+        auto UpdateSpendButton = [&](UButton* Button, const EDMFDigimonAttributeStat Stat)
+        {
+            if (!Button) return;
+            FText Failure;
+            Button->SetIsEnabled(BoundDigimonComponent->CanSpendDigimonAttributePoint(Digimon.InstanceId, Stat, Failure));
+        };
+        UpdateSpendButton(SpendPartyHPButton, EDMFDigimonAttributeStat::MaxHP);
+        UpdateSpendButton(SpendPartySPButton, EDMFDigimonAttributeStat::MaxSP);
+        UpdateSpendButton(SpendPartyStrengthButton, EDMFDigimonAttributeStat::Strength);
+        UpdateSpendButton(SpendPartyIntelligenceButton, EDMFDigimonAttributeStat::Intelligence);
+        UpdateSpendButton(SpendPartyDefenseButton, EDMFDigimonAttributeStat::Defense);
+        UpdateSpendButton(SpendPartySpeedButton, EDMFDigimonAttributeStat::Speed);
+    }
 
     if (!bHasSelection)
     {
@@ -1766,11 +1895,15 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
         }
         if (DigimonDetailsText)
         {
-            DigimonDetailsText->SetText(NSLOCTEXT("DMF", "DigimonInventoryNoSelection", "LEVEL  --\nHP     -- / --\nSP     -- / --\n\nSTR --     INT --\nDEF --     SPD --\nABI --     CAM --"));
+            DigimonDetailsText->SetText(NSLOCTEXT("DMF", "DigimonInventoryNoSelection", "LEVEL  --        EXP  -- / --\nHP     -- / --\nSP     -- / --\n\nSTR --     INT --\nDEF --     SPD --\nABI --     CAM --\nATTRIBUTE PTS  --"));
         }
         if (SelectedDescriptionText)
         {
             SelectedDescriptionText->SetText(NSLOCTEXT("DMF", "SelectedDigimonDescriptionEmpty", "Select a Digimon to view its species profile and current combat state."));
+        }
+        if (SelectedExperienceProgressBar)
+        {
+            SelectedExperienceProgressBar->SetPercent(0.0f);
         }
         return;
     }
@@ -1840,12 +1973,17 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
         SelectedStateText->SetColorAndOpacity(FSlateColor(StateColor));
     }
 
+    const int64 ExperienceRequired = BoundDigimonComponent->GetExperienceRequiredForLevel(Digimon.SpeciesId, Digimon.Stats.Level);
+    const bool bMaxLevel = ExperienceRequired <= 0;
     if (DigimonDetailsText)
     {
+        const FText ExperienceDisplay = bMaxLevel
+            ? NSLOCTEXT("DMF", "DigimonInventoryMaxExperience", "MAX")
+            : FText::Format(NSLOCTEXT("DMF", "DigimonInventoryExperienceFraction", "{0} / {1}"), FText::AsNumber(Digimon.Stats.Experience), FText::AsNumber(ExperienceRequired));
         DigimonDetailsText->SetText(FText::Format(
-            NSLOCTEXT("DMF", "DigimonInventoryDetailsPolished", "LEVEL  {0}        EXP  {1}\nHP     {2} / {3}\nSP     {4} / {5}\n\nSTR    {6}        INT    {7}\nDEF    {8}        SPD    {9}\nABI    {10}        CAM    {11}"),
+            NSLOCTEXT("DMF", "DigimonInventoryDetailsPolished", "LEVEL  {0}        EXP  {1}\nHP     {2} / {3}\nSP     {4} / {5}\n\nSTR    {6}        INT    {7}\nDEF    {8}        SPD    {9}\nABI    {10}        CAM    {11}\nATTRIBUTE PTS  {12}"),
             FText::AsNumber(Digimon.Stats.Level),
-            FText::AsNumber(Digimon.Stats.Experience),
+            ExperienceDisplay,
             FText::AsNumber(Digimon.CurrentHP),
             FText::AsNumber(Digimon.Stats.MaxHP),
             FText::AsNumber(Digimon.CurrentSP),
@@ -1855,7 +1993,12 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
             FText::AsNumber(Digimon.Stats.Defense),
             FText::AsNumber(Digimon.Stats.Speed),
             FText::AsNumber(Digimon.Stats.ABI),
-            FText::AsNumber(Digimon.Stats.CAM)));
+            FText::AsNumber(Digimon.Stats.CAM),
+            FText::AsNumber(Digimon.UnspentAttributePoints)));
+    }
+    if (SelectedExperienceProgressBar)
+    {
+        SelectedExperienceProgressBar->SetPercent(bMaxLevel ? 1.0f : BoundDigimonComponent->GetExperienceProgressNormalized(Digimon.InstanceId));
     }
 
     if (SelectedDescriptionText)
@@ -1866,6 +2009,40 @@ void UDMFDigimonInventoryWidget::RefreshSelectedDetails()
     }
 
     BP_OnDigimonPreviewChanged(Digimon, Species);
+}
+
+void UDMFDigimonInventoryWidget::SetPartyAttributeSpendEnabled(const bool bEnabled)
+{
+    if (SpendPartyHPButton) SpendPartyHPButton->SetIsEnabled(bEnabled);
+    if (SpendPartySPButton) SpendPartySPButton->SetIsEnabled(bEnabled);
+    if (SpendPartyStrengthButton) SpendPartyStrengthButton->SetIsEnabled(bEnabled);
+    if (SpendPartyIntelligenceButton) SpendPartyIntelligenceButton->SetIsEnabled(bEnabled);
+    if (SpendPartyDefenseButton) SpendPartyDefenseButton->SetIsEnabled(bEnabled);
+    if (SpendPartySpeedButton) SpendPartySpeedButton->SetIsEnabled(bEnabled);
+}
+
+void UDMFDigimonInventoryWidget::SetBankAttributeSpendEnabled(const bool bEnabled)
+{
+    if (SpendBankHPButton) SpendBankHPButton->SetIsEnabled(bEnabled);
+    if (SpendBankSPButton) SpendBankSPButton->SetIsEnabled(bEnabled);
+    if (SpendBankStrengthButton) SpendBankStrengthButton->SetIsEnabled(bEnabled);
+    if (SpendBankIntelligenceButton) SpendBankIntelligenceButton->SetIsEnabled(bEnabled);
+    if (SpendBankDefenseButton) SpendBankDefenseButton->SetIsEnabled(bEnabled);
+    if (SpendBankSpeedButton) SpendBankSpeedButton->SetIsEnabled(bEnabled);
+}
+
+void UDMFDigimonInventoryWidget::RequestAttributePointSpend(const EDMFDigimonAttributeStat Stat, const bool bUseBankSelection)
+{
+    if (!BoundDigimonComponent)
+    {
+        return;
+    }
+    const FGuid InstanceId = bUseBankSelection ? SelectedBankInstanceId : SelectedInstanceId;
+    if (!InstanceId.IsValid())
+    {
+        return;
+    }
+    BoundDigimonComponent->ServerSpendDigimonAttributePoint(InstanceId, Stat);
 }
 
 void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTab)
@@ -3000,6 +3177,17 @@ void UDMFDigimonInventoryWidget::HandleStorageActionResult(const bool bSuccess, 
     }
 }
 
+void UDMFDigimonInventoryWidget::HandleAttributePointSpendResult(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId, const EDMFDigimonAttributeStat Stat, const int32 NewStatValue, const int32 RemainingPoints)
+{
+    RefreshInventory();
+    RefreshBankData();
+    if (DigimonStatusText && !Message.IsEmpty())
+    {
+        DigimonStatusText->SetText(Message);
+        DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger()));
+    }
+}
+
 void UDMFDigimonInventoryWidget::HandleScanDataChanged(const FPrimaryAssetId SpeciesId, const float ScanPercent, const bool bMaterializationReady)
 {
     RefreshScanData();
@@ -3105,6 +3293,19 @@ void UDMFDigimonInventoryWidget::HandleRecallPartner()
         BoundDigimonComponent->ServerRecallActivePartner();
     }
 }
+
+void UDMFDigimonInventoryWidget::HandleSpendPartyHP() { RequestAttributePointSpend(EDMFDigimonAttributeStat::MaxHP, false); }
+void UDMFDigimonInventoryWidget::HandleSpendPartySP() { RequestAttributePointSpend(EDMFDigimonAttributeStat::MaxSP, false); }
+void UDMFDigimonInventoryWidget::HandleSpendPartyStrength() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Strength, false); }
+void UDMFDigimonInventoryWidget::HandleSpendPartyIntelligence() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Intelligence, false); }
+void UDMFDigimonInventoryWidget::HandleSpendPartyDefense() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Defense, false); }
+void UDMFDigimonInventoryWidget::HandleSpendPartySpeed() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Speed, false); }
+void UDMFDigimonInventoryWidget::HandleSpendBankHP() { RequestAttributePointSpend(EDMFDigimonAttributeStat::MaxHP, true); }
+void UDMFDigimonInventoryWidget::HandleSpendBankSP() { RequestAttributePointSpend(EDMFDigimonAttributeStat::MaxSP, true); }
+void UDMFDigimonInventoryWidget::HandleSpendBankStrength() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Strength, true); }
+void UDMFDigimonInventoryWidget::HandleSpendBankIntelligence() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Intelligence, true); }
+void UDMFDigimonInventoryWidget::HandleSpendBankDefense() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Defense, true); }
+void UDMFDigimonInventoryWidget::HandleSpendBankSpeed() { RequestAttributePointSpend(EDMFDigimonAttributeStat::Speed, true); }
 
 void UDMFDigimonInventoryWidget::HandleClose()
 {

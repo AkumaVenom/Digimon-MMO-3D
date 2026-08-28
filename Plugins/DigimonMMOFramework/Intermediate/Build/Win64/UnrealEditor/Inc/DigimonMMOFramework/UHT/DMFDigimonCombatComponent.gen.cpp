@@ -2001,6 +2001,71 @@ DEFINE_FUNCTION(UDMFDigimonCombatComponent::execQueueOrExecuteAbilitySlot)
 }
 // ********** End Class UDMFDigimonCombatComponent Function QueueOrExecuteAbilitySlot **************
 
+// ********** Begin Class UDMFDigimonCombatComponent Function RefreshRuntimeVitalsAfterProgression *
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonCombatComponent_RefreshRuntimeVitalsAfterProgression_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonCombatComponent_eventRefreshRuntimeVitalsAfterProgression_Parms
+	{
+		int32 InCurrentHP;
+		int32 InCurrentSP;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Combat|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshRuntimeVitalsAfterProgression constinit property declarations **
+	static const UECodeGen_Private::FIntPropertyParams NewProp_InCurrentHP;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_InCurrentSP;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function RefreshRuntimeVitalsAfterProgression constinit property declarations ****
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function RefreshRuntimeVitalsAfterProgression Property Definitions *************
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_InCurrentHP = { "InCurrentHP", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCombatComponent_eventRefreshRuntimeVitalsAfterProgression_Parms, InCurrentHP), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_InCurrentSP = { "InCurrentSP", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCombatComponent_eventRefreshRuntimeVitalsAfterProgression_Parms, InCurrentSP), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InCurrentHP,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InCurrentSP,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function RefreshRuntimeVitalsAfterProgression Property Definitions ***************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonCombatComponent, nullptr, "RefreshRuntimeVitalsAfterProgression", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonCombatComponent_eventRefreshRuntimeVitalsAfterProgression_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonCombatComponent_eventRefreshRuntimeVitalsAfterProgression_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonCombatComponent_RefreshRuntimeVitalsAfterProgression(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonCombatComponent::execRefreshRuntimeVitalsAfterProgression)
+{
+	P_GET_PROPERTY(FIntProperty,Z_Param_InCurrentHP);
+	P_GET_PROPERTY(FIntProperty,Z_Param_InCurrentSP);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshRuntimeVitalsAfterProgression(Z_Param_InCurrentHP,Z_Param_InCurrentSP);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonCombatComponent Function RefreshRuntimeVitalsAfterProgression ***
+
 // ********** Begin Class UDMFDigimonCombatComponent Function ResolveAbilityData *******************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2482,6 +2547,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("OnRep_CurrentTarget"), .Pointer = &UDMFDigimonCombatComponent::execOnRep_CurrentTarget },
 		{ .NameUTF8 = UTF8TEXT("OnRep_Vitals"), .Pointer = &UDMFDigimonCombatComponent::execOnRep_Vitals },
 		{ .NameUTF8 = UTF8TEXT("QueueOrExecuteAbilitySlot"), .Pointer = &UDMFDigimonCombatComponent::execQueueOrExecuteAbilitySlot },
+		{ .NameUTF8 = UTF8TEXT("RefreshRuntimeVitalsAfterProgression"), .Pointer = &UDMFDigimonCombatComponent::execRefreshRuntimeVitalsAfterProgression },
 		{ .NameUTF8 = UTF8TEXT("ResolveAbilityData"), .Pointer = &UDMFDigimonCombatComponent::execResolveAbilityData },
 		{ .NameUTF8 = UTF8TEXT("RestoreVitals"), .Pointer = &UDMFDigimonCombatComponent::execRestoreVitals },
 		{ .NameUTF8 = UTF8TEXT("RestoreVitalsToMaximum"), .Pointer = &UDMFDigimonCombatComponent::execRestoreVitalsToMaximum },
@@ -2521,6 +2587,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_OnRep_CurrentTarget, "OnRep_CurrentTarget" }, // f78e02a9f82092e06c9088643713e9fcb80571a5
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_OnRep_Vitals, "OnRep_Vitals" }, // 52b689957dcf2feaac43d138e3d7b7157cdec8d4
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_QueueOrExecuteAbilitySlot, "QueueOrExecuteAbilitySlot" }, // aafec1bcd573c9cfb6d6b0a31b68d9f3b78a1e55
+		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RefreshRuntimeVitalsAfterProgression, "RefreshRuntimeVitalsAfterProgression" }, // d2e66efc6237f8718c96736f5cc770f665a676f6
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ResolveAbilityData, "ResolveAbilityData" }, // 4cd90dda9e6e2cb2e66df7babe5b7967a15dc1d6
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RestoreVitals, "RestoreVitals" }, // 571e9c31e23fbaa16ea2a3f4a61df5925fc01e1c
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RestoreVitalsToMaximum, "RestoreVitalsToMaximum" }, // 46bd194816e918eb39c8b941bd491d1a038c048a
@@ -2656,10 +2723,10 @@ UDMFDigimonCombatComponent::~UDMFDigimonCombatComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 840012641U) },
+		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 1478134374U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_93d646f4bfe92880b107c5ed1b76e7fb87ab8f0a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_3f419bf25fc6386c457e1177c99eac70a064d951{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

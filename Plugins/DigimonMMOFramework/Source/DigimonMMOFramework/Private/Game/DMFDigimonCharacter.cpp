@@ -113,6 +113,22 @@ void ADMFDigimonCharacter::InitializeFromInstance(const FDMFDigimonInstance& Ins
     BP_OnDigimonStateReady();
 }
 
+void ADMFDigimonCharacter::RefreshProgressionFromInstance(const FDMFDigimonInstance& Instance)
+{
+    if (!HasAuthority() || !Instance.IsValid() || Instance.InstanceId != DigimonInstanceId || Instance.SpeciesId != SpeciesId)
+    {
+        return;
+    }
+
+    ReplicatedStats = Instance.Stats;
+    if (CombatComponent)
+    {
+        CombatComponent->RefreshRuntimeVitalsAfterProgression(Instance.CurrentHP, Instance.CurrentSP);
+    }
+    ForceNetUpdate();
+    RefreshWorldNameplate();
+}
+
 void ADMFDigimonCharacter::StartCombatFacingTarget(AActor* TargetActor)
 {
     if (!HasAuthority() || !bEnableCombatFacing || !IsValid(TargetActor) || TargetActor == this)

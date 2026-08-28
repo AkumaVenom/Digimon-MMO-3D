@@ -23,6 +23,7 @@ ENGINE_API UClass* Z_Construct_UClass_APawn(ETypeConstructPhase);
 // ********** Begin Same Module References *********************************************************
 UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFAccountRecord(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAttributePointSpendResult__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFBattleRewardGranted__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceFinished__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCareSequenceStarted__DelegateSignature(ETypeConstructPhase);
@@ -30,6 +31,8 @@ DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFrame
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCommandTargetChanged__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonBankChanged__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonCareState(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonExperienceProgressed__DelegateSignature(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonInventoryChanged__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonStorageActionResult__DelegateSignature(ETypeConstructPhase);
@@ -48,6 +51,7 @@ DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFrame
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterRequirementChanged__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionFinished__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionResult__DelegateSignature(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCarePropActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCharacter(ETypeConstructPhase);
@@ -428,6 +432,123 @@ UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFBattleRewardGran
 }
 #undef UHT_STATICS
 // ********** End Delegate FDMFBattleRewardGranted *************************************************
+
+// ********** Begin Delegate FDMFDigimonExperienceProgressed ***************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonExperienceProgressed__DelegateSignature_Statics
+struct UHT_STATICS
+{
+	struct _Script_DigimonMMOFramework_eventDMFDigimonExperienceProgressed_Parms
+	{
+		FDMFDigimonExperienceProgression Progression;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Delegate FDMFDigimonExperienceProgressed constinit property declarations *******
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Progression;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Delegate FDMFDigimonExperienceProgressed constinit property declarations *********
+	static const UECodeGen_Private::FDelegateFunctionParams FuncParams;
+};
+
+// ********** Begin Delegate FDMFDigimonExperienceProgressed Property Definitions ******************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Progression = { "Progression", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonExperienceProgressed_Parms, Progression), Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, METADATA_PARAMS(0, nullptr) }; // 94e02e0ef96f238d9bf716a73264a6be31a7ed80
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Progression,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Delegate FDMFDigimonExperienceProgressed Property Definitions ********************
+const UECodeGen_Private::FDelegateFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework, nullptr, "DMFDigimonExperienceProgressed__DelegateSignature", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::_Script_DigimonMMOFramework_eventDMFDigimonExperienceProgressed_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00130000, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::_Script_DigimonMMOFramework_eventDMFDigimonExperienceProgressed_Parms) < MAX_uint16);
+UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonExperienceProgressed__DelegateSignature(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUDelegateFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Delegate FDMFDigimonExperienceProgressed *****************************************
+
+// ********** Begin Delegate FDMFAttributePointSpendResult *****************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAttributePointSpendResult__DelegateSignature_Statics
+struct UHT_STATICS
+{
+	struct _Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms
+	{
+		bool bSuccess;
+		FText Message;
+		FGuid DigimonInstanceId;
+		EDMFDigimonAttributeStat Stat;
+		int32 NewStatValue;
+		int32 RemainingPoints;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Delegate FDMFAttributePointSpendResult constinit property declarations *********
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_Stat_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_Stat;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_NewStatValue;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_RemainingPoints;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Delegate FDMFAttributePointSpendResult constinit property declarations ***********
+	static const UECodeGen_Private::FDelegateFunctionParams FuncParams;
+};
+
+// ********** Begin Delegate FDMFAttributePointSpendResult Property Definitions ********************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms, Message), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Stat_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stat = { "Stat", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms, Stat), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, METADATA_PARAMS(0, nullptr) }; // 458144be16776e500a9826fc6a0d4e1919785b75
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_NewStatValue = { "NewStatValue", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms, NewStatValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_RemainingPoints = { "RemainingPoints", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms, RemainingPoints), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewStatValue,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RemainingPoints,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Delegate FDMFAttributePointSpendResult Property Definitions **********************
+const UECodeGen_Private::FDelegateFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework, nullptr, "DMFAttributePointSpendResult__DelegateSignature", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00130000, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::_Script_DigimonMMOFramework_eventDMFAttributePointSpendResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAttributePointSpendResult__DelegateSignature(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUDelegateFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Delegate FDMFAttributePointSpendResult *******************************************
 
 // ********** Begin Delegate FDMFMoneyChanged ******************************************************
 #ifdef UHT_STATICS
@@ -1150,6 +1271,194 @@ DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execCanDigivolveOwnedDigimonTo)
 }
 // ********** End Class UDMFPlayerDigimonComponent Function CanDigivolveOwnedDigimonTo *************
 
+// ********** Begin Class UDMFPlayerDigimonComponent Function CanSpendDigimonAttributePoint ********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_CanSpendDigimonAttributePoint_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms
+	{
+		FGuid InstanceId;
+		EDMFDigimonAttributeStat Stat;
+		FText OutFailureReason;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression|Attributes" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Local/read-only convenience check. The server repeats every ownership/point/stat validation before mutation. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Local/read-only convenience check. The server repeats every ownership/point/stat validation before mutation." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function CanSpendDigimonAttributePoint constinit property declarations *********
+	static const UECodeGen_Private::FStructPropertyParams NewProp_InstanceId;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_Stat_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_Stat;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_OutFailureReason;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function CanSpendDigimonAttributePoint constinit property declarations ***********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function CanSpendDigimonAttributePoint Property Definitions ********************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_InstanceId = { "InstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms, InstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Stat_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stat = { "Stat", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms, Stat), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, METADATA_PARAMS(0, nullptr) }; // 458144be16776e500a9826fc6a0d4e1919785b75
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_OutFailureReason = { "OutFailureReason", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms, OutFailureReason), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OutFailureReason,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function CanSpendDigimonAttributePoint Property Definitions **********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "CanSpendDigimonAttributePoint", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54C20401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerDigimonComponent_eventCanSpendDigimonAttributePoint_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_CanSpendDigimonAttributePoint(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execCanSpendDigimonAttributePoint)
+{
+	P_GET_STRUCT(FGuid,Z_Param_InstanceId);
+	P_GET_ENUM(EDMFDigimonAttributeStat,Z_Param_Stat);
+	P_GET_PROPERTY_REF(FTextProperty,Z_Param_Out_OutFailureReason);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->CanSpendDigimonAttributePoint(Z_Param_InstanceId,EDMFDigimonAttributeStat(Z_Param_Stat),Z_Param_Out_OutFailureReason);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function CanSpendDigimonAttributePoint **********
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function ClientAttributePointSpendResult ******
+struct DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms
+{
+	bool bSuccess;
+	FText Message;
+	FGuid DigimonInstanceId;
+	EDMFDigimonAttributeStat Stat;
+	int32 NewStatValue;
+	int32 RemainingPoints;
+};
+static FName NAME_UDMFPlayerDigimonComponent_ClientAttributePointSpendResult = FName(TEXT("ClientAttributePointSpendResult"));
+void UDMFPlayerDigimonComponent::ClientAttributePointSpendResult(bool bSuccess, FText const& Message, FGuid DigimonInstanceId, EDMFDigimonAttributeStat Stat, int32 NewStatValue, int32 RemainingPoints)
+{
+	DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms Parms;
+	Parms.bSuccess=bSuccess ? true : false;
+	Parms.Message=Message;
+	Parms.DigimonInstanceId=DigimonInstanceId;
+	Parms.Stat=Stat;
+	Parms.NewStatValue=NewStatValue;
+	Parms.RemainingPoints=RemainingPoints;
+	UFunction* Func = FindFunctionChecked(NAME_UDMFPlayerDigimonComponent_ClientAttributePointSpendResult);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientAttributePointSpendResult_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owning-client result only; gameplay mutation has already been committed by the server. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owning-client result only; gameplay mutation has already been committed by the server." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Message_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ClientAttributePointSpendResult constinit property declarations *******
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_DigimonInstanceId;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_Stat_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_Stat;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_NewStatValue;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_RemainingPoints;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ClientAttributePointSpendResult constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ClientAttributePointSpendResult Property Definitions ******************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms, Message), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Message_MetaData), NewProp_Message_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInstanceId = { "DigimonInstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms, DigimonInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Stat_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stat = { "Stat", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms, Stat), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, METADATA_PARAMS(0, nullptr) }; // 458144be16776e500a9826fc6a0d4e1919785b75
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_NewStatValue = { "NewStatValue", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms, NewStatValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_RemainingPoints = { "RemainingPoints", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms, RemainingPoints), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewStatValue,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RemainingPoints,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ClientAttributePointSpendResult Property Definitions ********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "ClientAttributePointSpendResult", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x01820CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFPlayerDigimonComponent_eventClientAttributePointSpendResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientAttributePointSpendResult(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execClientAttributePointSpendResult)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY(FTextProperty,Z_Param_Message);
+	P_GET_STRUCT(FGuid,Z_Param_DigimonInstanceId);
+	P_GET_ENUM(EDMFDigimonAttributeStat,Z_Param_Stat);
+	P_GET_PROPERTY(FIntProperty,Z_Param_NewStatValue);
+	P_GET_PROPERTY(FIntProperty,Z_Param_RemainingPoints);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ClientAttributePointSpendResult_Implementation(Z_Param_bSuccess,Z_Param_Message,Z_Param_DigimonInstanceId,EDMFDigimonAttributeStat(Z_Param_Stat),Z_Param_NewStatValue,Z_Param_RemainingPoints);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function ClientAttributePointSpendResult ********
+
 // ********** Begin Class UDMFPlayerDigimonComponent Function ClientBattleRewardGranted ************
 struct DMFPlayerDigimonComponent_eventClientBattleRewardGranted_Parms
 {
@@ -1363,6 +1672,73 @@ DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execClientCareSequenceStarted)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFPlayerDigimonComponent Function ClientCareSequenceStarted **************
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function ClientDigimonExperienceProgressed ****
+struct DMFPlayerDigimonComponent_eventClientDigimonExperienceProgressed_Parms
+{
+	FDMFDigimonExperienceProgression Progression;
+};
+static FName NAME_UDMFPlayerDigimonComponent_ClientDigimonExperienceProgressed = FName(TEXT("ClientDigimonExperienceProgressed"));
+void UDMFPlayerDigimonComponent::ClientDigimonExperienceProgressed(FDMFDigimonExperienceProgression Progression)
+{
+	DMFPlayerDigimonComponent_eventClientDigimonExperienceProgressed_Parms Parms;
+	Parms.Progression=Progression;
+	UFunction* Func = FindFunctionChecked(NAME_UDMFPlayerDigimonComponent_ClientDigimonExperienceProgressed);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigimonExperienceProgressed_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Dedicated owning-client progression snapshot; avoids relying on Fast Array vs RPC arrival order for animated UI. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Dedicated owning-client progression snapshot; avoids relying on Fast Array vs RPC arrival order for animated UI." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ClientDigimonExperienceProgressed constinit property declarations *****
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Progression;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ClientDigimonExperienceProgressed constinit property declarations *******
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ClientDigimonExperienceProgressed Property Definitions ****************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Progression = { "Progression", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventClientDigimonExperienceProgressed_Parms, Progression), Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, METADATA_PARAMS(0, nullptr) }; // 94e02e0ef96f238d9bf716a73264a6be31a7ed80
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Progression,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ClientDigimonExperienceProgressed Property Definitions ******************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "ClientDigimonExperienceProgressed", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFPlayerDigimonComponent_eventClientDigimonExperienceProgressed_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x01020CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFPlayerDigimonComponent_eventClientDigimonExperienceProgressed_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigimonExperienceProgressed(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execClientDigimonExperienceProgressed)
+{
+	P_GET_STRUCT(FDMFDigimonExperienceProgression,Z_Param_Progression);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ClientDigimonExperienceProgressed_Implementation(Z_Param_Progression);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function ClientDigimonExperienceProgressed ******
 
 // ********** Begin Class UDMFPlayerDigimonComponent Function ClientDigimonStorageActionResult *****
 struct DMFPlayerDigimonComponent_eventClientDigimonStorageActionResult_Parms
@@ -2431,6 +2807,267 @@ DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execGetDigivolutionOptions)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFPlayerDigimonComponent Function GetDigivolutionOptions *****************
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function GetExperienceProgressNormalized ******
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceProgressNormalized_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerDigimonComponent_eventGetExperienceProgressNormalized_Parms
+	{
+		FGuid InstanceId;
+		float ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Current-level EXP progress in [0,1]. Max-level Digimon return 1. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Current-level EXP progress in [0,1]. Max-level Digimon return 1." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetExperienceProgressNormalized constinit property declarations *******
+	static const UECodeGen_Private::FStructPropertyParams NewProp_InstanceId;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetExperienceProgressNormalized constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetExperienceProgressNormalized Property Definitions ******************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_InstanceId = { "InstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceProgressNormalized_Parms, InstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceProgressNormalized_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetExperienceProgressNormalized Property Definitions ********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "GetExperienceProgressNormalized", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceProgressNormalized_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54820401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceProgressNormalized_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceProgressNormalized(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execGetExperienceProgressNormalized)
+{
+	P_GET_STRUCT(FGuid,Z_Param_InstanceId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(float*)Z_Param__Result=P_THIS->GetExperienceProgressNormalized(Z_Param_InstanceId);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function GetExperienceProgressNormalized ********
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function GetExperienceRequiredForLevel ********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForLevel_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms
+	{
+		FPrimaryAssetId SpeciesId;
+		int32 CurrentLevel;
+		int64 ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Returns the authored/fallback EXP requirement to advance from CurrentLevel to CurrentLevel + 1. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Returns the authored/fallback EXP requirement to advance from CurrentLevel to CurrentLevel + 1." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetExperienceRequiredForLevel constinit property declarations *********
+	static const UECodeGen_Private::FStructPropertyParams NewProp_SpeciesId;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_CurrentLevel;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetExperienceRequiredForLevel constinit property declarations ***********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetExperienceRequiredForLevel Property Definitions ********************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpeciesId = { "SpeciesId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms, SpeciesId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(0, nullptr) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_CurrentLevel = { "CurrentLevel", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms, CurrentLevel), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpeciesId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CurrentLevel,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetExperienceRequiredForLevel Property Definitions **********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "GetExperienceRequiredForLevel", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceRequiredForLevel_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForLevel(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execGetExperienceRequiredForLevel)
+{
+	P_GET_STRUCT(FPrimaryAssetId,Z_Param_SpeciesId);
+	P_GET_PROPERTY(FIntProperty,Z_Param_CurrentLevel);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(int64*)Z_Param__Result=P_THIS->GetExperienceRequiredForLevel(Z_Param_SpeciesId,Z_Param_CurrentLevel);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function GetExperienceRequiredForLevel **********
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function GetExperienceRequiredForNextLevel ****
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForNextLevel_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerDigimonComponent_eventGetExperienceRequiredForNextLevel_Parms
+	{
+		FGuid InstanceId;
+		int64 ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Returns zero at max level or when InstanceId is not owned. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Returns zero at max level or when InstanceId is not owned." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetExperienceRequiredForNextLevel constinit property declarations *****
+	static const UECodeGen_Private::FStructPropertyParams NewProp_InstanceId;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetExperienceRequiredForNextLevel constinit property declarations *******
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetExperienceRequiredForNextLevel Property Definitions ****************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_InstanceId = { "InstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceRequiredForNextLevel_Parms, InstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetExperienceRequiredForNextLevel_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetExperienceRequiredForNextLevel Property Definitions ******************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "GetExperienceRequiredForNextLevel", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceRequiredForNextLevel_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54820401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerDigimonComponent_eventGetExperienceRequiredForNextLevel_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForNextLevel(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execGetExperienceRequiredForNextLevel)
+{
+	P_GET_STRUCT(FGuid,Z_Param_InstanceId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(int64*)Z_Param__Result=P_THIS->GetExperienceRequiredForNextLevel(Z_Param_InstanceId);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function GetExperienceRequiredForNextLevel ******
+
+// ********** Begin Class UDMFPlayerDigimonComponent Function GetMaximumLevelForSpecies ************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetMaximumLevelForSpecies_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerDigimonComponent_eventGetMaximumLevelForSpecies_Parms
+	{
+		FPrimaryAssetId SpeciesId;
+		int32 ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Returns the effective global/species level cap. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Returns the effective global/species level cap." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetMaximumLevelForSpecies constinit property declarations *************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_SpeciesId;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetMaximumLevelForSpecies constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetMaximumLevelForSpecies Property Definitions ************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpeciesId = { "SpeciesId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetMaximumLevelForSpecies_Parms, SpeciesId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(0, nullptr) }; // 51539104367397b403249c27cab9a0578cde1246
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventGetMaximumLevelForSpecies_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SpeciesId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetMaximumLevelForSpecies Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "GetMaximumLevelForSpecies", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerDigimonComponent_eventGetMaximumLevelForSpecies_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerDigimonComponent_eventGetMaximumLevelForSpecies_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetMaximumLevelForSpecies(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execGetMaximumLevelForSpecies)
+{
+	P_GET_STRUCT(FPrimaryAssetId,Z_Param_SpeciesId);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(int32*)Z_Param__Result=P_THIS->GetMaximumLevelForSpecies(Z_Param_SpeciesId);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function GetMaximumLevelForSpecies **************
 
 // ********** Begin Class UDMFPlayerDigimonComponent Function GetMoney *****************************
 #ifdef UHT_STATICS
@@ -4660,6 +5297,83 @@ DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execServerSetCommandTarget)
 }
 // ********** End Class UDMFPlayerDigimonComponent Function ServerSetCommandTarget *****************
 
+// ********** Begin Class UDMFPlayerDigimonComponent Function ServerSpendDigimonAttributePoint *****
+struct DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms
+{
+	FGuid InstanceId;
+	EDMFDigimonAttributeStat Stat;
+};
+static FName NAME_UDMFPlayerDigimonComponent_ServerSpendDigimonAttributePoint = FName(TEXT("ServerSpendDigimonAttributePoint"));
+void UDMFPlayerDigimonComponent::ServerSpendDigimonAttributePoint(FGuid InstanceId, EDMFDigimonAttributeStat Stat)
+{
+	DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms Parms;
+	Parms.InstanceId=InstanceId;
+	Parms.Stat=Stat;
+	UFunction* Func = FindFunctionChecked(NAME_UDMFPlayerDigimonComponent_ServerSpendDigimonAttributePoint);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSpendDigimonAttributePoint_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression|Attributes" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Spends exactly one earned Attribute Point on one persistent core stat. Works for Party and Bank Digimon. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Spends exactly one earned Attribute Point on one persistent core stat. Works for Party and Bank Digimon." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ServerSpendDigimonAttributePoint constinit property declarations ******
+	static const UECodeGen_Private::FStructPropertyParams NewProp_InstanceId;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_Stat_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_Stat;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ServerSpendDigimonAttributePoint constinit property declarations ********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ServerSpendDigimonAttributePoint Property Definitions *****************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_InstanceId = { "InstanceId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms, InstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_Stat_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_Stat = { "Stat", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms, Stat), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, METADATA_PARAMS(0, nullptr) }; // 458144be16776e500a9826fc6a0d4e1919785b75
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InstanceId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Stat,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ServerSpendDigimonAttributePoint Property Definitions *******************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFPlayerDigimonComponent, nullptr, "ServerSpendDigimonAttributePoint", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04A20CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFPlayerDigimonComponent_eventServerSpendDigimonAttributePoint_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSpendDigimonAttributePoint(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFPlayerDigimonComponent::execServerSpendDigimonAttributePoint)
+{
+	P_GET_STRUCT(FGuid,Z_Param_InstanceId);
+	P_GET_ENUM(EDMFDigimonAttributeStat,Z_Param_Stat);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ServerSpendDigimonAttributePoint_Implementation(Z_Param_InstanceId,EDMFDigimonAttributeStat(Z_Param_Stat));
+	P_NATIVE_END;
+}
+// ********** End Class UDMFPlayerDigimonComponent Function ServerSpendDigimonAttributePoint *******
+
 // ********** Begin Class UDMFPlayerDigimonComponent Function ServerSwapPartySlots *****************
 struct DMFPlayerDigimonComponent_eventServerSwapPartySlots_Parms
 {
@@ -4844,6 +5558,26 @@ struct UHT_STATICS
 		{ "Category", "Digimon MMO|Combat" },
 		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OnDigimonExperienceProgressed_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owner-only presentation signal emitted from the authoritative EXP result RPC. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owner-only presentation signal emitted from the authoritative EXP result RPC." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OnAttributePointSpendResult_MetaData[] = {
+		{ "Category", "Digimon MMO|Progression|Attributes" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owner-only result for an authoritative Attribute Point spend request. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owner-only result for an authoritative Attribute Point spend request." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OnMoneyChanged_MetaData[] = {
 		{ "Category", "Digimon MMO|Economy" },
 		{ "ModuleRelativePath", "Public/Components/DMFPlayerDigimonComponent.h" },
@@ -4972,6 +5706,8 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnStarterSelectionResult;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnCommandTargetChanged;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnBattleRewardGranted;
+	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnDigimonExperienceProgressed;
+	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnAttributePointSpendResult;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnMoneyChanged;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnPartnerActionResult;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnPartyHealed;
@@ -5015,9 +5751,12 @@ struct UHT_STATICS
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("ApplyToAccountRecord"), .Pointer = &UDMFPlayerDigimonComponent::execApplyToAccountRecord },
 		{ .NameUTF8 = UTF8TEXT("CanDigivolveOwnedDigimonTo"), .Pointer = &UDMFPlayerDigimonComponent::execCanDigivolveOwnedDigimonTo },
+		{ .NameUTF8 = UTF8TEXT("CanSpendDigimonAttributePoint"), .Pointer = &UDMFPlayerDigimonComponent::execCanSpendDigimonAttributePoint },
+		{ .NameUTF8 = UTF8TEXT("ClientAttributePointSpendResult"), .Pointer = &UDMFPlayerDigimonComponent::execClientAttributePointSpendResult },
 		{ .NameUTF8 = UTF8TEXT("ClientBattleRewardGranted"), .Pointer = &UDMFPlayerDigimonComponent::execClientBattleRewardGranted },
 		{ .NameUTF8 = UTF8TEXT("ClientCareSequenceFinished"), .Pointer = &UDMFPlayerDigimonComponent::execClientCareSequenceFinished },
 		{ .NameUTF8 = UTF8TEXT("ClientCareSequenceStarted"), .Pointer = &UDMFPlayerDigimonComponent::execClientCareSequenceStarted },
+		{ .NameUTF8 = UTF8TEXT("ClientDigimonExperienceProgressed"), .Pointer = &UDMFPlayerDigimonComponent::execClientDigimonExperienceProgressed },
 		{ .NameUTF8 = UTF8TEXT("ClientDigimonStorageActionResult"), .Pointer = &UDMFPlayerDigimonComponent::execClientDigimonStorageActionResult },
 		{ .NameUTF8 = UTF8TEXT("ClientDigivolutionResult"), .Pointer = &UDMFPlayerDigimonComponent::execClientDigivolutionResult },
 		{ .NameUTF8 = UTF8TEXT("ClientDigivolutionSequenceStarted"), .Pointer = &UDMFPlayerDigimonComponent::execClientDigivolutionSequenceStarted },
@@ -5033,6 +5772,10 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("GetDigimonByInstanceId"), .Pointer = &UDMFPlayerDigimonComponent::execGetDigimonByInstanceId },
 		{ .NameUTF8 = UTF8TEXT("GetDigimonInventory"), .Pointer = &UDMFPlayerDigimonComponent::execGetDigimonInventory },
 		{ .NameUTF8 = UTF8TEXT("GetDigivolutionOptions"), .Pointer = &UDMFPlayerDigimonComponent::execGetDigivolutionOptions },
+		{ .NameUTF8 = UTF8TEXT("GetExperienceProgressNormalized"), .Pointer = &UDMFPlayerDigimonComponent::execGetExperienceProgressNormalized },
+		{ .NameUTF8 = UTF8TEXT("GetExperienceRequiredForLevel"), .Pointer = &UDMFPlayerDigimonComponent::execGetExperienceRequiredForLevel },
+		{ .NameUTF8 = UTF8TEXT("GetExperienceRequiredForNextLevel"), .Pointer = &UDMFPlayerDigimonComponent::execGetExperienceRequiredForNextLevel },
+		{ .NameUTF8 = UTF8TEXT("GetMaximumLevelForSpecies"), .Pointer = &UDMFPlayerDigimonComponent::execGetMaximumLevelForSpecies },
 		{ .NameUTF8 = UTF8TEXT("GetMoney"), .Pointer = &UDMFPlayerDigimonComponent::execGetMoney },
 		{ .NameUTF8 = UTF8TEXT("GetOwnedDigimonByInstanceId"), .Pointer = &UDMFPlayerDigimonComponent::execGetOwnedDigimonByInstanceId },
 		{ .NameUTF8 = UTF8TEXT("GetOwnedSpeciesCount"), .Pointer = &UDMFPlayerDigimonComponent::execGetOwnedSpeciesCount },
@@ -5072,6 +5815,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("ServerSetActivePartner"), .Pointer = &UDMFPlayerDigimonComponent::execServerSetActivePartner },
 		{ .NameUTF8 = UTF8TEXT("ServerSetActivePartnerAutoBattle"), .Pointer = &UDMFPlayerDigimonComponent::execServerSetActivePartnerAutoBattle },
 		{ .NameUTF8 = UTF8TEXT("ServerSetCommandTarget"), .Pointer = &UDMFPlayerDigimonComponent::execServerSetCommandTarget },
+		{ .NameUTF8 = UTF8TEXT("ServerSpendDigimonAttributePoint"), .Pointer = &UDMFPlayerDigimonComponent::execServerSpendDigimonAttributePoint },
 		{ .NameUTF8 = UTF8TEXT("ServerSwapPartySlots"), .Pointer = &UDMFPlayerDigimonComponent::execServerSwapPartySlots },
 		{ .NameUTF8 = UTF8TEXT("SpawnOrRefreshActivePartner"), .Pointer = &UDMFPlayerDigimonComponent::execSpawnOrRefreshActivePartner },
 	};
@@ -5079,9 +5823,12 @@ struct UHT_STATICS
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // 27b6b5f2136d3c19488d794aa8c6a675f64cbaeb
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_CanDigivolveOwnedDigimonTo, "CanDigivolveOwnedDigimonTo" }, // 7929c1c93eab95c4c3d366e63ed36b5b6dda760a
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_CanSpendDigimonAttributePoint, "CanSpendDigimonAttributePoint" }, // 7bb7a29a7828259044b2ff3b5e2aedfbbed5f524
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientAttributePointSpendResult, "ClientAttributePointSpendResult" }, // bbbec669ea897d7146da309fe005d16d0ff9efe0
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientBattleRewardGranted, "ClientBattleRewardGranted" }, // 242ba7b869262e29a4770871624003d9f11d39ad
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientCareSequenceFinished, "ClientCareSequenceFinished" }, // a85f569966691afa3ff29e8f1f49125b4185a0c3
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientCareSequenceStarted, "ClientCareSequenceStarted" }, // 34d9dc5757eb8daa365d26b3ef541cf68eb38b15
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigimonExperienceProgressed, "ClientDigimonExperienceProgressed" }, // a2e6591f54d69f4a21251c871af6ae68dd1145e8
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigimonStorageActionResult, "ClientDigimonStorageActionResult" }, // 3918bed8408dae792b1993686e3929cb6837a1ab
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigivolutionResult, "ClientDigivolutionResult" }, // 320ed4ef3d3c5528b2de6c0d9369824e6606ef96
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ClientDigivolutionSequenceStarted, "ClientDigivolutionSequenceStarted" }, // 8cead7399ed6432bb3fe962bfeeaf4bf6eb0f5b8
@@ -5097,6 +5844,10 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetDigimonByInstanceId, "GetDigimonByInstanceId" }, // 3d3c03a02b3c74c4d96eb16b261cc5e3e46a9ea3
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetDigimonInventory, "GetDigimonInventory" }, // 95aa43c80aec5c874dd2d2a46cee86bac080a40b
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetDigivolutionOptions, "GetDigivolutionOptions" }, // bad841de3196597e5f6e95e603a34b8d70f884c8
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceProgressNormalized, "GetExperienceProgressNormalized" }, // 710a52637e93f5bea631dd2b7757d887f84b8da4
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForLevel, "GetExperienceRequiredForLevel" }, // 545c8900da416f2b9733408a8de72398607106b5
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetExperienceRequiredForNextLevel, "GetExperienceRequiredForNextLevel" }, // 6361e5891802726e782e75630176daeba64b8b36
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetMaximumLevelForSpecies, "GetMaximumLevelForSpecies" }, // 2af0f7c876a10e8c5c45038c1249299198710c9d
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetMoney, "GetMoney" }, // f7140b97b36930b68c4ed50e65b47b38f481d322
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetOwnedDigimonByInstanceId, "GetOwnedDigimonByInstanceId" }, // a1e8f74a1d59c41e32a39b791a36d6d7d845c5fa
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_GetOwnedSpeciesCount, "GetOwnedSpeciesCount" }, // d2bb8fc74d334220a8af523bce5bd36b643a2f52
@@ -5136,6 +5887,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSetActivePartner, "ServerSetActivePartner" }, // cce944afd30bbfd86b93f608e4e0852f9a5a630b
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSetActivePartnerAutoBattle, "ServerSetActivePartnerAutoBattle" }, // 22ac9895cde96582f0f835460efdaef994100d8d
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSetCommandTarget, "ServerSetCommandTarget" }, // 17ea4f3ec18b793685e4167004826e7297a78bc0
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSpendDigimonAttributePoint, "ServerSpendDigimonAttributePoint" }, // db76d27d82ab42f009284c75bdf7ca317073b4af
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ServerSwapPartySlots, "ServerSwapPartySlots" }, // e3bdc3b91c1c81be132299d31836e5b6459cf83a
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_SpawnOrRefreshActivePartner, "SpawnOrRefreshActivePartner" }, // 4c3b6637dbf7494b2ce4031442aa80b607f5bc9b
 	};
@@ -5155,6 +5907,8 @@ const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_O
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnStarterSelectionResult = { "OnStarterSelectionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnStarterSelectionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFStarterSelectionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnStarterSelectionResult_MetaData), NewProp_OnStarterSelectionResult_MetaData) }; // bee4e5767be52a2971b31147cb38b33398cb5c6b
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnCommandTargetChanged = { "OnCommandTargetChanged", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnCommandTargetChanged), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFCommandTargetChanged__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnCommandTargetChanged_MetaData), NewProp_OnCommandTargetChanged_MetaData) }; // 7c112ef633ad6d3074bfa3a556da42cb2b6f8e7b
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnBattleRewardGranted = { "OnBattleRewardGranted", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnBattleRewardGranted), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFBattleRewardGranted__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnBattleRewardGranted_MetaData), NewProp_OnBattleRewardGranted_MetaData) }; // cbb3cd6872cce019eb5d7e3083da299a789686c7
+const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnDigimonExperienceProgressed = { "OnDigimonExperienceProgressed", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnDigimonExperienceProgressed), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonExperienceProgressed__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnDigimonExperienceProgressed_MetaData), NewProp_OnDigimonExperienceProgressed_MetaData) }; // 887f6dd0c428d571720c9ebf9e10b856206ceec4
+const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnAttributePointSpendResult = { "OnAttributePointSpendResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnAttributePointSpendResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFAttributePointSpendResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnAttributePointSpendResult_MetaData), NewProp_OnAttributePointSpendResult_MetaData) }; // 1a8d409c9ed8f98f6fd6e65b6ac7c9885a5e1969
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnMoneyChanged = { "OnMoneyChanged", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnMoneyChanged), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFMoneyChanged__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnMoneyChanged_MetaData), NewProp_OnMoneyChanged_MetaData) }; // 2cf0896e110bce5a39ecb4870b2b40d43016d9c5
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnPartnerActionResult = { "OnPartnerActionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnPartnerActionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPartnerActionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnPartnerActionResult_MetaData), NewProp_OnPartnerActionResult_MetaData) }; // 05531cf3b9cd4050d7a4bc9a8fcda668f7113cbc
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnPartyHealed = { "OnPartyHealed", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFPlayerDigimonComponent, OnPartyHealed), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPartyHealed__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnPartyHealed_MetaData), NewProp_OnPartyHealed_MetaData) }; // 9273d57d5eb3ca36c746c15c818aef597748b93c
@@ -5190,6 +5944,8 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnStarterSelectionResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnCommandTargetChanged,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnBattleRewardGranted,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnDigimonExperienceProgressed,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnAttributePointSpendResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnMoneyChanged,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnPartnerActionResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnPartyHealed,
@@ -5323,10 +6079,10 @@ UDMFPlayerDigimonComponent::~UDMFPlayerDigimonComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFPlayerDigimonComponent, TEXT("UDMFPlayerDigimonComponent"), &Z_Registration_Info_UClass_UDMFPlayerDigimonComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerDigimonComponent), 3341643392U) },
+		{ Z_Construct_UClass_UDMFPlayerDigimonComponent, TEXT("UDMFPlayerDigimonComponent"), &Z_Registration_Info_UClass_UDMFPlayerDigimonComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerDigimonComponent), 262922921U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h__Script_DigimonMMOFramework_c534e144ccf07efcddb36dce156312300be3605d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h__Script_DigimonMMOFramework_480b12feae1c8ea214c01de1ecc5c45b62bfcd2d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

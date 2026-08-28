@@ -111,7 +111,7 @@ The v0.10.1 chat/quickbar separation fix is **presentation-only**. `WorldChatBot
 
 This baseline is intentionally **multiplayer gameplay only**:
 
-- The blank frontend/menu map may run locally before connection.
+- The frontend/menu map may run locally before connection. `FrontendBackgroundWidgetClass` is created locally by the frontend HUD below the login layer and is never replicated or authoritative. Its v0.15.0 project-selected background presentation, startup delay, native-backdrop toggle and UI Z-order are **local presentation only**; they add no replication/RPC channel and do not alter authentication or travel authority.
 - A normal player can only use the framework's regular **Join Game** path, which connects to the project-configured server endpoint.
 - An administrator who passes the extra Admin gate can choose **Host & Play**, causing the configured open-world map to open as an authoritative Unreal listen server.
 - `ADMFMMOGameMode` rejects the concept of standalone gameplay and returns to the configured frontend when loaded without networking.
@@ -227,6 +227,16 @@ Combat facing is server-authoritative. Only the authority rotates the Digimon ac
 ## v0.6.4 ability authority / reach
 Positive-SP and zero-SP abilities remain server-authoritative. Clients submit the slot/target request only. The server owns SP affordability, cooldown, capsule-aware range, facing, damage and impact revalidation. SP is deducted only after the execution gates succeed, and authoritative CurrentSP replication updates the owning HUD/clients.
 
+
+## v0.14.8 owned-Digimon EXP / level progression network contract
+
+- Battle EXP, threshold consumption, Level changes, per-level stat growth, Attribute Point grants and max-level handling execute only on the authoritative `UDMFPlayerDigimonComponent`. The client sends no progression mutation request.
+- Party/Bank durable Level/EXP/stats remain inside the existing owner-only Fast Arrays and account persistence. v0.14.8 adds no replicated progression property and no SaveGame field.
+- The active summoned Digimon's `ReplicatedStats` is refreshed on authority after progression so nearby peers receive the public Level/stat result through normal actor property replication. The progression refresh does not reset target, cooldown, recovery or battle-encounter state.
+- `ClientDigimonExperienceProgressed(FDMFDigimonExperienceProgression)` is the one new reliable owner Client RPC. It carries an immutable presentation snapshot only; receiving or Blueprint-handling it cannot grant EXP, levels, stats or Attribute Points.
+- The native EXP toast/progress animation is local-only. Another client can observe the partner's public new Level/nameplate but never receives the owner's private Party/Bank EXP ledger or EXP/LEVEL UP notification.
+- Legacy stored EXP is normalized only during server account hydration; clients cannot trigger or supply migration results.
+
 ## Scan & Materialization replication
 Scan Data lives on the owning `UDMFPlayerDigimonComponent` and replicates owner-only. Rewards are calculated only on authority from the defeated species data. The client reward RPC exists for presentation; it does not carry permission to mutate Scan Data. Materialization requests send only a species ID, after which the server independently validates global/species settings, threshold, Collection capacity and partner class before creating the new owned Digimon. Persistence is written immediately after successful materialization and at the normal account save boundaries.
 
@@ -270,3 +280,7 @@ The rendering fix does not change the network contract. Marker components no lon
 ### v0.14.6 CustomDepth presentation hardening
 The attack-VFX and enemy-marker CustomDepth fix adds no network contract. The server still owns ability execution, projectile travel/impact and damage; clients reconstruct the same replicated/local presentation as before. `Render CustomDepth Pass` is enabled on each relevant local runtime component and is not replicated as new gameplay state. The enemy overhead target marker remains owner-local/non-replicated.
 
+
+## v0.14.9 Attribute Point networking
+
+`ServerSpendDigimonAttributePoint` is the only gameplay mutation entry point. Clients cannot submit a target value or remaining-point count. `ClientAttributePointSpendResult` is owner-only acknowledgement after the server has committed the result. Private Party/Bank stats remain owner-only; a summoned partner exposes the resulting public replicated stats through its existing actor replication. No SaveGame schema bump is required.

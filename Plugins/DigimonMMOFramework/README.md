@@ -1,8 +1,28 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix`
+**Version:** `0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish
+
+v0.15.0 now lets the framework own the **complete local frontend layer stack** instead of asking the Frontend Map Level Blueprint to race the login widget. Assign any project `UUserWidget` / Widget Blueprint under **Project Settings -> Digimon MMO Framework -> UI -> Frontend -> Frontend Background Widget Class**. `ADMFFrontendHUD` creates that background first for the local player, automatically places it **100 Z-order units below** the configured login/main-menu layer, then waits **Frontend UI Startup Delay Seconds** before creating the normal Digimon MMO login/play/admin widget above it. No Level Blueprint `Create Widget`, manual Z-order, or timing workaround is required.
+
+The native fallback's old dark full-screen `FrontendBackdrop` remains **disabled by default**, so the selected project background is not tinted. The central Digimon MMO card keeps its existing navy/gold style, while authentication, Join Game, Admin unlock, Host & Play, travel and account authority are unchanged. Background creation is deliberately fail-safe: an invalid optional background can never block the trusted login flow. See `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`.
+
+## New in v0.14.9-alpha — Attribute Point Spending & Digimon Menu Polish
+
+v0.14.9 completes the Attribute Point loop introduced by leveling. Party and Bank Digimon can now spend earned points through compact native `+ HP / + SP / + STR / + INT / + DEF / + SPD` controls. Each click is only a request: the server revalidates ownership, remaining points and stat legality, spends exactly one persistent point, adds exactly +1 to the chosen stat, immediately saves the account, and refreshes a summoned partner's public replicated stats without respawn or combat reset. MaxHP/MaxSP preserve missing/spent resources; a defeated Digimon stays defeated. Custom Blueprint UI gets the same `EDMFDigimonAttributeStat`, eligibility query, server RPC and owner-only result delegate. See `Docs/SETUP_ATTRIBUTE_POINTS.md`.
+
+The native Digimon Menu shell has also been rebalanced for the feature density now present across Party, Bank, Scan, DigiDex, Digivolution and Care. Its logical canvas is now **1240x900** under the existing ScaleToFit/DownOnly wrapper, oversized portrait/minimum-detail regions are tightened, and the modal window clips to its bounds as a final safety contract. The Party selected-Digimon column additionally uses one bounded detail-body `ScrollBox` below its fixed identity/portrait header, containing stats, EXP, Attribute Point controls, description and all Summon/Recall/Bank actions. Short or DPI-scaled viewports can therefore always scroll to every Party action instead of clipping the lower buttons below the modal, matching the robust scrolling behavior of the other tabs.
+
+## New in v0.14.8-alpha — Owned Digimon Level Progression & Native XP UI
+
+v0.14.8 turns the existing persisted Battle EXP field into a complete server-authoritative growth system. Battle victories still award EXP only through the authoritative active-partner reward path, but EXP is now consumed against real level thresholds instead of accumulating forever. One reward can cross multiple thresholds safely; each gained level applies the species' existing `HP/SP/STR/INT/DEF/SPD Per Level` growth, grants `Attribute Points Per Level`, preserves current damage/SP expenditure while increasing the new capacity, marks the owner-only Fast Array entry dirty, persists the result, and refreshes the summoned partner's public replicated Level/EXP/stats without resetting its combat target, cooldowns, recovery or encounter state.
+
+Level requirements are species-owned and numeric—no CurveFloat asset is required. Every `DMFDigimonSpeciesData` directly exposes `Base Experience Required` and `Experience Growth Multiplier Per Level`. The requirement is `Base * Multiplier^(CurrentLevel - 1)`, so each species can have its own pacing with two simple Details-panel values (for example Base 100 / Multiplier 1.20 gives 100, 120, 144, 173...). `Max Level Override` remains optional, with Project Settings providing only the global default cap. Existing v0.14.7 accounts are normalized on authoritative hydration, so previously banked EXP can immediately produce the levels it had already earned; no SaveGame schema field is added or discarded.
+
+The native Party and Bank inspection panels now show `EXP current / required` beside Level plus a real EXP progress bar (or `MAX` at cap) and the current unspent Attribute Point total. Battle EXP also drives a new owner-only, queued `DMFExperienceNotificationWidget`: a centered Fortnite-style animated EXP bar displays the exact gained EXP, advances through multi-level thresholds, and reveals a distinct gold `LEVEL UP! old → new` notification as the animated bar crosses its first earned threshold, with granted Attribute Points. The notification receives a dedicated immutable server-result snapshot, so animation is deterministic even when owner Fast Array replication and the client RPC arrive in either order. Blueprint children can reskin the widget and use separate EXP/Level-Up presentation events without gaining gameplay authority. See `Docs/SETUP_LEVEL_PROGRESSION.md`.
 
 ## New in v0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix
 
@@ -427,7 +447,7 @@ This maintenance release preserves the complete v0.3.0 player-avatar/skin featur
 - Wild level stat scaling from species Data Assets.
 - Persistent active-partner HP/SP synchronization.
 - Configurable account autosave interval.
-- Battle EXP and money rewards persisted on authoritative victory.
+- Battle EXP now drives persistent server-authoritative level progression, species stat growth, Attribute Point grants and owner-only animated EXP/LEVEL UP presentation; money rewards remain authoritative/persistent.
 - Blueprint hooks for ability presentation, defeat presentation, target changes, combat state, vitals and battle rewards.
 
 ## Foundation retained from v0.1.0
@@ -511,9 +531,9 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
-## Native frontend UI bootstrap (0.3.2)
+## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)
 
-The native login, player-skin, starter and combat widgets are functional C++ fallbacks and do not require Widget Blueprint assets. Their fallback `WidgetTree` is constructed during `RebuildWidget()` so it exists before the underlying Slate widget is built. `DMFFrontendHUD` also retries briefly if the local PlayerController is not ready on its first `BeginPlay` frame. A correctly configured blank MainMenu using `DMFFrontendGameMode` should therefore show the native login UI rather than an empty black viewport.
+The native login, player-skin, starter and combat widgets are functional C++ fallbacks and do not require Widget Blueprint assets. Their fallback `WidgetTree` is constructed during `RebuildWidget()` so it exists before the underlying Slate widget is built. `DMFFrontendHUD` now defers the frontend login layer by the configurable `FrontendUIStartupDelaySeconds`, then retains its existing brief retry loop if the local PlayerController is not ready. This lets the Frontend Map's Blueprint BeginPlay create a project-owned background first while preserving reliable native login bootstrap. The native full-screen dim backdrop is disabled by default; the centered login/play/admin card remains styled and interactive above the project's background.

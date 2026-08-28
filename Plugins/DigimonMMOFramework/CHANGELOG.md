@@ -1,5 +1,88 @@
 # Changelog
 
+## 0.15.0-alpha — Project-Selectable Frontend Background Layering & Bootstrap Polish
+
+### Added — framework-owned background widget class
+- Added **Frontend Background Widget Class** under Project Settings -> Digimon MMO Framework -> UI -> Frontend. Assign any project Widget Blueprint derived from `UUserWidget`; no Level Blueprint `Create Widget` path is required.
+- `ADMFFrontendHUD` now resolves the local PlayerController first, creates the selected background widget, adds it to the same game viewport layer used by the login widget, and only then schedules the login/main-menu bootstrap.
+- The background is automatically placed exactly **100 Z-order units below** `Frontend Login/Menu Viewport Z Order`. This relationship is framework-owned, so a full-screen/opaque background cannot cover the framework login card because of an accidental project Z-order.
+- Background and login are now both inserted with `AddToViewport` so they share one Slate viewport layer. This fixes the case where a project `AddToViewport` background could visually outrank the framework login even when the old login `AddToPlayerScreen` call used a numerically higher Z-order.
+- `Frontend UI Startup Delay Seconds` now starts **after the selected background has been initialized**, making the setting a true background-to-login presentation delay rather than a race against map BeginPlay.
+- If the optional background class fails to instantiate or add to screen, the framework logs the presentation failure and still continues into the login flow so a decorative asset can never lock the user out.
+
+### Fixed / polished — native fullscreen background ownership
+- The native `UDMFLoginMainMenuWidget` dark full-screen `FrontendBackdrop` remains disabled by default. Projects using the new Background Widget Class therefore receive their authored background un-tinted.
+- `Show Native Frontend Fullscreen Backdrop` plus `Native Frontend Backdrop Opacity` remain available for an optional dim treatment.
+- The native root and optional decorative backdrop remain `SelfHitTestInvisible`; the login card stays interactive while empty foreground space does not unnecessarily consume hits.
+- Frontend background and login widgets are both removed by the HUD on frontend EndPlay/map travel.
+
+### Multiplayer / authority contract
+- This release changes local frontend presentation only. It adds no RPC, replicated property, SaveGame field or trusted client gameplay mutation.
+- Login credential staging, endpoint validation, Admin unlock, Host & Play listen-server startup, server `PreLogin` authentication, account persistence and gameplay travel are unchanged.
+- Background widgets are local presentation only and never become an authentication/hosting authority surface.
+
+### Documentation
+- Revised `SETUP_FRONTEND_BACKGROUND_PRESENTATION.md` around the one-setting Background Widget Class workflow and updated README, native-UI setup, architecture, networking, config template, roadmap, test plan and validation report.
+
+## 0.14.9-alpha — Attribute Point Spending & Native Digimon Menu Layout Polish
+
+### Added — server-authoritative Attribute Point spending
+- Added `EDMFDigimonAttributeStat` for the six spendable persistent battle stats: Max HP, Max SP, Strength, Intelligence, Defense and Speed. ABI/CAM remain non-spendable progression/care values.
+- Added Blueprint-pure `CanSpendDigimonAttributePoint` plus reliable server `ServerSpendDigimonAttributePoint`. Every request revalidates account ownership, unspent points, stat eligibility, integer safety and active Digivolution state on the server before mutation.
+- Each successful request spends exactly one `UnspentAttributePoints` and adds exactly one point to the selected stat. MaxHP/MaxSP preserve the current missing/spent amount by increasing current HP/SP by the same +1 capacity delta; defeated Digimon remain defeated.
+- Party and Bank Digimon use the same persistent mutation path. Party/Bank owner Fast Arrays are dirtied, the account is persisted immediately, and a currently summoned active partner refreshes public replicated stats/vitals without respawn, heal reset, target reset, cooldown reset or battle-state reset.
+- Added owner-only `OnAttributePointSpendResult`/`ClientAttributePointSpendResult` for deterministic UI acknowledgement only; clients never author the resulting value or remaining-point count.
+
+### Added — native `+` controls
+- Party and Bank selected-Digimon stat cards now expose compact `+ HP`, `+ SP`, `+ STR`, `+ INT`, `+ DEF`, `+ SPD` controls under the current Attribute Point total. Buttons disable when the selection cannot legally spend.
+- Custom Blueprint UI can use the same enum, eligibility query and authoritative server RPC without relying on the native fallback widget.
+
+### Fixed / polished — Digimon Menu containment
+- Increased the native design canvas from 1240x820 to **1240x900**, still inside the existing `ScaleToFit / DownOnly` wrapper, to accommodate the mature Party/Bank/Scan/DigiDex/Digivolution/Care feature set.
+- Added hard window clipping as a final layout safety contract and reduced several oversized portrait viewports/minimum description height so footer/action controls stay inside the modal window instead of bleeding below it on short/DPI-scaled viewports. Existing internal scroll regions remain intact.
+- **Revised candidate:** the Party selected-Digimon panel now keeps its identity/portrait header fixed and places stats, EXP, Attribute Point controls, description, `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER` and `MOVE TO BANK` inside one bounded vertical `ScrollBox`. This fixes the final short-viewport case where Party actions were clipped below the modal even though the other tabs already scrolled correctly.
+- Removed the old nested Party-description scroll lane so wheel/gamepad scrolling follows one deterministic detail-body path instead of becoming trapped inside a small inner region.
+- This is presentation/layout only; no tab enum values, storage rules or gameplay authority changed.
+
+### Multiplayer / persistence contract
+- Attribute spending is server-authoritative, immediately persisted and owner-only in private Party/Bank storage state; a summoned Digimon's resulting public stats continue through normal actor replication.
+- No SaveGame schema bump is required because stats and `UnspentAttributePoints` were already persistent. No existing RPC, reflected function or serialized enum value was removed/reordered.
+
+### Documentation
+- Added `SETUP_ATTRIBUTE_POINTS.md` and updated README, leveling/native-UI setup, architecture, networking, roadmap, test plan and validation report.
+
+## 0.14.8-alpha — Owned Digimon Level Progression & Native XP UI
+
+### Added — authoritative EXP thresholds and persistent level growth
+- Battle EXP no longer accumulates as an inert number. `UDMFPlayerDigimonComponent` now consumes the active partner's stored EXP through server-owned level thresholds and supports multiple level-ups from one reward.
+- Every gained level applies the current species' existing `HPPerLevel`, `SPPerLevel`, `StrengthPerLevel`, `IntelligencePerLevel`, `DefensePerLevel` and `SpeedPerLevel` growth values and grants `AttributePointsPerLevel` into the already-persistent `UnspentAttributePoints` field.
+- Increased MaxHP/MaxSP also increase current HP/SP by the same capacity delta so level growth is immediately useful without erasing damage/SP already spent. A defeated Digimon remains defeated.
+- The summoned partner refreshes its public replicated `ReplicatedStats` plus authoritative HP/SP through a progression-specific refresh path that deliberately does not reset combat state, target, encounter latch, cooldowns or recovery.
+- Existing stored EXP is normalized on authoritative account hydration, allowing v0.14.7 accounts with accumulated EXP to catch up automatically. Existing levels are never reduced if a project later lowers a configured cap.
+
+### Added — species-owned numeric EXP requirements
+- `DMFDigimonSpeciesData` now owns `BaseExperienceRequired`, `ExperienceGrowthMultiplierPerLevel` and optional `MaxLevelOverride`; there is no CurveFloat asset dependency in the leveling workflow.
+- Requirement formula is deterministic and shared by authority + native UI: `BaseExperienceRequired * pow(ExperienceGrowthMultiplierPerLevel, CurrentLevel - 1)`. `1.0` is flat, `1.10` adds 10% per level, `1.20` adds 20% per level. Each species therefore controls its own EXP economy directly from its Data Asset.
+- Project Settings keeps only the master leveling switch and `DefaultMaxDigimonLevel`; EXP pacing itself belongs to the species.
+- Added Blueprint-pure queries for requirement-at-level, effective species max level, owned-Digimon next requirement and normalized current-level progress.
+- No SaveGame schema version bump is required: `Stats.Experience`, `Stats.Level`, existing stats and `UnspentAttributePoints` remain the durable fields.
+
+### Added — polished native EXP / LEVEL UP presentation
+- Added `UDMFExperienceNotificationWidget`, a native owner-only queued toast with portrait/species identity, gained EXP, animated current-level progress and a distinct gold level-up result revealed when the animated bar crosses its first earned threshold. Large rewards can visually cross multiple level segments.
+- Level-up presentation reports old/new level and Attribute Points gained; max-level completion is explicitly labeled. Rapid rewards are bounded/queued instead of overwriting one another.
+- Added `ExperienceNotificationWidgetClass`, native-notification enable, progress animation time, normal/level-up hold times and bottom-safe offset under Project Settings. Blueprint child widgets can fully reskin presentation.
+- Party selected-details and Bank selected-details now show `EXP current / required`, native progress bars and unspent Attribute Points. Max-level Digimon show `MAX`.
+- Added owner-only `OnDigimonExperienceProgressed` plus a dedicated reliable client result RPC carrying immutable old/new progression state. The existing `OnBattleRewardGranted` contract remains unchanged for backward compatibility.
+
+### Multiplayer / regression contract
+- EXP award, threshold consumption, level/stat growth, Attribute Point grant, max-level handling and persistence are server authoritative. Clients cannot submit level/EXP/stat mutations.
+- Party/Bank progression remains owner-only Fast Array state. The currently summoned Digimon's public Level/stats continue through normal actor replication so other players/nameplates observe the correct level.
+- The new client RPC is presentation data only and cannot author gameplay. Native XP animation is entirely local.
+- Save schema remains v5; no serialized enum reorder or existing RPC signature was changed. v0.14.7 combat AI, v0.14.6 CustomDepth, v0.14.5 spawning and v0.14.4 battle-music behavior are preserved.
+
+### Documentation
+- Added `SETUP_LEVEL_PROGRESSION.md` and updated README, combat/native-UI setup, architecture, networking, roadmap, Project Settings config template, test plan and validation report.
+
 ## 0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix
 
 ### Fixed — autonomous Digimon now use their complete eligible ability moveset

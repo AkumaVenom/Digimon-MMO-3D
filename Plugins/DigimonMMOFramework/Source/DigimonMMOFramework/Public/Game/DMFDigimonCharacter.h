@@ -28,6 +28,10 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Digimon")
     void InitializeFromInstance(const FDMFDigimonInstance& Instance, ADMFPlayerState* InOwningPlayerState);
 
+    /** Refreshes persistent Level/EXP/stats on an already spawned partner without resetting its live combat lifecycle. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Digimon|Progression")
+    void RefreshProgressionFromInstance(const FDMFDigimonInstance& Instance);
+
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void SetCombatTeamId(FName NewTeamId);
 

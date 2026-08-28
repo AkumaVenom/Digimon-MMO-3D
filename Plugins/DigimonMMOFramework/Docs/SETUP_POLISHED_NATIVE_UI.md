@@ -1,4 +1,4 @@
-# Polished Native UI Setup — v0.13.1-alpha
+# Polished Native UI Setup — v0.14.8-alpha
 
 ## v0.13.1 — Digivolution owned-roster card hardening
 
@@ -7,11 +7,20 @@ The native DIGIVOLUTION tab uses a fixed three-column Party/Bank browser. Each o
 v0.6.0 rebuilds the framework's native fallback presentation. You do **not** need Widget Blueprints to get a usable polished frontend, Digimon collection, starter selector, character selector, or combat bar. Blueprint children remain supported when a project wants a completely custom skin.
 
 
+
+## v0.14.8 EXP progression presentation
+
+The selected Digimon profile in both **PARTY** and **BANK / BOXES** now shows Level, `EXP current / required`, a real EXP progress bar and persistent unspent Attribute Points. At the configured species/global level cap the bar is full and the EXP row displays `MAX`. Requirement text and bar percentage use the exact same per-species numeric `Base Experience Required` + `Experience Growth Multiplier Per Level` calculation as authority; no CurveFloat asset is involved. Durable Level/EXP values still come from the owner-only replicated Digimon instance.
+
+Battle EXP also creates the native `DMFExperienceNotificationWidget` for the owning player. It is a centered-bottom, HUD-safe queued toast with portrait, species, exact `+ EXP`, animated progress bar and a distinct gold `LEVEL UP!` result that reveals when the animated bar crosses the first earned threshold. Multi-level rewards animate across multiple threshold segments instead of snapping straight to the final number.
+
+Under **UI -> Progression**, projects can replace `Experience Notification Widget Class`, disable the native notification, tune animation/hold durations and move its bottom safe offset. Blueprint children may implement `BP On Experience Progress Presented` and `BP On Level Up Presented` for custom presentation. These hooks consume an authority-produced result snapshot and cannot grant EXP, levels, stats or Attribute Points.
+
 ## v0.12.1 responsive layout hardening
 
-The native fallback Digimon Menu now uses a larger 1240x820 design canvas inside its existing **Scale To Fit / Down Only** wrapper. On normal desktop viewports it therefore has enough vertical room for Party/Bank/Scan/Care content without forcing the profile footer into body text; on smaller viewports the complete menu still scales down as one unit.
+The native fallback Digimon Menu now uses a larger 1240x900 design canvas inside its existing **Scale To Fit / Down Only** wrapper. On normal desktop viewports it therefore has enough vertical room for Party/Bank/Scan/Care content without forcing the profile footer into body text; on smaller viewports the complete menu still scales down as one unit.
 
-Party and Scan descriptions, Bank detail guidance and Care rules are clipped/scrollable regions. Action buttons remain outside those regions, so authored species descriptions or longer localized strings cannot draw through the buttons. The Bank six-column card grid is itself scrollable, which preserves fixed card dimensions even when `DigimonBankSlotsPerPage` is increased.
+The Party selected-Digimon column now uses one bounded vertical detail-body scroll lane below its fixed identity/portrait header. Stats, EXP, Attribute Point controls, description and all three Party actions (`SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, `MOVE TO BANK`) share that lane, so short/DPI-scaled viewports can always reach the buttons and long descriptions cannot force controls outside the modal. Scan descriptions, Bank detail guidance and Care rules retain their own bounded scroll regions. The Bank six-column card grid is itself scrollable, which preserves fixed card dimensions even when `DigimonBankSlotsPerPage` is increased.
 
 Dense Party/Bank/Party-destination and HUD cards use compact internal button padding. The Party Quick Access bar stacks each portrait over a two-line state/name/level label, and the combat quickbar collapses a missing ability-icon frame instead of reserving an empty square. These changes are native fallback presentation only and do not alter the Blueprint replacement classes or server authority.
 
@@ -26,6 +35,7 @@ In **Project Settings -> Game -> Digimon MMO Framework -> UI**, the default clas
 - `Combat Quick Bar Widget Class` -> `DMFCombatQuickBarWidget`
 - `Party Quick Bar Widget Class` -> `DMFPartyQuickBarWidget`
 - `World Chat Widget Class` -> `DMFWorldChatWidget`
+- `Experience Notification Widget Class` -> `DMFExperienceNotificationWidget`
 
 Leave these native defaults assigned to use the current framework presentation. A Blueprint child may still replace any individual presentation while retaining the underlying framework APIs.
 
@@ -81,7 +91,7 @@ Default input remains:
 
 The shared native menu now exposes six first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION**, **CARE**.
 
-**PARTY** renders the active field roster (`MaxPartyDigimon`, six by default) with portrait, species/nickname, level, Active/Summoned/KO state and the existing selected-Digimon profile. `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, and `MOVE TO BANK` route through server-owned state. The final Party member cannot be deposited.
+**PARTY** renders the active field roster (`MaxPartyDigimon`, six by default) with portrait, species/nickname, level, Active/Summoned/KO state and the existing selected-Digimon profile. The identity/portrait header remains fixed while the complete detail/action body scrolls vertically as one lane, so `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, and `MOVE TO BANK` remain reachable at short viewport heights. Those actions still route through server-owned state, and the final Party member cannot be deposited.
 
 **BANK / BOXES** renders persistent account storage in a paged six-column grid (`DigimonBankSlotsPerPage`, 30 by default). Selecting a stored Digimon shows its profile and a live six-slot Party destination strip. If Party has space the server moves it into Party; if Party is full, select an occupied Party destination and **MOVE / SWAP TO PARTY** performs an atomic authoritative swap.
 
@@ -99,7 +109,9 @@ The skin selector automatically discovers enabled `DMFPlayerSkinData` Primary As
 
 ## 8. Frontend
 
-The native frontend now has two clear states:
+v0.15.0 lets the framework own the complete local frontend stack. Assign a project Widget Blueprint to **Frontend Background Widget Class**; the HUD creates it first, automatically places it 100 Z-order units below the framework login/main-menu layer, then waits `Frontend UI Startup Delay Seconds` before revealing the login card. No Level Blueprint `Create Widget` or manual Z-order path is required. See `SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`.
+
+The native frontend has two clear states:
 
 **Login**
 - Username
@@ -114,6 +126,15 @@ The native frontend now has two clear states:
 - Host & Play after successful admin unlock
 - Logout
 - Quit
+
+Frontend presentation settings:
+- `Frontend Background Widget Class` — optional project-authored full-screen background created by the framework before login.
+- `Frontend UI Startup Delay Seconds` — default `0.25 s`; delay between background initialization and login creation.
+- `Frontend Login/Menu Viewport Z Order` — default `1000`; the framework automatically places the selected background at this value minus 100.
+- `Show Native Frontend Fullscreen Backdrop` — default `False`; enable only when the project wants the optional native dim.
+- `Native Frontend Backdrop Opacity` — used only when the optional dim is enabled.
+
+The native root and optional decorative backdrop pass pointer hit testing through empty space; the central login/play/admin controls remain interactive.
 
 `Logout` clears only the locally staged frontend credentials/admin unlock and returns the same widget to login state. It does not alter the server account database.
 
@@ -198,3 +219,9 @@ For Blueprint replacements, keep the `EDMFDigimonMenuTab` serialized values inta
 ### DigiDex page
 
 The v0.14 native shell includes a read-only **DIGIDEX** page using the same fixed-card/aspect-safe rules established by the v0.13.1 UI fix. The left browser uses four fixed cards per row with `ScaleBox -> ScaleToFit -> DownOnly` portrait presentation, search and Stage/Attribute filters. The right dossier is scroll-protected so long descriptions/move/evolution text cannot draw through the read-only footer. No action button is present on this page.
+
+## v0.14.9 Attribute controls and containment
+
+Party and Bank selected-Digimon stat cards expose compact `+ HP`, `+ SP`, `+ STR`, `+ INT`, `+ DEF`, `+ SPD` buttons whenever the selected Digimon has legal unspent Attribute Points. Buttons route only to `ServerSpendDigimonAttributePoint`; native UMG never mutates stats locally.
+
+The native modal now hard-clips to its window bounds and uses a 1240x900 logical canvas. Several portrait/detail minimums were tightened so every tab's footer/action lane remains inside the shell on short/DPI-scaled viewports. Party has an explicit bounded detail-body `ScrollBox` for stats/progression/actions; the other existing tab-internal scroll regions continue to handle variable descriptions, rules and large data sets.

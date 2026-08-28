@@ -20,6 +20,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFStarterSelectionFinished, FGuid,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFStarterSelectionResult, bool, bSuccess, FText, Message, FGuid, PartnerInstanceId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFCommandTargetChanged, ADMFDigimonCharacter*, NewTarget);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFBattleRewardGranted, FPrimaryAssetId, DefeatedSpeciesId, int64, Experience, int64, Money);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFDigimonExperienceProgressed, FDMFDigimonExperienceProgression, Progression);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDMFAttributePointSpendResult, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId, EDMFDigimonAttributeStat, Stat, int32, NewStatValue, int32, RemainingPoints);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFMoneyChanged, int64, NewMoney);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFPartnerActionResult, bool, bSuccess, FText, Message, FGuid, PartnerInstanceId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFPartyHealed, int32, DigimonHealed);
@@ -68,6 +70,14 @@ public:
 
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Combat")
     FDMFBattleRewardGranted OnBattleRewardGranted;
+
+    /** Owner-only presentation signal emitted from the authoritative EXP result RPC. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Progression")
+    FDMFDigimonExperienceProgressed OnDigimonExperienceProgressed;
+
+    /** Owner-only result for an authoritative Attribute Point spend request. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Progression|Attributes")
+    FDMFAttributePointSpendResult OnAttributePointSpendResult;
 
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Economy")
     FDMFMoneyChanged OnMoneyChanged;
@@ -165,6 +175,34 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Economy")
     int64 GetMoney() const { return Money; }
 
+    /** Returns the authored/fallback EXP requirement to advance from CurrentLevel to CurrentLevel + 1. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
+    int64 GetExperienceRequiredForLevel(FPrimaryAssetId SpeciesId, int32 CurrentLevel) const;
+
+    /** Returns the effective global/species level cap. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
+    int32 GetMaximumLevelForSpecies(FPrimaryAssetId SpeciesId) const;
+
+    /** Returns zero at max level or when InstanceId is not owned. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
+    int64 GetExperienceRequiredForNextLevel(FGuid InstanceId) const;
+
+    /** Current-level EXP progress in [0,1]. Max-level Digimon return 1. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
+    float GetExperienceProgressNormalized(FGuid InstanceId) const;
+
+    /** Local/read-only convenience check. The server repeats every ownership/point/stat validation before mutation. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression|Attributes")
+    bool CanSpendDigimonAttributePoint(FGuid InstanceId, EDMFDigimonAttributeStat Stat, FText& OutFailureReason) const;
+
+    /** Spends exactly one earned Attribute Point on one persistent core stat. Works for Party and Bank Digimon. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Progression|Attributes")
+    void ServerSpendDigimonAttributePoint(FGuid InstanceId, EDMFDigimonAttributeStat Stat);
+
+    /** Owning-client result only; gameplay mutation has already been committed by the server. */
+    UFUNCTION(Client, Reliable)
+    void ClientAttributePointSpendResult(bool bSuccess, const FText& Message, FGuid DigimonInstanceId, EDMFDigimonAttributeStat Stat, int32 NewStatValue, int32 RemainingPoints);
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Scan & Materialization")
     TArray<FDMFScanDataEntry> GetScanDataEntries() const { return ReplicatedScanData; }
 
@@ -261,6 +299,10 @@ public:
 
     UFUNCTION(Client, Reliable)
     void ClientBattleRewardGranted(FPrimaryAssetId DefeatedSpeciesId, int64 Experience, int64 MoneyReward);
+
+    /** Dedicated owning-client progression snapshot; avoids relying on Fast Array vs RPC arrival order for animated UI. */
+    UFUNCTION(Client, Reliable)
+    void ClientDigimonExperienceProgressed(FDMFDigimonExperienceProgression Progression);
 
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Onboarding|Admin")
     bool ResetStarterOnboarding(bool bRemoveStarterDigimon = true);
@@ -364,6 +406,11 @@ private:
     const FDMFDigivolutionRequirement* FindDigivolutionPath(const UDMFDigimonSpeciesData& SourceSpecies, FPrimaryAssetId TargetSpeciesId, UDMFDigimonSpeciesData*& OutTargetSpecies) const;
     bool EvaluateDigivolutionRequirement(const FDMFDigimonInstance& Digimon, EDMFDigimonStorageLocation Location, const FDMFDigivolutionRequirement& Requirement, const UDMFDigimonSpeciesData& SourceSpecies, const UDMFDigimonSpeciesData& TargetSpecies, FText& OutFailure, FText* OutSummary = nullptr) const;
     bool ApplyDigivolutionMutation(FDMFReplicatedDigimonEntry& Entry, const UDMFDigimonSpeciesData& SourceSpecies, const UDMFDigimonSpeciesData& TargetSpecies, const FDMFDigivolutionRequirement& Requirement);
+    int64 ResolveExperienceRequirement(const UDMFDigimonSpeciesData& Species, int32 CurrentLevel) const;
+    int32 ResolveMaximumLevel(const UDMFDigimonSpeciesData& Species) const;
+    bool ApplyExperienceReward(FDMFReplicatedDigimonEntry& Entry, int64 ExperienceReward, FDMFDigimonExperienceProgression& OutProgression) const;
+    bool NormalizeStoredExperienceForLeveling(FDMFDigimonInstance& Digimon) const;
+    void ApplyLevelGrowth(FDMFDigimonInstance& Digimon, const UDMFDigimonSpeciesData& Species, int32 LevelsGained, int32& OutAttributePointsGained) const;
     void CompleteDigivolutionSequence();
     void NormalizeDigivolutionProvenance(FDMFDigimonInstance& Digimon) const;
     FDMFDigimonInstance BuildStarterInstance(const UDMFDigimonSpeciesData& Species) const;

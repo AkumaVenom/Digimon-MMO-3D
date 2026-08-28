@@ -44,6 +44,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execStartCombatFacingTarget); \
 	DECLARE_FUNCTION(execConfigureCombatAutomation); \
 	DECLARE_FUNCTION(execSetCombatTeamId); \
+	DECLARE_FUNCTION(execRefreshProgressionFromInstance); \
 	DECLARE_FUNCTION(execInitializeFromInstance);
 
 

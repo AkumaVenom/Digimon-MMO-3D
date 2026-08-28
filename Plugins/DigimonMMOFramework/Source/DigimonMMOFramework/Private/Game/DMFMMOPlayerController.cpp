@@ -18,6 +18,7 @@
 #include "UI/DMFPartyQuickBarWidget.h"
 #include "UI/DMFDigimonInventoryWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
+#include "UI/DMFExperienceNotificationWidget.h"
 #include "UI/DMFPlayerSkinSelectionWidget.h"
 #include "UI/DMFStarterSelectionWidget.h"
 #include "UI/DMFWorldChatWidget.h"
@@ -153,6 +154,8 @@ void ADMFMMOPlayerController::BindStarterState()
     DMFPlayerState->DigimonComponent->OnStarterRequirementChanged.AddDynamic(this, &ADMFMMOPlayerController::HandleStarterRequirementChanged);
     DMFPlayerState->DigimonComponent->OnScanDataRewardGranted.RemoveDynamic(this, &ADMFMMOPlayerController::HandleScanDataRewardGranted);
     DMFPlayerState->DigimonComponent->OnScanDataRewardGranted.AddDynamic(this, &ADMFMMOPlayerController::HandleScanDataRewardGranted);
+    DMFPlayerState->DigimonComponent->OnDigimonExperienceProgressed.RemoveDynamic(this, &ADMFMMOPlayerController::HandleDigimonExperienceProgressed);
+    DMFPlayerState->DigimonComponent->OnDigimonExperienceProgressed.AddDynamic(this, &ADMFMMOPlayerController::HandleDigimonExperienceProgressed);
     DMFPlayerState->DigimonComponent->OnCareSequenceStarted.RemoveDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceStarted);
     DMFPlayerState->DigimonComponent->OnCareSequenceStarted.AddDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceStarted);
     DMFPlayerState->DigimonComponent->OnCareSequenceFinished.RemoveDynamic(this, &ADMFMMOPlayerController::HandleCareSequenceFinished);
@@ -220,6 +223,47 @@ void ADMFMMOPlayerController::HandleScanDataRewardGranted(const FPrimaryAssetId 
     if (DigimonInventoryWidget && DigimonInventoryWidget->GetActiveMenuTab() == EDMFDigimonMenuTab::ScanAndMaterialize)
     {
         DigimonInventoryWidget->RefreshScanData();
+    }
+}
+
+void ADMFMMOPlayerController::HandleDigimonExperienceProgressed(const FDMFDigimonExperienceProgression Progression)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bShowNativeExperienceNotifications)
+    {
+        return;
+    }
+
+    if (!ExperienceNotificationWidget)
+    {
+        TSubclassOf<UDMFExperienceNotificationWidget> WidgetClass = Settings ? Settings->ExperienceNotificationWidgetClass : nullptr;
+        if (!WidgetClass)
+        {
+            WidgetClass = UDMFExperienceNotificationWidget::StaticClass();
+        }
+        ExperienceNotificationWidget = CreateWidget<UDMFExperienceNotificationWidget>(this, WidgetClass);
+        if (ExperienceNotificationWidget)
+        {
+            ExperienceNotificationWidget->AddToViewport(850);
+        }
+    }
+
+    if (ExperienceNotificationWidget)
+    {
+        ExperienceNotificationWidget->ShowExperienceProgress(Progression);
+    }
+
+    // The owner-only Fast Array remains the durable UI source. Refresh an open menu immediately when
+    // its corresponding replication has already arrived; OnRep will safely refresh again if it arrives later.
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->RefreshInventory();
+        DigimonInventoryWidget->RefreshBankData();
     }
 }
 

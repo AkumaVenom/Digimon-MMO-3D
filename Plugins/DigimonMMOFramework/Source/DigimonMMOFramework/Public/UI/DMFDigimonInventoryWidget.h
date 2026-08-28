@@ -88,6 +88,9 @@ protected:
     TObjectPtr<UTextBlock> DigimonDetailsText;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UProgressBar> SelectedExperienceProgressBar;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UTextBlock> DigimonStatusText;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
@@ -116,6 +119,14 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> MoveSelectedToBankButton;
+
+    /** Native fallback Attribute Point spend controls. Custom Blueprint UI may call ServerSpendDigimonAttributePoint directly. */
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartyHPButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartySPButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartyStrengthButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartyIntelligenceButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartyDefenseButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendPartySpeedButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> CloseDigimonInventoryButton;
@@ -163,6 +174,9 @@ protected:
     TObjectPtr<UTextBlock> BankSelectedStatsText;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UProgressBar> BankExperienceProgressBar;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> BankPartyDestinationGrid;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
@@ -173,6 +187,13 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> MoveSelectedBankToPartyButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankHPButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankSPButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankStrengthButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankIntelligenceButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankDefenseButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SpendBankSpeedButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> ScanSpeciesGrid;
@@ -344,6 +365,9 @@ private:
     TArray<UDMFDigimonSpeciesData*> GatherRegisteredDigiDexSpecies() const;
     void RefreshTabPresentation();
     UDMFDigimonSpeciesData* ResolveSpecies(FPrimaryAssetId SpeciesId) const;
+    void RequestAttributePointSpend(EDMFDigimonAttributeStat Stat, bool bUseBankSelection);
+    void SetPartyAttributeSpendEnabled(bool bEnabled);
+    void SetBankAttributeSpendEnabled(bool bEnabled);
 
     UFUNCTION()
     void HandleInventoryChanged();
@@ -353,6 +377,9 @@ private:
 
     UFUNCTION()
     void HandleStorageActionResult(bool bSuccess, FText Message, FGuid DigimonInstanceId, EDMFDigimonStorageLocation NewLocation);
+
+    UFUNCTION()
+    void HandleAttributePointSpendResult(bool bSuccess, FText Message, FGuid DigimonInstanceId, EDMFDigimonAttributeStat Stat, int32 NewStatValue, int32 RemainingPoints);
 
     UFUNCTION()
     void HandleScanDataChanged(FPrimaryAssetId SpeciesId, float ScanPercent, bool bMaterializationReady);
@@ -443,6 +470,19 @@ private:
 
     UFUNCTION()
     void HandleRecallPartner();
+
+    UFUNCTION() void HandleSpendPartyHP();
+    UFUNCTION() void HandleSpendPartySP();
+    UFUNCTION() void HandleSpendPartyStrength();
+    UFUNCTION() void HandleSpendPartyIntelligence();
+    UFUNCTION() void HandleSpendPartyDefense();
+    UFUNCTION() void HandleSpendPartySpeed();
+    UFUNCTION() void HandleSpendBankHP();
+    UFUNCTION() void HandleSpendBankSP();
+    UFUNCTION() void HandleSpendBankStrength();
+    UFUNCTION() void HandleSpendBankIntelligence();
+    UFUNCTION() void HandleSpendBankDefense();
+    UFUNCTION() void HandleSpendBankSpeed();
 
     UFUNCTION()
     void HandleClose();

@@ -1,3 +1,31 @@
+# v0.14.8-alpha validation summary
+
+## Owned Digimon Level progression / EXP UI source validation
+- Built directly on the user-runtime-validated v0.14.7 `FullWildAbilityMovesetRotationFix` baseline. v0.14.8 still requires a clean UE5.8.1 compile plus listen-host/remote-client runtime acceptance before promotion.
+- Root progression gap confirmed: authoritative Battle victory previously appended `BattleExperienceReward` to `Stats.Experience` but had no threshold consumption, Level increment, stat growth, Attribute Point grant, active-actor stat refresh or level-up presentation.
+- `UDMFPlayerDigimonComponent` now owns one server-only EXP mutation path. It clamps legacy values, resolves the current species-owned numeric requirement, subtracts every crossed threshold, supports multiple level-ups in one reward, applies existing HP/SP/STR/INT/DEF/SPD Per Level growth and grants existing `AttributePointsPerLevel`.
+- Current HP/SP preserve the amount already missing/spent as MaxHP/MaxSP grow; defeated Digimon remain defeated. `RefreshProgressionFromInstance` / `RefreshRuntimeVitalsAfterProgression` update the summoned partner without calling the combat initialization/reset path, so target, cooldowns, recovery and the durable battle-encounter latch are not reset by progression.
+- Existing stored pre-v0.14.8 EXP is normalized on authoritative account hydration. No SaveGame migration field is needed: schema remains **v5**, and the existing persisted Level/Experience/stats/UnspentAttributePoints fields remain the durable ledger.
+- `DMFDigimonSpeciesData` adds `BaseExperienceRequired`, `ExperienceGrowthMultiplierPerLevel` and optional `MaxLevelOverride`. Requirement math is shared by server mutation and owner-local UI: `Base * Multiplier^(Level-1)`. Project Settings keeps the master leveling switch and global default max level; no CurveFloat asset or global EXP fallback is required.
+- Native Party and Bank selected-details now display `EXP current / required`, progress bars, `MAX` at cap and unspent Attribute Points. Four Blueprint-pure progression queries expose the same display calculations without mutation authority.
+- Added Blueprintable `UDMFExperienceNotificationWidget`: owner-local queued `+EXP` progress animation, multi-level threshold traversal, a distinct LEVEL UP state revealed at the first animated threshold crossing plus the Attribute Point result. Project Settings exposes widget replacement, enable, animation/hold times and HUD-safe bottom offset.
+- Added exactly one network RPC, `ClientDigimonExperienceProgressed(FDMFDigimonExperienceProgression)`. It is a reliable owner Client presentation snapshot only; Party/Bank durable data remains owner-only Fast Array state and the active world partner's public `ReplicatedStats` continues through ordinary property replication.
+
+## Baseline compatibility / static gate
+- Baseline v0.14.7: **116 files**, **80 source/header/build files**, **24,054 source/build lines**, **42 UCLASS**, **15 UENUM**, **16 USTRUCT**, **423 UFUNCTION**, **770 UPROPERTY**, **42 reflected RPC declarations**.
+- Revised v0.14.8 candidate: **120 files**, **83 source/header/build files**, **24,972 source/build lines**, **43 UCLASS**, **15 UENUM**, **17 USTRUCT**, **434 UFUNCTION**, **802 UPROPERTY**, **43 reflected RPC declarations**.
+- Added files only: `Docs/SETUP_LEVEL_PROGRESSION.md`, `Public/UI/DMFExperienceNotificationWidget.h`, `Private/UI/DMFExperienceNotificationWidget.cpp`, and private shared progression helper `Private/Progression/DMFLevelProgressionMath.h`. **Zero baseline files removed.**
+- **Zero existing reflected UFUNCTION names removed**, **zero existing UPROPERTY names removed**, **zero existing RPC names removed**. The only RPC addition is `ClientDigimonExperienceProgressed`; all 43 reflected Server/Client/NetMulticast declarations have matching `_Implementation` bodies.
+- Added reflected functions are limited to the four progression queries, the owner Client result RPC/delegate handler, the two progression-safe actor/combat refresh APIs, the notification entry point and two Blueprint presentation hooks.
+- All 15 UENUM declarations retain identical value/order definitions to v0.14.7. Save schema remains v5. No serialized enum migration or account-database migration step is introduced.
+- Generated-header include ordering passes for all headers; changed C++ delimiter counts are balanced; changed runtime source has no TODO/FIXME markers; plugin JSON parses successfully.
+- Unreal Engine/UnrealBuildTool is not installed in this assembly environment, so only static/source validation is claimed here. Runtime truth remains the user's UE5.8.1 compile + multiplayer test.
+
+## Required v0.14.8 runtime acceptance
+Run `TEST_PLAN.md` section **L0**. In particular validate species-authored 25-EXP progression to Level 2, Party/Bank required-EXP bars, native queued EXP toast + LEVEL UP state, species-specific numeric EXP requirements, multi-level rewards, exact per-level stat/Attribute Point gains, combat-state continuity, max-level behavior, old banked-EXP normalization, reconnect persistence, and remote-client ownership privacy/public partner Level replication.
+
+---
+
 # v0.14.6-alpha validation summary
 
 ## Attack VFX / enemy marker CustomDepth enforcement
@@ -114,7 +142,7 @@ Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` sect
 Static/source validation was performed against the user-runtime-validated v0.12.0 Party/Bank/Boxes baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus visual/runtime acceptance remain authoritative.
 
 Validated contracts:
-- The Digimon Menu fallback design canvas is rebalanced to 1240x820 while retaining the existing Down-Only ScaleBox wrapper for smaller viewports. Party/Bank/Scan/Care left/right lanes were widened without changing any gameplay widget class or RPC path.
+- The Digimon Menu fallback design canvas is rebalanced to 1240x900 while retaining the existing Down-Only ScaleBox wrapper for smaller viewports. Party/Bank/Scan/Care left/right lanes were widened without changing any gameplay widget class or RPC path.
 - Party and Scan description bodies are clipped by dedicated ScrollBoxes above fixed action footers; Bank stats/destination guidance use a scroll body above **MOVE / SWAP TO PARTY**; Care rules use the same protected pattern. Long authored/localized text therefore cannot draw through the action controls.
 - Bank Box cards retain explicit fixed size inside a dedicated grid ScrollBox. Page sizes above the default 30 add scrollable rows instead of compressing the six-column card grid, while the Party Destination strip remains outside/pinned below the grid.
 - Dense tile/HUD buttons use a compact native style with reduced internal padding. Party Quick Access now gives each portrait and two-line identity/state label the full card width. The combat quickbar collapses the icon container when an ability has no icon, eliminating the empty-square width penalty visible in v0.12.0.
@@ -803,3 +831,30 @@ Validated contracts:
 - v0.14.6 CustomDepth presentation, v0.14.5 spawn rarity normalization and v0.14.4 battle encounter music logic are untouched.
 
 Final static regression gate: **80 source/header/build files** and **24054 source/build lines** checked, with **42 UCLASS**, **15 UENUM**, **16 USTRUCT**, **423 UFUNCTION**, **770 UPROPERTY** and **42 reflected RPC declarations**. Comparison against v0.14.6 finds **zero baseline files removed**, **zero existing reflected UFUNCTION names removed**, and all reflected RPC declarations still have matching `_Implementation` bodies. Plugin JSON, generated-header include ordering and changed C++ delimiter balance pass.
+
+## v0.14.9 candidate static validation
+
+Candidate adds one new stat enum, one server spend RPC, one owner-only result RPC, one Blueprint-pure eligibility query and native Party/Bank button handlers. No existing serialized enum values are reordered, no persistent fields are added, SaveGame schema remains v5, and the menu layout change is presentation-only.
+
+The revised Party layout fixes the final short-viewport overflow path identified during user runtime inspection: the Party identity/portrait header stays outside the scroll lane, while one bounded `PartyDetailsBodyScroll` contains stats, EXP, Attribute Point controls, description and all three Party action buttons. The prior inner description ScrollBox is removed, avoiding nested wheel/gamepad scroll capture. Bank/Scan/DigiDex/Digivolution/Care layout paths are unchanged.
+
+Baseline-to-candidate static diff from accepted v0.14.8: **120 -> 121 files** (only `SETUP_ATTRIBUTE_POINTS.md` added), **83 source/header/build files preserved**, **434 -> 450 UFUNCTION declarations** with zero removals, **43 -> 45 RPCs** with zero removals and every RPC matched to an `_Implementation`, and **802 -> 815 UPROPERTY declarations** with no baseline property name removed. Changed C++ delimiter counts are balanced, generated-header include ordering is valid, plugin JSON parses, and no TODO/FIXME marker was introduced in the changed runtime files. Runtime UE5.8 host/client acceptance remains required.
+
+## v0.15.0 candidate static validation — layered frontend background bootstrap
+
+Source review against the runtime-accepted v0.14.9 Party-scroll/Attribute Point baseline confirms the frontend change is local presentation/bootstrap only. `ADMFFrontendHUD` now owns a one-shot configurable startup-delay timer separately from the existing PlayerController/widget retry timer, and uses the configured frontend viewport Z-order instead of a hardcoded value. `UDMFLoginMainMenuWidget` no longer creates the native full-screen backdrop unless explicitly enabled; the fallback root and optional decorative backdrop use `SelfHitTestInvisible`, preserving child login control input while allowing project-owned background presentation through empty screen space.
+
+No RPC, replicated property, SaveGame field, serialized gameplay enum or trusted client mutation path is introduced. Login/session state, endpoint validation, Admin hosting gate, listen travel and server authentication code are untouched.
+
+Final static regression gate against accepted v0.14.9: **121 -> 122 packaged files** (only `SETUP_FRONTEND_BACKGROUND_PRESENTATION.md` added), **83 source/header/build files preserved**, **25,435 source/build lines**, **43 UCLASS**, **16 UENUM**, **17 USTRUCT**, **450 UFUNCTION** and **815 -> 819 UPROPERTY** declarations. All **45 reflected RPC declarations** remain unchanged and have matching `_Implementation` bodies. Zero baseline files, reflected UFUNCTION names or RPCs were removed; generated-header ordering, changed C++ delimiter balance and plugin JSON validation pass. UE5.8 Editor compile plus PIE/Standalone/packaged frontend presentation testing remain the authoritative runtime acceptance gate.
+
+
+## v0.15.0 revised candidate static validation — project-selectable frontend background layering
+
+The earlier map/Level-Blueprint sequencing candidate is superseded by this revision. The framework now owns both local frontend layers. `FrontendBackgroundWidgetClass` is the only new project-facing class selector; `ADMFFrontendHUD` creates it first, inserts it into the **same game viewport layer** as the login widget, and derives its Z-order as `FrontendUIViewportZOrder - 100`. The login widget also uses `AddToViewport`, eliminating the cross-layer `AddToPlayerScreen` vs `AddToViewport` ordering ambiguity that allowed a fullscreen project background to cover the login card despite a higher numeric login Z-order.
+
+The configured reveal delay starts only after background initialization. Local-PlayerController acquisition keeps its independent 0.10 s retry. Background creation/add failure is non-fatal and cannot block the login flow. Background + login widgets and all three bootstrap timers are cleaned on frontend EndPlay/travel.
+
+Final static regression gate against the runtime-accepted v0.14.9 baseline: **121 -> 122 packaged files**, **83 source/header/build files preserved**, **25,339 -> 25,588 source/build lines**, **43 UCLASS**, **16 UENUM**, **17 USTRUCT**, **450 UFUNCTION** declarations, and **815 -> 821 UPROPERTY** declarations. The six-property delta consists of the five v0.15.0 local frontend presentation properties versus v0.14.9 plus the transient HUD-owned background widget reference; no persistent gameplay property was added. All **45 RPC declarations** are unchanged, no existing reflected UFUNCTION or RPC name was removed, generated-header include ordering passes, changed C++ braces/parentheses are balanced, and the plugin descriptor remains valid JSON.
+
+No replicated property, RPC, SaveGame field, serialized gameplay enum, credential/authentication path, hosting permission path or gameplay authority contract is changed. UE5.8 Editor compile and PIE/Standalone/packaged frontend tests remain the authoritative runtime acceptance gate.

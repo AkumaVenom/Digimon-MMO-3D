@@ -13,6 +13,7 @@ void EmptyLinkFunctionForGeneratedCodeDMFFrontendHUD() {}
 
 // ********** Begin Cross Module References ********************************************************
 ENGINE_API UClass* Z_Construct_UClass_AHUD(ETypeConstructPhase);
+UMG_API UClass* Z_Construct_UClass_UUserWidget(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -39,6 +40,10 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/Game/DMFFrontendHUD.h" },
 		{ "ShowCategories", "Input|MouseInput Input|TouchInput" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendBackgroundWidget_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFFrontendHUD.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendWidget_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFFrontendHUD.h" },
@@ -46,6 +51,7 @@ struct UHT_STATICS
 #endif // WITH_METADATA
 
 // ********** Begin Class ADMFFrontendHUD constinit property declarations **************************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_FrontendBackgroundWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_FrontendWidget;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFFrontendHUD constinit property declarations ****************************
@@ -57,8 +63,10 @@ struct UHT_STATICS
 }; // struct UHT_STATICS
 
 // ********** Begin Class ADMFFrontendHUD Property Definitions *************************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_FrontendBackgroundWidget = { "FrontendBackgroundWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFFrontendHUD, FrontendBackgroundWidget), Z_Construct_UClass_UUserWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendBackgroundWidget_MetaData), NewProp_FrontendBackgroundWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_FrontendWidget = { "FrontendWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFFrontendHUD, FrontendWidget), Z_Construct_UClass_UDMFLoginMainMenuWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendWidget_MetaData), NewProp_FrontendWidget_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendBackgroundWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendWidget,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
@@ -130,10 +138,10 @@ ADMFFrontendHUD::~ADMFFrontendHUD() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFFrontendHUD, TEXT("ADMFFrontendHUD"), &Z_Registration_Info_UClass_ADMFFrontendHUD, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFFrontendHUD), 2262878779U) },
+		{ Z_Construct_UClass_ADMFFrontendHUD, TEXT("ADMFFrontendHUD"), &Z_Registration_Info_UClass_ADMFFrontendHUD, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFFrontendHUD), 957672755U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFFrontendHUD_h__Script_DigimonMMOFramework_90017e06a3795f575537e0ff976d5b764dc08584{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFFrontendHUD_h__Script_DigimonMMOFramework_8af1f3d062e707ee7ed1d8dc27d5a311713838bd{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

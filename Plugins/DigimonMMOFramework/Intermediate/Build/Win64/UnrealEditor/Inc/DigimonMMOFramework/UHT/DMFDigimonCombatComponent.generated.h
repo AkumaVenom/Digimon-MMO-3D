@@ -52,6 +52,7 @@ struct FVector_NetQuantize;
 	DECLARE_FUNCTION(execIsRetaliationEnabled); \
 	DECLARE_FUNCTION(execConfigureRetaliation); \
 	DECLARE_FUNCTION(execConfigureAutomation); \
+	DECLARE_FUNCTION(execRefreshRuntimeVitalsAfterProgression); \
 	DECLARE_FUNCTION(execInitializeRuntimeVitals); \
 	DECLARE_FUNCTION(execCanAttackTarget); \
 	DECLARE_FUNCTION(execGetRemainingCooldown); \

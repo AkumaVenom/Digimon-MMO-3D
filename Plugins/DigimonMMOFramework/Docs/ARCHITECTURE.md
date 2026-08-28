@@ -12,6 +12,21 @@ Species resolution remains Primary Asset Manager-first. v0.13 also walks Digivol
 
 The native `UDMFDigimonInventoryWidget` extends the existing shared shell with `DIGIVOLUTION`. It reads Party+Bank owner state, displays path evaluations and invokes the same server API; no UMG object owns species, stat, cost or persistence authority.
 
+
+## Owned Digimon level progression architecture (v0.14.8)
+
+`UDMFPlayerDigimonComponent` is the sole durable authority for owned-Digimon EXP and Level. `HandleAuthoritativeBattleVictory` resolves the defeated species reward on the server, finds the active partner's owner-only Fast Array entry and passes that entry through one `ApplyExperienceReward` boundary. Clients never submit EXP, Level, stat-growth or Attribute Point values.
+
+Threshold resolution is species-owned and numeric. The current `DMFDigimonSpeciesData` supplies `BaseExperienceRequired` and `ExperienceGrowthMultiplierPerLevel`; the shared deterministic formula is `Base * Multiplier^(CurrentLevel - 1)`. No CurveFloat asset or global EXP fallback is required. The loop subtracts each crossed threshold, supports multiple levels from one reward, and applies the species' existing HP/SP/STR/INT/DEF/SPD Per Level plus `AttributePointsPerLevel` exactly once per gained level.
+
+The persistent Digimon record remains the durable truth. Level, current-level EXP, grown stats and unspent Attribute Points already existed in `FDMFDigimonInstance`, so v0.14.8 does not add a SaveGame schema field. During authoritative account hydration, legacy accumulated EXP is normalized through the same level-up function so pre-v0.14.8 accounts receive levels they had already earned rather than losing stored rewards.
+
+For a summoned partner, `ADMFDigimonCharacter::RefreshProgressionFromInstance` updates public `ReplicatedStats` and clamps/refreshed combat vitals through the dedicated progression path. It intentionally does **not** call the normal combat initialization/reset path: target, cooldowns, recovery, active encounter state and combat intent survive a level-up. Normal actor/property replication publishes the new public Level/stats to observers while Party/Bank contents remain owner-only.
+
+`FDMFDigimonExperienceProgression` is an immutable owner-facing result snapshot used only for presentation. One owner-targeted `ClientDigimonExperienceProgressed` RPC broadcasts the local Blueprint delegate and feeds `UDMFExperienceNotificationWidget`; it grants no authority and is robust to Fast Array/RPC arrival order because the snapshot already contains the committed before/after result. The native Party/Bank panels independently read replicated durable state and the same requirement rules for their EXP bars.
+
+See `SETUP_LEVEL_PROGRESSION.md` for authoring and acceptance tests.
+
 ## Party + Bank / Boxes architecture (v0.12.0)
 
 `UDMFPlayerDigimonComponent` now owns two explicit account-storage tiers while retaining historical field/API names for compatibility:
@@ -88,8 +103,8 @@ The legacy timed-impact presentation path now creates explicitly bounded transie
 Species are immutable definitions (`UDMFDigimonSpeciesData`). Captured/materialized/starter Digimon are mutable instances (`FDMFDigimonInstance`) with a unique `FGuid`.
 
 This separation is mandatory for:
-- individual level/EXP/stat growth;
-- attribute-point spending;
+- owned-Digimon Level/EXP/stat growth is now implemented in v0.14.8;
+- Attribute Point grants are implemented in v0.14.8, while dedicated attribute-point spending remains future expansion;
 - current HP/SP;
 - hunger/care state;
 - learned/equipped abilities;
@@ -102,16 +117,18 @@ This separation is mandatory for:
 
 ## Frontend/network flow
 
-1. Blank frontend map runs `ADMFFrontendGameMode`.
-2. `ADMFFrontendHUD` creates the native `UDMFLoginMainMenuWidget`.
-3. Login locally stages username + credential digest.
-4. **Join Game** validates `Server Public Address / Hostname` + `Game Port` from Project Settings, then travels to that configured MMO endpoint with authentication options.
-5. Server `PreLogin` validates credentials or auto-registers the account.
-6. `InitNewPlayer` hydrates `ADMFPlayerState`, avatar state and Digimon state.
-7. If the account requires a player skin, `UDMFPlayerSkinSelectionWidget` appears first and the server validates the selected `DMFPlayerSkin`.
-8. Once avatar onboarding is complete, a new account requiring a Starter Digimon automatically sees `UDMFStarterSelectionWidget`.
-9. Starter selection is sent as a Server RPC and validated against the configured starter roster.
-10. Server creates/persists/spawns the partner; returning players skip completed onboarding stages.
+1. Frontend map runs `ADMFFrontendGameMode`; `ADMFFrontendHUD` resolves a valid local PlayerController through a short retry loop if necessary.
+2. If `FrontendBackgroundWidgetClass` is assigned, the HUD creates that project-authored background locally and adds it to the game viewport exactly 100 Z-order units below `FrontendUIViewportZOrder`. The project does not manually create this same widget.
+3. After the background is initialized (or immediately when no background class is assigned), the HUD waits `FrontendUIStartupDelaySeconds` and creates `UDMFLoginMainMenuWidget` at `FrontendUIViewportZOrder`. Background creation failure is non-fatal and cannot block login.
+4. The native fallback does not paint a full-screen dark backdrop by default; its root passes hit tests through empty space while the centered login card remains interactive. An optional decorative backdrop can be enabled in Project Settings.
+5. Login locally stages username + credential digest.
+6. **Join Game** validates `Server Public Address / Hostname` + `Game Port` from Project Settings, then travels to that configured MMO endpoint with authentication options.
+7. Server `PreLogin` validates credentials or auto-registers the account.
+8. `InitNewPlayer` hydrates `ADMFPlayerState`, avatar state and Digimon state.
+9. If the account requires a player skin, `UDMFPlayerSkinSelectionWidget` appears first and the server validates the selected `DMFPlayerSkin`.
+10. Once avatar onboarding is complete, a new account requiring a Starter Digimon automatically sees `UDMFStarterSelectionWidget`.
+11. Starter selection is sent as a Server RPC and validated against the configured starter roster.
+12. Server creates/persists/spawns the partner; returning players skip completed onboarding stages.
 
 Admin flow uses the same frontend but requires the additional admin unlock before `Host & Play` can start the open-world map with `listen`. v0.10.2 preflights the project-configured player-facing endpoint, and v0.10.3 also moves the Admin hosting password into Project Settings using a transient editor setter that persists only a one-way digest. Endpoint and Admin-host deployment configuration are therefore centralized without moving gameplay authority into UI.
 
@@ -288,3 +305,7 @@ This layer never selects a target, does not call damage APIs, and introduces no 
 ### v0.14.6 combat-presentation CustomDepth invariant
 Framework-owned attack Niagara/Cascade components and the owner-local enemy overhead target marker participate in the CustomDepth pass unconditionally. Transient attack/impact components are flagged immediately after spawn; reusable projectile and target-arrow components reassert the flag whenever their presentation is refreshed/activated. This is a local rendering invariant only and adds no gameplay authority or network state.
 
+
+## v0.14.9 Attribute-point mutation contract
+
+Attribute Point spending is an owned-Digimon persistence mutation on `UDMFPlayerDigimonComponent`. UI submits only `(InstanceId, EDMFDigimonAttributeStat)`; authority resolves Party/Bank ownership, validates an unspent point, mutates the persistent instance, marks the owner Fast Array item dirty, saves immediately, and refreshes an active world partner in place. The native menu is presentation only and its 1240x900/clipped shell is independent of gameplay authority.

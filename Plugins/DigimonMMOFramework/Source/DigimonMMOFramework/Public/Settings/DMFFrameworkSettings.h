@@ -6,11 +6,13 @@
 
 class UDMFStarterRosterData;
 class UDMFLoginMainMenuWidget;
+class UUserWidget;
 class UDMFStarterSelectionWidget;
 class UDMFCombatQuickBarWidget;
 class UDMFPartyQuickBarWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
+class UDMFExperienceNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFWorldNameplateWidget;
 class UDMFWorldChatWidget;
@@ -43,6 +45,40 @@ public:
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFLoginMainMenuWidget> LoginWidgetClass;
+
+    /**
+     * Optional project-authored full-screen frontend background. The framework creates this first for the
+     * local player and always places it below the login/main-menu layer. Leave unset to use only the map/world.
+     * This is the recommended v0.15.0 path; consuming projects do not need to Create Widget in Level Blueprint.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Frontend", meta=(DisplayName="Frontend Background Widget Class"))
+    TSubclassOf<UUserWidget> FrontendBackgroundWidgetClass;
+
+    /**
+     * Delay after the selected Frontend Background Widget Class has been created and added to the game
+     * viewport before the framework login/main-menu layer is created. Set to zero for immediate overlay.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Frontend", meta=(ClampMin="0.0", ClampMax="30.0", Units="s", DisplayName="Frontend UI Startup Delay Seconds"))
+    float FrontendUIStartupDelaySeconds = 0.25f;
+
+    /**
+     * Optional decorative full-screen dim layer behind the native C++ frontend card. Disabled by default
+     * so consuming projects can provide their own world/UMG background without the framework tinting it.
+     * Blueprint-authored LoginWidgetClass roots remain entirely project-owned.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Frontend", DisplayName="Show Native Frontend Fullscreen Backdrop")
+    bool bShowNativeFrontendFullscreenBackdrop = false;
+
+    /** Opacity used only when the optional native full-screen frontend backdrop is enabled. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Frontend", meta=(EditCondition="bShowNativeFrontendFullscreenBackdrop", ClampMin="0.0", ClampMax="1.0", DisplayName="Native Frontend Backdrop Opacity"))
+    float NativeFrontendBackdropOpacity = 0.34f;
+
+    /**
+     * Viewport Z-order used by the framework login/main-menu layer. The selected Frontend Background Widget
+     * Class is automatically placed 100 Z-order units below this value; no Blueprint Z-order setup is needed.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Frontend", meta=(ClampMin="-100000", ClampMax="100000", DisplayName="Frontend Login/Menu Viewport Z Order"))
+    int32 FrontendUIViewportZOrder = 1000;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFStarterSelectionWidget> StarterSelectionWidgetClass;
@@ -207,6 +243,37 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Partner")
     FVector PartnerSpawnOffset = FVector(150.0, 120.0, 0.0);
 
+    /** Master switch for server-authoritative owned-Digimon EXP consumption and level growth. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Progression|Leveling")
+    bool bEnableOwnedDigimonLeveling = true;
+
+    /** Global level cap used when a species does not provide MaxLevelOverride. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Progression|Leveling", meta=(EditCondition="bEnableOwnedDigimonLeveling", ClampMin="1", ClampMax="999"))
+    int32 DefaultMaxDigimonLevel = 99;
+
+    /** Native Fortnite-style owner-only EXP progress/level-up presentation; assign a Blueprint child to fully reskin it. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression")
+    TSubclassOf<UDMFExperienceNotificationWidget> ExperienceNotificationWidgetClass;
+
+    /** Master switch for the native EXP gain and LEVEL UP presentation. Gameplay leveling remains authoritative when disabled. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression")
+    bool bShowNativeExperienceNotifications = true;
+
+    /** Time used to animate the current-level EXP bar toward the authoritative result. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression|Presentation", meta=(EditCondition="bShowNativeExperienceNotifications", ClampMin="0.05", ClampMax="5.0"))
+    float ExperienceProgressAnimationSeconds = 1.10f;
+
+    /** Hold time after the bar finishes when no level was gained. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression|Presentation", meta=(EditCondition="bShowNativeExperienceNotifications", ClampMin="0.1", ClampMax="10.0"))
+    float ExperienceNotificationHoldSeconds = 2.20f;
+
+    /** Longer hold time used when the reward produces one or more level-ups. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression|Presentation", meta=(EditCondition="bShowNativeExperienceNotifications", ClampMin="0.1", ClampMax="10.0"))
+    float LevelUpNotificationHoldSeconds = 3.40f;
+
+    /** Bottom safe-lane offset for the centered native EXP toast so it clears Party/combat quickbars. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Progression|Presentation", meta=(EditCondition="bShowNativeExperienceNotifications", ClampMin="0.0", ClampMax="1200.0"))
+    float ExperienceNotificationBottomSafeOffset = 280.0f;
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFCombatQuickBarWidget> CombatQuickBarWidgetClass;

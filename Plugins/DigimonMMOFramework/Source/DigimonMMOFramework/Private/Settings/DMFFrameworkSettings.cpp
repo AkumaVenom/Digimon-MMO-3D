@@ -6,6 +6,7 @@
 #include "UI/DMFDigimonInventoryWidget.h"
 #include "UI/DMFPartyQuickBarWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
+#include "UI/DMFExperienceNotificationWidget.h"
 #include "UI/DMFWorldNameplateWidget.h"
 #include "UI/DMFWorldChatWidget.h"
 #include "Utility/DMFCredentialUtility.h"
@@ -21,6 +22,7 @@ UDMFFrameworkSettings::UDMFFrameworkSettings()
     DigimonInventoryWidgetClass = UDMFDigimonInventoryWidget::StaticClass();
     PartyQuickBarWidgetClass = UDMFPartyQuickBarWidget::StaticClass();
     ScanNotificationWidgetClass = UDMFScanNotificationWidget::StaticClass();
+    ExperienceNotificationWidgetClass = UDMFExperienceNotificationWidget::StaticClass();
     WorldChatWidgetClass = UDMFWorldChatWidget::StaticClass();
     PlayerNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     DigimonNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();

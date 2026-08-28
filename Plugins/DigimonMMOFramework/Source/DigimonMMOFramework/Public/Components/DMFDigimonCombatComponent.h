@@ -77,6 +77,10 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void InitializeRuntimeVitals(int32 InCurrentHP, int32 InCurrentSP);
 
+    /** Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat|Progression")
+    void RefreshRuntimeVitalsAfterProgression(int32 InCurrentHP, int32 InCurrentSP);
+
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void ConfigureAutomation(bool bInAutoBattleEnabled, float InAggroRange, float InLeashRange, AActor* InFollowAnchor);
 

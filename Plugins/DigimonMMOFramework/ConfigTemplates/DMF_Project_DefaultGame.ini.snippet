@@ -10,7 +10,28 @@
 +PrimaryAssetTypesToScan=(PrimaryAssetType="DMFPlayerSkin",AssetBaseClass="/Script/DigimonMMOFramework.DMFPlayerSkinData",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/DigimonData")),SpecificAssets=,Rules=(Priority=-1,ChunkId=-1,bApplyRecursively=True,CookRule=AlwaysCook))
 
 
+; v0.15.0 framework-owned Frontend background + login/main-menu layering.
+; Assign FrontendBackgroundWidgetClass in Project Settings; the framework creates it first and
+; automatically places it 100 Z-order units below the login/main-menu layer. No Level Blueprint race is required.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+; FrontendBackgroundWidgetClass=/Game/UI/WBP_MainMenuBackground.WBP_MainMenuBackground_C
+FrontendUIStartupDelaySeconds=0.25
+bShowNativeFrontendFullscreenBackdrop=False
+NativeFrontendBackdropOpacity=0.34
+FrontendUIViewportZOrder=1000
 
+; v0.14.8 server-authoritative owned-Digimon Level/EXP progression + owner-only native EXP presentation.
+; Each DMFDigimonSpeciesData owns BaseExperienceRequired + ExperienceGrowthMultiplierPerLevel; no CurveFloat asset is required.
+; MaxLevelOverride is optional; zero uses DefaultMaxDigimonLevel.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnableOwnedDigimonLeveling=True
+DefaultMaxDigimonLevel=99
+bShowNativeExperienceNotifications=True
+ExperienceProgressAnimationSeconds=1.10
+ExperienceNotificationHoldSeconds=2.20
+LevelUpNotificationHoldSeconds=3.40
+ExperienceNotificationBottomSafeOffset=280.0
+; ExperienceNotificationWidgetClass=/Script/DigimonMMOFramework.DMFExperienceNotificationWidget
 
 ; v0.13.0 persistent server-authoritative Digivolution defaults.
 ; Author actual branching paths on each DMFDigimonSpeciesData asset under Digivolution > Digivolutions.

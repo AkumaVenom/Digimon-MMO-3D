@@ -19,9 +19,11 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class ADMFDigimonCharacter;
 class APawn;
 class UDMFDigimonSpeciesData;
+enum class EDMFDigimonAttributeStat : uint8;
 enum class EDMFDigimonStorageLocation : uint8;
 struct FDMFAccountRecord;
 struct FDMFDigimonCareState;
+struct FDMFDigimonExperienceProgression;
 struct FDMFDigimonInstance;
 struct FDMFDigivolutionEvaluation;
 struct FDMFScanDataEntry;
@@ -29,7 +31,8 @@ struct FGuid;
 struct FPrimaryAssetId;
 
 // ********** Begin Class UDMFPlayerDigimonComponent ***********************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual void ClientDigimonExperienceProgressed_Implementation(FDMFDigimonExperienceProgression Progression); \
 	virtual void ClientBattleRewardGranted_Implementation(FPrimaryAssetId DefeatedSpeciesId, int64 Experience, int64 MoneyReward); \
 	virtual void ServerCommandActivePartnerAbilitySlot_Implementation(int32 SlotIndex, ADMFDigimonCharacter* RequestedTarget); \
 	virtual void ServerSetCommandTarget_Implementation(ADMFDigimonCharacter* NewTarget); \
@@ -46,6 +49,8 @@ struct FPrimaryAssetId;
 	virtual void ClientDigivolutionResult_Implementation(bool bSuccess, FText const& Message, FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId NewSpeciesId); \
 	virtual void ClientDigivolutionSequenceStarted_Implementation(FGuid DigimonInstanceId, FPrimaryAssetId PreviousSpeciesId, FPrimaryAssetId TargetSpeciesId); \
 	virtual void ServerDigivolveOwnedDigimon_Implementation(FGuid InstanceId, FPrimaryAssetId TargetSpeciesId); \
+	virtual void ClientAttributePointSpendResult_Implementation(bool bSuccess, FText const& Message, FGuid DigimonInstanceId, EDMFDigimonAttributeStat Stat, int32 NewStatValue, int32 RemainingPoints); \
+	virtual void ServerSpendDigimonAttributePoint_Implementation(FGuid InstanceId, EDMFDigimonAttributeStat Stat); \
 	virtual void ClientStarterSelectionResult_Implementation(bool bSuccess, FText const& Message, FGuid PartnerInstanceId); \
 	virtual void ServerSelectStarter_Implementation(FPrimaryAssetId StarterSpeciesId); \
 	virtual void ClientDigimonStorageActionResult_Implementation(bool bSuccess, FText const& Message, FGuid DigimonInstanceId, EDMFDigimonStorageLocation NewLocation); \
@@ -66,6 +71,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execApplyToAccountRecord); \
 	DECLARE_FUNCTION(execInitializeFromAccountRecord); \
 	DECLARE_FUNCTION(execResetStarterOnboarding); \
+	DECLARE_FUNCTION(execClientDigimonExperienceProgressed); \
 	DECLARE_FUNCTION(execClientBattleRewardGranted); \
 	DECLARE_FUNCTION(execHandleAuthoritativeBattleVictory); \
 	DECLARE_FUNCTION(execServerCommandActivePartnerAbilitySlot); \
@@ -95,6 +101,13 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execIsSpeciesReadyToMaterialize); \
 	DECLARE_FUNCTION(execGetScanPercent); \
 	DECLARE_FUNCTION(execGetScanDataEntries); \
+	DECLARE_FUNCTION(execClientAttributePointSpendResult); \
+	DECLARE_FUNCTION(execServerSpendDigimonAttributePoint); \
+	DECLARE_FUNCTION(execCanSpendDigimonAttributePoint); \
+	DECLARE_FUNCTION(execGetExperienceProgressNormalized); \
+	DECLARE_FUNCTION(execGetExperienceRequiredForNextLevel); \
+	DECLARE_FUNCTION(execGetMaximumLevelForSpecies); \
+	DECLARE_FUNCTION(execGetExperienceRequiredForLevel); \
 	DECLARE_FUNCTION(execGetMoney); \
 	DECLARE_FUNCTION(execGetCommandTarget); \
 	DECLARE_FUNCTION(execClientStarterSelectionResult); \
@@ -115,11 +128,11 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execGetDigimonInventory);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_UDMFPlayerDigimonComponent_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerDigimonComponent(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_UDMFPlayerDigimonComponent_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_UDMFPlayerDigimonComponent(ETypeConstructPhase); \
@@ -146,7 +159,7 @@ public: \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	UDMFPlayerDigimonComponent(UDMFPlayerDigimonComponent&&) = delete; \
 	UDMFPlayerDigimonComponent(const UDMFPlayerDigimonComponent&) = delete; \
@@ -156,14 +169,14 @@ public: \
 	NO_API virtual ~UDMFPlayerDigimonComponent();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_35_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_37_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_38_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h_40_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

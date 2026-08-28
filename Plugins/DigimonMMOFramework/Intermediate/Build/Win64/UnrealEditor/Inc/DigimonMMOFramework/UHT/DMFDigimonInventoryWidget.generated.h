@@ -17,6 +17,7 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class UDMFDigimonSpeciesData;
+enum class EDMFDigimonAttributeStat : uint8;
 enum class EDMFDigimonMenuTab : uint8;
 enum class EDMFDigimonStorageLocation : uint8;
 struct FDMFDigimonCareState;
@@ -28,6 +29,18 @@ struct FPrimaryAssetId;
 #define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_29_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execHandlePartnerActionResult); \
 	DECLARE_FUNCTION(execHandleClose); \
+	DECLARE_FUNCTION(execHandleSpendBankSpeed); \
+	DECLARE_FUNCTION(execHandleSpendBankDefense); \
+	DECLARE_FUNCTION(execHandleSpendBankIntelligence); \
+	DECLARE_FUNCTION(execHandleSpendBankStrength); \
+	DECLARE_FUNCTION(execHandleSpendBankSP); \
+	DECLARE_FUNCTION(execHandleSpendBankHP); \
+	DECLARE_FUNCTION(execHandleSpendPartySpeed); \
+	DECLARE_FUNCTION(execHandleSpendPartyDefense); \
+	DECLARE_FUNCTION(execHandleSpendPartyIntelligence); \
+	DECLARE_FUNCTION(execHandleSpendPartyStrength); \
+	DECLARE_FUNCTION(execHandleSpendPartySP); \
+	DECLARE_FUNCTION(execHandleSpendPartyHP); \
 	DECLARE_FUNCTION(execHandleRecallPartner); \
 	DECLARE_FUNCTION(execHandleSummonSelected); \
 	DECLARE_FUNCTION(execHandleDigimonPressed); \
@@ -58,6 +71,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleCollectionTab); \
 	DECLARE_FUNCTION(execHandleMaterializationResult); \
 	DECLARE_FUNCTION(execHandleScanDataChanged); \
+	DECLARE_FUNCTION(execHandleAttributePointSpendResult); \
 	DECLARE_FUNCTION(execHandleStorageActionResult); \
 	DECLARE_FUNCTION(execHandleBankChanged); \
 	DECLARE_FUNCTION(execHandleInventoryChanged); \

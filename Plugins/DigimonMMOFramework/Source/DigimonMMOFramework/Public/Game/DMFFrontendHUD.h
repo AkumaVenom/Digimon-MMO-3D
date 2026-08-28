@@ -5,6 +5,7 @@
 #include "DMFFrontendHUD.generated.h"
 
 class UDMFLoginMainMenuWidget;
+class UUserWidget;
 
 UCLASS(Blueprintable)
 class DIGIMONMMOFRAMEWORK_API ADMFFrontendHUD : public AHUD
@@ -16,10 +17,21 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+    void EnsureFrontendBackgroundWidget();
+    void ScheduleFrontendBackgroundRetry();
+    void ScheduleFrontendLoginBootstrap();
+    void BeginFrontendBootstrap();
     void EnsureFrontendWidget();
+    void ScheduleFrontendRetry();
+
+    UPROPERTY(Transient)
+    TObjectPtr<UUserWidget> FrontendBackgroundWidget;
 
     UPROPERTY(Transient)
     TObjectPtr<UDMFLoginMainMenuWidget> FrontendWidget;
 
+    bool bFrontendLoginBootstrapScheduled = false;
+    FTimerHandle FrontendBackgroundBootstrapTimer;
+    FTimerHandle FrontendStartupDelayTimer;
     FTimerHandle FrontendBootstrapTimer;
 };

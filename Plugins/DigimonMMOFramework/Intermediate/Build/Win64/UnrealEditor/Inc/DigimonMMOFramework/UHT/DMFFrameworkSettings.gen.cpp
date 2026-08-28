@@ -22,6 +22,7 @@ ENGINE_API UClass* Z_Construct_UClass_UStaticMesh(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_UWorld(ETypeConstructPhase);
 NIAGARA_API UClass* Z_Construct_UClass_UNiagaraSystem(ETypeConstructPhase);
 PAPER2D_API UClass* Z_Construct_UClass_UPaperSprite(ETypeConstructPhase);
+UMG_API UClass* Z_Construct_UClass_UUserWidget(ETypeConstructPhase);
 // ********** End Cross Module References **********************************************************
 
 // ********** Begin Same Module References *********************************************************
@@ -30,6 +31,7 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeCo
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFCombatQuickBarWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCarePropActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFExperienceNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFLoginMainMenuWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPartyQuickBarWidget(ETypeConstructPhase);
@@ -71,6 +73,69 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_LoginWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendBackgroundWidgetClass_MetaData[] = {
+		{ "Category", "UI|Frontend" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Optional project-authored full-screen frontend background. The framework creates this first for the\n     * local player and always places it below the login/main-menu layer. Leave unset to use only the map/world.\n     * This is the recommended v0.15.0 path; consuming projects do not need to Create Widget in Level Blueprint.\n     */" },
+#endif
+		{ "DisplayName", "Frontend Background Widget Class" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional project-authored full-screen frontend background. The framework creates this first for the\nlocal player and always places it below the login/main-menu layer. Leave unset to use only the map/world.\nThis is the recommended v0.15.0 path; consuming projects do not need to Create Widget in Level Blueprint." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendUIStartupDelaySeconds_MetaData[] = {
+		{ "Category", "UI|Frontend" },
+		{ "ClampMax", "30.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Delay after the selected Frontend Background Widget Class has been created and added to the game\n     * viewport before the framework login/main-menu layer is created. Set to zero for immediate overlay.\n     */" },
+#endif
+		{ "DisplayName", "Frontend UI Startup Delay Seconds" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Delay after the selected Frontend Background Widget Class has been created and added to the game\nviewport before the framework login/main-menu layer is created. Set to zero for immediate overlay." },
+#endif
+		{ "Units", "s" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativeFrontendFullscreenBackdrop_MetaData[] = {
+		{ "Category", "UI|Frontend" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Optional decorative full-screen dim layer behind the native C++ frontend card. Disabled by default\n     * so consuming projects can provide their own world/UMG background without the framework tinting it.\n     * Blueprint-authored LoginWidgetClass roots remain entirely project-owned.\n     */" },
+#endif
+		{ "DisplayName", "Show Native Frontend Fullscreen Backdrop" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Optional decorative full-screen dim layer behind the native C++ frontend card. Disabled by default\nso consuming projects can provide their own world/UMG background without the framework tinting it.\nBlueprint-authored LoginWidgetClass roots remain entirely project-owned." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NativeFrontendBackdropOpacity_MetaData[] = {
+		{ "Category", "UI|Frontend" },
+		{ "ClampMax", "1.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opacity used only when the optional native full-screen frontend backdrop is enabled. */" },
+#endif
+		{ "DisplayName", "Native Frontend Backdrop Opacity" },
+		{ "EditCondition", "bShowNativeFrontendFullscreenBackdrop" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opacity used only when the optional native full-screen frontend backdrop is enabled." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FrontendUIViewportZOrder_MetaData[] = {
+		{ "Category", "UI|Frontend" },
+		{ "ClampMax", "100000" },
+		{ "ClampMin", "-100000" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Viewport Z-order used by the framework login/main-menu layer. The selected Frontend Background Widget\n     * Class is automatically placed 100 Z-order units below this value; no Blueprint Z-order setup is needed.\n     */" },
+#endif
+		{ "DisplayName", "Frontend Login/Menu Viewport Z Order" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Viewport Z-order used by the framework login/main-menu layer. The selected Frontend Background Widget\nClass is automatically placed 100 Z-order units below this value; no Blueprint Z-order setup is needed." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StarterSelectionWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
@@ -510,6 +575,101 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartnerSpawnOffset_MetaData[] = {
 		{ "Category", "Partner" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableOwnedDigimonLeveling_MetaData[] = {
+		{ "Category", "Progression|Leveling" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for server-authoritative owned-Digimon EXP consumption and level growth. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for server-authoritative owned-Digimon EXP consumption and level growth." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultMaxDigimonLevel_MetaData[] = {
+		{ "Category", "Progression|Leveling" },
+		{ "ClampMax", "999" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global level cap used when a species does not provide MaxLevelOverride. */" },
+#endif
+		{ "EditCondition", "bEnableOwnedDigimonLeveling" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global level cap used when a species does not provide MaxLevelOverride." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ExperienceNotificationWidgetClass_MetaData[] = {
+		{ "Category", "UI|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Native Fortnite-style owner-only EXP progress/level-up presentation; assign a Blueprint child to fully reskin it. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Native Fortnite-style owner-only EXP progress/level-up presentation; assign a Blueprint child to fully reskin it." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowNativeExperienceNotifications_MetaData[] = {
+		{ "Category", "UI|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for the native EXP gain and LEVEL UP presentation. Gameplay leveling remains authoritative when disabled. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for the native EXP gain and LEVEL UP presentation. Gameplay leveling remains authoritative when disabled." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ExperienceProgressAnimationSeconds_MetaData[] = {
+		{ "Category", "UI|Progression|Presentation" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.05" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Time used to animate the current-level EXP bar toward the authoritative result. */" },
+#endif
+		{ "EditCondition", "bShowNativeExperienceNotifications" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Time used to animate the current-level EXP bar toward the authoritative result." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ExperienceNotificationHoldSeconds_MetaData[] = {
+		{ "Category", "UI|Progression|Presentation" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Hold time after the bar finishes when no level was gained. */" },
+#endif
+		{ "EditCondition", "bShowNativeExperienceNotifications" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Hold time after the bar finishes when no level was gained." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_LevelUpNotificationHoldSeconds_MetaData[] = {
+		{ "Category", "UI|Progression|Presentation" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Longer hold time used when the reward produces one or more level-ups. */" },
+#endif
+		{ "EditCondition", "bShowNativeExperienceNotifications" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Longer hold time used when the reward produces one or more level-ups." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ExperienceNotificationBottomSafeOffset_MetaData[] = {
+		{ "Category", "UI|Progression|Presentation" },
+		{ "ClampMax", "1200.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Bottom safe-lane offset for the centered native EXP toast so it clears Party/combat quickbars. */" },
+#endif
+		{ "EditCondition", "bShowNativeExperienceNotifications" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Bottom safe-lane offset for the centered native EXP toast so it clears Party/combat quickbars." },
+#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CombatQuickBarWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
@@ -1509,6 +1669,15 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_OpenWorldMap;
 	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_StarterRoster;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_LoginWidgetClass;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_FrontendBackgroundWidgetClass;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FrontendUIStartupDelaySeconds;
+	static void NewProp_bShowNativeFrontendFullscreenBackdrop_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowNativeFrontendFullscreenBackdrop = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowNativeFrontendFullscreenBackdrop;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_NativeFrontendBackdropOpacity;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_FrontendUIViewportZOrder;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_StarterSelectionWidgetClass;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_PlayerSkinSelectionWidgetClass;
 	static void NewProp_bRequirePlayerSkinSelection_SetBit(void* Obj)
@@ -1590,6 +1759,22 @@ struct UHT_STATICS
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAllowPartySwitchingDuringCombat;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_PartnerSpawnOffset;
+	static void NewProp_bEnableOwnedDigimonLeveling_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableOwnedDigimonLeveling = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableOwnedDigimonLeveling;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_DefaultMaxDigimonLevel;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_ExperienceNotificationWidgetClass;
+	static void NewProp_bShowNativeExperienceNotifications_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowNativeExperienceNotifications = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowNativeExperienceNotifications;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceProgressAnimationSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceNotificationHoldSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_LevelUpNotificationHoldSeconds;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceNotificationBottomSafeOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_CombatQuickBarWidgetClass;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_PartyQuickBarWidgetClass;
 	static void NewProp_bShowNativePartyQuickBar_SetBit(void* Obj)
@@ -1830,6 +2015,11 @@ const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_Frontend
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_OpenWorldMap = { "OpenWorldMap", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, OpenWorldMap), Z_Construct_UClass_UWorld, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OpenWorldMap_MetaData), NewProp_OpenWorldMap_MetaData) };
 const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_StarterRoster = { "StarterRoster", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, StarterRoster), Z_Construct_UClass_UDMFStarterRosterData, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StarterRoster_MetaData), NewProp_StarterRoster_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_LoginWidgetClass = { "LoginWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, LoginWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFLoginMainMenuWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LoginWidgetClass_MetaData), NewProp_LoginWidgetClass_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_FrontendBackgroundWidgetClass = { "FrontendBackgroundWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FrontendBackgroundWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UUserWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendBackgroundWidgetClass_MetaData), NewProp_FrontendBackgroundWidgetClass_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_FrontendUIStartupDelaySeconds = { "FrontendUIStartupDelaySeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FrontendUIStartupDelaySeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendUIStartupDelaySeconds_MetaData), NewProp_FrontendUIStartupDelaySeconds_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeFrontendFullscreenBackdrop = { "bShowNativeFrontendFullscreenBackdrop", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeFrontendFullscreenBackdrop_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeFrontendFullscreenBackdrop_MetaData), NewProp_bShowNativeFrontendFullscreenBackdrop_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_NativeFrontendBackdropOpacity = { "NativeFrontendBackdropOpacity", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, NativeFrontendBackdropOpacity), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NativeFrontendBackdropOpacity_MetaData), NewProp_NativeFrontendBackdropOpacity_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_FrontendUIViewportZOrder = { "FrontendUIViewportZOrder", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FrontendUIViewportZOrder), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FrontendUIViewportZOrder_MetaData), NewProp_FrontendUIViewportZOrder_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_StarterSelectionWidgetClass = { "StarterSelectionWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, StarterSelectionWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFStarterSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StarterSelectionWidgetClass_MetaData), NewProp_StarterSelectionWidgetClass_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PlayerSkinSelectionWidgetClass = { "PlayerSkinSelectionWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerSkinSelectionWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPlayerSkinSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerSkinSelectionWidgetClass_MetaData), NewProp_PlayerSkinSelectionWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bRequirePlayerSkinSelection = { "bRequirePlayerSkinSelection", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bRequirePlayerSkinSelection_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bRequirePlayerSkinSelection_MetaData), NewProp_bRequirePlayerSkinSelection_MetaData) };
@@ -1871,6 +2061,14 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxDigimonBankS
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonBankSlotsPerPage = { "DigimonBankSlotsPerPage", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonBankSlotsPerPage), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonBankSlotsPerPage_MetaData), NewProp_DigimonBankSlotsPerPage_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat = { "bAllowPartySwitchingDuringCombat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAllowPartySwitchingDuringCombat_MetaData), NewProp_bAllowPartySwitchingDuringCombat_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PartnerSpawnOffset = { "PartnerSpawnOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartnerSpawnOffset), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartnerSpawnOffset_MetaData), NewProp_PartnerSpawnOffset_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling = { "bEnableOwnedDigimonLeveling", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableOwnedDigimonLeveling_MetaData), NewProp_bEnableOwnedDigimonLeveling_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DefaultMaxDigimonLevel = { "DefaultMaxDigimonLevel", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultMaxDigimonLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultMaxDigimonLevel_MetaData), NewProp_DefaultMaxDigimonLevel_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ExperienceNotificationWidgetClass = { "ExperienceNotificationWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceNotificationWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFExperienceNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationWidgetClass_MetaData), NewProp_ExperienceNotificationWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeExperienceNotifications = { "bShowNativeExperienceNotifications", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeExperienceNotifications_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeExperienceNotifications_MetaData), NewProp_bShowNativeExperienceNotifications_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceProgressAnimationSeconds = { "ExperienceProgressAnimationSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceProgressAnimationSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceProgressAnimationSeconds_MetaData), NewProp_ExperienceProgressAnimationSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNotificationHoldSeconds = { "ExperienceNotificationHoldSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceNotificationHoldSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationHoldSeconds_MetaData), NewProp_ExperienceNotificationHoldSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds = { "LevelUpNotificationHoldSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, LevelUpNotificationHoldSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LevelUpNotificationHoldSeconds_MetaData), NewProp_LevelUpNotificationHoldSeconds_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset = { "ExperienceNotificationBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceNotificationBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationBottomSafeOffset_MetaData), NewProp_ExperienceNotificationBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidgetClass = { "CombatQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CombatQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidgetClass_MetaData), NewProp_CombatQuickBarWidgetClass_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidgetClass = { "PartyQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidgetClass_MetaData), NewProp_PartyQuickBarWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativePartyQuickBar = { "bShowNativePartyQuickBar", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativePartyQuickBar_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativePartyQuickBar_MetaData), NewProp_bShowNativePartyQuickBar_MetaData) };
@@ -1974,6 +2172,11 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OpenWorldMap,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StarterRoster,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LoginWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendBackgroundWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendUIStartupDelaySeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeFrontendFullscreenBackdrop,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NativeFrontendBackdropOpacity,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FrontendUIViewportZOrder,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StarterSelectionWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerSkinSelectionWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bRequirePlayerSkinSelection,
@@ -2015,6 +2218,14 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonBankSlotsPerPage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartnerSpawnOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultMaxDigimonLevel,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeExperienceNotifications,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceProgressAnimationSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationHoldSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativePartyQuickBar,
@@ -2182,10 +2393,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3069909326U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 1906843854U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_c88ca8f044d2d98a83b90f8afdc22b07d3f15b71{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_91edc546ab96cd12e7ed0ff8fe25b88dbd15e1d4{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -100,13 +100,13 @@ The plugin is intentionally being built in dependency order rather than as isola
 ## Phase 7 — Growth and digivolution (Digivolution core implemented in v0.13.0-alpha)
 
 - Digivolution Owned Digimon Party/Bank card aspect-ratio and sparse-row layout hardening — **FIXED in v0.13.1-alpha**.
-- EXP curves and level-up rewards — future expansion.
-- Attribute point grants/spending — future expansion.
+- Server-authoritative species-owned numeric EXP thresholds, multi-level rewards, persistent stat growth and native EXP/LEVEL UP presentation — **IMPLEMENTED in v0.14.8-alpha**.
+- Attribute Point grants from `Attribute Points Per Level` — **IMPLEMENTED in v0.14.8-alpha**; dedicated attribute-spending UX/rules remain future expansion.
 - Level + ABI/CAM + optional stat/Care/economy Digivolution requirements — **IMPLEMENTED in v0.13.0-alpha**.
 - Server-authoritative persistent species transition for Party + Bank — **IMPLEMENTED in v0.13.0-alpha**.
 - Replicated active-partner transformation presentation and target-form actor replacement — **IMPLEMENTED in v0.13.0-alpha**.
 - Persistent Origin Species + Digivolution History schema-v5 provenance — **IMPLEMENTED in v0.13.0-alpha**.
-- More advanced EXP curves, attribute-spend UX and project-specific de-Digivolution rules remain future growth work.
+- Attribute-spend UX, richer optional progression economies and project-specific de-Digivolution rules remain future growth work; species-owned EXP scaling/level rewards are now first-class in v0.14.8.
 
 ## Phase 8 — Ranked NPC arena
 - Data-driven ranked teams.
@@ -206,3 +206,16 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Replicated moving projectile Niagara/Cascade components force CustomDepth at construction and every presentation refresh before activation.
 - The owner-local enemy overhead target arrow forces CustomDepth for both Niagara and Cascade across construction, hot asset refresh and activation.
 - No stencil value, combat authority, RPC, replication ownership or SaveGame contract changed.
+
+## v0.14.9 completed
+
+Completed: persistent server-authoritative Attribute Point spending for HP/SP/STR/INT/DEF/SPD, native Party/Bank plus-button UX, Blueprint API/result delegate, active-partner in-place replication refresh, and full native Digimon Menu containment/layout polish.
+
+## v0.15.0 implemented — framework-owned frontend background layering
+
+- Project Settings exposes `Frontend Background Widget Class`; consuming projects select their authored Widget Blueprint instead of manually creating it in the Frontend Map.
+- `ADMFFrontendHUD` creates the selected background first and automatically places it 100 Z-order units below the login/main-menu layer.
+- Configurable startup delay now measures background-to-login reveal timing rather than relying on Blueprint BeginPlay ordering.
+- Native fallback no longer forces the dark full-screen backdrop; optional dim + opacity remain available in Project Settings.
+- Background creation is non-fatal, and both layers/timers are cleaned up on frontend EndPlay/travel.
+- Presentation-only change: login, hosting, travel, authentication, persistence and multiplayer gameplay authority are unchanged.

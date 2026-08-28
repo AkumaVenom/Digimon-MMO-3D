@@ -17,6 +17,7 @@
 #include "Engine/World.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/AssetManager.h"
+#include "Progression/DMFLevelProgressionMath.h"
 #include "TimerManager.h"
 #include "AIController.h"
 #include "Animation/AnimMontage.h"
@@ -154,6 +155,333 @@ bool UDMFPlayerDigimonComponent::GetOwnedDigimonByInstanceId(const FGuid Instanc
     return false;
 }
 
+int64 UDMFPlayerDigimonComponent::ResolveExperienceRequirement(const UDMFDigimonSpeciesData& Species, const int32 CurrentLevel) const
+{
+    return DMFLevelProgressionMath::GetExperienceRequiredForLevel(Species, CurrentLevel);
+}
+
+int32 UDMFPlayerDigimonComponent::ResolveMaximumLevel(const UDMFDigimonSpeciesData& Species) const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const int32 GlobalMaximum = Settings ? FMath::Clamp(Settings->DefaultMaxDigimonLevel, 1, 999) : 99;
+    return Species.MaxLevelOverride > 0 ? FMath::Clamp(Species.MaxLevelOverride, 1, 999) : GlobalMaximum;
+}
+
+int64 UDMFPlayerDigimonComponent::GetExperienceRequiredForLevel(const FPrimaryAssetId SpeciesId, const int32 CurrentLevel) const
+{
+    if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(SpeciesId))
+    {
+        if (FMath::Max(1, CurrentLevel) >= ResolveMaximumLevel(*Species))
+        {
+            return 0;
+        }
+        return ResolveExperienceRequirement(*Species, CurrentLevel);
+    }
+    return 0;
+}
+
+int32 UDMFPlayerDigimonComponent::GetMaximumLevelForSpecies(const FPrimaryAssetId SpeciesId) const
+{
+    if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(SpeciesId))
+    {
+        return ResolveMaximumLevel(*Species);
+    }
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    return Settings ? FMath::Clamp(Settings->DefaultMaxDigimonLevel, 1, 999) : 99;
+}
+
+int64 UDMFPlayerDigimonComponent::GetExperienceRequiredForNextLevel(const FGuid InstanceId) const
+{
+    FDMFDigimonInstance Digimon;
+    EDMFDigimonStorageLocation Location = EDMFDigimonStorageLocation::Party;
+    if (!GetOwnedDigimonByInstanceId(InstanceId, Digimon, Location))
+    {
+        return 0;
+    }
+    return GetExperienceRequiredForLevel(Digimon.SpeciesId, Digimon.Stats.Level);
+}
+
+float UDMFPlayerDigimonComponent::GetExperienceProgressNormalized(const FGuid InstanceId) const
+{
+    FDMFDigimonInstance Digimon;
+    EDMFDigimonStorageLocation Location = EDMFDigimonStorageLocation::Party;
+    if (!GetOwnedDigimonByInstanceId(InstanceId, Digimon, Location))
+    {
+        return 0.0f;
+    }
+
+    const int64 Required = GetExperienceRequiredForLevel(Digimon.SpeciesId, Digimon.Stats.Level);
+    if (Required <= 0)
+    {
+        return 1.0f;
+    }
+    return FMath::Clamp(static_cast<float>(static_cast<double>(FMath::Max<int64>(0, Digimon.Stats.Experience)) / static_cast<double>(Required)), 0.0f, 1.0f);
+}
+
+bool UDMFPlayerDigimonComponent::CanSpendDigimonAttributePoint(const FGuid InstanceId, const EDMFDigimonAttributeStat Stat, FText& OutFailureReason) const
+{
+    OutFailureReason = FText::GetEmpty();
+    if (!InstanceId.IsValid())
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendInvalidInstance", "Select an owned Digimon first.");
+        return false;
+    }
+
+    FDMFDigimonInstance Digimon;
+    EDMFDigimonStorageLocation Location = EDMFDigimonStorageLocation::Party;
+    if (!GetOwnedDigimonByInstanceId(InstanceId, Digimon, Location))
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendNotOwned", "That Digimon is not owned by this account.");
+        return false;
+    }
+    if (Digimon.UnspentAttributePoints <= 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendNoPoints", "This Digimon has no unspent Attribute Points.");
+        return false;
+    }
+    if (bDigivolutionSequenceActive && DigivolutionSequenceInstanceId == InstanceId)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendDuringDigivolution", "Wait for the current Digivolution sequence to finish before spending Attribute Points.");
+        return false;
+    }
+
+    int32 CurrentValue = MAX_int32;
+    switch (Stat)
+    {
+        case EDMFDigimonAttributeStat::MaxHP: CurrentValue = Digimon.Stats.MaxHP; break;
+        case EDMFDigimonAttributeStat::MaxSP: CurrentValue = Digimon.Stats.MaxSP; break;
+        case EDMFDigimonAttributeStat::Strength: CurrentValue = Digimon.Stats.Strength; break;
+        case EDMFDigimonAttributeStat::Intelligence: CurrentValue = Digimon.Stats.Intelligence; break;
+        case EDMFDigimonAttributeStat::Defense: CurrentValue = Digimon.Stats.Defense; break;
+        case EDMFDigimonAttributeStat::Speed: CurrentValue = Digimon.Stats.Speed; break;
+        default:
+            OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendInvalidStat", "That stat cannot receive Attribute Points.");
+            return false;
+    }
+
+    if (CurrentValue >= MAX_int32)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "AttributeSpendStatAtLimit", "That stat has reached the framework integer limit.");
+        return false;
+    }
+    return true;
+}
+
+void UDMFPlayerDigimonComponent::ServerSpendDigimonAttributePoint_Implementation(const FGuid InstanceId, const EDMFDigimonAttributeStat Stat)
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        return;
+    }
+
+    FText Failure;
+    if (!CanSpendDigimonAttributePoint(InstanceId, Stat, Failure))
+    {
+        ClientAttributePointSpendResult(false, Failure, InstanceId, Stat, 0, 0);
+        return;
+    }
+
+    FDMFReplicatedDigimonEntry* Entry = FindInventoryEntry(InstanceId);
+    const bool bPartyEntry = Entry != nullptr;
+    if (!Entry)
+    {
+        Entry = FindBankEntry(InstanceId);
+    }
+    if (!Entry || Entry->Digimon.UnspentAttributePoints <= 0)
+    {
+        ClientAttributePointSpendResult(false, NSLOCTEXT("DMF", "AttributeSpendStateChanged", "The Digimon's progression state changed before the request could be applied."), InstanceId, Stat, 0, 0);
+        return;
+    }
+
+    FDMFDigimonInstance& Digimon = Entry->Digimon;
+    int32 NewStatValue = 0;
+    switch (Stat)
+    {
+        case EDMFDigimonAttributeStat::MaxHP:
+        {
+            ++Digimon.Stats.MaxHP;
+            if (Digimon.CurrentHP > 0)
+            {
+                Digimon.CurrentHP = FMath::Min(Digimon.Stats.MaxHP, Digimon.CurrentHP + 1);
+            }
+            NewStatValue = Digimon.Stats.MaxHP;
+            break;
+        }
+        case EDMFDigimonAttributeStat::MaxSP:
+        {
+            ++Digimon.Stats.MaxSP;
+            Digimon.CurrentSP = FMath::Min(Digimon.Stats.MaxSP, Digimon.CurrentSP + 1);
+            NewStatValue = Digimon.Stats.MaxSP;
+            break;
+        }
+        case EDMFDigimonAttributeStat::Strength: NewStatValue = ++Digimon.Stats.Strength; break;
+        case EDMFDigimonAttributeStat::Intelligence: NewStatValue = ++Digimon.Stats.Intelligence; break;
+        case EDMFDigimonAttributeStat::Defense: NewStatValue = ++Digimon.Stats.Defense; break;
+        case EDMFDigimonAttributeStat::Speed: NewStatValue = ++Digimon.Stats.Speed; break;
+        default:
+            ClientAttributePointSpendResult(false, NSLOCTEXT("DMF", "AttributeSpendInvalidStatServer", "That stat cannot receive Attribute Points."), InstanceId, Stat, 0, Digimon.UnspentAttributePoints);
+            return;
+    }
+
+    Digimon.UnspentAttributePoints = FMath::Max(0, Digimon.UnspentAttributePoints - 1);
+    if (bPartyEntry)
+    {
+        ReplicatedInventory.MarkItemDirty(*Entry);
+        OnDigimonInventoryChanged.Broadcast();
+        if (InstanceId == ActivePartnerInstanceId && IsValid(ActivePartnerActor) && ActivePartnerActor->DigimonInstanceId == InstanceId)
+        {
+            // Public partner stats/vitals follow the committed owner record without respawning or resetting combat.
+            ActivePartnerActor->RefreshProgressionFromInstance(Digimon);
+        }
+    }
+    else
+    {
+        ReplicatedBank.MarkItemDirty(*Entry);
+        OnDigimonBankChanged.Broadcast();
+    }
+
+    PersistOwningPlayer();
+    const UEnum* EnumType = StaticEnum<EDMFDigimonAttributeStat>();
+    const FText StatName = EnumType ? EnumType->GetDisplayNameTextByValue(static_cast<int64>(Stat)) : NSLOCTEXT("DMF", "AttributeSpendStatFallback", "Stat");
+    const FText SuccessMessage = FText::Format(
+        NSLOCTEXT("DMF", "AttributeSpendSuccess", "{0} increased to {1}. {2} Attribute Points remaining."),
+        StatName,
+        FText::AsNumber(NewStatValue),
+        FText::AsNumber(Digimon.UnspentAttributePoints));
+    ClientAttributePointSpendResult(true, SuccessMessage, InstanceId, Stat, NewStatValue, Digimon.UnspentAttributePoints);
+}
+
+void UDMFPlayerDigimonComponent::ClientAttributePointSpendResult_Implementation(const bool bSuccess, const FText& Message, const FGuid DigimonInstanceId, const EDMFDigimonAttributeStat Stat, const int32 NewStatValue, const int32 RemainingPoints)
+{
+    OnAttributePointSpendResult.Broadcast(bSuccess, Message, DigimonInstanceId, Stat, NewStatValue, RemainingPoints);
+}
+
+void UDMFPlayerDigimonComponent::ApplyLevelGrowth(FDMFDigimonInstance& Digimon, const UDMFDigimonSpeciesData& Species, const int32 LevelsGained, int32& OutAttributePointsGained) const
+{
+    OutAttributePointsGained = 0;
+    if (LevelsGained <= 0)
+    {
+        return;
+    }
+
+    auto AddGrowth = [LevelsGained](const int32 CurrentValue, const int32 PerLevel, const int32 MinimumValue)
+    {
+        const int64 Added = static_cast<int64>(FMath::Max(0, PerLevel)) * static_cast<int64>(LevelsGained);
+        return static_cast<int32>(FMath::Clamp<int64>(static_cast<int64>(CurrentValue) + Added, MinimumValue, MAX_int32));
+    };
+
+    const int32 PreviousMaxHP = Digimon.Stats.MaxHP;
+    const int32 PreviousMaxSP = Digimon.Stats.MaxSP;
+    Digimon.Stats.MaxHP = AddGrowth(Digimon.Stats.MaxHP, Species.HPPerLevel, 1);
+    Digimon.Stats.MaxSP = AddGrowth(Digimon.Stats.MaxSP, Species.SPPerLevel, 0);
+    Digimon.Stats.Strength = AddGrowth(Digimon.Stats.Strength, Species.StrengthPerLevel, 0);
+    Digimon.Stats.Intelligence = AddGrowth(Digimon.Stats.Intelligence, Species.IntelligencePerLevel, 0);
+    Digimon.Stats.Defense = AddGrowth(Digimon.Stats.Defense, Species.DefensePerLevel, 0);
+    Digimon.Stats.Speed = AddGrowth(Digimon.Stats.Speed, Species.SpeedPerLevel, 0);
+
+    // Preserve damage/SP spent while making the new capacity immediately useful. A defeated Digimon stays defeated.
+    if (Digimon.CurrentHP > 0)
+    {
+        const int64 GrownHP = static_cast<int64>(Digimon.CurrentHP) + static_cast<int64>(Digimon.Stats.MaxHP - PreviousMaxHP);
+        Digimon.CurrentHP = static_cast<int32>(FMath::Clamp<int64>(GrownHP, 1, Digimon.Stats.MaxHP));
+    }
+    const int64 GrownSP = static_cast<int64>(Digimon.CurrentSP) + static_cast<int64>(Digimon.Stats.MaxSP - PreviousMaxSP);
+    Digimon.CurrentSP = static_cast<int32>(FMath::Clamp<int64>(GrownSP, 0, Digimon.Stats.MaxSP));
+
+    const int64 AttributeGain64 = static_cast<int64>(FMath::Max(0, Species.AttributePointsPerLevel)) * static_cast<int64>(LevelsGained);
+    OutAttributePointsGained = static_cast<int32>(FMath::Clamp<int64>(AttributeGain64, 0, MAX_int32));
+    Digimon.UnspentAttributePoints = static_cast<int32>(FMath::Clamp<int64>(static_cast<int64>(Digimon.UnspentAttributePoints) + AttributeGain64, 0, MAX_int32));
+}
+
+bool UDMFPlayerDigimonComponent::ApplyExperienceReward(FDMFReplicatedDigimonEntry& Entry, const int64 ExperienceReward, FDMFDigimonExperienceProgression& OutProgression) const
+{
+    FDMFDigimonInstance& Digimon = Entry.Digimon;
+    OutProgression = FDMFDigimonExperienceProgression();
+    OutProgression.DigimonInstanceId = Digimon.InstanceId;
+    OutProgression.SpeciesId = Digimon.SpeciesId;
+    OutProgression.PreviousLevel = FMath::Max(1, Digimon.Stats.Level);
+    OutProgression.PreviousExperience = FMath::Max<int64>(0, Digimon.Stats.Experience);
+
+    UDMFDigimonSpeciesData* Species = ResolveSpeciesById(Digimon.SpeciesId);
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bLevelingEnabled = !Settings || Settings->bEnableOwnedDigimonLeveling;
+    const int64 SafeReward = FMath::Max<int64>(0, ExperienceReward);
+
+    Digimon.Stats.Level = FMath::Max(1, Digimon.Stats.Level);
+    Digimon.Stats.Experience = FMath::Max<int64>(0, Digimon.Stats.Experience);
+
+    if (!Species || !bLevelingEnabled)
+    {
+        if (SafeReward > 0)
+        {
+            const int64 Capacity = MAX_int64 - Digimon.Stats.Experience;
+            const int64 Applied = FMath::Min(SafeReward, Capacity);
+            Digimon.Stats.Experience += Applied;
+            OutProgression.ExperienceGained = Applied;
+        }
+        OutProgression.NewLevel = Digimon.Stats.Level;
+        OutProgression.NewExperience = Digimon.Stats.Experience;
+        return OutProgression.ExperienceGained > 0;
+    }
+
+    const int32 MaxLevel = ResolveMaximumLevel(*Species);
+    if (Digimon.Stats.Level >= MaxLevel)
+    {
+        // Never de-level a persistent Digimon if a project later lowers its configured cap.
+        const bool bNormalized = Digimon.Stats.Experience != 0;
+        Digimon.Stats.Experience = 0;
+        OutProgression.NewLevel = Digimon.Stats.Level;
+        OutProgression.NewExperience = 0;
+        OutProgression.bReachedMaxLevel = true;
+        return bNormalized;
+    }
+
+    if (SafeReward > 0)
+    {
+        const int64 Capacity = MAX_int64 - Digimon.Stats.Experience;
+        const int64 Applied = FMath::Min(SafeReward, Capacity);
+        Digimon.Stats.Experience += Applied;
+        OutProgression.ExperienceGained = Applied;
+    }
+
+    int32 LevelsGained = 0;
+    while (Digimon.Stats.Level < MaxLevel)
+    {
+        const int64 Required = ResolveExperienceRequirement(*Species, Digimon.Stats.Level);
+        if (Digimon.Stats.Experience < Required)
+        {
+            break;
+        }
+        Digimon.Stats.Experience -= Required;
+        ++Digimon.Stats.Level;
+        ++LevelsGained;
+    }
+
+    int32 AttributePointsGained = 0;
+    ApplyLevelGrowth(Digimon, *Species, LevelsGained, AttributePointsGained);
+    if (Digimon.Stats.Level >= MaxLevel)
+    {
+        Digimon.Stats.Experience = 0;
+        OutProgression.bReachedMaxLevel = true;
+    }
+
+    OutProgression.LevelsGained = LevelsGained;
+    OutProgression.AttributePointsGained = AttributePointsGained;
+    OutProgression.NewLevel = Digimon.Stats.Level;
+    OutProgression.NewExperience = Digimon.Stats.Experience;
+    return OutProgression.ExperienceGained > 0 || LevelsGained > 0 || OutProgression.PreviousExperience != OutProgression.NewExperience;
+}
+
+bool UDMFPlayerDigimonComponent::NormalizeStoredExperienceForLeveling(FDMFDigimonInstance& Digimon) const
+{
+    FDMFReplicatedDigimonEntry TempEntry;
+    TempEntry.Digimon = Digimon;
+    FDMFDigimonExperienceProgression Progression;
+    const bool bChanged = ApplyExperienceReward(TempEntry, 0, Progression);
+    Digimon = TempEntry.Digimon;
+    return bChanged;
+}
+
 void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRecord& Record)
 {
     if (!GetOwner() || !GetOwner()->HasAuthority())
@@ -235,6 +563,7 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     auto NormalizeForLoad = [&](FDMFDigimonInstance& Digimon)
     {
         NormalizeDigivolutionProvenance(Digimon);
+        NormalizeStoredExperienceForLeveling(Digimon);
         if (CareSettings && CareSettings->bEnableCareSystem)
         {
             if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(Digimon.SpeciesId))
@@ -1908,12 +2237,23 @@ void UDMFPlayerDigimonComponent::HandleAuthoritativeBattleVictory(ADMFDigimonCha
 
     const int64 ExpReward = FMath::Max<int64>(0, DefeatedSpecies->BattleExperienceReward);
     const int64 MoneyReward = FMath::Max<int64>(0, DefeatedSpecies->BattleMoneyReward);
+    FDMFDigimonExperienceProgression ExperienceProgression;
+    bool bHasExperienceProgression = false;
     for (FDMFReplicatedDigimonEntry& Entry : ReplicatedInventory.Items)
     {
         if (Entry.Digimon.InstanceId == ActivePartnerInstanceId)
         {
-            Entry.Digimon.Stats.Experience = FMath::Max<int64>(0, Entry.Digimon.Stats.Experience + ExpReward);
-            ReplicatedInventory.MarkItemDirty(Entry);
+            bHasExperienceProgression = ApplyExperienceReward(Entry, ExpReward, ExperienceProgression);
+            if (bHasExperienceProgression)
+            {
+                ReplicatedInventory.MarkItemDirty(Entry);
+                if (IsValid(ActivePartnerActor) && ActivePartnerActor->DigimonInstanceId == Entry.Digimon.InstanceId)
+                {
+                    // Keep the public replicated partner Level/EXP/stats synchronized without resetting
+                    // combat target/recovery/encounter state during the victory frame.
+                    ActivePartnerActor->RefreshProgressionFromInstance(Entry.Digimon);
+                }
+            }
             break;
         }
     }
@@ -1937,15 +2277,24 @@ void UDMFPlayerDigimonComponent::HandleAuthoritativeBattleVictory(ADMFDigimonCha
         ClientScanDataRewardGranted(DefeatedSpecies->GetPrimaryAssetId(), ScanAdded, NewScanPercent, bMaterializationReady);
     }
 
-    // Reward presentation is emitted through the owning-client RPC. This avoids double-firing
-    // the Blueprint reward event for a listen-host player while still keeping all mutations server-side.
+    // Reward presentation is emitted through owning-client RPCs. The generic battle-reward event remains
+    // backward-compatible while the dedicated progression snapshot gives animated UI deterministic old/new state.
     ClientBattleRewardGranted(DefeatedDigimon->SpeciesId, ExpReward, MoneyReward);
+    if (bHasExperienceProgression && (ExperienceProgression.ExperienceGained > 0 || ExperienceProgression.LevelsGained > 0))
+    {
+        ClientDigimonExperienceProgressed(ExperienceProgression);
+    }
     PersistOwningPlayer();
 }
 
 void UDMFPlayerDigimonComponent::ClientBattleRewardGranted_Implementation(const FPrimaryAssetId DefeatedSpeciesId, const int64 Experience, const int64 MoneyReward)
 {
     OnBattleRewardGranted.Broadcast(DefeatedSpeciesId, Experience, MoneyReward);
+}
+
+void UDMFPlayerDigimonComponent::ClientDigimonExperienceProgressed_Implementation(const FDMFDigimonExperienceProgression Progression)
+{
+    OnDigimonExperienceProgressed.Broadcast(Progression);
 }
 
 void UDMFPlayerDigimonComponent::OnRep_CommandTarget()

@@ -11,6 +11,7 @@ class UDMFPartyQuickBarWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFScanNotificationWidget;
+class UDMFExperienceNotificationWidget;
 class UDMFWorldChatWidget;
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
@@ -227,6 +228,9 @@ private:
     TObjectPtr<UDMFScanNotificationWidget> ScanNotificationWidget;
 
     UPROPERTY(Transient)
+    TObjectPtr<UDMFExperienceNotificationWidget> ExperienceNotificationWidget;
+
+    UPROPERTY(Transient)
     TObjectPtr<UDMFWorldChatWidget> WorldChatWidget;
 
     /** Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController. */
@@ -257,6 +261,9 @@ private:
 
     UFUNCTION()
     void HandleScanDataRewardGranted(FPrimaryAssetId SpeciesId, float AddedPercent, float NewPercent, bool bMaterializationReady);
+
+    UFUNCTION()
+    void HandleDigimonExperienceProgressed(FDMFDigimonExperienceProgression Progression);
 
     UFUNCTION()
     void HandleCareSequenceStarted(FGuid DigimonInstanceId);

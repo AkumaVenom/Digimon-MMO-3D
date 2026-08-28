@@ -15,6 +15,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Game/DMFSessionSubsystem.h"
+#include "Settings/DMFFrameworkSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/DMFNativeUIStyle.h"
 
@@ -76,13 +77,22 @@ void UDMFLoginMainMenuWidget::BuildNativeFallbackUI()
 
     UOverlay* RootOverlay = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass(), TEXT("FrontendRootOverlay"));
     WidgetTree->RootWidget = RootOverlay;
+    // The root itself must not swallow pointer input intended for a project-owned background UI.
+    // Interactive descendants such as the login card remain hit-testable.
+    RootOverlay->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-    UBorder* BackdropBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("FrontendBackdrop"));
-    DMFNativeUI::StylePanel(BackdropBorder, FLinearColor(0.005f, 0.010f, 0.020f, 0.34f), FMargin(0.0f));
-    if (UOverlaySlot* BackdropSlot = RootOverlay->AddChildToOverlay(BackdropBorder))
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && Settings->bShowNativeFrontendFullscreenBackdrop)
     {
-        BackdropSlot->SetHorizontalAlignment(HAlign_Fill);
-        BackdropSlot->SetVerticalAlignment(VAlign_Fill);
+        UBorder* BackdropBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("FrontendBackdrop"));
+        const float BackdropOpacity = FMath::Clamp(Settings->NativeFrontendBackdropOpacity, 0.0f, 1.0f);
+        DMFNativeUI::StylePanel(BackdropBorder, FLinearColor(0.005f, 0.010f, 0.020f, BackdropOpacity), FMargin(0.0f));
+        BackdropBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+        if (UOverlaySlot* BackdropSlot = RootOverlay->AddChildToOverlay(BackdropBorder))
+        {
+            BackdropSlot->SetHorizontalAlignment(HAlign_Fill);
+            BackdropSlot->SetVerticalAlignment(VAlign_Fill);
+        }
     }
 
     UScaleBox* ScreenScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass(), TEXT("FrontendScreenScale"));
