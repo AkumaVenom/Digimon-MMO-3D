@@ -1,8 +1,24 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.14.3-alpha — Local Targeting Visibility Runtime Fix`
+**Version:** `0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix
+
+v0.14.5 fixes a structural bias in `ADMFWildDigimonSpawner` rarity/species selection. Earlier builds calculated every eligible entry as `Rarity Base Weight * Selection Weight Multiplier` and rolled the entire table in one pass. That unintentionally counted the same rarity-tier base weight once **for every species in that tier**, so simply adding more Rookie or other species entries could make that tier dominate a smaller tier even when its configured rarity/entry weights were lower.
+
+Selection is now a true two-stage server-authoritative roll. First, the spawner chooses one **currently eligible rarity tier** using `RarityWeights`; the number of species authored in that tier no longer changes the tier's probability. Second, it chooses one eligible species **inside the selected tier** using `Selection Weight Multiplier` as a relative within-tier weight. Disabled entries, zero-weight entries and entries at `Max Alive From Entry` remain excluded before both rolls.
+
+This preserves all existing replicated wild actors, rarity values, population caps, respawn timing, placement, roaming and multiplayer authority. No RPCs, replicated properties or SaveGame fields are added. Existing Blueprint spawn tables require no migration; their `Rarity` and `Selection Weight Multiplier` fields now behave according to their intended tier/entry responsibilities. See `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`.
+
+## New in v0.14.4-alpha — Persistent Battle Music Encounter State Fix
+
+v0.14.4 fixes Battle music dropping back to the Open World track during normal **manual combat pauses**. The original v0.11 music director correctly entered Battle when the active partner was `Chasing`, `Attacking` or `Recovering`, but those states describe the current action phase rather than the lifetime of the encounter. After an attack recovery finished, a manually commanded partner could legitimately return to `Idle` while the same hostile Digimon was still alive and targeted; after the short release delay the music therefore switched to exploration even though the battle had not ended.
+
+`UDMFDigimonCombatComponent` now owns a dedicated **server-authoritative replicated battle-encounter latch**. A real chase/attack/recovery against a valid hostile target starts the encounter. Returning to `Idle` between ability-button presses deliberately does **not** clear it. Victory, local-partner defeat, authoritative target clear/disengage, healer/reset and other combat teardown paths clear it. `UDMFMusicSubsystem` reads this durable replicated encounter truth and keeps Battle music active until the encounter really ends, then applies the existing configurable release delay before crossfading back to Open World. Selecting a hostile target without ever entering combat still does not start Battle music.
+
+Music itself remains client-local presentation: this adds **no music/audio RPCs**. The only new network state is one replicated combat boolean on each Digimon combat component, owned and mutated by authority, so Host and remote clients continue to hear their own independent encounter soundtrack. `Is Battle Encounter Active` is also Blueprint-readable for projects that need the same durable battle truth for presentation. See `Docs/SETUP_GLOBAL_MUSIC.md`.
 
 ## New in v0.14.3-alpha — Local Targeting Visibility Runtime Fix
 
@@ -96,13 +112,14 @@ The framework now includes an automatic **local MMO music-state director** expos
 
 - The configured **Frontend Map** automatically plays **Frontend / Main Menu Music**.
 - Entering the configured **Open World Map** crossfades to **Open World Music**.
-- When the local player's active partner enters the existing replicated authoritative `Chasing`, `Attacking` or `Recovering` combat states, the local soundtrack crossfades to **Battle Music**. Merely selecting a target does not start battle music.
-- After combat ends, a configurable release delay prevents rapid soundtrack chatter before the music crossfades back to **Open World Music**.
+- When the local player's active partner actually enters combat, the replicated authoritative encounter latch starts and the local soundtrack crossfades to **Battle Music**. Merely selecting a target does not start battle music.
+- The encounter latch survives normal `Idle` gaps between manual ability presses, so Battle music does not time out while the same enemy is still being fought.
+- Victory, defeat or authoritative combat teardown ends the encounter; the configurable release delay then prevents soundtrack chatter before crossfading back to **Open World Music**.
 - Frontend, Open World and Battle volume multipliers plus a global master volume and crossfade duration are exposed in Project Settings.
 - Framework music can automatically replay a track that naturally ends, so both looping Sound Cues and ordinary non-looping `USoundBase` assets are supported.
 - Battle music gracefully falls back to Open World music if no dedicated Battle asset is assigned.
 - The music director lives in a `GameInstanceSubsystem`, so Frontend audio can persist naturally through map travel and transition cleanly into gameplay music.
-- Music is **client-local presentation only**. No audio track, playback time or music RPC is replicated; each player reacts to their own replicated partner combat state, which is the correct MMO behavior when different players are fighting different encounters. Dedicated servers render no music.
+- Music is **client-local presentation only**. No audio track, playback time or music RPC is replicated; each player reacts to their own server-authored replicated battle-encounter state, which is the correct MMO behavior when different players are fighting different encounters. Dedicated servers render no music.
 
 Advanced Blueprint projects can access `DMFMusicSubsystem` through the normal Game Instance Subsystem node, inspect `Current Music State`, listen to `On Music State Changed`, force an immediate refresh, or temporarily suppress framework music for cinematics without modifying the global Project Settings. See `Docs/SETUP_GLOBAL_MUSIC.md`.
 

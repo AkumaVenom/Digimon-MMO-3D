@@ -1,4 +1,4 @@
-# Wild Digimon Proximity / Rarity Spawner Setup — v0.4.1-alpha
+# Wild Digimon Proximity / Rarity Spawner Setup — current through v0.14.5-alpha
 
 
 ## v0.4.1 placement correction
@@ -129,15 +129,20 @@ Spawner rarity base weights are relative, not literal percentages:
 - Legendary: 1
 - Mythic: 0.25
 
+As of v0.14.5, selection is deliberately **two-stage**:
+
+1. The authoritative server rolls one currently eligible `Rarity` tier using the spawner's `Rarity Weights`.
+2. Inside that selected tier, it rolls one eligible spawn entry using `Selection Weight Multiplier`.
+
+This means the number of species inside a rarity tier **does not multiply that tier's chance**. Adding five more Uncommon species broadens which Uncommon Digimon can appear; it does not give the Uncommon tier five extra copies of its base rarity weight.
+
 Each spawn entry has:
 
-- `Rarity`
-- `Selection Weight Multiplier`
-- `Max Alive From Entry`
+- `Rarity` — chooses which tier-level probability pool the entry belongs to.
+- `Selection Weight Multiplier` — relative species weight **within that rarity tier**.
+- `Max Alive From Entry` — removes a capped entry from the eligible within-tier pool until capacity becomes available again.
 
-Effective selection weight:
-
-`Rarity Base Weight * Selection Weight Multiplier`
+For entries inside the same selected rarity tier, a multiplier of `1.0` is twice as likely as `0.5`. A multiplier of `0.0` makes that entry ineligible without removing it from the table.
 
 Example entries:
 
@@ -168,6 +173,12 @@ Example entries:
 - Max Alive From Entry: 1
 
 A cap of 1 ensures that entry cannot have multiple live copies from the same spawner, regardless of future rolls. If every enabled entry has a finite cap, target population is automatically clamped to the total possible capacity.
+
+### v0.14.5 normalization example
+
+If `Common = 1.0` and `Uncommon = 0.5`, and both tiers have at least one eligible entry, the tier roll is approximately **66.7% Common / 33.3% Uncommon** regardless of whether Common has 2 species and Uncommon has 2, 6, or 20 species. Once a tier wins, its own entry multipliers decide which species from that tier appears.
+
+This is the important distinction from v0.14.4 and earlier: rarity controls the **tier chance**; entry multiplier controls the **species distribution inside that tier**.
 
 `SpawnRarity` is replicated on each `DMFWildDigimonCharacter`, ready for Blueprint nameplates, aura cosmetics, future loot/scan multipliers and other MMO presentation.
 

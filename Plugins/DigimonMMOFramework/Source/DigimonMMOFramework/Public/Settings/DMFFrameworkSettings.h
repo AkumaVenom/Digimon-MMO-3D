@@ -166,7 +166,7 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Transitions", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="10.0"))
     float MusicCrossfadeSeconds = 1.25f;
 
-    /** Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter. */
+    /** Keeps Battle music active briefly after the authoritative battle encounter actually ends before returning to Open World. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Transitions", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.0", ClampMax="10.0"))
     float BattleMusicReleaseDelaySeconds = 1.5f;
 
@@ -174,7 +174,7 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Audio|Music|Playback", meta=(EditCondition="bEnableFrameworkMusic"))
     bool bAutomaticallyLoopMusic = true;
 
-    /** Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent. */
+    /** Local presentation polling interval. Encounter truth still comes from the replicated partner CombatComponent. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category="Audio|Music|Performance", meta=(EditCondition="bEnableFrameworkMusic", ClampMin="0.05", ClampMax="1.0"))
     float MusicStateEvaluationInterval = 0.20f;
 

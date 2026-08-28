@@ -145,7 +145,7 @@ Player-avatar and Digimon presentation bases enforce an always-on Custom Depth c
 
 `ADMFWildDigimonSpawner` is an authority-only decision maker wrapped in a replicated world actor. Clients never create wild populations or roll rarity/level. The server periodically counts real player pawns around the spawner, activates with a smaller radius, and unloads only after every required player has exceeded the larger deactivation radius for the configured grace period.
 
-Activation chooses a target population within the designer min/max range. Initial actor creation is staggered. Each spawn selects from currently eligible entries using `rarity base weight * entry multiplier`; finite per-entry live caps are respected, and a fully capped table clamps the target population to the table's theoretical capacity.
+Activation chooses a target population within the designer min/max range. Initial actor creation is staggered. As of v0.14.5, each spawn uses normalized two-stage selection: the server first rolls among currently eligible rarity tiers using each tier's single `RarityWeights` value, then rolls an entry inside the selected tier using `SelectionWeightMultiplier`. A tier's probability is therefore independent of how many species are authored inside it. Finite per-entry live caps are applied before selection, and a fully capped table clamps the target population to the table's theoretical capacity.
 
 Placement samples uniformly over the spawner disk, traces terrain, optionally projects onto NavMesh, rejects points too close to players, then uses collision-aware deferred spawning so Species/Level/rarity/AI/roam/emergence values exist before `BeginPlay`.
 
@@ -248,6 +248,16 @@ Feeding deliberately crosses UI and world presentation layers: the server accept
 `UDMFWorldNameplateWidget` is deliberately shared so the framework has one compact presentation contract while still exposing separate project-level Player/Digimon widget-class overrides. The native fallback collapses Digimon-only metadata/HP when observing a player, and expands the same small panel for Digimon identity/type/health. It polls presentation at a throttled interval rather than inventing replicated UI state.
 
 Player username display uses `APlayerState::PlayerName`, which is the public display-name channel. Private account fields do not change their ownership contract. Digimon HP remains owned by `UDMFDigimonCombatComponent`; the plate is only a view of replicated combat truth.
+
+## v0.14.4 — durable server-authoritative battle encounter state
+
+`UDMFDigimonCombatComponent::CombatState` remains the short-lived action-phase state machine (`Idle`, `Chasing`, `Attacking`, `Recovering`, `Defeated`). v0.14.4 deliberately does **not** redefine those values because combat movement, facing, animation and buffered-command behavior depend on their existing semantics.
+
+Instead the combat component now also replicates a compact `bBattleEncounterActive` latch. Authority sets it when a valid hostile chase/attack/recovery establishes real combat and keeps it set when recovery naturally returns to `Idle`. It is cleared by victory, self defeat, authoritative target teardown/disengage and reset/healer paths. `IsBattleEncounterActive()` exposes this durable semantic state to Blueprint without granting mutation authority.
+
+The music subsystem consumes the latch only as local presentation. It retains the transient active-state test as a replication-order safety net so a remote client can enter Battle immediately if `CombatState` arrives just before the latch. No audio state is replicated and no client can author the encounter flag.
+
+This separation is intentional: **action phase** answers “what is the Digimon doing this instant?” while **battle encounter** answers “is this Digimon still engaged in this fight?” Systems whose lifetime must survive pauses between manual commands should use the latter.
 
 ## v0.14 DigiDex architecture
 

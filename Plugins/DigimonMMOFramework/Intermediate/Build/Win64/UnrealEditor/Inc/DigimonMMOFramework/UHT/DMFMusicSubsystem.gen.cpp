@@ -314,12 +314,12 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
 		{ "BlueprintType", "true" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/**\n * Local presentation-only music director for the framework.\n *\n * The subsystem survives map travel with the GameInstance, automatically chooses Frontend/OpenWorld/Battle\n * music, and crossfades persistent 2D audio components. Battle truth is read from the existing replicated\n * active-partner CombatComponent; no music state or audio event is replicated.\n */" },
+		{ "Comment", "/**\n * Local presentation-only music director for the framework.\n *\n * The subsystem survives map travel with the GameInstance, automatically chooses Frontend/OpenWorld/Battle\n * music, and crossfades persistent 2D audio components. Battle truth is read from the replicated\n * active-partner CombatComponent encounter latch; no music state or audio event is replicated.\n */" },
 #endif
 		{ "IncludePath", "Subsystems/DMFMusicSubsystem.h" },
 		{ "ModuleRelativePath", "Public/Subsystems/DMFMusicSubsystem.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Local presentation-only music director for the framework.\n\nThe subsystem survives map travel with the GameInstance, automatically chooses Frontend/OpenWorld/Battle\nmusic, and crossfades persistent 2D audio components. Battle truth is read from the existing replicated\nactive-partner CombatComponent; no music state or audio event is replicated." },
+		{ "ToolTip", "Local presentation-only music director for the framework.\n\nThe subsystem survives map travel with the GameInstance, automatically chooses Frontend/OpenWorld/Battle\nmusic, and crossfades persistent 2D audio components. Battle truth is read from the replicated\nactive-partner CombatComponent encounter latch; no music state or audio event is replicated." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OnMusicStateChanged_MetaData[] = {
@@ -457,10 +457,10 @@ UDMFMusicSubsystem::~UDMFMusicSubsystem() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFMusicSubsystem, TEXT("UDMFMusicSubsystem"), &Z_Registration_Info_UClass_UDMFMusicSubsystem, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFMusicSubsystem), 372593590U) },
+		{ Z_Construct_UClass_UDMFMusicSubsystem, TEXT("UDMFMusicSubsystem"), &Z_Registration_Info_UClass_UDMFMusicSubsystem, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFMusicSubsystem), 641063154U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Subsystems_DMFMusicSubsystem_h__Script_DigimonMMOFramework_f040c8e086d2f18022a5d6bf62e9cd701504ead1{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Subsystems_DMFMusicSubsystem_h__Script_DigimonMMOFramework_c80fc440fc952b45b37c336e4d95d76545a243de{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

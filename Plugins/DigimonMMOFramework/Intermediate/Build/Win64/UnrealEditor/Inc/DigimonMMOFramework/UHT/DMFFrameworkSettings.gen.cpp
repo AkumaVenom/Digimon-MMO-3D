@@ -410,12 +410,12 @@ struct UHT_STATICS
 		{ "ClampMax", "10.0" },
 		{ "ClampMin", "0.0" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter. */" },
+		{ "Comment", "/** Keeps Battle music active briefly after the authoritative battle encounter actually ends before returning to Open World. */" },
 #endif
 		{ "EditCondition", "bEnableFrameworkMusic" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Keeps Battle music active briefly after replicated combat ends so short state gaps do not cause soundtrack chatter." },
+		{ "ToolTip", "Keeps Battle music active briefly after the authoritative battle encounter actually ends before returning to Open World." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bAutomaticallyLoopMusic_MetaData[] = {
@@ -434,12 +434,12 @@ struct UHT_STATICS
 		{ "ClampMax", "1.0" },
 		{ "ClampMin", "0.05" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent. */" },
+		{ "Comment", "/** Local presentation polling interval. Encounter truth still comes from the replicated partner CombatComponent. */" },
 #endif
 		{ "EditCondition", "bEnableFrameworkMusic" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Local presentation polling interval. Combat truth still comes from the existing replicated partner CombatComponent." },
+		{ "ToolTip", "Local presentation polling interval. Encounter truth still comes from the replicated partner CombatComponent." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AccountSaveSlot_MetaData[] = {
@@ -2182,10 +2182,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2885438718U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3069909326U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_5073b29574e3884a6d80f427f6f05f73e24fa809{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_c88ca8f044d2d98a83b90f8afdc22b07d3f15b71{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

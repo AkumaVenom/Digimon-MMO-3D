@@ -28,14 +28,15 @@ Player camera zoom is **client-local presentation only**. Mouse-wheel input, des
 
 The new character camera-collision policy is deterministic actor configuration rather than network gameplay state. Framework player and Digimon primitive components ignore only `ECC_Camera`; movement, Pawn collision, targeting/Visibility traces, combat authority, interaction and navigation are unchanged. No new camera RPCs or replicated properties are introduced.
 
-## v0.11.0 global music networking contract
+## v0.11.0 global music networking contract (v0.14.4 lifecycle semantics)
 
-- Frontend/Open World/Battle music is **local presentation only** and adds no music RPC, replicated property or persistent account field.
-- The local `UDMFMusicSubsystem` reads the active partner's already-replicated authoritative `CombatState`; it never predicts or changes combat authority.
-- Battle music activates only from replicated `Chasing`, `Attacking` or `Recovering`, so merely selecting a command target does not create a false battle transition.
+- Frontend/Open World/Battle music is **local presentation only** and adds no music RPC or persistent account field.
+- The local `UDMFMusicSubsystem` reads the active partner's replicated server-authoritative battle-encounter state; it never predicts or changes combat authority.
+- A real replicated `Chasing`, `Attacking` or `Recovering` phase establishes the encounter. The encounter then remains active through manual `Idle` gaps until authority ends it. Merely selecting a command target still does not create a false battle transition.
+- v0.14.4 adds one replicated combat boolean (`bBattleEncounterActive`) to carry this durable gameplay truth; track assets, playback position, crossfades, volumes and AudioComponents remain entirely local.
 - Each player's music state is independent. One client entering combat cannot force unrelated clients to switch soundtrack.
 - Persistent-across-travel 2D AudioComponents and crossfades are local AudioMixer/presentation behavior only. Dedicated servers do not render them.
-- Music settings/assets are deployment/content configuration and do not consume runtime network bandwidth.
+- Music settings/assets are deployment/content configuration and do not consume music-specific runtime network bandwidth.
 
 ## v0.10.4 replicated player-footstep contract
 
@@ -168,6 +169,8 @@ For a public service, keep the PlayerState/account interfaces and replace the tr
 
 `DMFWildDigimonSpawner` performs proximity counting, target-population selection, rarity/species roll, level roll, ground/nav placement, respawn scheduling and destruction only on the authoritative server. The spawner replicates only small runtime state (`active`, `alive count`, `target population`); spawned Digimon are normal replicated actors.
 
+v0.14.5 keeps that authority boundary unchanged while correcting probability semantics: rarity and species are rolled in two server-only stages. Only currently eligible rarity tiers participate in the first roll, each tier contributes its configured rarity weight once, and the selected tier's eligible entries then use their per-entry multipliers. Clients receive only the resulting replicated wild actor/state and cannot influence either random roll.
+
 Wild `SpawnRarity`, `SpawnHomeLocation` and the compact ground-transition timing struct replicate with the actor. Emergence/sink mesh motion is reconstructed independently on every machine using synchronized server world time, avoiding reliable per-frame cosmetic transform traffic. AI roaming and combat movement remain server-driven through the existing replicated Character movement path.
 
 
@@ -237,6 +240,15 @@ Clients never submit Hunger gain, decay, waste timing, mesh scale authority, sou
 Waste uses persisted server UTC scheduling. At due time, authority traces beneath the currently spawned active partner and creates a replicated `ADMFDigimonCarePropActor`. `SpeciesId` and `PropType` replicate to resolve presentation for current/late viewers; actor movement/attachment or world transform is server-owned. The actor disables collision/overlaps/navigation and server lifespan performs cleanup. DigiMeat/poo CustomDepth and stencil application are local rendering state reasserted by the Care prop on each peer; they add no network payload or client authority.
 
 During `bCareSequenceActive`, the owner component rejects conflicting set-active, recall, auto-battle, target and ability RPCs. The server also disables the partner's combat automation/target and stops AI movement before feeding, then restores the previously allowed auto-battle state on completion.
+
+## v0.14.4 persistent battle-encounter network contract
+
+- `UDMFDigimonCombatComponent::bBattleEncounterActive` is a normal replicated **server-owned gameplay boolean**. It is never client-writable and introduces no RPC.
+- Authority starts the encounter only after actual hostile combat activity and keeps it active through transient `CombatState=Idle` gaps between manual attacks.
+- Authority clears it on victory, local Digimon defeat, authoritative target/disengage teardown and combat reset paths.
+- `UDMFMusicSubsystem` runs locally and reads only the local player's active partner. Therefore the new replicated boolean does **not** replicate music, track assets, playback position, volume, crossfade state or audio events.
+- Host and every remote client can be in different encounter/music states at the same time. Dedicated servers remain audio-free.
+- Target selection remains owner-only and does not by itself set the encounter boolean.
 
 ## DigiDex networking contract (v0.14)
 

@@ -16,8 +16,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFMusicStateChanged, EDMFMusicSta
  * Local presentation-only music director for the framework.
  *
  * The subsystem survives map travel with the GameInstance, automatically chooses Frontend/OpenWorld/Battle
- * music, and crossfades persistent 2D audio components. Battle truth is read from the existing replicated
- * active-partner CombatComponent; no music state or audio event is replicated.
+ * music, and crossfades persistent 2D audio components. Battle truth is read from the replicated
+ * active-partner CombatComponent encounter latch; no music state or audio event is replicated.
  */
 UCLASS(BlueprintType)
 class DIGIMONMMOFRAMEWORK_API UDMFMusicSubsystem : public UGameInstanceSubsystem, public FTickableGameObject

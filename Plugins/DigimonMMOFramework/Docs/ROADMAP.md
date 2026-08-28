@@ -171,6 +171,20 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Existing Timed Impact abilities remain backward compatible by default.
 
 
+## Completed — v0.14.5 normalized rarity-weighted wild spawning
+
+- Corrected species-count bias in the wild spawn table.
+- Rarity tier is rolled once from eligible `RarityWeights`; entry is then rolled inside that tier from `SelectionWeightMultiplier`.
+- Adding more species to one rarity tier no longer increases that rarity tier's aggregate probability.
+- Existing live caps, population streaming and server-only spawn authority remain intact with no new replication or persistence fields.
+
+## Completed — v0.14.4 persistent Battle music encounter state
+
+- Added a replicated server-authoritative battle-encounter latch separate from transient combat action states.
+- Battle music now remains active through unlimited manual `Idle` pauses between ability presses while the encounter remains alive.
+- Victory, defeat and authoritative combat teardown end the encounter; the existing release delay then returns to Open World music.
+- Added Blueprint `Is Battle Encounter Active` query with no client mutation path and no music/audio RPCs.
+
 ## Completed — v0.14.3 local targeting visibility runtime fix
 
 - Removed redundant renderer owner-visibility filtering that could hide all local-only targeting markers from their intended player.

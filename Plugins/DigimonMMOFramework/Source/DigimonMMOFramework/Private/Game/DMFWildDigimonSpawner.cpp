@@ -450,8 +450,27 @@ ADMFWildDigimonCharacter* ADMFWildDigimonSpawner::SpawnOneWildDigimon()
 
 int32 ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex() const
 {
-    float TotalWeight = 0.0f;
-    TArray<TPair<int32, float>> Candidates;
+    /**
+     * Selection is intentionally two-stage.
+     *
+     * 1) Roll the rarity tier from the spawner's rarity weights.
+     * 2) Roll one currently eligible entry inside that tier from its SelectionWeightMultiplier.
+     *
+     * The old implementation multiplied the rarity weight into every entry and then rolled the
+     * entire table in one pass. That made a rarity tier more likely merely because designers added
+     * more species to it (for example six Uncommon entries received six copies of the Uncommon
+     * base weight). Rarity is a tier-level probability and must therefore be independent of the
+     * number of species authored inside that tier.
+     */
+    struct FEligibleRarityBucket
+    {
+        EDMFWildSpawnRarity Rarity = EDMFWildSpawnRarity::Common;
+        float RarityWeight = 0.0f;
+        float TotalEntryWeight = 0.0f;
+        TArray<TPair<int32, float>> Entries;
+    };
+
+    TArray<FEligibleRarityBucket> Buckets;
 
     for (int32 Index = 0; Index < SpawnEntries.Num(); ++Index)
     {
@@ -466,31 +485,90 @@ int32 ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex() const
             continue;
         }
 
-        const float Weight = RarityWeights.GetWeight(Entry.Rarity) * FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
-        if (Weight <= 0.0f)
+        const float RarityWeight = RarityWeights.GetWeight(Entry.Rarity);
+        const float EntryWeight = FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
+        if (RarityWeight <= 0.0f || EntryWeight <= 0.0f)
         {
             continue;
         }
 
-        Candidates.Emplace(Index, Weight);
-        TotalWeight += Weight;
+        FEligibleRarityBucket* Bucket = Buckets.FindByPredicate([&Entry](const FEligibleRarityBucket& Existing)
+        {
+            return Existing.Rarity == Entry.Rarity;
+        });
+
+        if (!Bucket)
+        {
+            FEligibleRarityBucket& NewBucket = Buckets.AddDefaulted_GetRef();
+            NewBucket.Rarity = Entry.Rarity;
+            NewBucket.RarityWeight = RarityWeight;
+            Bucket = &NewBucket;
+        }
+
+        Bucket->Entries.Emplace(Index, EntryWeight);
+        Bucket->TotalEntryWeight += EntryWeight;
     }
 
-    if (TotalWeight <= 0.0f || Candidates.Num() == 0)
+    float TotalRarityWeight = 0.0f;
+    for (const FEligibleRarityBucket& Bucket : Buckets)
+    {
+        if (Bucket.Entries.Num() > 0 && Bucket.TotalEntryWeight > 0.0f)
+        {
+            TotalRarityWeight += Bucket.RarityWeight;
+        }
+    }
+
+    if (TotalRarityWeight <= 0.0f || Buckets.Num() == 0)
     {
         return INDEX_NONE;
     }
 
-    float Roll = FMath::FRandRange(0.0f, TotalWeight);
-    for (const TPair<int32, float>& Candidate : Candidates)
+    const FEligibleRarityBucket* SelectedBucket = nullptr;
+    float RarityRoll = FMath::FRand() * TotalRarityWeight;
+    for (const FEligibleRarityBucket& Bucket : Buckets)
     {
-        Roll -= Candidate.Value;
-        if (Roll <= 0.0f)
+        if (Bucket.Entries.Num() == 0 || Bucket.TotalEntryWeight <= 0.0f)
+        {
+            continue;
+        }
+
+        RarityRoll -= Bucket.RarityWeight;
+        if (RarityRoll < 0.0f)
+        {
+            SelectedBucket = &Bucket;
+            break;
+        }
+    }
+
+    // Floating-point safety only; a valid roll should always select one eligible bucket.
+    if (!SelectedBucket)
+    {
+        for (int32 BucketIndex = Buckets.Num() - 1; BucketIndex >= 0; --BucketIndex)
+        {
+            if (Buckets[BucketIndex].Entries.Num() > 0 && Buckets[BucketIndex].TotalEntryWeight > 0.0f)
+            {
+                SelectedBucket = &Buckets[BucketIndex];
+                break;
+            }
+        }
+    }
+
+    if (!SelectedBucket)
+    {
+        return INDEX_NONE;
+    }
+
+    float EntryRoll = FMath::FRand() * SelectedBucket->TotalEntryWeight;
+    for (const TPair<int32, float>& Candidate : SelectedBucket->Entries)
+    {
+        EntryRoll -= Candidate.Value;
+        if (EntryRoll < 0.0f)
         {
             return Candidate.Key;
         }
     }
-    return Candidates.Last().Key;
+
+    return SelectedBucket->Entries.Last().Key;
 }
 
 int32 ADMFWildDigimonSpawner::ComputeConfiguredPopulationCapacity() const
@@ -499,8 +577,9 @@ int32 ADMFWildDigimonSpawner::ComputeConfiguredPopulationCapacity() const
     bool bHasEligibleEntry = false;
     for (const FDMFWildSpawnEntry& Entry : SpawnEntries)
     {
-        const float Weight = RarityWeights.GetWeight(Entry.Rarity) * FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
-        if (!Entry.bEnabled || Entry.Species.IsNull() || !Entry.WildCharacterClass || Weight <= 0.0f)
+        const float RarityWeight = RarityWeights.GetWeight(Entry.Rarity);
+        const float EntryWeight = FMath::Max(0.0f, Entry.SelectionWeightMultiplier);
+        if (!Entry.bEnabled || Entry.Species.IsNull() || !Entry.WildCharacterClass || RarityWeight <= 0.0f || EntryWeight <= 0.0f)
         {
             continue;
         }

@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix
+
+### Fixed — rarity tiers are no longer biased by species-count
+- Fixed `ADMFWildDigimonSpawner` favoring a rarity/category simply because more spawn entries were authored inside it.
+- Root cause: the old one-pass roll assigned `Rarity Base Weight * Selection Weight Multiplier` to every entry, effectively adding the same rarity base weight to the pool once per species. A tier containing many Rookie entries could therefore overwhelm a smaller In-Training pool despite lower intended weighting.
+- Spawn selection is now two-stage and authority-only: the server first rolls one currently eligible rarity tier from `RarityWeights`, then rolls one eligible entry inside that tier from `SelectionWeightMultiplier`.
+- `SelectionWeightMultiplier` is now explicitly a **within-rarity-tier relative species weight**. A value of `2.0` is twice as likely as `1.0` among eligible entries in the same selected tier; `0.0` disables the entry without deleting it.
+- Disabled/invalid entries, zero-weight tiers/entries, and entries that reached `MaxAliveFromEntry` are removed before selection, so capped entries cannot distort either roll.
+
+### Multiplayer / regression contract
+- Rarity/species rolls remain server-authoritative. Clients do not roll or influence spawn selection.
+- No RPCs, replicated properties, SaveGame fields or serialized enums were added or reordered.
+- Existing spawn-table assets require no migration; the same fields now produce normalized tier behavior independent of how many species are authored per tier.
+- Wild replication, population activation/deactivation, level rolls, placement/NavMesh grounding, emergence/despawn, roaming, combat, respawn and per-entry live caps are unchanged.
+
+### Documentation
+- Updated README, wild-spawner setup, architecture, networking, roadmap, test plan and validation notes with the corrected two-stage weighting contract.
+
+## 0.14.4-alpha — Persistent Battle Music Encounter State Fix
+
+### Fixed — Battle music no longer expires between manual attacks
+- Fixed Battle music returning to Open World shortly after an attack when the player paused between ability-button presses while the hostile Digimon was still alive.
+- Root cause: `UDMFMusicSubsystem` treated only transient `Chasing`, `Attacking` and `Recovering` action states as Battle. Manual combat legitimately returns to `Idle` after recovery, so the old `BattleMusicReleaseDelaySeconds` countdown could expire during an ongoing encounter.
+- Added `bBattleEncounterActive`, a server-authoritative replicated encounter latch on `UDMFDigimonCombatComponent`. Real chase/attack/recovery against a valid hostile target starts the latch; `Idle` action gaps do not clear it.
+- Victory, local Digimon defeat, authoritative target clear/disengage and combat reset/healer teardown clear the encounter latch. The existing release delay now begins only after the durable encounter ends.
+- `UDMFMusicSubsystem` uses the replicated encounter latch first, with the active combat-state check retained only as replication-ordering safety for immediate Battle entry.
+- Added Blueprint-pure `IsBattleEncounterActive()` so custom UI/presentation can query the same durable server-authored encounter truth without inferring battle lifetime from animation/action states.
+
+### Multiplayer / regression contract
+- Music remains completely client-local presentation: **no music RPCs, playback replication or shared AudioComponents** were added.
+- The combat component adds one replicated authority-owned boolean; clients cannot set encounter state. Host and remote clients therefore continue to resolve Battle/Open World music independently from their own active partner.
+- Target selection alone still does not start Battle music. Existing crossfade, volume, looping, Battle-music fallback and suppression controls are unchanged.
+- v0.14.3 targeting visuals, v0.14.1 projectiles/VFX, DigiDex, Digivolution, Party/Bank, Scan/Materialization, Care/healer, chat/nameplates, camera/footsteps, accounts and SaveGame schema remain unchanged.
+
+### Documentation
+- Updated global-music setup, README, architecture, networking, roadmap, test plan, validation report and config-template commentary for the persistent encounter contract.
+
 ## 0.14.3-alpha — Local Targeting Visibility Runtime Fix
 
 ### Fixed — local targeting markers could be culled for their owning player

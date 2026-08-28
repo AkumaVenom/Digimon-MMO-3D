@@ -59,6 +59,7 @@ void UDMFDigimonCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     DOREPLIFETIME(UDMFDigimonCombatComponent, CurrentSP);
     DOREPLIFETIME(UDMFDigimonCombatComponent, CombatState);
     DOREPLIFETIME(UDMFDigimonCombatComponent, CurrentTarget);
+    DOREPLIFETIME(UDMFDigimonCombatComponent, bBattleEncounterActive);
     DOREPLIFETIME(UDMFDigimonCombatComponent, ReplicatedCooldowns);
 }
 
@@ -72,6 +73,7 @@ void UDMFDigimonCombatComponent::InitializeRuntimeVitals(const int32 InCurrentHP
 
     CurrentHP = FMath::Clamp(InCurrentHP, 0, FMath::Max(1, Digimon->ReplicatedStats.MaxHP));
     CurrentSP = FMath::Clamp(InCurrentSP, 0, FMath::Max(0, Digimon->ReplicatedStats.MaxSP));
+    SetBattleEncounterActive(false);
     SetCombatState(CurrentHP > 0 ? EDMFCombatState::Idle : EDMFCombatState::Defeated);
     OnVitalsChanged.Broadcast(CurrentHP, CurrentSP);
 }
@@ -152,6 +154,7 @@ void UDMFDigimonCombatComponent::SetAuthoritativeTarget(ADMFDigimonCharacter* Ne
         if (!CurrentTarget)
         {
             bRetaliationCombatActive = false;
+            SetBattleEncounterActive(false);
         }
         OnTargetChanged.Broadcast(CurrentTarget);
         GetOwner()->ForceNetUpdate();
@@ -159,6 +162,7 @@ void UDMFDigimonCombatComponent::SetAuthoritativeTarget(ADMFDigimonCharacter* Ne
     else if (!NewTarget)
     {
         bRetaliationCombatActive = false;
+        SetBattleEncounterActive(false);
     }
 }
 
@@ -878,6 +882,7 @@ int32 UDMFDigimonCombatComponent::ApplyAuthoritativeDamage(const int32 Damage, A
         ClearQueuedCommand();
         Self->StopCombatFacingTarget();
         bRetaliationCombatActive = false;
+        SetBattleEncounterActive(false);
         SetCombatState(EDMFCombatState::Defeated);
         CurrentTarget = nullptr;
         if (AAIController* AI = Cast<AAIController>(Self->GetController()))
@@ -918,6 +923,7 @@ void UDMFDigimonCombatComponent::NotifyAuthoritativeVictory(ADMFDigimonCharacter
     if (CurrentTarget == DefeatedDigimon)
     {
         bRetaliationCombatActive = false;
+        SetBattleEncounterActive(false);
         CurrentTarget = nullptr;
         OnTargetChanged.Broadcast(nullptr);
     }
@@ -950,6 +956,7 @@ void UDMFDigimonCombatComponent::RestoreVitals(const bool bRestoreHP, const bool
     {
         Self->StopCombatFacingTarget();
         bRetaliationCombatActive = false;
+        SetBattleEncounterActive(false);
         CurrentTarget = nullptr;
         ClearQueuedCommand();
         ReplicatedCooldowns.Reset();
@@ -1115,6 +1122,14 @@ void UDMFDigimonCombatComponent::AutomationTick()
     }
 
     PruneExpiredCooldowns();
+
+    if (bBattleEncounterActive && !CanAttackTarget(CurrentTarget))
+    {
+        // The opponent may have been defeated/destroyed by another authoritative participant. Do not
+        // leave durable encounter consumers (music/UI) latched merely because this Digimon was not
+        // the actor that received the victory callback.
+        SetBattleEncounterActive(false);
+    }
 
     if (ProcessQueuedCommand())
     {
@@ -1358,8 +1373,41 @@ void UDMFDigimonCombatComponent::FinishRecovery()
     }
 }
 
+void UDMFDigimonCombatComponent::SetBattleEncounterActive(const bool bActive)
+{
+    if (bBattleEncounterActive == bActive)
+    {
+        return;
+    }
+
+    bBattleEncounterActive = bActive;
+    if (GetOwner())
+    {
+        // Encounter truth is durable gameplay state consumed by owner-local presentation (music) and
+        // Blueprint queries. Force an update so victory/defeat/disengage transitions do not wait for
+        // an unrelated replication wake-up.
+        GetOwner()->ForceNetUpdate();
+    }
+}
+
 void UDMFDigimonCombatComponent::SetCombatState(const EDMFCombatState NewState)
 {
+    if (NewState == EDMFCombatState::Defeated)
+    {
+        SetBattleEncounterActive(false);
+    }
+    else if ((NewState == EDMFCombatState::Chasing
+        || NewState == EDMFCombatState::Attacking
+        || NewState == EDMFCombatState::Recovering)
+        && CurrentTarget
+        && CanAttackTarget(CurrentTarget))
+    {
+        // CombatState describes the current action phase. The encounter latch deliberately does not
+        // clear when recovery returns to Idle, because manual combat can legitimately pause there
+        // while the same living hostile target remains engaged.
+        SetBattleEncounterActive(true);
+    }
+
     if (CombatState != NewState)
     {
         const EDMFCombatState PreviousState = CombatState;

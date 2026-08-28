@@ -1267,6 +1267,69 @@ DEFINE_FUNCTION(UDMFDigimonCombatComponent::execIsAutoBattleEnabled)
 }
 // ********** End Class UDMFDigimonCombatComponent Function IsAutoBattleEnabled ********************
 
+// ********** Begin Class UDMFDigimonCombatComponent Function IsBattleEncounterActive **************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonCombatComponent_IsBattleEncounterActive_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonCombatComponent_eventIsBattleEncounterActive_Parms
+	{
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Combat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Server-authoritative encounter latch. Unlike CombatState, this remains true through intentional\n     * Idle gaps between manual ability commands and clears only when the encounter actually ends.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Server-authoritative encounter latch. Unlike CombatState, this remains true through intentional\nIdle gaps between manual ability commands and clears only when the encounter actually ends." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function IsBattleEncounterActive constinit property declarations ***************
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFDigimonCombatComponent_eventIsBattleEncounterActive_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function IsBattleEncounterActive constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function IsBattleEncounterActive Property Definitions **************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFDigimonCombatComponent_eventIsBattleEncounterActive_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function IsBattleEncounterActive Property Definitions ****************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonCombatComponent, nullptr, "IsBattleEncounterActive", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonCombatComponent_eventIsBattleEncounterActive_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonCombatComponent_eventIsBattleEncounterActive_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonCombatComponent_IsBattleEncounterActive(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonCombatComponent::execIsBattleEncounterActive)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->IsBattleEncounterActive();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonCombatComponent Function IsBattleEncounterActive ****************
+
 // ********** Begin Class UDMFDigimonCombatComponent Function IsDefeated ***************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2357,6 +2420,15 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CurrentTarget_MetaData[] = {
 		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bBattleEncounterActive_MetaData[] = {
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Durable server-owned encounter truth for systems that must outlive per-attack animation states.\n     * It intentionally survives Chasing/Attacking/Recovering -> Idle gaps while a valid battle remains.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Durable server-owned encounter truth for systems that must outlive per-attack animation states.\nIt intentionally survives Chasing/Attacking/Recovering -> Idle gaps while a valid battle remains." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReplicatedCooldowns_MetaData[] = {
 		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
 	};
@@ -2373,6 +2445,11 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FBytePropertyParams NewProp_CombatState_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_CombatState;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CurrentTarget;
+	static void NewProp_bBattleEncounterActive_SetBit(void* Obj)
+	{
+		((UDMFDigimonCombatComponent*)Obj)->bBattleEncounterActive = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bBattleEncounterActive;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_ReplicatedCooldowns_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_ReplicatedCooldowns;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
@@ -2392,6 +2469,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("GetRemainingCooldown"), .Pointer = &UDMFDigimonCombatComponent::execGetRemainingCooldown },
 		{ .NameUTF8 = UTF8TEXT("InitializeRuntimeVitals"), .Pointer = &UDMFDigimonCombatComponent::execInitializeRuntimeVitals },
 		{ .NameUTF8 = UTF8TEXT("IsAutoBattleEnabled"), .Pointer = &UDMFDigimonCombatComponent::execIsAutoBattleEnabled },
+		{ .NameUTF8 = UTF8TEXT("IsBattleEncounterActive"), .Pointer = &UDMFDigimonCombatComponent::execIsBattleEncounterActive },
 		{ .NameUTF8 = UTF8TEXT("IsDefeated"), .Pointer = &UDMFDigimonCombatComponent::execIsDefeated },
 		{ .NameUTF8 = UTF8TEXT("IsRetaliating"), .Pointer = &UDMFDigimonCombatComponent::execIsRetaliating },
 		{ .NameUTF8 = UTF8TEXT("IsRetaliationEnabled"), .Pointer = &UDMFDigimonCombatComponent::execIsRetaliationEnabled },
@@ -2430,6 +2508,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_GetRemainingCooldown, "GetRemainingCooldown" }, // 291ddaefa9d54618649d25f1b312947401d2e2b9
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_InitializeRuntimeVitals, "InitializeRuntimeVitals" }, // 98ee9c65446b919fddf11e814e36ea78f480d548
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsAutoBattleEnabled, "IsAutoBattleEnabled" }, // 5d436875bc9d1738e1ecceda43fd2eae3fc20754
+		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsBattleEncounterActive, "IsBattleEncounterActive" }, // 7b165a4f27fc6aee810f34cacf0990303c60e803
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsDefeated, "IsDefeated" }, // 334d981c28f7141751bc0b5c3608c19edff51da0
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsRetaliating, "IsRetaliating" }, // 48e9244c8b26fef2d4db98a8c661cb623bd82a96
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_IsRetaliationEnabled, "IsRetaliationEnabled" }, // b0b00a1382fdba32637b0bdac8735f26d2f3629e
@@ -2467,6 +2546,7 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_CurrentSP = { "
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_CombatState_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_CombatState = { "CombatState", "OnRep_CombatState", (EPropertyFlags)0x0040000100000020, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonCombatComponent, CombatState), Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatState_MetaData), NewProp_CombatState_MetaData) }; // f39157b31587da9510a9e9d2d63daa8f797fe530
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CurrentTarget = { "CurrentTarget", "OnRep_CurrentTarget", (EPropertyFlags)0x0144000100000020, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonCombatComponent, CurrentTarget), Z_Construct_UClass_ADMFDigimonCharacter, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CurrentTarget_MetaData), NewProp_CurrentTarget_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bBattleEncounterActive = { "bBattleEncounterActive", nullptr, (EPropertyFlags)0x0040000000000020, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFDigimonCombatComponent), &UHT_STATICS::NewProp_bBattleEncounterActive_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bBattleEncounterActive_MetaData), NewProp_bBattleEncounterActive_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ReplicatedCooldowns_Inner = { "ReplicatedCooldowns", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFAbilityCooldownState, METADATA_PARAMS(0, nullptr) }; // 2d39d476e3f200b690e062988336f05167f5ae5b
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ReplicatedCooldowns = { "ReplicatedCooldowns", nullptr, (EPropertyFlags)0x0040000000000020, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonCombatComponent, ReplicatedCooldowns), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedCooldowns_MetaData), NewProp_ReplicatedCooldowns_MetaData) }; // 2d39d476e3f200b690e062988336f05167f5ae5b
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
@@ -2480,6 +2560,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatState_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatState,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CurrentTarget,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bBattleEncounterActive,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedCooldowns_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReplicatedCooldowns,
 };
@@ -2550,12 +2631,14 @@ void UDMFDigimonCombatComponent::ValidateGeneratedRepEnums(const TArray<struct F
 	static FName Name_CurrentSP(TEXT("CurrentSP"));
 	static FName Name_CombatState(TEXT("CombatState"));
 	static FName Name_CurrentTarget(TEXT("CurrentTarget"));
+	static FName Name_bBattleEncounterActive(TEXT("bBattleEncounterActive"));
 	static FName Name_ReplicatedCooldowns(TEXT("ReplicatedCooldowns"));
 	const bool bIsValid = true
 		&& Name_CurrentHP == ClassReps[(int32)ENetFields_Private::CurrentHP].Property->GetFName()
 		&& Name_CurrentSP == ClassReps[(int32)ENetFields_Private::CurrentSP].Property->GetFName()
 		&& Name_CombatState == ClassReps[(int32)ENetFields_Private::CombatState].Property->GetFName()
 		&& Name_CurrentTarget == ClassReps[(int32)ENetFields_Private::CurrentTarget].Property->GetFName()
+		&& Name_bBattleEncounterActive == ClassReps[(int32)ENetFields_Private::bBattleEncounterActive].Property->GetFName()
 		&& Name_ReplicatedCooldowns == ClassReps[(int32)ENetFields_Private::ReplicatedCooldowns].Property->GetFName();
 	checkf(bIsValid, TEXT("UHT Generated Rep Indices do not match runtime populated Rep Indices for properties in UDMFDigimonCombatComponent"));
 }
@@ -2573,10 +2656,10 @@ UDMFDigimonCombatComponent::~UDMFDigimonCombatComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 1098409119U) },
+		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 840012641U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_eb3ecd358b18bbaf2e490dbdd2999538c09f3c58{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_93d646f4bfe92880b107c5ed1b76e7fb87ab8f0a{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

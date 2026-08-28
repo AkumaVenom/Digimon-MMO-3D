@@ -1,3 +1,29 @@
+# v0.14.5-alpha validation summary
+
+- Built directly on the runtime-accepted v0.14.4 `PersistentBattleMusicEncounterStateFix` baseline.
+- Root cause isolated to `ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex()`: the old one-pass table gave every individual entry `RarityWeight * EntryMultiplier`, so the same rarity base weight was counted repeatedly when a tier contained many species.
+- Replaced that roll with a two-stage authority-only algorithm: build currently eligible rarity buckets, roll each eligible rarity weight exactly once, then roll an entry inside the selected bucket from its non-negative `SelectionWeightMultiplier`.
+- Entry enable state, valid species/class, positive rarity weight, positive entry weight and `MaxAliveFromEntry` capacity are all evaluated before either roll.
+- `ComputeConfiguredPopulationCapacity()` now uses the same explicit positive rarity/entry eligibility semantics rather than relying on a multiplied weight solely as a boolean check.
+- No RPC, replicated property, SaveGame field, UENUM ordering or Blueprint property was added/removed. Existing spawner Blueprint data remains source-compatible.
+- Wild species/rarity/level decisions remain server-only; clients continue to receive the replicated result rather than rolling locally.
+- v0.14.4 persistent Battle music behavior is unchanged.
+
+## Inherited v0.14.4 validation baseline
+
+- Built directly on the user-provided v0.14.3 `LocalTargetingVisibilityRuntimeFix` working baseline.
+- Root cause isolated to music using transient `CombatState` action phases as the lifetime of an encounter; manual recovery legitimately returned to `Idle`, allowing the old release-delay countdown to expire mid-battle.
+- Added one replicated server-authoritative `bBattleEncounterActive` boolean to `UDMFDigimonCombatComponent` plus Blueprint-pure `IsBattleEncounterActive()`. Clients have no setter/RPC path for this state.
+- Encounter activation is tied to valid hostile `Chasing`/`Attacking`/`Recovering` activity and deliberately survives `Idle` between manual commands. Victory, self defeat, target clear/disengage, combat reset/healer teardown, and authoritative invalid-target cleanup clear the latch.
+- `UDMFMusicSubsystem` now prefers the durable encounter latch and retains the transient active-state check only as a replication-ordering safety path for immediate Battle entry. Target selection alone still does not start Battle music.
+- Music remains local-only presentation. No music/audio RPC, playback replication, crossfade replication or shared AudioComponent state was added.
+- SaveGame schema is unchanged. v0.14.3 targeting visuals, v0.14.1 projectiles/VFX, DigiDex, Digivolution, Party/Bank, Scan/Materialization, Care/healer, chat/nameplates, camera/footsteps and account persistence remain additive regression contracts.
+- Final static gate: **80 source/header/build files, 23,790 source/build lines, 42 UCLASS, 15 UENUM, 16 USTRUCT, 423 UFUNCTION and 770 UPROPERTY declarations**.
+- All **42 Server/Client/NetMulticast RPC declarations** retain matching `_Implementation` bodies; v0.14.4 adds no RPCs.
+- Comparison against v0.14.3 finds **zero baseline files removed**, **zero existing reflected UFUNCTION names removed**, and exactly one new reflected query (`IsBattleEncounterActive`).
+- Generated-header ordering, changed-source delimiter balance, runtime TODO/FIXME scan and direct encounter-state mutation checks pass.
+- Unreal Engine/UnrealBuildTool is not installed in this assembly environment, so UE5.8 compile plus listen-host/remote-client runtime validation remain the authoritative acceptance gates.
+
 # v0.14.3-alpha validation summary
 
 - Built directly on v0.14.2 targeting-visual source, itself additive over the user-runtime-accepted v0.14.1 projectile baseline.
@@ -124,6 +150,8 @@ Validated contracts:
 Required runtime acceptance: clean UE5.8.1 compile, then run `TEST_PLAN.md` section **C0** with listen host + remote client, followed by the v0.11.0 music, v0.10.4 footsteps and existing WORLD chat/nameplate/Care/Scan/combat regressions.
 
 ## v0.11.0-alpha — polished global music director source validation
+
+> Historical note: the original v0.11 battle-lifetime rule below was superseded by the durable replicated encounter latch in v0.14.4. The remainder records the v0.11 source gate as it existed at release.
 
 Static/source validation was performed against the user-runtime-validated v0.10.4 automatic player-footstep baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8.1 compile plus Frontend/Open World/listen-host/remote-client runtime test remain the authoritative acceptance gates.
 

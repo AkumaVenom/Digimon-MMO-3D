@@ -12,7 +12,7 @@ class UDMFDigimonSpeciesData;
 class USceneComponent;
 class USphereComponent;
 
-/** Tunable rarity weights used by one wild-Digimon spawner. Values are relative weights, not percentages. */
+/** Tunable rarity-tier weights used by one wild-Digimon spawner. Values are relative weights, not percentages or per-entry weights. */
 USTRUCT(BlueprintType)
 struct DIGIMONMMOFRAMEWORK_API FDMFWildSpawnRarityWeights
 {
@@ -63,7 +63,7 @@ struct DIGIMONMMOFRAMEWORK_API FDMFWildSpawnEntry
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn Entry|Rarity")
     EDMFWildSpawnRarity Rarity = EDMFWildSpawnRarity::Common;
 
-    /** Multiplies the selected rarity tier's base weight. 0 disables selection without removing the entry. */
+    /** Relative weight among other currently eligible entries in this same rarity tier. 0 disables selection without removing the entry. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn Entry|Rarity", meta=(ClampMin="0.0"))
     float SelectionWeightMultiplier = 1.0f;
 

@@ -47,11 +47,11 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
 		{ "BlueprintType", "true" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Tunable rarity weights used by one wild-Digimon spawner. Values are relative weights, not percentages. */" },
+		{ "Comment", "/** Tunable rarity-tier weights used by one wild-Digimon spawner. Values are relative weights, not percentages or per-entry weights. */" },
 #endif
 		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Tunable rarity weights used by one wild-Digimon spawner. Values are relative weights, not percentages." },
+		{ "ToolTip", "Tunable rarity-tier weights used by one wild-Digimon spawner. Values are relative weights, not percentages or per-entry weights." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Common_MetaData[] = {
@@ -214,11 +214,11 @@ struct UHT_STATICS
 		{ "Category", "Spawn Entry|Rarity" },
 		{ "ClampMin", "0.0" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Multiplies the selected rarity tier's base weight. 0 disables selection without removing the entry. */" },
+		{ "Comment", "/** Relative weight among other currently eligible entries in this same rarity tier. 0 disables selection without removing the entry. */" },
 #endif
 		{ "ModuleRelativePath", "Public/Game/DMFWildDigimonSpawner.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Multiplies the selected rarity tier's base weight. 0 disables selection without removing the entry." },
+		{ "ToolTip", "Relative weight among other currently eligible entries in this same rarity tier. 0 disables selection without removing the entry." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxAliveFromEntry_MetaData[] = {
@@ -1498,9 +1498,9 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_RoamRadius = 
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumRoamDelay = { "MinimumRoamDelay", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, MinimumRoamDelay), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumRoamDelay_MetaData), NewProp_MinimumRoamDelay_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MaximumRoamDelay = { "MaximumRoamDelay", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, MaximumRoamDelay), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumRoamDelay_MetaData), NewProp_MaximumRoamDelay_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_RoamAcceptanceRadius = { "RoamAcceptanceRadius", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, RoamAcceptanceRadius), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RoamAcceptanceRadius_MetaData), NewProp_RoamAcceptanceRadius_MetaData) };
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_RarityWeights = { "RarityWeights", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, RarityWeights), Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RarityWeights_MetaData), NewProp_RarityWeights_MetaData) }; // a4502800758d998119469d6bc5cba1cee4834028
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpawnEntries_Inner = { "SpawnEntries", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWildSpawnEntry, METADATA_PARAMS(0, nullptr) }; // 1630f3cac08d5f9ff38fca246a8bb26c91c85c1f
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_SpawnEntries = { "SpawnEntries", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, SpawnEntries), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SpawnEntries_MetaData), NewProp_SpawnEntries_MetaData) }; // 1630f3cac08d5f9ff38fca246a8bb26c91c85c1f
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_RarityWeights = { "RarityWeights", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, RarityWeights), Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RarityWeights_MetaData), NewProp_RarityWeights_MetaData) }; // 65355ebe5881c3931b352d536a51864fc1ca6b21
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SpawnEntries_Inner = { "SpawnEntries", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWildSpawnEntry, METADATA_PARAMS(0, nullptr) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_SpawnEntries = { "SpawnEntries", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, SpawnEntries), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SpawnEntries_MetaData), NewProp_SpawnEntries_MetaData) }; // 00cecf35d85f82e03b964d9b2de05906af76dde6
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSpawnerActive = { "bSpawnerActive", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFWildDigimonSpawner), &UHT_STATICS::NewProp_bSpawnerActive_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bSpawnerActive_MetaData), NewProp_bSpawnerActive_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_ReplicatedAliveCount = { "ReplicatedAliveCount", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, ReplicatedAliveCount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedAliveCount_MetaData), NewProp_ReplicatedAliveCount_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_ReplicatedTargetPopulation = { "ReplicatedTargetPopulation", "OnRep_SpawnerState", (EPropertyFlags)0x0010000100000034, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFWildDigimonSpawner, ReplicatedTargetPopulation), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReplicatedTargetPopulation_MetaData), NewProp_ReplicatedTargetPopulation_MetaData) };
@@ -1637,14 +1637,14 @@ ADMFWildDigimonSpawner::~ADMFWildDigimonSpawner() {}
 struct UHT_STATICS
 {
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights_Statics::NewStructOps, TEXT("DMFWildSpawnRarityWeights"),&Z_Registration_Info_UScriptStruct_FDMFWildSpawnRarityWeights, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWildSpawnRarityWeights), 2756716544U) },
-		{ Z_Construct_UScriptStruct_FDMFWildSpawnEntry, Z_Construct_UScriptStruct_FDMFWildSpawnEntry_Statics::NewStructOps, TEXT("DMFWildSpawnEntry"),&Z_Registration_Info_UScriptStruct_FDMFWildSpawnEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWildSpawnEntry), 372306890U) },
+		{ Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights, Z_Construct_UScriptStruct_FDMFWildSpawnRarityWeights_Statics::NewStructOps, TEXT("DMFWildSpawnRarityWeights"),&Z_Registration_Info_UScriptStruct_FDMFWildSpawnRarityWeights, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWildSpawnRarityWeights), 1697996478U) },
+		{ Z_Construct_UScriptStruct_FDMFWildSpawnEntry, Z_Construct_UScriptStruct_FDMFWildSpawnEntry_Statics::NewStructOps, TEXT("DMFWildSpawnEntry"),&Z_Registration_Info_UScriptStruct_FDMFWildSpawnEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWildSpawnEntry), 13553461U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFWildDigimonSpawner, TEXT("ADMFWildDigimonSpawner"), &Z_Registration_Info_UClass_ADMFWildDigimonSpawner, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFWildDigimonSpawner), 2911576359U) },
+		{ Z_Construct_UClass_ADMFWildDigimonSpawner, TEXT("ADMFWildDigimonSpawner"), &Z_Registration_Info_UClass_ADMFWildDigimonSpawner, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFWildDigimonSpawner), 1810529664U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h__Script_DigimonMMOFramework_52a1bc8dc13caad14a446b52c2c46226526d7996{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFWildDigimonSpawner_h__Script_DigimonMMOFramework_9221d102654af1153c7f4f06184fcf98171bd6ea{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

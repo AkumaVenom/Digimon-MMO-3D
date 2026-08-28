@@ -1,5 +1,7 @@
 # Global Music Director Setup — v0.11.0-alpha
 
+**Persistent battle-lifecycle fix:** v0.14.4-alpha
+
 ## Goal
 
 The framework provides a ready-to-use **Frontend → Open World → Battle → Open World** soundtrack flow without requiring Blueprint state machines, Level Blueprint audio switching or replicated music RPCs.
@@ -35,19 +37,22 @@ Compatible framework GameMode/PlayerController fallbacks are also present for pr
 
 ## 3. What counts as Battle
 
-Battle music is intentionally driven by the local active partner's **replicated authoritative `UDMFDigimonCombatComponent` state**.
+Battle music is intentionally driven by the local active partner's **server-authoritative replicated `UDMFDigimonCombatComponent` encounter state**.
 
-Battle begins when that component is in one of these states:
+A real combat action (`Chasing`, `Attacking` or `Recovering`) against a valid hostile target starts the component's durable `bBattleEncounterActive` latch. Simply selecting a Digimon as the command target does **not** start the latch, so inspecting/targeting an enemy without attacking still leaves Open World music playing.
 
-- `Chasing`
-- `Attacking`
-- `Recovering`
+The important v0.14.4 behavior is that **returning to `Idle` after an attack does not end the battle encounter**. Manual combat is allowed to sit Idle for as long as the player wants between ability presses while the same hostile encounter remains active, and Battle music stays on for that entire period. The short action-state transitions are no longer used as the lifetime of the soundtrack.
 
-Simply selecting a Digimon as the command target does **not** trigger Battle music. This prevents exploration music from changing just because the player inspected/targeted something before issuing an attack.
+The authoritative encounter is cleared by actual combat teardown, including:
 
-When combat returns to Idle/ends, the framework waits for the configured **Battle Music Release Delay Seconds** and then crossfades back to Open World music. The short hold prevents soundtrack chatter during tiny state gaps and lets the final attack/recovery beat finish naturally.
+- victory against the current opponent;
+- defeat of the local active partner;
+- authoritative target clear/disengage (including leash/automation teardown);
+- healer/full combat reset and other framework paths that intentionally clear combat intent.
 
-A defeated local partner is not considered an active Battle state; the release delay returns the player to Open World music.
+Only after that durable encounter ends does **Battle Music Release Delay Seconds** begin counting down, after which the subsystem crossfades back to Open World music. The release delay remains useful for a clean victory/defeat transition, but it can no longer expire merely because the player waited between attacks.
+
+Blueprint projects can query `Is Battle Encounter Active` on the Digimon Combat Component when they need the same durable battle-lifecycle truth for UI or presentation.
 
 ## 4. Crossfade and volume controls
 
@@ -84,7 +89,7 @@ Music is **never replicated**.
 
 Each local client independently chooses music from gameplay state that already came from the server:
 
-`Server-authoritative partner CombatState -> normal replication -> local DMFMusicSubsystem -> local AudioComponent`
+`Server-authoritative battle encounter state -> normal replication -> local DMFMusicSubsystem -> local AudioComponent`
 
 Therefore:
 
@@ -126,6 +131,8 @@ Run `TEST_PLAN.md` section **M0** on a listen host and remote client. At minimum
 - Open World music takes over after entering gameplay.
 - Target selection alone does not start Battle music.
 - A real chase/attack switches only the fighting local player to Battle music.
-- Battle completion returns to Open World music after the release delay.
+- Stop pressing abilities after one attack while the enemy remains alive. Battle music must remain active indefinitely through the partner's `Idle` gap.
+- Resume attacking and verify the same Battle track/state continues without an Open World round-trip.
+- Victory or local-partner defeat ends the encounter and returns to Open World only after the release delay.
 - returning to the frontend restores Frontend music.
 - disabling the master switch produces no framework music.

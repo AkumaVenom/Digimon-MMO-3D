@@ -222,12 +222,28 @@ bool UDMFMusicSubsystem::IsLocalPlayerInBattle() const
         return false;
     }
 
+    ADMFDigimonCharacter* EncounterTarget = Combat->GetCurrentTarget();
+    const bool bHasLivingEncounterTarget = EncounterTarget
+        && EncounterTarget->CombatComponent
+        && !EncounterTarget->CombatComponent->IsDefeated();
+
+    // v0.14.4: music follows the durable server-authoritative encounter latch, not the transient
+    // action phase. Manual combat commonly returns to Idle between button presses; that is still the
+    // same battle until victory, defeat, or an authoritative disengage/reset clears the encounter.
+    if (Combat->IsBattleEncounterActive() && bHasLivingEncounterTarget)
+    {
+        return true;
+    }
+
+    // Replication ordering safety: if the action-state property arrives one update before the new
+    // encounter latch, enter Battle immediately rather than waiting for another replication frame.
+    // Requiring a living authoritative target prevents targetless abilities/final recovery after a
+    // cleared victory target from creating a false Battle interval.
     const EDMFCombatState CombatState = Combat->GetCombatState();
-    // Merely selecting a command target is not a battle. The soundtrack changes only after the
-    // authoritative CombatComponent enters an active chase/attack/recovery state.
-    return CombatState == EDMFCombatState::Chasing
-        || CombatState == EDMFCombatState::Attacking
-        || CombatState == EDMFCombatState::Recovering;
+    return bHasLivingEncounterTarget
+        && (CombatState == EDMFCombatState::Chasing
+            || CombatState == EDMFCombatState::Attacking
+            || CombatState == EDMFCombatState::Recovering);
 }
 
 USoundBase* UDMFMusicSubsystem::ResolveSoundForState(const EDMFMusicState State) const

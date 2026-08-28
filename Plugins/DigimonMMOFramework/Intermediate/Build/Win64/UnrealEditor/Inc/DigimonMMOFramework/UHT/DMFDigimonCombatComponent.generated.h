@@ -55,6 +55,7 @@ struct FVector_NetQuantize;
 	DECLARE_FUNCTION(execInitializeRuntimeVitals); \
 	DECLARE_FUNCTION(execCanAttackTarget); \
 	DECLARE_FUNCTION(execGetRemainingCooldown); \
+	DECLARE_FUNCTION(execIsBattleEncounterActive); \
 	DECLARE_FUNCTION(execIsDefeated); \
 	DECLARE_FUNCTION(execGetCurrentTarget); \
 	DECLARE_FUNCTION(execGetCombatState); \
@@ -80,6 +81,7 @@ public: \
 		CurrentSP, \
 		CombatState, \
 		CurrentTarget, \
+		bBattleEncounterActive, \
 		ReplicatedCooldowns, \
 		NETFIELD_REP_END=ReplicatedCooldowns	}; \
 	DECLARE_VALIDATE_GENERATED_REP_ENUMS(NO_API)

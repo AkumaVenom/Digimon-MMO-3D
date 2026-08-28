@@ -61,6 +61,13 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Combat")
     bool IsDefeated() const { return CombatState == EDMFCombatState::Defeated || CurrentHP <= 0; }
 
+    /**
+     * Server-authoritative encounter latch. Unlike CombatState, this remains true through intentional
+     * Idle gaps between manual ability commands and clears only when the encounter actually ends.
+     */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Combat")
+    bool IsBattleEncounterActive() const { return bBattleEncounterActive; }
+
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Combat")
     float GetRemainingCooldown(FName AbilityId) const;
 
@@ -154,6 +161,13 @@ private:
     UPROPERTY(ReplicatedUsing=OnRep_CurrentTarget)
     TObjectPtr<ADMFDigimonCharacter> CurrentTarget;
 
+    /**
+     * Durable server-owned encounter truth for systems that must outlive per-attack animation states.
+     * It intentionally survives Chasing/Attacking/Recovering -> Idle gaps while a valid battle remains.
+     */
+    UPROPERTY(Replicated)
+    bool bBattleEncounterActive = false;
+
     /** Proactive acquisition/attack behavior. False does not suppress configured retaliation. */
     bool bAutoBattleEnabled = false;
     /** Reactive combat is a separate policy so passive wild Digimon can still defend themselves. */
@@ -220,5 +234,6 @@ private:
     void SpawnTransientProjectileImpactVFX(const UDMFDigimonAbilityData& Ability, const FVector& ImpactLocation);
     void FinishRecovery();
     void SetCombatState(EDMFCombatState NewState);
+    void SetBattleEncounterActive(bool bActive);
     void PlayNativeAbilityPresentation(FName AbilityId, ADMFDigimonCharacter* Target);
 };

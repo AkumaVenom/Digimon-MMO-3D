@@ -109,18 +109,22 @@ Run these after a clean UE5.8.1 Editor compile and before promoting the source p
 3. Host & Play into the configured Open World. Confirm Frontend music survives the travel boundary only long enough to crossfade cleanly into Open World music, with no doubled persistent track afterward.
 4. Join from a remote client. Confirm that client independently transitions from its Frontend music to Open World music and does not inherit the host's AudioComponent/playback position.
 5. Select/Interact with a hostile Digimon as a command target but do **not** attack. Music must remain Open World.
-6. Issue an ability so the active partner enters `Chasing`, `Attacking` or `Recovering`. The fighting local player must crossfade to Battle music.
-7. While Host fights, leave Client out of combat. Client must stay on Open World music. Repeat with Client fighting while Host remains idle. This proves music is local presentation rather than global multicast state.
-8. End the battle. Battle music should remain stable through the configured **Battle Music Release Delay Seconds**, then crossfade back to Open World music exactly once.
-9. Test a defeated partner and a normal victory/target-clear path; neither may leave Battle music stuck indefinitely.
-10. Clear the **Battle Music** asset and repeat a fight. The state may report Battle, but audible playback must gracefully remain/fall back to Open World music instead of becoming silent. Restore the Battle asset afterward.
-11. Use a non-looping test music asset and wait for it to finish. With **Automatically Loop Music** enabled it must restart cleanly. Disable automatic looping and verify the framework does not restart it.
-12. Set **Music Crossfade Seconds** to `0` and verify immediate state cuts; restore the preferred production fade. Test master/per-state volume controls.
-13. Disable **Enable Framework Music** and restart PIE. No framework music should play on Frontend or Open World. Re-enable it.
-14. If using a cinematic, call **Set Music Suppressed(true)** from the Game Instance Subsystem and verify the current track fades/stops; set false and verify automatic state music resumes.
-15. Return to the configured Frontend map and verify Frontend/Main Menu music is restored.
-16. Package host/client and verify all three soft-referenced music assets are cooked and transitions behave the same on two machines.
-17. Run the v0.10.4 footstep section plus WORLD chat, nameplate, Care, Scan/Materialization and combat regressions.
+6. Issue an ability so the active partner enters `Chasing`, `Attacking` or `Recovering`. The fighting local player must crossfade to Battle music and `Is Battle Encounter Active` must become true from replicated authority.
+7. **v0.14.4 regression:** after that attack finishes, press no combat button for at least 15 seconds (well beyond the default 1.5-second release delay) while the enemy remains alive. The partner may sit in `Idle`, but Battle music must continue without interruption and the encounter query must remain true.
+8. Resume attacking the same enemy. There must be no Open World -> Battle restart because the same battle never ended.
+9. While Host fights, leave Client out of combat. Client must stay on Open World music. Repeat with Client fighting while Host remains idle. This proves encounter truth replicates normally while music remains local presentation rather than global multicast state.
+10. Win the battle. The encounter query must clear, Battle music must remain stable only for the configured **Battle Music Release Delay Seconds**, then crossfade back to Open World exactly once.
+11. Repeat and allow the local active partner to be defeated. The encounter must clear and return to Open World after the release delay; Battle music must not become stuck.
+12. Exercise an authoritative target-clear/disengage/reset path (for example healer/reset or auto-battle leash teardown) and verify it also clears the durable encounter safely.
+13. Select a second hostile target without attacking it. The encounter must remain false and music must stay Open World.
+14. Clear the **Battle Music** asset and repeat a fight. The state may report Battle, but audible playback must gracefully remain/fall back to Open World music instead of becoming silent. Restore the Battle asset afterward.
+15. Use a non-looping test music asset and wait for it to finish. With **Automatically Loop Music** enabled it must restart cleanly. Disable automatic looping and verify the framework does not restart it.
+16. Set **Music Crossfade Seconds** to `0` and verify immediate state cuts; restore the preferred production fade. Test master/per-state volume controls.
+17. Disable **Enable Framework Music** and restart PIE. No framework music should play on Frontend or Open World. Re-enable it.
+18. If using a cinematic, call **Set Music Suppressed(true)** from the Game Instance Subsystem and verify the current track fades/stops; set false and verify automatic state music resumes.
+19. Return to the configured Frontend map and verify Frontend/Main Menu music is restored.
+20. Package host/client and verify all three soft-referenced music assets are cooked and transitions behave the same on two machines.
+21. Run the v0.10.4 footstep section plus WORLD chat, nameplate, Care, Scan/Materialization and combat regressions.
 
 
 ## F0. v0.10.4 automatic replicated player-footstep acceptance
@@ -385,6 +389,15 @@ The baseline should not be treated as networking-accepted until it passes a pack
 - Restore NavMesh and confirm spawning recovers without changing the Wild Blueprint.
 
 
+
+## v0.14.5 rarity-weight normalization regression
+
+1. Configure at least two eligible rarity tiers in one `DMFWildDigimonSpawner` and temporarily use easy-to-observe rarity weights such as `Common = 1.0`, `Uncommon = 0.5`, with all other tiers `0.0`.
+2. Put a small number of entries in one tier and many entries in the other. Confirm adding entries to a tier changes species variety but does not multiply that tier's aggregate chance; with the example weights the long-run tier distribution should trend near 66.7% / 33.3%, not scale with entry count.
+3. Inside one rarity tier, configure two entries with `Selection Weight Multiplier = 1.0` and `0.5`. Over repeated authoritative spawns, confirm the `1.0` entry trends approximately twice as often as the `0.5` entry when both remain eligible.
+4. Set one entry multiplier to `0.0`; confirm it is never selected. Restore it and set `Max Alive From Entry = 1`; while one copy is alive, confirm the capped entry is removed from the within-tier roll and other eligible entries continue spawning normally.
+5. Run listen host plus remote client and confirm both machines see the same resulting species and replicated `SpawnRarity`; the client must not perform an independent rarity/species roll.
+6. Repeat the user's production Rookie/In-Training table and verify lower-weight Rookie tiers no longer dominate merely because more Rookie species are authored.
 
 ## v0.5.0 manual partner / balance acceptance
 
