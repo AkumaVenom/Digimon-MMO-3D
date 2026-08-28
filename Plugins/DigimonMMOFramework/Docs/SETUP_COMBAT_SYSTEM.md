@@ -1,4 +1,4 @@
-# Real-Time Combat Setup — v0.14.1-alpha
+# Real-Time Combat Setup — v0.14.7-alpha
 
 ## v0.5.0 owned-partner control defaults
 
@@ -13,7 +13,7 @@ Create `DMFDigimonAbilityData` assets under `/Game/DigimonData`. For each abilit
 - SP cost, cooldown, impact delay and recovery.
 - Max range.
 - Base power, STR or INT scaling, and defense scaling.
-- Whether it is eligible for auto battle.
+- Whether it is eligible for auto battle. In v0.14.7, every equipped ability with `bEligibleForAutoBattle=true` participates in autonomous full-moveset selection; disable it only for moves the AI must never choose.
 - Montage, Cascade particle, optional Niagara particle and attack sound.
 - `Execution Mode`: keep **Timed / Instant Impact** for direct attacks, or choose **Replicated Projectile** for fireballs/bolts/rockets that must physically travel to the enemy.
 - Projectile mode exposes launch socket/offset, moving Niagara/Cascade/mesh, speed, homing, visual rotation correction, impact radius, hard lifetime cleanup, impact VFX/audio and an optional custom projectile Blueprint class.
@@ -52,11 +52,12 @@ This prevents a client from directly authoring damage/cooldown/SP state on the s
 By default, `ADMFMMOPlayerController` binds **Left Mouse Button** to target selection (actual cursor when visible, screen centre when the cursor is hidden) and number keys **1–4** to the four quick slots. Disable `bEnableDefaultCombatInputBindings` if your project wants to own those bindings through Enhanced Input. The native quick bar is also clickable and can be replaced with a Blueprint subclass in Project Settings.
 
 ## 6. Automatic partner behavior
-Player partners automatically:
+When **Player Partner Auto Battle** is deliberately enabled, autonomous partners:
 - follow their player outside combat;
 - acquire hostile Digimon in `PartnerAggroRange`;
-- chase using the AI controller;
-- use the configured Basic Auto Attack when in range;
+- choose fairly from the complete equipped `ReplicatedAbilityIds` moveset, limited to abilities whose `bEligibleForAutoBattle` flag is enabled;
+- respect SP, per-move cooldowns and each selected move's own range;
+- keep a selected move stable while chasing so mixed melee/ranged moves do not oscillate;
 - accept server-validated player ability commands from the quick bar;
 - queue out-of-range commanded abilities, chase to range, then revalidate and execute them;
 - abandon queued commands after the configurable `CombatCommandQueueTimeout` or when target/self violates the leash.
@@ -82,6 +83,19 @@ Proactive Auto Battle (Aggressive) = False
 Retaliate When Attacked = True
 ```
 
-This means the wild Digimon will **not** acquire targets because they are nearby. When a hostile Digimon actually damages it, the authoritative damage pipeline establishes that attacker as the reactive target and the wild Digimon fights back using its Basic Auto Attack. Retaliation ends on victory, invalid target or leash break.
+This means the wild Digimon will **not** acquire targets because they are nearby. When a hostile Digimon actually damages it, the authoritative damage pipeline establishes that attacker as the reactive target and the wild Digimon fights back using its complete currently usable auto-battle moveset. `BasicAutoAttack` remains part of that pool, but it is no longer the only move the automation loop can execute. Retaliation ends on victory, invalid target or leash break.
 
 Player-owned partner Digimon are unaffected: their auto battle remains off by default and they continue to attack only through player commands.
+
+## Attack VFX CustomDepth (v0.14.6)
+
+Framework-owned attack particle presentation now always enables **Render CustomDepth Pass** at runtime. Direct ability VFX, replicated projectile Niagara/Cascade visuals and projectile impact VFX are covered. The framework intentionally does not overwrite a project's CustomDepth stencil value; it guarantees only that the relevant runtime particle component participates in the pass. The local enemy overhead target arrow uses the same invariant. See `SETUP_ABILITY_PROJECTILES.md` and `SETUP_COMBAT_TARGETING_VISUALS.md` for the detailed lifecycle.
+
+
+## Full autonomous moveset selection (v0.14.7)
+
+The authoritative automation loop no longer hard-wires `BasicAutoAttack`. It builds its candidates from the Digimon's runtime `ReplicatedAbilityIds` (with Basic Auto Attack retained as a compatibility fallback), filters out abilities that are not auto-battle eligible or cannot currently be paid/used, and selects by least-recently-used fairness. This means all currently usable moves receive turns before a recently used move becomes preferred again.
+
+The selection history and pending move are **server-only transient AI state**. Clients do not choose abilities and no additional replicated property/RPC exists. The move itself still executes through `TryExecuteAbilityById`, so existing server SP deduction, cooldown creation, range/facing validation, projectile/timed-impact behavior, damage and defeat logic remain the single authoritative execution path.
+
+For a wild Digimon intended to use four attacks, put all four ability assets in `StartingAbilities`/the runtime moveset and leave `bEligibleForAutoBattle=true` on each. If a move is support/manual-only, disable that flag and automation will never select it.

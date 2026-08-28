@@ -1,4 +1,17 @@
-# v0.14.5-alpha validation summary
+# v0.14.6-alpha validation summary
+
+## Attack VFX / enemy marker CustomDepth enforcement
+- Direct attack Niagara/Cascade spawn paths force `SetRenderCustomDepth(true)` immediately after component creation.
+- Projectile-impact Niagara/Cascade spawn paths force the same flag on every impact component.
+- Replicated moving projectile Niagara/Cascade components enable CustomDepth at construction and reassert it on every presentation refresh.
+- Owner-local enemy target-arrow Niagara/Cascade components enable CustomDepth at construction, runtime asset refresh and activation.
+- No stencil value is overwritten by this release.
+- No RPC, replicated gameplay state, SaveGame schema or serialized enum changes are required.
+
+## Prior validated baseline carried forward
+The implementation is based on the user-runtime-validated v0.14.5-alpha rarity-weight normalization baseline. v0.14.6 requires UE5.8 host/client runtime validation before being marked accepted.
+
+---
 
 - Built directly on the runtime-accepted v0.14.4 `PersistentBattleMusicEncounterStateFix` baseline.
 - Root cause isolated to `ADMFWildDigimonSpawner::SelectWeightedSpawnEntryIndex()`: the old one-pass table gave every individual entry `RarityWeight * EntryMultiplier`, so the same rarity base weight was counted repeatedly when a tier contained many species.
@@ -771,3 +784,22 @@ Validated contracts:
 - Generated-header ordering, changed-source delimiter balance and runtime TODO/FIXME checks pass.
 
 Required runtime acceptance: clean UE5.8 compile, then run `TEST_PLAN.md` section **T0** with listen host + two remote clients and packaged clients, followed by the v0.14.1 projectile/homing regression and existing combat/Party/Care/Scan/Digivolution/DigiDex regressions.
+
+
+## v0.14.7-alpha — wild / auto-battle full moveset source validation
+
+Static/source validation was performed against the user-runtime-validated v0.14.6 CustomDepth baseline. Unreal Engine/UnrealBuildTool is not installed in the assembly environment, so a clean UE5.8 compile plus host/remote-client runtime test remains the authoritative acceptance gate.
+
+Validated contracts:
+- Root cause confirmed in `UDMFDigimonCombatComponent::AutomationTick`: autonomous combat resolved `ResolveBasicAttackId()` and executed only that one ability. Other runtime equipped ability IDs were not considered by the AI decision path.
+- Autonomous selection now reads the complete runtime `ReplicatedAbilityIds` set and retains Basic Auto Attack only as a compatibility fallback.
+- `bEligibleForAutoBattle=false`, insufficient SP, active cooldown or invalid hostile target remove an ability from the current candidate pool before selection.
+- Least-recently-used server-only use serials prefer untouched/oldest usable moves, with randomization only between equal-age candidates. This removes fixed slot-order bias while ensuring current usable abilities are exercised before recently used moves are preferred again.
+- A server-only pending ability ID remains stable while AI chases into that selected move's capsule-aware range; mixed melee/ranged moves therefore do not thrash `MoveToActor` acceptance radii every automation interval.
+- Rotation state resets on authoritative target change, reset/heal combat teardown, defeat and victory. It is not a UPROPERTY, is not saved and is never client-authored.
+- Actual execution still calls `TryExecuteAbilityById`, preserving the existing authoritative SP deduction, cooldown mutation, facing/range checks, timed/projectile impact, damage, defeat and replication/cosmetic cue contracts.
+- Manual queued commands remain processed before autonomous decisions. Player-owned partner auto battle is still disabled by default.
+- No RPC, replicated gameplay property, SaveGame field or serialized enum is added by this release.
+- v0.14.6 CustomDepth presentation, v0.14.5 spawn rarity normalization and v0.14.4 battle encounter music logic are untouched.
+
+Final static regression gate: **80 source/header/build files** and **24054 source/build lines** checked, with **42 UCLASS**, **15 UENUM**, **16 USTRUCT**, **423 UFUNCTION**, **770 UPROPERTY** and **42 reflected RPC declarations**. Comparison against v0.14.6 finds **zero baseline files removed**, **zero existing reflected UFUNCTION names removed**, and all reflected RPC declarations still have matching `_Implementation` bodies. Plugin JSON, generated-header include ordering and changed C++ delimiter balance pass.

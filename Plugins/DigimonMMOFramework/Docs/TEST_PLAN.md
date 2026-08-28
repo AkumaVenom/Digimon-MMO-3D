@@ -579,3 +579,29 @@ The baseline should not be treated as networking-accepted until it passes a pack
 8. Unassign Niagara and assign Cascade fallback; repeat target selection. Then restore Niagara and verify Niagara is preferred.
 9. Verify host/client target selection, abilities, v0.14.1 projectile homing/impact/cleanup and all combat damage remain server-authoritative and unchanged.
 10. Package two clients and repeat privacy/cleanup checks.
+
+## v0.14.6 attack VFX / enemy marker CustomDepth regression
+
+1. In PIE, select a hostile Digimon and verify the overhead enemy Niagara or Cascade marker is visible and its runtime component reports **Render CustomDepth Pass = true**.
+2. Execute a direct/non-projectile ability using Niagara, then Cascade fallback, and inspect the spawned component: CustomDepth must be enabled every spawn.
+3. Execute a projectile ability and verify its moving Niagara/Cascade component has CustomDepth enabled on host and remote client presentation.
+4. Verify projectile-impact Niagara/Cascade components also have CustomDepth enabled on every impact spawn.
+5. Change/reassign the enemy target-arrow asset during PIE and confirm the refreshed marker still has CustomDepth enabled.
+6. Regression-check projectile hit/damage, homing, cleanup, target privacy, v0.14.5 rarity weighting and v0.14.4 battle-music lifecycle.
+
+
+
+## v0.14.7 wild / auto-battle full moveset regression
+
+1. Create or use a wild species with at least four resolvable runtime abilities: `BasicAutoAttack` plus three `StartingAbilities`. Leave `bEligibleForAutoBattle=true` on all four and give the Digimon enough SP to use each repeatedly.
+2. Set cooldowns low enough to observe repeated cycles, but give the moves visibly distinct montages/VFX/sounds so ability identity is obvious. Include at least one short-range/melee move and one longer-range/projectile move.
+3. With `Proactive Auto Battle=false` and `Retaliate When Attacked=true`, attack the wild Digimon from a player partner. Confirm authority establishes retaliation and the wild executes **multiple different abilities**, not only Basic Auto Attack.
+4. Observe a long enough fight to cover at least one complete currently-usable rotation. Confirm every auto-battle-eligible move executes before a recently used move becomes the preferred choice again, allowing for temporary cooldown/SP exclusion.
+5. Confirm mixed ranges are stable: when a short-range ability is selected from farther away, the wild keeps chasing into that move's range and executes it rather than oscillating between ranged/melee acceptance radii each automation tick.
+6. Put one ability on a visibly longer cooldown. Confirm other ready abilities continue executing; after the long cooldown expires, that older move naturally returns to selection.
+7. Set one move's `bEligibleForAutoBattle=false`. Confirm it is never autonomously selected while the remaining enabled moves continue rotating.
+8. Reduce SP so one costly move can no longer be paid. Confirm it leaves the autonomous candidate pool without blocking attacks that are still affordable.
+9. Repeat with `Proactive Auto Battle=true` to verify nearest-hostile acquisition uses the same full-moveset execution path.
+10. Optional owned-partner regression: explicitly enable Player Partner Auto Battle and confirm it also uses the complete eligible moveset; then disable it and confirm manual slot 1–4 commands remain unchanged and take priority.
+11. Run listen host + remote client. Confirm ability selection/damage/cooldowns remain server-authored while the existing replicated/multicast presentation shows the same chosen attacks remotely.
+12. Regression-check v0.14.6 CustomDepth attack VFX/marker enforcement, v0.14.5 rarity weighting, v0.14.4 persistent battle music, projectile homing/impact, combat facing, leash behavior, defeat/reward and Party/Bank persistence.

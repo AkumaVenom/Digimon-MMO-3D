@@ -175,3 +175,8 @@ Use host + at least one remote PIE client:
 8. Deliberately use a looping projectile Niagara system and let it miss; the entire actor/VFX must disappear at `Projectile Max Lifetime Seconds`.
 9. Test a normal timed-impact looping Niagara/Cascade cue; it must disappear at `Presentation VFX Lifetime Seconds`.
 10. Repeat attacks for several minutes and verify no orphan attack particles remain in the world.
+
+## v0.14.6 CustomDepth contract — attack VFX
+
+All framework-owned runtime attack particle components force **Render CustomDepth Pass = true**. This includes transient direct-ability Niagara/Cascade effects, projectile-impact Niagara/Cascade effects, and the Niagara/Cascade components on replicated moving projectile actors. Moving projectile components reassert the flag every time their presentation is refreshed before activation, including replication-driven definition refreshes. This changes presentation only; projectile travel, homing, impact authority and replicated lifecycle are unchanged.
+

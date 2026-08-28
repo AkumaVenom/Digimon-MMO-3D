@@ -268,3 +268,8 @@ Attacker dies / becomes invalid / leaves wild leash
 `Proactive Auto Battle (Aggressive)` is only for Digimon that should initiate combat merely because an enemy is within `Aggro Range`. `Retaliate When Attacked` is independent and continues to work when proactive auto battle is off.
 
 The spawner's existing optional per-entry Auto Battle override only affects **proactive aggression**. It never disables retaliation. This keeps ordinary encounter setup simple while still allowing intentionally aggressive rare/boss entries when needed.
+
+
+## v0.14.7 wild combat moveset note
+
+Spawner combat policy still decides **whether** a wild Digimon may proactively acquire targets and/or retaliate. Once a wild Digimon is in an authoritative fight, v0.14.7 makes its combat component choose from the complete currently usable equipped moveset instead of repeating only `BasicAutoAttack`. Put the desired abilities on the species/runtime moveset and keep `bEligibleForAutoBattle=true` for moves the enemy AI is allowed to perform. Ability choice remains server-only and respects SP, cooldown, target validity, leash and each move's own capsule-aware range.

@@ -187,6 +187,11 @@ private:
     double QueuedCommandExpireTime = 0.0;
     FTimerHandle AutomationTimer;
     FTimerHandle RecoveryTimer;
+    /** Server-only AI intent. Kept stable while chasing so different ability ranges cannot thrash movement. */
+    FName PendingAutoBattleAbilityId = NAME_None;
+    /** Server-only least-recently-used history for fair use of the full eligible moveset. */
+    TMap<FName, uint64> AutoBattleAbilityUseSerials;
+    uint64 AutoBattleAbilityUseCounter = 0;
 
     UFUNCTION()
     void OnRep_Vitals();
@@ -219,6 +224,15 @@ private:
     void PruneExpiredCooldowns();
     ADMFDigimonCharacter* AcquireNearestHostile() const;
     FName ResolveBasicAttackId() const;
+    /**
+     * Chooses from the complete equipped moveset rather than hard-wiring BasicAutoAttack.
+     * Range is intentionally not a readiness gate; automation can select a short-range move and
+     * chase into that move's authored reach before executing it.
+     */
+    FName SelectAutoBattleAbility(ADMFDigimonCharacter* Target);
+    bool IsAutoBattleAbilityReady(FName AbilityId, ADMFDigimonCharacter* Target) const;
+    void RecordAutoBattleAbilityUse(FName AbilityId);
+    void ResetAutoBattleAbilityRotation();
     bool ValidateAbilityUse(const UDMFDigimonAbilityData& Ability, ADMFDigimonCharacter* Target, FText* OutFailure = nullptr) const;
     /** Horizontal combat distance measured from collision-capsule edge to edge, not actor center to center. */
     float GetTargetEdgeDistance2D(const ADMFDigimonCharacter* Target) const;

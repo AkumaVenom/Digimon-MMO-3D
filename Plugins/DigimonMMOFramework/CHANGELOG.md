@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix
+
+### Fixed — autonomous Digimon now use their complete eligible ability moveset
+- Fixed wild Digimon and other autonomous combatants repeatedly using only `BasicAutoAttack` even when multiple equipped/starting abilities were available.
+- Root cause: `UDMFDigimonCombatComponent::AutomationTick` explicitly resolved `BasicAutoAttack` and executed that single ID every attack decision; the rest of `ReplicatedAbilityIds` were never considered by autonomous combat.
+- Auto battle and wild retaliation now select from the complete runtime equipped moveset (`ReplicatedAbilityIds`) plus the Basic Auto Attack compatibility fallback. Only abilities with `bEligibleForAutoBattle=true` participate.
+- Selection respects authoritative SP availability, per-ability cooldowns, hostile target validity and the existing leash contract before a move is considered ready.
+- Added server-only least-recently-used fairness history. Among currently usable abilities, never/least-recently-used moves are preferred first, with randomization only between equally old candidates. This prevents slot-order bias and makes all usable moves surface before already-used moves are preferred again.
+- Added a server-only pending autonomous ability intent. When the selected move is out of range, AI keeps that same move while chasing into its authored capsule-aware range instead of changing move/range every automation tick. This allows mixed melee/ranged movesets to work reliably without movement thrashing.
+- Rotation history resets when the authoritative combat target changes, combat is reset, the Digimon is defeated, or victory tears down the target.
+
+### Multiplayer / regression contract
+- Ability choice, chase intent, SP/cooldown checks and execution remain authority-only. The new selection history/pending intent are transient server-only members and are not replicated or saved.
+- No RPCs, replicated properties, SaveGame fields, serialized enums or existing Blueprint APIs were added/reordered. Existing `bEligibleForAutoBattle` remains the designer opt-in/opt-out switch per ability.
+- Player manual quick-slot commands are unchanged and continue to take priority through the existing server command queue. Player-owned partner auto battle remains disabled by default; if deliberately enabled, it benefits from the same full-moveset selector.
+- v0.14.6 CustomDepth VFX/marker behavior, v0.14.5 rarity weighting and v0.14.4 persistent battle music are unchanged.
+
+### Documentation
+- Updated README, combat setup, wild-spawner guidance, architecture, networking, roadmap, test plan and validation notes for full-moveset autonomous combat.
+
+## 0.14.6-alpha — Attack VFX / Enemy Marker CustomDepth Enforcement
+
+### Fixed — attack particles now always render into CustomDepth
+- Direct ability Niagara and Cascade components spawned by `UDMFDigimonCombatComponent` now force `Render CustomDepth Pass = true` immediately after each runtime spawn.
+- Projectile-impact Niagara and Cascade components follow the same rule on every impact spawn.
+- Replicated moving ability-projectile Niagara/Cascade components enable CustomDepth in their constructor and reassert it every time projectile presentation is refreshed before activation.
+- The owner-local enemy target arrow above the selected Digimon now forces CustomDepth for both Niagara and Cascade, including constructor setup, runtime asset refresh and every activation path.
+- The framework does not modify CustomDepth stencil values here; project-authored stencil configuration remains available while the render-pass participation flag is guaranteed on.
+
+### Multiplayer / regression contract
+- Presentation-only fix: no combat authority, targeting validation, damage, projectile movement/impact, selection privacy or replication ownership changed.
+- No RPCs, replicated properties, SaveGame fields or serialized enums were added or reordered.
+- Targeting presentation remains local-only/non-replicated; projectile gameplay remains server-authoritative and replicated exactly as before.
+- v0.14.5 normalized rarity spawning and v0.14.4 persistent battle music behavior are unchanged.
+
+### Documentation
+- Updated README, combat-targeting setup, ability-projectile setup, architecture, networking, test plan and validation notes with the enforced CustomDepth presentation contract.
+
 ## 0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix
 
 ### Fixed — rarity tiers are no longer biased by species-count

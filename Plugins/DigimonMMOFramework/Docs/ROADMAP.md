@@ -40,7 +40,8 @@ The plugin is intentionally being built in dependency order rather than as isola
 ## Phase 2 — Real-time battle core (implemented in v0.2.0-alpha)
 - Server-authoritative combat state machine.
 - Wild/NPC/owned Digimon combatants.
-- Wild/NPC autonomous basic attacks plus player command queue; owned partners default to manual commands (v0.5.0).
+- Wild/NPC autonomous combat plus player command queue; owned partners default to manual commands (v0.5.0).
+- Full eligible wild/auto-battle moveset selection with least-recently-used fairness and stable per-move chase intent (v0.14.7).
 - Quick-access ability slots.
 - Attack targeting, cooldowns, SP costs and damage formulas, including v0.6.4 repeat-safe buffered quick-slot input.
 - Attack 1/2 montage + Cascade/Niagara execution and replicated cues.
@@ -198,3 +199,10 @@ v0.12 builds Party, Bank/Boxes and Party Quick Access on this presentation layer
 - Niagara-preferred / Cascade-fallback hovering enemy arrow.
 - Independent world-Z ring rotation speeds/directions and automatic Digimon capsule-size adaptation.
 - Project Settings exposure and host/multi-client privacy contract.
+
+## Completed — v0.14.6 attack VFX / enemy marker CustomDepth enforcement
+
+- All framework-owned direct attack and projectile-impact Niagara/Cascade components now force `Render CustomDepth Pass = true` immediately when spawned.
+- Replicated moving projectile Niagara/Cascade components force CustomDepth at construction and every presentation refresh before activation.
+- The owner-local enemy overhead target arrow forces CustomDepth for both Niagara and Cascade across construction, hot asset refresh and activation.
+- No stencil value, combat authority, RPC, replication ownership or SaveGame contract changed.

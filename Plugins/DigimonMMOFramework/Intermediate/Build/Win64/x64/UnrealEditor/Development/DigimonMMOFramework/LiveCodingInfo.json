@@ -48,29 +48,29 @@
 			"DMFPlayerAvatarComponent.cpp.obj",
 			"DMFPlayerDigimonComponent.cpp.obj",
 			"DigimonMMOFramework.cpp.obj",
-			"DMFAbilityProjectileActor.cpp.obj",
 			"DMFDigimonCarePropActor.cpp.obj",
 			"DMFDigimonCharacter.cpp.obj",
+			"DMFDigimonCombatComponent.cpp.obj",
+			"DMFAbilityProjectileActor.cpp.obj"
+		],
+		"Module.DigimonMMOFramework.2.cpp.obj": [
 			"DMFFrontendGameMode.cpp.obj",
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
-			"DMFDigimonCombatComponent.cpp.obj"
-		],
-		"Module.DigimonMMOFramework.2.cpp.obj": [
 			"DMFMMOGameMode.cpp.obj",
 			"DMFMMOPlayerController.cpp.obj",
 			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
 			"DMFSessionSubsystem.cpp.obj",
-			"DMFTargetingPresentationActor.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
+			"DMFWildDigimonSpawner.cpp.obj",
 			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj",
+			"DMFMusicSubsystem.cpp.obj",
 			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
 			"DMFDigimonInventoryWidget.cpp.obj",
-			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
-			"DMFMusicSubsystem.cpp.obj"
+			"DMFTargetingPresentationActor.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.3.cpp.obj": [
 			"DMFLoginMainMenuWidget.cpp.obj",

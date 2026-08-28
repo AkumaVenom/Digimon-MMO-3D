@@ -134,3 +134,8 @@ Run listen host + at least two remote clients:
 ## Packaging note
 
 The targeting assets are soft references stored in Project Settings. Ensure assigned sprite/VFX assets are cooked in packaged builds. Assets living under an always-cooked project directory or referenced by another cooked asset are sufficient; otherwise add their directory to the project's cook rules.
+
+## v0.14.6 CustomDepth contract — enemy overhead marker
+
+The framework-owned enemy target arrow component is always forced to **Render CustomDepth Pass = true** for both Niagara and Cascade presentation. The flag is applied when the local presentation actor is constructed, whenever targeting assets are refreshed from Project Settings, and again immediately before the active marker is started. This is intentional framework behavior so post-process outlines/masks can reliably include the overhead enemy marker even if the assigned effect asset was authored without a matching component default. The marker remains local-only and does not replicate.
+

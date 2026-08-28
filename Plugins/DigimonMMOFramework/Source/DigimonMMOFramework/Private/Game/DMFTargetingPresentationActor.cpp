@@ -57,6 +57,8 @@ ADMFTargetingPresentationActor::ADMFTargetingPresentationActor()
     EnemyTargetArrowNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("EnemyTargetArrowNiagara"));
     EnemyTargetArrowNiagara->SetupAttachment(PresentationRoot);
     EnemyTargetArrowNiagara->SetAutoActivate(false);
+    // The overhead enemy marker is framework presentation and is always forced through CustomDepth.
+    EnemyTargetArrowNiagara->SetRenderCustomDepth(true);
     EnemyTargetArrowNiagara->SetOnlyOwnerSee(false);
     EnemyTargetArrowNiagara->SetOwnerNoSee(false);
     EnemyTargetArrowNiagara->SetHiddenInGame(false);
@@ -65,6 +67,7 @@ ADMFTargetingPresentationActor::ADMFTargetingPresentationActor()
     EnemyTargetArrowCascade = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EnemyTargetArrowCascade"));
     EnemyTargetArrowCascade->SetupAttachment(PresentationRoot);
     EnemyTargetArrowCascade->bAutoActivate = false;
+    EnemyTargetArrowCascade->SetRenderCustomDepth(true);
     EnemyTargetArrowCascade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     EnemyTargetArrowCascade->SetGenerateOverlapEvents(false);
     EnemyTargetArrowCascade->SetCastShadow(false);
@@ -135,6 +138,9 @@ void ADMFTargetingPresentationActor::RefreshPresentationAssets()
         ? nullptr
         : Settings->EnemyTargetArrowCascadeSystem.LoadSynchronous();
 
+    // The overhead enemy marker is framework presentation and is always forced through CustomDepth.
+    // Reapply this whenever Project Settings assets are refreshed during PIE/runtime.
+    EnemyTargetArrowNiagara->SetRenderCustomDepth(true);
     EnemyTargetArrowNiagara->SetOnlyOwnerSee(false);
     EnemyTargetArrowNiagara->SetOwnerNoSee(false);
     EnemyTargetArrowNiagara->SetHiddenInGame(false);
@@ -142,6 +148,7 @@ void ADMFTargetingPresentationActor::RefreshPresentationAssets()
     EnemyTargetArrowNiagara->SetAsset(NiagaraSystem);
     EnemyTargetArrowNiagara->SetVisibility(false, true);
 
+    EnemyTargetArrowCascade->SetRenderCustomDepth(true);
     EnemyTargetArrowCascade->SetOnlyOwnerSee(false);
     EnemyTargetArrowCascade->SetOwnerNoSee(false);
     EnemyTargetArrowCascade->SetHiddenInGame(false);
@@ -316,6 +323,7 @@ void ADMFTargetingPresentationActor::UpdateArrowActivation(const bool bShouldBeA
 
     if (bUseNiagaraArrow && bHasNiagaraArrowAsset)
     {
+        EnemyTargetArrowNiagara->SetRenderCustomDepth(true);
         EnemyTargetArrowCascade->DeactivateSystem();
         EnemyTargetArrowCascade->SetVisibility(false, true);
         EnemyTargetArrowNiagara->SetVisibility(true, true);
@@ -328,6 +336,7 @@ void ADMFTargetingPresentationActor::UpdateArrowActivation(const bool bShouldBeA
 
     if (bHasCascadeArrowAsset)
     {
+        EnemyTargetArrowCascade->SetRenderCustomDepth(true);
         EnemyTargetArrowNiagara->DeactivateImmediate();
         EnemyTargetArrowNiagara->SetVisibility(false, true);
         EnemyTargetArrowCascade->SetVisibility(true, true);

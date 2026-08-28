@@ -221,6 +221,15 @@ The frontend adds `UDMFSessionSubsystem::Logout()` only for local staged credent
 ## v0.6.4 combat reach contract
 Ability range is evaluated by the authoritative combat component as horizontal capsule-edge distance rather than actor-center distance. The same helper is used for direct validation, queued manual commands, wild/auto attacks, and impact-time revalidation. AI chase acceptance is derived from the same capsule-aware reach so navigation cannot settle outside a short-range attack's legal distance.
 
+
+## v0.14.7 autonomous full-moveset selection contract
+
+`UDMFDigimonCombatComponent::AutomationTick` no longer maps autonomous combat to a single `BasicAutoAttack`. Authority selects from the complete runtime equipped `ReplicatedAbilityIds` set, retaining the species Basic Auto Attack only as a compatibility fallback. `bEligibleForAutoBattle`, current authoritative SP, per-ability cooldown readiness and target validity filter the pool before selection.
+
+Fairness is server-only and transient. Each effective ability ID receives a monotonically increasing local use serial when automation successfully executes it. The next decision prefers the smallest/oldest serial, randomizing only ties. Therefore unused usable moves surface before already-used moves, but the framework does not replicate or persist AI history. A pending selected ability ID is held while chasing into that ability's own capsule-aware range, preventing mixed-range movesets from changing navigation goals every automation interval. Target changes, reset, defeat and victory clear the transient rotation state.
+
+Manual commands remain independent and continue through the existing authoritative command queue. If a player-owned partner has auto battle explicitly enabled, the same selector applies only to autonomous decisions; manual input still uses the requested slot and server validation path.
+
 ## v0.7.0 Scan Data / Materialization authority
 
 `UDMFPlayerDigimonComponent` owns the authoritative per-account `ReplicatedScanData` array (`COND_OwnerOnly`). `HandleAuthoritativeBattleVictory` is the single mutation boundary for scan rewards. Species tuning comes from `UDMFDigimonSpeciesData`; no client-supplied reward values are accepted. Materialization is a server RPC that resolves the species, re-checks progress and capacity, validates a partner WorldActorClass, builds a unique `FDMFDigimonInstance`, subtracts the requirement, marks Collection replication dirty and persists immediately.
@@ -275,3 +284,7 @@ The local targeting presentation actor remains non-replicated and local-controll
 PaperSprite rings are moved from capsule dimensions rather than species-authored sockets, and optional capsule-radius scaling supports widely different Digimon sizes. A Niagara-preferred/Cascade-fallback target-arrow component follows the target capsule top. Marker rotation/bob are local cosmetic ticks only.
 
 This layer never selects a target, does not call damage APIs, and introduces no marker replication. Server-authoritative target validation and ability execution remain in `UDMFPlayerDigimonComponent` / `UDMFDigimonCombatComponent`.
+
+### v0.14.6 combat-presentation CustomDepth invariant
+Framework-owned attack Niagara/Cascade components and the owner-local enemy overhead target marker participate in the CustomDepth pass unconditionally. Transient attack/impact components are flagged immediately after spawn; reusable projectile and target-arrow components reassert the flag whenever their presentation is refreshed/activated. This is a local rendering invariant only and adds no gameplay authority or network state.
+

@@ -150,6 +150,7 @@ void UDMFDigimonCombatComponent::SetAuthoritativeTarget(ADMFDigimonCharacter* Ne
         {
             Self->StopCombatFacingTarget();
         }
+        ResetAutoBattleAbilityRotation();
         CurrentTarget = NewTarget;
         if (!CurrentTarget)
         {
@@ -776,6 +777,10 @@ void UDMFDigimonCombatComponent::SpawnTransientAbilityVFX(const UDMFDigimonAbili
         if (UNiagaraComponent* Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             this, Niagara, FXLocation, FXRotation, Ability.PresentationVFXScale, true, true, ENCPoolMethod::None, true))
         {
+            // Framework-owned attack VFX must always participate in CustomDepth so project post-process
+            // materials can render combat particles consistently regardless of the authored Niagara asset.
+            Component->SetRenderCustomDepth(true);
+
             TWeakObjectPtr<UNiagaraComponent> WeakComponent(Component);
             FTimerHandle CleanupTimer;
             World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
@@ -793,6 +798,10 @@ void UDMFDigimonCombatComponent::SpawnTransientAbilityVFX(const UDMFDigimonAbili
         if (UParticleSystemComponent* Component = UGameplayStatics::SpawnEmitterAtLocation(
             this, Cascade, FXLocation, FXRotation, Ability.PresentationVFXScale, true, EPSCPoolMethod::None, true))
         {
+            // Cascade fallback follows the same invariant as Niagara: every runtime attack particle
+            // component is forced into the CustomDepth pass immediately after it is spawned.
+            Component->SetRenderCustomDepth(true);
+
             TWeakObjectPtr<UParticleSystemComponent> WeakComponent(Component);
             FTimerHandle CleanupTimer;
             World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
@@ -828,6 +837,10 @@ void UDMFDigimonCombatComponent::SpawnTransientProjectileImpactVFX(const UDMFDig
         if (UNiagaraComponent* Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             this, Niagara, ImpactLocation, FRotator::ZeroRotator, FVector::OneVector, true, true, ENCPoolMethod::None, true))
         {
+            // Framework-owned attack VFX must always participate in CustomDepth so project post-process
+            // materials can render combat particles consistently regardless of the authored Niagara asset.
+            Component->SetRenderCustomDepth(true);
+
             TWeakObjectPtr<UNiagaraComponent> WeakComponent(Component);
             FTimerHandle CleanupTimer;
             World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
@@ -845,6 +858,10 @@ void UDMFDigimonCombatComponent::SpawnTransientProjectileImpactVFX(const UDMFDig
         if (UParticleSystemComponent* Component = UGameplayStatics::SpawnEmitterAtLocation(
             this, Cascade, ImpactLocation, FRotator::ZeroRotator, FVector::OneVector, true, EPSCPoolMethod::None, true))
         {
+            // Cascade fallback follows the same invariant as Niagara: every runtime attack particle
+            // component is forced into the CustomDepth pass immediately after it is spawned.
+            Component->SetRenderCustomDepth(true);
+
             TWeakObjectPtr<UParticleSystemComponent> WeakComponent(Component);
             FTimerHandle CleanupTimer;
             World->GetTimerManager().SetTimer(CleanupTimer, FTimerDelegate::CreateLambda([WeakComponent]()
@@ -880,6 +897,7 @@ int32 UDMFDigimonCombatComponent::ApplyAuthoritativeDamage(const int32 Damage, A
     if (CurrentHP <= 0)
     {
         ClearQueuedCommand();
+        ResetAutoBattleAbilityRotation();
         Self->StopCombatFacingTarget();
         bRetaliationCombatActive = false;
         SetBattleEncounterActive(false);
@@ -906,7 +924,7 @@ int32 UDMFDigimonCombatComponent::ApplyAuthoritativeDamage(const int32 Damage, A
         // Reactive combat is intentionally independent of proactive auto battle. A passive wild
         // Digimon does not scan for enemies, but once a valid hostile Digimon damages it the server
         // makes that aggressor the retaliation target and the normal automation loop handles chase,
-        // range, cooldown, basic attack and leash enforcement.
+        // per-move range, cooldown, full eligible moveset selection and leash enforcement.
         BeginRetaliation(InstigatorDigimon);
     }
 
@@ -925,6 +943,7 @@ void UDMFDigimonCombatComponent::NotifyAuthoritativeVictory(ADMFDigimonCharacter
         bRetaliationCombatActive = false;
         SetBattleEncounterActive(false);
         CurrentTarget = nullptr;
+        ResetAutoBattleAbilityRotation();
         OnTargetChanged.Broadcast(nullptr);
     }
     MulticastVictoryCue(DefeatedDigimon);
@@ -958,6 +977,7 @@ void UDMFDigimonCombatComponent::RestoreVitals(const bool bRestoreHP, const bool
         bRetaliationCombatActive = false;
         SetBattleEncounterActive(false);
         CurrentTarget = nullptr;
+        ResetAutoBattleAbilityRotation();
         ClearQueuedCommand();
         ReplicatedCooldowns.Reset();
         if (AAIController* AI = Cast<AAIController>(Self->GetController()))
@@ -1220,23 +1240,42 @@ void UDMFDigimonCombatComponent::AutomationTick()
         return;
     }
 
-    const FName BasicAttackId = ResolveBasicAttackId();
-    UDMFDigimonAbilityData* BasicAttack = ResolveAbilityData(BasicAttackId);
-    if (!BasicAttack || !BasicAttack->bEligibleForAutoBattle)
+    // Do not make a new autonomous decision while the previous move is still in its action lock.
+    // FinishRecovery will return us to Idle and the next authority tick selects the next move.
+    if (CombatState == EDMFCombatState::Attacking || CombatState == EDMFCombatState::Recovering)
     {
         return;
     }
 
-    if (!IsTargetWithinAbilityRange(CurrentTarget, BasicAttack->MaxRange))
+    // Keep one selected move stable while closing distance. Without this pending intent, an AI with
+    // mixed melee/ranged moves could choose a different range every 0.25s and oscillate instead of
+    // ever reaching the move it intended to perform.
+    if (!PendingAutoBattleAbilityId.IsNone()
+        && !IsAutoBattleAbilityReady(PendingAutoBattleAbilityId, CurrentTarget))
+    {
+        PendingAutoBattleAbilityId = NAME_None;
+    }
+
+    if (PendingAutoBattleAbilityId.IsNone())
+    {
+        PendingAutoBattleAbilityId = SelectAutoBattleAbility(CurrentTarget);
+    }
+
+    UDMFDigimonAbilityData* SelectedAbility = ResolveAbilityData(PendingAutoBattleAbilityId);
+    if (!SelectedAbility)
+    {
+        PendingAutoBattleAbilityId = NAME_None;
+        SetCombatState(EDMFCombatState::Idle);
+        return;
+    }
+
+    if (SelectedAbility->bRequiresTarget && !IsTargetWithinAbilityRange(CurrentTarget, SelectedAbility->MaxRange))
     {
         Self->StopCombatFacingTarget();
-        if (CombatState != EDMFCombatState::Attacking && CombatState != EDMFCombatState::Recovering)
+        SetCombatState(EDMFCombatState::Chasing);
+        if (AAIController* AI = Cast<AAIController>(Self->GetController()))
         {
-            SetCombatState(EDMFCombatState::Chasing);
-            if (AAIController* AI = Cast<AAIController>(Self->GetController()))
-            {
-                AI->MoveToActor(CurrentTarget, GetAbilityMoveAcceptanceRadius(CurrentTarget, BasicAttack->MaxRange), true, true, true, nullptr, false);
-            }
+            AI->MoveToActor(CurrentTarget, GetAbilityMoveAcceptanceRadius(CurrentTarget, SelectedAbility->MaxRange), true, true, true, nullptr, false);
         }
         return;
     }
@@ -1253,7 +1292,12 @@ void UDMFDigimonCombatComponent::AutomationTick()
             return;
         }
     }
-    TryExecuteAbilityById(BasicAttackId, CurrentTarget);
+    const FName AbilityToExecute = PendingAutoBattleAbilityId;
+    if (TryExecuteAbilityById(AbilityToExecute, CurrentTarget))
+    {
+        RecordAutoBattleAbilityUse(AbilityToExecute);
+        PendingAutoBattleAbilityId = NAME_None;
+    }
 }
 
 void UDMFDigimonCombatComponent::BeginRetaliation(ADMFDigimonCharacter* Aggressor)
@@ -1274,8 +1318,8 @@ void UDMFDigimonCombatComponent::BeginRetaliation(ADMFDigimonCharacter* Aggresso
     Self->StopCombatFacingTarget();
     SetAuthoritativeTarget(Aggressor);
 
-    // Cancel an idle roam immediately. AutomationTick will choose chase versus attack using the
-    // configured basic attack range on the next authoritative combat interval.
+    // Cancel an idle roam immediately. AutomationTick will select from the complete eligible
+    // moveset and choose chase versus attack using that selected move's authored range.
     if (AAIController* AI = Cast<AAIController>(Self->GetController()))
     {
         AI->StopMovement();
@@ -1356,6 +1400,118 @@ FName UDMFDigimonCombatComponent::ResolveBasicAttackId() const
     }
 
     return Self && Self->ReplicatedAbilityIds.Num() > 0 ? Self->ReplicatedAbilityIds[0] : NAME_None;
+}
+
+bool UDMFDigimonCombatComponent::IsAutoBattleAbilityReady(const FName AbilityId, ADMFDigimonCharacter* Target) const
+{
+    const ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());
+    UDMFDigimonAbilityData* Ability = ResolveAbilityData(AbilityId);
+    if (!Self || !Target || !CanAttackTarget(Target) || !Ability || !Ability->bEligibleForAutoBattle)
+    {
+        return false;
+    }
+
+    if (CurrentSP < GetEffectiveSPCost(*Ability))
+    {
+        return false;
+    }
+
+    const FName EffectiveAbilityId = Ability->AbilityId.IsNone()
+        ? Ability->GetPrimaryAssetId().PrimaryAssetName
+        : Ability->AbilityId;
+    return GetRemainingCooldown(EffectiveAbilityId) <= KINDA_SMALL_NUMBER;
+}
+
+FName UDMFDigimonCombatComponent::SelectAutoBattleAbility(ADMFDigimonCharacter* Target)
+{
+    const ADMFDigimonCharacter* Self = Cast<ADMFDigimonCharacter>(GetOwner());
+    if (!Self || !Self->HasAuthority() || !Target || !CanAttackTarget(Target))
+    {
+        return NAME_None;
+    }
+
+    TArray<FName> RuntimeAbilityIds = Self->ReplicatedAbilityIds;
+    const FName BasicAttackId = ResolveBasicAttackId();
+    if (!BasicAttackId.IsNone())
+    {
+        RuntimeAbilityIds.AddUnique(BasicAttackId);
+    }
+
+    uint64 OldestUseSerial = TNumericLimits<uint64>::Max();
+    TArray<FName> LeastRecentlyUsedCandidates;
+    TSet<FName> SeenEffectiveIds;
+
+    for (const FName RuntimeAbilityId : RuntimeAbilityIds)
+    {
+        if (!IsAutoBattleAbilityReady(RuntimeAbilityId, Target))
+        {
+            continue;
+        }
+
+        UDMFDigimonAbilityData* Ability = ResolveAbilityData(RuntimeAbilityId);
+        if (!Ability)
+        {
+            continue;
+        }
+
+        const FName EffectiveAbilityId = Ability->AbilityId.IsNone()
+            ? Ability->GetPrimaryAssetId().PrimaryAssetName
+            : Ability->AbilityId;
+        if (EffectiveAbilityId.IsNone() || SeenEffectiveIds.Contains(EffectiveAbilityId))
+        {
+            continue;
+        }
+        SeenEffectiveIds.Add(EffectiveAbilityId);
+
+        const uint64 UseSerial = AutoBattleAbilityUseSerials.FindRef(EffectiveAbilityId);
+        if (UseSerial < OldestUseSerial)
+        {
+            OldestUseSerial = UseSerial;
+            LeastRecentlyUsedCandidates.Reset();
+            LeastRecentlyUsedCandidates.Add(RuntimeAbilityId);
+        }
+        else if (UseSerial == OldestUseSerial)
+        {
+            LeastRecentlyUsedCandidates.Add(RuntimeAbilityId);
+        }
+    }
+
+    if (LeastRecentlyUsedCandidates.IsEmpty())
+    {
+        return NAME_None;
+    }
+
+    // Randomize only among equally old candidates. This avoids a rigid slot-order pattern while the
+    // least-recently-used rule still guarantees that untouched usable moves are selected before
+    // already-used moves are preferred again.
+    return LeastRecentlyUsedCandidates[FMath::RandHelper(LeastRecentlyUsedCandidates.Num())];
+}
+
+void UDMFDigimonCombatComponent::RecordAutoBattleAbilityUse(const FName AbilityId)
+{
+    UDMFDigimonAbilityData* Ability = ResolveAbilityData(AbilityId);
+    if (!Ability)
+    {
+        return;
+    }
+
+    const FName EffectiveAbilityId = Ability->AbilityId.IsNone()
+        ? Ability->GetPrimaryAssetId().PrimaryAssetName
+        : Ability->AbilityId;
+    if (EffectiveAbilityId.IsNone())
+    {
+        return;
+    }
+
+    ++AutoBattleAbilityUseCounter;
+    AutoBattleAbilityUseSerials.FindOrAdd(EffectiveAbilityId) = AutoBattleAbilityUseCounter;
+}
+
+void UDMFDigimonCombatComponent::ResetAutoBattleAbilityRotation()
+{
+    PendingAutoBattleAbilityId = NAME_None;
+    AutoBattleAbilityUseSerials.Reset();
+    AutoBattleAbilityUseCounter = 0;
 }
 
 void UDMFDigimonCombatComponent::FinishRecovery()

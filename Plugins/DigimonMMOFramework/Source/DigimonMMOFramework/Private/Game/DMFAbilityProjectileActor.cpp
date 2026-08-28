@@ -39,10 +39,12 @@ ADMFAbilityProjectileActor::ADMFAbilityProjectileActor()
     ProjectileNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileNiagara"));
     ProjectileNiagaraComponent->SetupAttachment(VisualRoot);
     ProjectileNiagaraComponent->SetAutoActivate(false);
+    ProjectileNiagaraComponent->SetRenderCustomDepth(true);
 
     ProjectileCascadeComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ProjectileCascade"));
     ProjectileCascadeComponent->SetupAttachment(VisualRoot);
     ProjectileCascadeComponent->SetAutoActivate(false);
+    ProjectileCascadeComponent->SetRenderCustomDepth(true);
 }
 
 void ADMFAbilityProjectileActor::BeginPlay()
@@ -230,6 +232,9 @@ void ADMFAbilityProjectileActor::RefreshProjectilePresentation()
 
     if (ProjectileNiagaraComponent)
     {
+        // Reassert on every presentation refresh so replicated definition changes / Blueprint asset swaps
+        // cannot leave a moving attack VFX outside the CustomDepth pass.
+        ProjectileNiagaraComponent->SetRenderCustomDepth(true);
         ProjectileNiagaraComponent->Deactivate();
         ProjectileNiagaraComponent->SetAsset(Niagara);
         if (Niagara)
@@ -240,6 +245,7 @@ void ADMFAbilityProjectileActor::RefreshProjectilePresentation()
 
     if (ProjectileCascadeComponent)
     {
+        ProjectileCascadeComponent->SetRenderCustomDepth(true);
         ProjectileCascadeComponent->DeactivateSystem();
         ProjectileCascadeComponent->SetTemplate(Niagara ? nullptr : Cascade);
         if (!Niagara && Cascade)

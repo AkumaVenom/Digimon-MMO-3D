@@ -211,6 +211,8 @@ Wild aggression policy is server-owned. `Proactive Auto Battle` controls nearest
 
 The retaliation target is the authoritative attacking Digimon passed through the damage pipeline. Normal replicated `CurrentTarget`, `CombatState` and character movement then synchronize the response. Leash, target validity, cooldown, range and defeat rules are revalidated server-side.
 
+As of v0.14.7, the server also owns **which autonomous ability is chosen**. Wild retaliation/proactive auto battle evaluates the complete equipped `ReplicatedAbilityIds` moveset, filters by `bEligibleForAutoBattle`, SP/cooldown/target validity, and uses transient least-recently-used history plus a pending chase intent. Neither history nor pending intent is replicated or persisted; clients learn the chosen move only through the same existing authoritative ability execution/cosmetic replication they already receive. No new combat RPC is introduced.
+
 ## v0.6.0 UI authority note
 
 The polished native UI pass does not move authority into UMG. Inventory slots, selected stats, active/summoned/defeated badges and combat HUD state are views of replicated/owner-owned framework data. Summon/recall, starter selection, player skin application, ability commands and healer use continue through their existing server-authoritative paths.
@@ -264,3 +266,7 @@ The rendering fix does not change the network contract. Marker components no lon
 - No targeting-visual RPC or replicated property is added. The local actor consumes the existing `COND_OwnerOnly` `ActivePartnerActor` and `CommandTarget` references.
 - Consequently Player A does not receive Player B's marker selection state. If two players independently target the same enemy, both render their own local marker set.
 - Target legality and target changes remain server-owned through `ServerSetCommandTarget` / existing combat validation. Marker visibility grants no combat authority.
+
+### v0.14.6 CustomDepth presentation hardening
+The attack-VFX and enemy-marker CustomDepth fix adds no network contract. The server still owns ability execution, projectile travel/impact and damage; clients reconstruct the same replicated/local presentation as before. `Render CustomDepth Pass` is enabled on each relevant local runtime component and is not replicated as new gameplay state. The enemy overhead target marker remains owner-local/non-replicated.
+

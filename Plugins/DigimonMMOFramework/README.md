@@ -1,8 +1,22 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix`
+**Version:** `0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.14.7-alpha — Wild / Auto-Battle Full Moveset Rotation Fix
+
+v0.14.7 fixes autonomous enemy Digimon repeatedly using only one attack. The moves were already present in each Digimon's replicated runtime moveset, but the automation loop was hard-wired to resolve and execute only `BasicAutoAttack`, so `StartingAbilities` / the remaining `ReplicatedAbilityIds` were never selected by wild retaliation or proactive auto battle.
+
+Autonomous combat now chooses from the **complete equipped ability moveset**. Every ability with `bEligibleForAutoBattle=true` can participate when the server confirms sufficient SP, cooldown readiness and a valid hostile target. Selection uses server-only **least-recently-used fairness**: untouched/oldest usable moves are preferred before already-used moves, while equally old candidates are randomized so the AI does not fall into a rigid slot-order script. As cooldowns expire, previously unavailable moves naturally return to the front of the rotation.
+
+Mixed melee/ranged sets are handled deliberately. Once the server selects an ability, it keeps that move as a transient pending AI intent while the Digimon chases into **that move's own capsule-aware range**. It does not re-roll every automation tick, so short-range and long-range attacks can coexist without navigation thrashing. The pending intent/fairness history are server-only transient state: no RPC, replication, persistence or SaveGame schema was added. Manual player commands are unchanged and retain priority through the existing command queue.
+
+## New in v0.14.6-alpha — Attack VFX / Enemy Marker CustomDepth Enforcement
+
+v0.14.6 hardens combat presentation for projects that use CustomDepth-based post-process rendering. Every framework-owned runtime **attack particle component** is now forced to `Render CustomDepth Pass = true` as soon as it is created, covering direct ability Niagara/Cascade effects, projectile impact Niagara/Cascade effects, and the Niagara/Cascade visual components carried by replicated moving ability projectiles. Reusable projectile components reassert the flag whenever their replicated presentation definition is refreshed.
+
+The owner-local **enemy target arrow above the selected Digimon's head** now follows the same rule for both Niagara and Cascade. CustomDepth is enabled on component construction, reapplied whenever Project Settings targeting assets are hot-refreshed, and reasserted immediately before marker activation. This is presentation-only: attack/damage authority, projectile replication, owner-only targeting privacy, marker visibility and network RPC contracts are unchanged.
 
 ## New in v0.14.5-alpha — Rarity-Weighted Spawn Selection Normalization Fix
 
