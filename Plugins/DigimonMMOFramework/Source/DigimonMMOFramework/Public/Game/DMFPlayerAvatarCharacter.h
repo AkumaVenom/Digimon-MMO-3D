@@ -211,6 +211,10 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Healer")
     bool InteractWithHealer(AActor* HealerActor);
 
+    /** Opens a nearby Digimon vendor from a generic Actor reference; no Blueprint cast is required. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Vendor")
+    bool InteractWithDigimonVendor(AActor* VendorActor);
+
     /** Clears the current partner command target without requiring PlayerController/PlayerState casts. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Digimon")
     void ClearDigimonTarget();

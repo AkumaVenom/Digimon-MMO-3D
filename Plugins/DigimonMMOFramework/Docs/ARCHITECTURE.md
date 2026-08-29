@@ -375,3 +375,21 @@ The visual state is camera-correct: `FollowCamera` must be inside the active wat
 The native profile builds color saturation/contrast/gamma/gain, exposure, vignette and subtle scene-fringe settings. An optional authored Post Process material is added as a weighted blendable for project-specific SceneDepth haze/refraction/caustics. Because all rendering is local, these additions cannot influence movement/combat/server simulation.
 
 The underwater fog component is present on avatar instances but constructor-disabled. Only the locally controlled rendering avatar may enable it. Its profile values come from the replicated active water actor; camera state and applied fog density stay local. Stable density is cached to avoid repeatedly dirtying the fog render state after a blend reaches equilibrium.
+
+## v0.18.0 — Digimon vendor economy architecture
+
+`ADMFDigimonVendorActor` is the authority-owned public market entity. It uses no Tick: a server timer rotates a small replicated array of immutable stock snapshots. Stock generation consumes only server-side per-vendor species/range configuration. `UDMFPlayerDigimonComponent` remains the owner-private source of truth for Party, Bank and Bits and provides server-only atomic purchase/sale commit helpers. `ADMFMMOPlayerController` transports only a vendor actor, Buy/Sell enum and GUID through the single vendor transaction Server RPC; the vendor/component resolve all price/stat/ownership/storage data again before mutation.
+
+The market does not create a parallel Digimon record type. Stock and owned entries use `FDMFDigimonInstance`, preserving the framework's persistent-individual contract. Schema v7 adds lifetime battle EXP and exact Attribute Point spend provenance so the economy can value long-term training without inferring it every quote. Digivolution continues to mutate the current form on the same individual, naturally carrying economy provenance through Digivolution and De-Digivolution.
+
+Presentation is split cleanly: `UDMFDigimonVendorWidget` is owner-local UMG, while stock/configuration are public replicated vendor state and Party/Bank/Money remain owner-only component state. Transaction confirmations are local presentation; transaction acceptance is never a UI decision.
+
+## v0.18.2 authenticated reconnect authority
+
+DMF treats persisted authenticated account data as the sole source of truth for reconnect. Because `AGameMode` normally supports short-lived reconnects by duplicating a disconnecting `PlayerState` and later substituting that inactive object into a rejoining controller, component-owned MMO state can be replaced by stale teardown memory even after a correct SaveGame commit. DMF therefore does not cache or reassociate inactive PlayerStates. Every successful reconnect starts with a newly authenticated PlayerState populated from `UDMFAccountPersistenceSubsystem`, followed by a PostLogin initialization-integrity check.
+
+## v0.18.1 disconnect-safe account finalization
+
+Remote logout is now a single pre-teardown authority transaction owned by `ADMFMMOGameMode::FinalizeAuthenticatedPlayerSession`. The GameMode snapshots the already-initialized `ADMFPlayerState` components before `Super::Logout`, synchronizes live partner vitals, writes the existing account record synchronously, then marks the Digimon component persistence-finalized and destroys the transient summoned partner. `UDMFPlayerDigimonComponent::EndPlay` is no longer an unconditional second writer after a successful logout save.
+
+The component also carries a non-serialized `bAuthoritativeAccountStateInitialized` lifecycle guard. Persistence is refused until `InitializeFromAccountRecord` has rebuilt Party/Bank/partner/money/scan state, preventing a partially initialized or teardown-damaged PlayerState from replacing an established account with defaults. `ADMFMMOPlayerController::EndPlay` is an authority-only idempotent fallback into the same GameMode transaction for abnormal net-driver teardown. Account schema remains v7.

@@ -21,8 +21,18 @@ public:
     virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
     virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
     virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+    virtual void PostLogin(APlayerController* NewPlayer) override;
+    virtual void AddInactivePlayer(APlayerState* PlayerState, APlayerController* PC) override;
+    virtual bool FindInactivePlayer(APlayerController* PC) override;
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
     virtual void Logout(AController* Exiting) override;
+
+    /**
+     * Idempotent server-side disconnect finalization used by Logout and the PlayerController teardown fallback.
+     * Commits the fully initialized account before transient owner/pawn state can disappear, then removes the
+     * summoned partner actor so disconnected players never leave an orphaned Digimon in the world.
+     */
+    bool FinalizeAuthenticatedPlayerSession(APlayerController* PlayerController);
 
     /**
      * Server-authoritative recovery/validation hook for late-joining players. Ensures the controller owns
@@ -81,11 +91,12 @@ protected:
 
 private:
     bool ValidateCredentialsFromOptions(const FString& Options, FString& OutUsername, FString& OutCredentialDigest, bool& bOutCreatedNew, FString& OutError) const;
+    bool RehydrateAuthenticatedPlayerState(APlayerController* PlayerController, const TCHAR* Context) const;
     UClass* ResolveFrameworkPlayerAvatarClass() const;
     void ScheduleFrameworkPlayerAvatarValidation(APlayerController* PlayerController);
     bool ApplyInitialPlayerWorldLocation(APlayerController* PlayerController);
     bool ResolveInitialPlayerWorldTransform(APlayerController* PlayerController, FTransform& OutTransform, bool& bOutHasCustomTransform, bool& bOutRestoredSavedLocation, bool& bOutFirstLocationCheckpoint) const;
-    void SavePlayerState(class ADMFPlayerState* PlayerState) const;
+    bool SavePlayerState(class ADMFPlayerState* PlayerState) const;
 
     TSet<TWeakObjectPtr<APlayerController>> InitialWorldLocationApplied;
 

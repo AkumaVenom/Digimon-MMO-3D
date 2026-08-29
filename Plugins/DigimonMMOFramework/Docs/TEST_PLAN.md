@@ -1,4 +1,58 @@
-# UE5.8 Validation Plan — 0.16.0-alpha
+# UE5.8 Validation Plan — 0.18.2-alpha
+
+## S0 — v0.18.2 same-host remote reconnect persistence acceptance
+
+1. Package a Shipping listen-server build and remote Shipping client on separate PCs. Keep the host process running for the entire first test. Use an established remote account with selected avatar, Party/Bank Digimon, active partner, Bits and obvious saved progression.
+2. Join the host, make an unmistakable authoritative change, then disconnect the remote client. Confirm its summoned partner is destroyed on the host.
+3. **Without closing/restarting the host**, immediately reconnect the exact same remote account. Confirm avatar selection does not reopen, starter selection does not reopen, Party/Bank are intact, Bits/progression are intact and the active partner reconstructs normally.
+4. Repeat disconnect/reconnect at least five times while the host remains continuously running. Every reconnect must load the same evolving account; no cycle may become an empty/fresh PlayerState.
+5. After those cycles, restart the host once and reconnect. The result must be identical to the same-host reconnect result; host restart must no longer change whether account data is visible.
+6. Repeat with abrupt client process termination/network loss. After the server detects the disconnect, reconnect without restarting host and verify identical restoration.
+7. During one disconnect, observe that no orphan Digimon remains in world and no stale inactive DMF PlayerState is reused on reconnect.
+8. Regression-check schema-v7 vendor purchases/sales, swimming/underwater reload, Day/Night, world location and host account persistence. RPC count must remain 49.
+
+## S0.1 — v0.18.1 disconnect-finalization regression
+
+1. Package a Shipping listen-server build and Shipping client build on separate PCs. Use an existing client account with a selected player avatar, at least one Party Digimon, at least one Bank Digimon if available, a summoned active partner, non-default Bits and known ABI/stats.
+2. Make a fresh authoritative change on the remote client account (earn EXP/Bits, spend an Attribute Point, change active partner or move to an unmistakable location). Disconnect/close the client **before** `AccountAutosaveInterval` expires.
+3. On the host, confirm the disconnected player's summoned partner is destroyed when logout is processed. No orphan partner may remain targetable, moving or fighting in the world.
+4. Reconnect with exactly the same username/password. Confirm the account is not treated as fresh: avatar selection must not reopen, starter selection must not reopen, Party/Bank must be restored, the active partner must resolve correctly and the latest committed values must remain.
+5. Repeat step 2 using an abrupt process close / network loss rather than a clean frontend path. Reconnect after the server detects the disconnect and verify identical restoration.
+6. Run three rapid disconnect/reconnect cycles. Confirm the idempotent GameMode Logout + PlayerController EndPlay paths do not double-save, clear Party/Bank, reset avatar selection or duplicate/destroy persistent Digimon.
+7. Force/inspect an initialization-failure path if practical. Confirm the server logs that it refuses a disconnect save from an uninitialized account component and preserves the previous persistent record rather than overwriting it with defaults.
+8. Regression-check schema-v7 vendor persistence, vendor purchase/sale, lifetime battle EXP, spent Attribute Points, ABI/Digivolution history, saved world location, swimming reload reconstruction and host account persistence. RPC count must remain 49.
+
+# UE5.8 Validation Plan — 0.18.0-alpha
+
+## S0 — v0.18.0 replicated Digimon vendor economy acceptance
+
+### Native vendor / stock generation
+1. From the accepted v0.17.3 project, create `BP_DigimonVendor_Test` derived from `DMFDigimonVendorActor`, assign an obvious NPC mesh, add Agumon and Gabumon Species Data Assets to `Species Pool`, set `Stock Slots=4`, Level `1-10`, ABI `0-50`, Spent Attribute Points `0-20`, and temporarily set stock rotation to `30-45 seconds`.
+2. Place exactly one vendor and interact using the normal player interaction call/trace. Confirm the native modal opens without Blueprint casts, shows the configured vendor name/subtitle, BUY/SELL tabs, Bits, countdown and four stock rows. Close/reopen repeatedly and confirm normal quickbars/input restore cleanly.
+3. Inspect every generated offer. Confirm level, current-level EXP, ABI, CAM and stat training vary inside the authored ranges; HP/SP/STR/INT/DEF/SPD include normal species level growth, the explicit min/max natural stat rolls and then rolled spent Attribute Points. With a narrow fixed level and spent-points range, confirm same-species offers can still differ through the natural HP/SP/combat-stat ranges, and confirm those natural rolls do **not** inflate `TotalAttributePointsSpent`. Confirm the server does not generate invalid GUID/species entries.
+4. Let the timer expire twice. Confirm each rotation changes stock on authority, both peers converge on exactly the same StockIds/offers/prices, the countdown restarts from synchronized server time and the vendor actor never requires Tick.
+
+### Buying / concurrency / persistence
+5. Give both test accounts sufficient Bits. On the remote client select one stock Digimon and click BUY once: verify only the confirmation state is armed and no money/stock changes. Click CONFIRM BUY: verify the server deducts the exact offer price once, adds the exact generated individual to Party/Bank, removes the shared offer and saves immediately.
+6. Reconnect the buyer. Confirm the purchased Digimon retains its generated InstanceId/species/level/EXP/stats/ABI/CAM/training values and remains in the correct Party/Bank storage.
+7. Have host and client select the same remaining StockId, then confirm as nearly simultaneously as possible. Exactly one purchase may succeed; the other must receive the stock-gone rejection. No duplicated Digimon, negative Bits or double stock removal is allowed. Also bind a test vendor Blueprint callback to the successful trade/account-change path and attempt immediate same-StockId re-entry; the reserved offer must already be unavailable.
+8. Fill both Party and Bank, attempt another purchase and confirm server rejection. Test `Prefer Purchased Digimon To Bank` with room in both, then with preferred storage full and alternate storage available.
+9. Start Care, Digivolution or active combat under the existing Party-mutation policy and attempt a purchase. Confirm the server reuses the established mutation lock and does not partially deduct money.
+
+### Selling / automatic progression valuation
+10. In SELL, compare two same-species individuals where one is clearly higher level/EXP/stats/ABI. Confirm the stronger/trained individual receives the higher automatic quote. Verify the detail panel explicitly shows Lifetime Battle EXP, ABI/CAM, spent/unspent Attribute Points, forms visited and the value contributions.
+11. Spend one Attribute Point on an owned Digimon, reopen/refresh SELL and confirm `TotalAttributePointsSpent` increases by exactly one and its market/sell value responds to the configured training weight. Gain battle EXP and confirm `LifetimeBattleExperience` increases and affects price even if the Digimon is already at max level.
+12. Digivolve and De-Digivolve a persistent individual using the normal system, increasing ABI through the existing progression rules. Confirm the same InstanceId retains lifetime EXP/training provenance and that the higher ABI materially raises its vendor value.
+13. Select a nonstarter owned Digimon and click SELL once: no mutation. Click CONFIRM SELL: the server recalculates the quote, removes that exact instance, credits Bits once and saves immediately. Reconnect and confirm both collection and money persist.
+14. Attempt to sell a protected starter with default vendor settings and confirm rejection. Attempt to sell the final Party member with `Require At Least One Party Digimon=true` and confirm rejection with no partial mutation.
+15. Sell the active nonstarter partner while another Party member exists. Confirm the old actor is removed/reconciled through the existing Party contract, replacement active partner state is valid, the sale persists, and no stale command target remains.
+
+### Security / per-vendor configuration / regression
+16. Move/teleport the player outside the vendor's trade radius and attempt a stale transaction request. Confirm server rejection regardless of what the local UI displayed. Rapidly spam transaction requests and confirm the server throttle plus stock/ownership validation prevents duplicate money or Digimon.
+17. Place a second vendor with a different Species Pool, level/ABI range, pricing, rotation interval and Buy/Sell policy. Confirm each placed NPC maintains its own independent stock/scheduler/UI identity and server validation.
+18. Authority-call `Set Buying Enabled`, `Set Selling Enabled`, `Set Pricing Settings`, `Set Vendor Enabled`, `Refresh Stock Now` and `Restart Stock Rotation Schedule`; confirm relevant public config/stock updates reach the remote client and the server remains final authority.
+19. Load a pre-v0.18/v6 account. Confirm migration to schema v7 preserves Party, Bank, active partner, stats, ABI, Digivolution history, Bits and saved world location while conservatively initializing Lifetime Battle EXP / Total Attribute Points Spent and setting `DigimonEconomyProvenanceVersion = 1`. Save/reconnect again and confirm the v7 values remain stable rather than being re-inferred. Separately purchase/generate a high-level Digimon with exactly 0 spent Attribute Points and reconnect; it must remain exactly 0 rather than being mistaken for a legacy individual.
+20. Regression test accepted v0.17.3 host/client swimming presentation (including no shake), underwater save/reload/fog, Day/Night clock/spawner populations, combat/abilities, healer, DigiDex, Digivolution, Party/Bank, world chat, Return Home and frontend login.
 
 ## v0.16.0 Day / Night sky + population acceptance
 

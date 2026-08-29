@@ -84,7 +84,7 @@ struct UHT_STATICS
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(_Script_DigimonMMOFramework_eventDMFPlayerInteractionResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_TargetActor = { "TargetActor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFPlayerInteractionResult_Parms, TargetActor), Z_Construct_UClass_AActor, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_InteractionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_InteractionType = { "InteractionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFPlayerInteractionResult_Parms, InteractionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, METADATA_PARAMS(0, nullptr) }; // 2ed898c642a6d7c4b766ca7b5e89d01a9d1c3f4c
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_InteractionType = { "InteractionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFPlayerInteractionResult_Parms, InteractionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, METADATA_PARAMS(0, nullptr) }; // eec082a259837f9d37acefbcf8317c96714fc943
 const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFPlayerInteractionResult_Parms, Message), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
@@ -1790,6 +1790,74 @@ DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execInteractWithDigimonAndAttack)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFPlayerAvatarCharacter Function InteractWithDigimonAndAttack ************
+
+// ********** Begin Class ADMFPlayerAvatarCharacter Function InteractWithDigimonVendor *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithDigimonVendor_Statics
+struct UHT_STATICS
+{
+	struct DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms
+	{
+		AActor* VendorActor;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Interaction|Vendor" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opens a nearby Digimon vendor from a generic Actor reference; no Blueprint cast is required. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFPlayerAvatarCharacter.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opens a nearby Digimon vendor from a generic Actor reference; no Blueprint cast is required." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function InteractWithDigimonVendor constinit property declarations *************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_VendorActor;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function InteractWithDigimonVendor constinit property declarations ***************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function InteractWithDigimonVendor Property Definitions ************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_VendorActor = { "VendorActor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms, VendorActor), Z_Construct_UClass_AActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_VendorActor,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function InteractWithDigimonVendor Property Definitions **************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFPlayerAvatarCharacter, nullptr, "InteractWithDigimonVendor", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFPlayerAvatarCharacter_eventInteractWithDigimonVendor_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithDigimonVendor(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFPlayerAvatarCharacter::execInteractWithDigimonVendor)
+{
+	P_GET_OBJECT(AActor,Z_Param_VendorActor);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->InteractWithDigimonVendor(Z_Param_VendorActor);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFPlayerAvatarCharacter Function InteractWithDigimonVendor ***************
 
 // ********** Begin Class ADMFPlayerAvatarCharacter Function InteractWithHealer ********************
 #ifdef UHT_STATICS
@@ -3780,6 +3848,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("InteractWithActor"), .Pointer = &ADMFPlayerAvatarCharacter::execInteractWithActor },
 		{ .NameUTF8 = UTF8TEXT("InteractWithDigimon"), .Pointer = &ADMFPlayerAvatarCharacter::execInteractWithDigimon },
 		{ .NameUTF8 = UTF8TEXT("InteractWithDigimonAndAttack"), .Pointer = &ADMFPlayerAvatarCharacter::execInteractWithDigimonAndAttack },
+		{ .NameUTF8 = UTF8TEXT("InteractWithDigimonVendor"), .Pointer = &ADMFPlayerAvatarCharacter::execInteractWithDigimonVendor },
 		{ .NameUTF8 = UTF8TEXT("InteractWithHealer"), .Pointer = &ADMFPlayerAvatarCharacter::execInteractWithHealer },
 		{ .NameUTF8 = UTF8TEXT("IsLocalCameraUnderwater"), .Pointer = &ADMFPlayerAvatarCharacter::execIsLocalCameraUnderwater },
 		{ .NameUTF8 = UTF8TEXT("IsSprinting"), .Pointer = &ADMFPlayerAvatarCharacter::execIsSprinting },
@@ -3838,6 +3907,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithActor, "InteractWithActor" }, // 5515eae62994f074bb56bfae169499a35856a713
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithDigimon, "InteractWithDigimon" }, // d14e7f3cac65393d8a6e31cdc048df6208f4193a
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithDigimonAndAttack, "InteractWithDigimonAndAttack" }, // 4deabc5bd74403005827807e1912cb22b0744087
+		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithDigimonVendor, "InteractWithDigimonVendor" }, // a7a69c40594c2c42faddffe31b34ad1895fee291
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_InteractWithHealer, "InteractWithHealer" }, // d320eceb55596c6dd94ea24f57ad2e5ef052c780
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_IsLocalCameraUnderwater, "IsLocalCameraUnderwater" }, // c2ccf6e304b6ee8c501c738f193487975854de3c
 		{ &Z_Construct_UFunction_ADMFPlayerAvatarCharacter_IsSprinting, "IsSprinting" }, // ffad58daf6e8b34b9f32239f98200a2bf293c008
@@ -3896,7 +3966,7 @@ const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIgnoreActiveP
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bDrawDebugInteractionTrace = { "bDrawDebugInteractionTrace", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFPlayerAvatarCharacter), &UHT_STATICS::NewProp_bDrawDebugInteractionTrace_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bDrawDebugInteractionTrace_MetaData), NewProp_bDrawDebugInteractionTrace_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAttackOnDigimonInteract = { "bAttackOnDigimonInteract", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFPlayerAvatarCharacter), &UHT_STATICS::NewProp_bAttackOnDigimonInteract_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAttackOnDigimonInteract_MetaData), NewProp_bAttackOnDigimonInteract_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonInteractAttackSlotIndex = { "DigimonInteractAttackSlotIndex", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, DigimonInteractAttackSlotIndex), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInteractAttackSlotIndex_MetaData), NewProp_DigimonInteractAttackSlotIndex_MetaData) };
-const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnInteractionResult = { "OnInteractionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, OnInteractionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPlayerInteractionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnInteractionResult_MetaData), NewProp_OnInteractionResult_MetaData) }; // b7af22ac924900e7487623a93b0d3d9defb378af
+const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnInteractionResult = { "OnInteractionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, OnInteractionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFPlayerInteractionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnInteractionResult_MetaData), NewProp_OnInteractionResult_MetaData) }; // de25884cae3c8d4620825e56f818e8c65fca9f7a
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bUseNativeSwimFallbackPose = { "bUseNativeSwimFallbackPose", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(ADMFPlayerAvatarCharacter), &UHT_STATICS::NewProp_bUseNativeSwimFallbackPose_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bUseNativeSwimFallbackPose_MetaData), NewProp_bUseNativeSwimFallbackPose_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SwimFallbackMeshRotationOffset = { "SwimFallbackMeshRotationOffset", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, SwimFallbackMeshRotationOffset), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SwimFallbackMeshRotationOffset_MetaData), NewProp_SwimFallbackMeshRotationOffset_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SwimFallbackMeshLocationOffset = { "SwimFallbackMeshLocationOffset", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFPlayerAvatarCharacter, SwimFallbackMeshLocationOffset), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SwimFallbackMeshLocationOffset_MetaData), NewProp_SwimFallbackMeshLocationOffset_MetaData) };
@@ -4043,10 +4113,10 @@ ADMFPlayerAvatarCharacter::~ADMFPlayerAvatarCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 572718304U) },
+		{ Z_Construct_UClass_ADMFPlayerAvatarCharacter, TEXT("ADMFPlayerAvatarCharacter"), &Z_Registration_Info_UClass_ADMFPlayerAvatarCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFPlayerAvatarCharacter), 1693176296U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_0839a45dac0d21e53b93d2280cff5217745aaf5e{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFPlayerAvatarCharacter_h__Script_DigimonMMOFramework_04eb70ba17d164a669f3663da7ca72fef62c05b1{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -175,6 +175,14 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Economy")
     int64 GetMoney() const { return Money; }
 
+    /** Server-only atomic vendor purchase. Price and offered Digimon are supplied only by the authoritative vendor actor. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Vendor")
+    bool AuthorityPurchaseVendorDigimon(const FDMFDigimonInstance& OfferedDigimon, int64 PurchasePrice, bool bPreferBank, FGuid& OutNewInstanceId, EDMFDigimonStorageLocation& OutDestination, FText& OutFailureReason);
+
+    /** Server-only atomic vendor sale. Removes the exact owned individual, credits money, reconciles the active partner, and persists immediately. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Vendor")
+    bool AuthoritySellDigimonToVendor(FGuid DigimonInstanceId, int64 SalePrice, bool bAllowStarterSale, bool bRequireAtLeastOnePartyDigimon, FDMFDigimonInstance& OutSoldDigimon, FText& OutFailureReason);
+
     /** Returns the authored/fallback EXP requirement to advance from CurrentLevel to CurrentLevel + 1. */
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
     int64 GetExperienceRequiredForLevel(FPrimaryAssetId SpeciesId, int32 CurrentLevel) const;
@@ -313,6 +321,24 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Persistence")
     void ApplyToAccountRecord(UPARAM(ref) FDMFAccountRecord& Record) const;
 
+    /**
+     * Internal server lifecycle guard. True only after InitializeFromAccountRecord has populated the
+     * authoritative Party/Bank/avatar-linked runtime for this login. Disconnect persistence must never
+     * serialize component defaults over an established account before this becomes true.
+     */
+    bool HasAuthoritativeAccountStateInitialized() const { return bAuthoritativeAccountStateInitialized; }
+    bool IsDisconnectPersistenceFinalized() const { return bDisconnectPersistenceFinalized; }
+
+    /** Copies the currently spawned partner's live combat vitals into its persistent Party instance. Authority only. */
+    void SynchronizeActivePartnerRuntimeForPersistence();
+
+    /**
+     * Completes the presentation/actor side of an owner disconnect. If bPersistenceCommitted is true,
+     * EndPlay is prevented from issuing a second teardown-time account write. The selected partner GUID
+     * is intentionally preserved; only the transient world actor is destroyed.
+     */
+    void FinalizeForOwnerDisconnect(bool bPersistenceCommitted);
+
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Partner")
     ADMFDigimonCharacter* SpawnOrRefreshActivePartner(APawn* PlayerPawn);
 
@@ -370,6 +396,11 @@ private:
     int32 CareServingVoiceSoundIndex = INDEX_NONE;
     bool bCareRestoreAutoBattle = false;
     bool bCareRestoreRetaliation = false;
+
+    /** Set only after authoritative account data has been loaded into this component for the current session. */
+    bool bAuthoritativeAccountStateInitialized = false;
+    /** Prevents a successful GameMode logout checkpoint from being overwritten during component teardown. */
+    bool bDisconnectPersistenceFinalized = false;
 
     UFUNCTION()
     void OnRep_CommandTarget();

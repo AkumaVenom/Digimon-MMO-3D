@@ -185,3 +185,10 @@ See `SETUP_DIGIVOLUTION.md` for path authoring, requirements, presentation and t
 
 ### DigiDex relationship
 DigiDex is informational only. It may show whether a species is owned by checking Party + Bank counts, but it cannot move, summon or mutate those instances.
+
+## v0.18 Digimon vendor integration
+
+Vendor purchases and sales use Party/Bank as the authoritative ownership source. A successful purchase atomically deducts Bits and inserts the exact server-generated Digimon into Party or Bank (with configurable Bank preference and safe fallback); a successful sale removes the exact instance GUID, credits Bits, reconciles an active summoned partner when necessary, and persists immediately.
+
+The server blocks purchases when both storage tiers are full and can protect starter Digimon and the last Party member from sale. Clients never submit a price, generated stats, destination inventory mutation, or money balance. See `SETUP_DIGIMON_VENDOR.md` for the complete stock, pricing, UI, and multiplayer contract.
+

@@ -12,7 +12,7 @@ class DIGIMONMMOFRAMEWORK_API UDMFAccountDatabaseSaveGame : public USaveGame
 
 public:
     UPROPERTY(SaveGame)
-    int32 SchemaVersion = 6;
+    int32 SchemaVersion = 7;
 
     UPROPERTY(SaveGame)
     TMap<FString, FDMFAccountRecord> Accounts;

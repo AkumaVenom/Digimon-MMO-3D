@@ -17,6 +17,7 @@
 #include "Data/DMFDigimonSpeciesData.h"
 #include "Game/DMFPlayerState.h"
 #include "Game/DMFDigimonCharacter.h"
+#include "Game/DMFDigimonVendorActor.h"
 #include "Game/DMFHealerActor.h"
 #include "Game/DMFMMOPlayerController.h"
 #include "Game/DMFSwimmableWater.h"
@@ -690,6 +691,11 @@ bool ADMFPlayerAvatarCharacter::InteractWithActor(AActor* TargetActor)
         return InteractWithHealer(TargetActor);
     }
 
+    if (Cast<ADMFDigimonVendorActor>(TargetActor))
+    {
+        return InteractWithDigimonVendor(TargetActor);
+    }
+
     BP_OnUnhandledInteraction(TargetActor);
     ReportInteractionResult(false, TargetActor, EDMFPlayerInteractionType::Unhandled, NSLOCTEXT("DMF", "InteractionUnhandled", "This actor has no native Digimon MMO interaction."));
     return false;
@@ -775,6 +781,26 @@ bool ADMFPlayerAvatarCharacter::InteractWithHealer(AActor* HealerActor)
     DMFController->RequestUseHealer(Healer);
     ReportInteractionResult(true, Healer, EDMFPlayerInteractionType::Healer, NSLOCTEXT("DMF", "InteractionHealerRequestedDirect", "Healing request sent."));
     return true;
+}
+
+bool ADMFPlayerAvatarCharacter::InteractWithDigimonVendor(AActor* VendorActor)
+{
+    ADMFDigimonVendorActor* Vendor = Cast<ADMFDigimonVendorActor>(VendorActor);
+    ADMFMMOPlayerController* DMFController = ResolveDMFPlayerController();
+    if (!IsLocallyControlled() || !IsValid(Vendor) || !DMFController || !Vendor->IsVendorEnabled()
+        || !Vendor->IsPlayerWithinTradeRange(DMFController))
+    {
+        ReportInteractionResult(false, VendorActor, EDMFPlayerInteractionType::DigimonVendor, NSLOCTEXT("DMF", "InteractionInvalidDigimonVendor", "That Digimon vendor is unavailable or out of range."));
+        return false;
+    }
+
+    LastInteractionActor = Vendor;
+    DMFController->OpenDigimonVendorUI(Vendor);
+    const bool bOpened = DMFController->IsDigimonVendorUIOpen();
+    ReportInteractionResult(bOpened, Vendor, EDMFPlayerInteractionType::DigimonVendor,
+        bOpened ? NSLOCTEXT("DMF", "InteractionVendorOpened", "Digimon vendor opened.")
+                : NSLOCTEXT("DMF", "InteractionVendorOpenFailed", "The Digimon vendor could not be opened."));
+    return bOpened;
 }
 
 void ADMFPlayerAvatarCharacter::ClearDigimonTarget()
@@ -897,6 +923,11 @@ FText ADMFPlayerAvatarCharacter::GetInteractionPromptForActor(AActor* TargetActo
     if (const ADMFHealerActor* Healer = Cast<ADMFHealerActor>(TargetActor))
     {
         return Healer->InteractionPrompt.IsEmpty() ? NSLOCTEXT("DMF", "InteractionPromptHealer", "Heal Digimon") : Healer->InteractionPrompt;
+    }
+
+    if (const ADMFDigimonVendorActor* Vendor = Cast<ADMFDigimonVendorActor>(TargetActor))
+    {
+        return Vendor->InteractionPrompt.IsEmpty() ? NSLOCTEXT("DMF", "InteractionPromptDigimonVendor", "Open Digimon Vendor") : Vendor->InteractionPrompt;
     }
 
     return FText::GetEmpty();

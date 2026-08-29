@@ -63,6 +63,14 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // bHasSavedLocation=false and will use DMFNewPlayerStart once before their first checkpoint is saved.
             Database->SchemaVersion = 6;
         }
+
+        if (Database->SchemaVersion < 7)
+        {
+            // v7 adds per-Digimon lifetime EXP and exact Attribute Point spend counters for vendor valuation.
+            // Existing Digimon are conservatively reconstructed from their current level/EXP and unspent-point state
+            // during authoritative account initialization; no owned Digimon or legacy stat is discarded.
+            Database->SchemaVersion = 7;
+        }
     }
     else
     {
@@ -114,6 +122,7 @@ bool UDMFAccountPersistenceSubsystem::ValidateOrRegisterAccount(const FString& U
     FDMFAccountRecord NewRecord;
     NewRecord.Username = Username.TrimStartAndEnd();
     NewRecord.CredentialDigest = CredentialDigest;
+    NewRecord.DigimonEconomyProvenanceVersion = 1;
     Database->Accounts.Add(Key, NewRecord);
     bOutCreatedNewAccount = true;
 

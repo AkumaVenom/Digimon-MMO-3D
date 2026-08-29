@@ -48,7 +48,20 @@ void UDMFPlayerDigimonComponent::EndPlay(const EEndPlayReason::Type EndPlayReaso
 {
     if (GetOwner() && GetOwner()->HasAuthority())
     {
-        PersistOwningPlayer();
+        // GameMode::Logout performs the canonical save while Controller/PlayerState/Pawn are all still valid.
+        // Never issue a second teardown-time write after that transaction succeeds: on network disconnect the
+        // owning pawn/controller can already be partially detached, and serializing component defaults at this
+        // stage can destructively replace a perfectly good account record. If Logout could not commit, retain
+        // this guarded fallback while the component's authoritative arrays are still available.
+        if (!bDisconnectPersistenceFinalized && bAuthoritativeAccountStateInitialized)
+        {
+            SynchronizeActivePartnerRuntimeForPersistence();
+            PersistOwningPlayer();
+        }
+
+        // Partner actors are transient session presentation/gameplay actors. They must never survive their owner
+        // leaving the server, even when the PlayerState is retained temporarily by AGameMode's inactive-player path.
+        FinalizeForOwnerDisconnect(bDisconnectPersistenceFinalized);
     }
     if (UWorld* World = GetWorld())
     {
@@ -154,6 +167,165 @@ bool UDMFPlayerDigimonComponent::GetOwnedDigimonByInstanceId(const FGuid Instanc
         return true;
     }
     return false;
+}
+
+bool UDMFPlayerDigimonComponent::AuthorityPurchaseVendorDigimon(const FDMFDigimonInstance& OfferedDigimon, const int64 PurchasePrice, const bool bPreferBank, FGuid& OutNewInstanceId, EDMFDigimonStorageLocation& OutDestination, FText& OutFailureReason)
+{
+    OutNewInstanceId.Invalidate();
+    OutDestination = EDMFDigimonStorageLocation::Party;
+    OutFailureReason = FText::GetEmpty();
+
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorPurchaseAuthorityRequired", "Vendor purchases must be committed by the server.");
+        return false;
+    }
+    if (!OfferedDigimon.IsValid())
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorPurchaseInvalidDigimon", "The vendor offer is no longer valid.");
+        return false;
+    }
+
+    FText MutationFailure;
+    if (!IsPartyMutationAllowed(MutationFailure))
+    {
+        OutFailureReason = MutationFailure;
+        return false;
+    }
+
+    const int64 SafePrice = FMath::Max<int64>(0, PurchasePrice);
+    if (Money < SafePrice)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorPurchaseInsufficientMoney", "You do not have enough Bits for this Digimon.");
+        return false;
+    }
+
+    const bool bPartyHasRoom = ReplicatedInventory.Items.Num() < GetPartyCapacity();
+    const bool bBankHasRoom = ReplicatedBank.Items.Num() < GetBankCapacity();
+    if (!bPartyHasRoom && !bBankHasRoom)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorPurchaseStorageFull", "Your Party and Digimon Bank are both full.");
+        return false;
+    }
+
+    FDMFDigimonInstance Purchased = OfferedDigimon;
+    FDMFDigimonInstance Existing;
+    EDMFDigimonStorageLocation ExistingLocation = EDMFDigimonStorageLocation::Party;
+    if (!Purchased.InstanceId.IsValid() || GetOwnedDigimonByInstanceId(Purchased.InstanceId, Existing, ExistingLocation))
+    {
+        Purchased.InstanceId = FGuid::NewGuid();
+    }
+    Purchased.bStarterPartner = false;
+    NormalizeDigivolutionProvenance(Purchased);
+    Purchased.CurrentHP = FMath::Clamp(Purchased.CurrentHP, 0, FMath::Max(1, Purchased.Stats.MaxHP));
+    Purchased.CurrentSP = FMath::Clamp(Purchased.CurrentSP, 0, FMath::Max(0, Purchased.Stats.MaxSP));
+
+    const bool bSendToBank = bPreferBank ? bBankHasRoom : !bPartyHasRoom;
+    if (bSendToBank)
+    {
+        FDMFReplicatedDigimonEntry& NewEntry = ReplicatedBank.Items.AddDefaulted_GetRef();
+        NewEntry.Digimon = Purchased;
+        ReplicatedBank.MarkItemDirty(NewEntry);
+        ReplicatedBank.MarkArrayDirty();
+        OutDestination = EDMFDigimonStorageLocation::Bank;
+        OnDigimonBankChanged.Broadcast();
+    }
+    else
+    {
+        FDMFReplicatedDigimonEntry& NewEntry = ReplicatedInventory.Items.AddDefaulted_GetRef();
+        NewEntry.Digimon = Purchased;
+        ReplicatedInventory.MarkItemDirty(NewEntry);
+        ReplicatedInventory.MarkArrayDirty();
+        OutDestination = EDMFDigimonStorageLocation::Party;
+        OnDigimonInventoryChanged.Broadcast();
+
+        if (!ActivePartnerInstanceId.IsValid())
+        {
+            ActivePartnerInstanceId = Purchased.InstanceId;
+            bStarterSelectionRequired = false;
+        }
+    }
+
+    Money = FMath::Max<int64>(0, Money - SafePrice);
+    OutNewInstanceId = Purchased.InstanceId;
+    OnMoneyChanged.Broadcast(Money);
+    PersistOwningPlayer();
+    if (GetOwner()) GetOwner()->ForceNetUpdate();
+
+    OutFailureReason = OutDestination == EDMFDigimonStorageLocation::Party
+        ? NSLOCTEXT("DMF", "VendorPurchaseSuccessParty", "Purchase complete. The Digimon was added to your Party and saved.")
+        : NSLOCTEXT("DMF", "VendorPurchaseSuccessBank", "Purchase complete. The Digimon was sent to your Bank and saved.");
+    return true;
+}
+
+bool UDMFPlayerDigimonComponent::AuthoritySellDigimonToVendor(const FGuid DigimonInstanceId, const int64 SalePrice, const bool bAllowStarterSale, const bool bRequireAtLeastOnePartyDigimon, FDMFDigimonInstance& OutSoldDigimon, FText& OutFailureReason)
+{
+    OutSoldDigimon = FDMFDigimonInstance();
+    OutFailureReason = FText::GetEmpty();
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorSaleAuthorityRequired", "Vendor sales must be committed by the server.");
+        return false;
+    }
+
+    FText MutationFailure;
+    if (!IsPartyMutationAllowed(MutationFailure))
+    {
+        OutFailureReason = MutationFailure;
+        return false;
+    }
+
+    const int32 PartyIndex = ReplicatedInventory.Items.IndexOfByPredicate([&](const FDMFReplicatedDigimonEntry& Entry) { return Entry.Digimon.InstanceId == DigimonInstanceId; });
+    const int32 BankIndex = ReplicatedBank.Items.IndexOfByPredicate([&](const FDMFReplicatedDigimonEntry& Entry) { return Entry.Digimon.InstanceId == DigimonInstanceId; });
+    const bool bFromParty = PartyIndex != INDEX_NONE;
+    if (!bFromParty && BankIndex == INDEX_NONE)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorSaleMissingDigimon", "That Digimon is no longer owned by your account.");
+        return false;
+    }
+
+    const FDMFDigimonInstance& Candidate = bFromParty ? ReplicatedInventory.Items[PartyIndex].Digimon : ReplicatedBank.Items[BankIndex].Digimon;
+    if (Candidate.bStarterPartner && !bAllowStarterSale)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorSaleStarterProtected", "This vendor protects starter partners from being sold.");
+        return false;
+    }
+    if (bFromParty && bRequireAtLeastOnePartyDigimon && ReplicatedInventory.Items.Num() <= 1)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "VendorSaleLastPartyMember", "You must keep at least one Digimon in your Party.");
+        return false;
+    }
+
+    const FGuid PreviousActivePartnerId = ActivePartnerInstanceId;
+    const bool bWasSummoned = IsValid(ActivePartnerActor);
+    OutSoldDigimon = Candidate;
+
+    if (bFromParty)
+    {
+        ReplicatedInventory.Items.RemoveAt(PartyIndex);
+        ReplicatedInventory.MarkArrayDirty();
+        OnDigimonInventoryChanged.Broadcast();
+        if (PreviousActivePartnerId == DigimonInstanceId)
+        {
+            ActivePartnerInstanceId.Invalidate();
+        }
+        ReconcileActivePartnerAfterPartyMutation(PreviousActivePartnerId, bWasSummoned);
+    }
+    else
+    {
+        ReplicatedBank.Items.RemoveAt(BankIndex);
+        ReplicatedBank.MarkArrayDirty();
+        OnDigimonBankChanged.Broadcast();
+    }
+
+    const int64 SafeSalePrice = FMath::Max<int64>(0, SalePrice);
+    Money = SafeSalePrice > MAX_int64 - Money ? MAX_int64 : Money + SafeSalePrice;
+    OnMoneyChanged.Broadcast(Money);
+    PersistOwningPlayer();
+    if (GetOwner()) GetOwner()->ForceNetUpdate();
+
+    OutFailureReason = FText::Format(NSLOCTEXT("DMF", "VendorSaleSuccess", "Sale complete. {0} Bits were added to your account and saved."), FText::AsNumber(SafeSalePrice));
+    return true;
 }
 
 int64 UDMFPlayerDigimonComponent::ResolveExperienceRequirement(const UDMFDigimonSpeciesData& Species, const int32 CurrentLevel) const
@@ -325,6 +497,7 @@ void UDMFPlayerDigimonComponent::ServerSpendDigimonAttributePoint_Implementation
     }
 
     Digimon.UnspentAttributePoints = FMath::Max(0, Digimon.UnspentAttributePoints - 1);
+    Digimon.TotalAttributePointsSpent = FMath::Min(MAX_int32, FMath::Max(0, Digimon.TotalAttributePointsSpent) + 1);
     if (bPartyEntry)
     {
         ReplicatedInventory.MarkItemDirty(*Entry);
@@ -407,6 +580,12 @@ bool UDMFPlayerDigimonComponent::ApplyExperienceReward(FDMFReplicatedDigimonEntr
     const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
     const bool bLevelingEnabled = !Settings || Settings->bEnableOwnedDigimonLeveling;
     const int64 SafeReward = FMath::Max<int64>(0, ExperienceReward);
+    if (SafeReward > 0)
+    {
+        Digimon.LifetimeBattleExperience = SafeReward > MAX_int64 - FMath::Max<int64>(0, Digimon.LifetimeBattleExperience)
+            ? MAX_int64
+            : FMath::Max<int64>(0, Digimon.LifetimeBattleExperience) + SafeReward;
+    }
 
     Digimon.Stats.Level = FMath::Max(1, Digimon.Stats.Level);
     Digimon.Stats.Experience = FMath::Max<int64>(0, Digimon.Stats.Experience);
@@ -422,7 +601,7 @@ bool UDMFPlayerDigimonComponent::ApplyExperienceReward(FDMFReplicatedDigimonEntr
         }
         OutProgression.NewLevel = Digimon.Stats.Level;
         OutProgression.NewExperience = Digimon.Stats.Experience;
-        return OutProgression.ExperienceGained > 0;
+        return SafeReward > 0 || OutProgression.ExperienceGained > 0;
     }
 
     const int32 MaxLevel = ResolveMaximumLevel(*Species);
@@ -434,7 +613,7 @@ bool UDMFPlayerDigimonComponent::ApplyExperienceReward(FDMFReplicatedDigimonEntr
         OutProgression.NewLevel = Digimon.Stats.Level;
         OutProgression.NewExperience = 0;
         OutProgression.bReachedMaxLevel = true;
-        return bNormalized;
+        return bNormalized || SafeReward > 0;
     }
 
     if (SafeReward > 0)
@@ -489,6 +668,12 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     {
         return;
     }
+
+    // A PlayerState can pass through Unreal's inactive/reconnect lifecycle. Treat every authoritative account
+    // initialization as a new session and do not permit persistence until all account-owned arrays/state below
+    // have been reconstructed. This prevents a half-initialized PlayerState from saving empty defaults.
+    bAuthoritativeAccountStateInitialized = false;
+    bDisconnectPersistenceFinalized = false;
 
     ReplicatedInventory.Items.Reset();
     ReplicatedBank.Items.Reset();
@@ -565,6 +750,45 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     {
         NormalizeDigivolutionProvenance(Digimon);
         NormalizeStoredExperienceForLeveling(Digimon);
+
+        // v0.18/schema-v7 migration: reconstruct conservative valuation provenance only for accounts
+        // that predate the economy provenance marker. Current records may legitimately contain a
+        // high-level Digimon with exactly zero spent Attribute Points, so value==0 is not a migration sentinel.
+        if (Record.DigimonEconomyProvenanceVersion < 1)
+        {
+            if (UDMFDigimonSpeciesData* ProgressionSpecies = ResolveSpeciesById(Digimon.SpeciesId))
+            {
+                if (Digimon.LifetimeBattleExperience <= 0 && (Digimon.Stats.Level > 1 || Digimon.Stats.Experience > 0))
+                {
+                    int64 InferredLifetimeExperience = 0;
+                    for (int32 Level = FMath::Max(1, ProgressionSpecies->StartingLevel); Level < FMath::Max(1, Digimon.Stats.Level); ++Level)
+                    {
+                        const int64 Required = ResolveExperienceRequirement(*ProgressionSpecies, Level);
+                        if (Required > MAX_int64 - InferredLifetimeExperience)
+                        {
+                            InferredLifetimeExperience = MAX_int64;
+                            break;
+                        }
+                        InferredLifetimeExperience += Required;
+                    }
+                    if (InferredLifetimeExperience < MAX_int64)
+                    {
+                        InferredLifetimeExperience = Digimon.Stats.Experience > MAX_int64 - InferredLifetimeExperience
+                            ? MAX_int64
+                            : InferredLifetimeExperience + FMath::Max<int64>(0, Digimon.Stats.Experience);
+                    }
+                    Digimon.LifetimeBattleExperience = InferredLifetimeExperience;
+                }
+
+                if (Digimon.TotalAttributePointsSpent <= 0)
+                {
+                    const int32 EarnedLevels = FMath::Max(0, Digimon.Stats.Level - FMath::Max(1, ProgressionSpecies->StartingLevel));
+                    const int64 EarnedPoints = static_cast<int64>(EarnedLevels) * FMath::Max(0, ProgressionSpecies->AttributePointsPerLevel);
+                    Digimon.TotalAttributePointsSpent = static_cast<int32>(FMath::Clamp<int64>(EarnedPoints - FMath::Max(0, Digimon.UnspentAttributePoints), 0, MAX_int32));
+                }
+            }
+        }
+
         if (CareSettings && CareSettings->bEnableCareSystem)
         {
             if (UDMFDigimonSpeciesData* Species = ResolveSpeciesById(Digimon.SpeciesId))
@@ -620,6 +844,10 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     {
         BroadcastCareState(*ActiveEntry);
     }
+
+    // Only after the complete Party/Bank/partner/money/scan state is reconstructed may autosave/logout
+    // serialize this component back over the persistent account record.
+    bAuthoritativeAccountStateInitialized = true;
 }
 
 void UDMFPlayerDigimonComponent::ApplyToAccountRecord(FDMFAccountRecord& Record) const
@@ -629,6 +857,7 @@ void UDMFPlayerDigimonComponent::ApplyToAccountRecord(FDMFAccountRecord& Record)
     Record.ActivePartnerInstanceId = ActivePartnerInstanceId;
     Record.bStarterSelected = !bStarterSelectionRequired && ActivePartnerInstanceId.IsValid();
     Record.Money = Money;
+    Record.DigimonEconomyProvenanceVersion = 1;
     Record.ScanData = ReplicatedScanData;
 }
 
@@ -1512,10 +1741,68 @@ bool UDMFPlayerDigimonComponent::ResetStarterOnboarding(const bool bRemoveStarte
     return true;
 }
 
+void UDMFPlayerDigimonComponent::SynchronizeActivePartnerRuntimeForPersistence()
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority() || !ActivePartnerInstanceId.IsValid())
+    {
+        return;
+    }
+
+    ADMFDigimonCharacter* Partner = ActivePartnerActor.Get();
+    if (!IsValid(Partner) || !Partner->CombatComponent)
+    {
+        return;
+    }
+
+    if (FDMFReplicatedDigimonEntry* Entry = FindInventoryEntry(ActivePartnerInstanceId))
+    {
+        const int32 LiveHP = Partner->CombatComponent->GetCurrentHP();
+        const int32 LiveSP = Partner->CombatComponent->GetCurrentSP();
+        if (Entry->Digimon.CurrentHP != LiveHP || Entry->Digimon.CurrentSP != LiveSP)
+        {
+            Entry->Digimon.CurrentHP = LiveHP;
+            Entry->Digimon.CurrentSP = LiveSP;
+            ReplicatedInventory.MarkItemDirty(*Entry);
+        }
+    }
+}
+
+void UDMFPlayerDigimonComponent::FinalizeForOwnerDisconnect(const bool bPersistenceCommitted)
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+    {
+        return;
+    }
+
+    // Once the canonical pre-teardown account transaction succeeds, block every later EndPlay/autosave path
+    // from writing over it. If it failed, leave the flag false so EndPlay gets one final guarded retry.
+    if (bPersistenceCommitted)
+    {
+        bDisconnectPersistenceFinalized = true;
+    }
+
+    CommandTarget = nullptr;
+
+    if (IsValid(ActivePartnerActor))
+    {
+        if (ActivePartnerActor->CombatComponent)
+        {
+            ActivePartnerActor->CombatComponent->OnVitalsChanged.RemoveDynamic(this, &UDMFPlayerDigimonComponent::HandleActivePartnerVitalsChanged);
+            ActivePartnerActor->CombatComponent->ForceAuthoritativeDisengage();
+        }
+
+        ActivePartnerActor->Destroy();
+        ActivePartnerActor = nullptr;
+    }
+
+    // A feeding prop is also owned by the player session rather than the persistent Digimon record.
+    DestroyActiveCareMeat();
+}
+
 void UDMFPlayerDigimonComponent::PersistOwningPlayer()
 {
     ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
-    if (!PS || !PS->HasAuthority())
+    if (!PS || !PS->HasAuthority() || !bAuthoritativeAccountStateInitialized || bDisconnectPersistenceFinalized)
     {
         return;
     }

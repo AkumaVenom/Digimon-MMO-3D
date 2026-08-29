@@ -10,17 +10,20 @@ class UDMFCombatQuickBarWidget;
 class UDMFPartyQuickBarWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
+class UDMFDigimonVendorWidget;
 class UDMFScanNotificationWidget;
 class UDMFExperienceNotificationWidget;
 class UDMFHomeTeleportNotificationWidget;
 class UDMFWorldChatWidget;
 class ADMFDigimonCharacter;
 class ADMFHealerActor;
+class ADMFDigimonVendorActor;
 class ADMFTargetingPresentationActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFWorldChatMessageReceived, FDMFWorldChatMessage, ChatMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFHomeTeleportResult, bool, bSuccess, FText, Message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDMFDigimonVendorTransactionResult, bool, bSuccess, FText, Message, EDMFDigimonVendorTransactionType, TransactionType, FGuid, Identifier, int64, Price, int64, NewMoney);
 
 /**
  * MMO player controller with ready-to-use onboarding, avatar skin and Digimon combat UI routing.
@@ -33,6 +36,7 @@ class DIGIMONMMOFRAMEWORK_API ADMFMMOPlayerController : public APlayerController
 
 public:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void SetupInputComponent() override;
 
     /** Requests the authoritative GameMode to validate/recover this controller's MMO avatar possession. */
@@ -225,6 +229,35 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|World Chat")
     FDMFWorldChatMessageReceived OnWorldChatMessageReceived;
 
+    /** Opens the owner-local native BUY / SELL market UI for a nearby replicated vendor. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Vendor|UI")
+    void OpenDigimonVendorUI(ADMFDigimonVendorActor* Vendor);
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Vendor|UI")
+    void CloseDigimonVendorUI();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Vendor|UI")
+    void RefreshDigimonVendorUI();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Vendor|UI")
+    bool IsDigimonVendorUIOpen() const { return DigimonVendorWidget != nullptr; }
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Vendor|UI")
+    ADMFDigimonVendorActor* GetActiveDigimonVendor() const { return ActiveDigimonVendor; }
+
+    /** Client-facing request. Price/stats/money are intentionally never accepted from the caller. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Vendor")
+    void RequestDigimonVendorTransaction(ADMFDigimonVendorActor* Vendor, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier);
+
+    UFUNCTION(Server, Reliable)
+    void ServerRequestDigimonVendorTransaction(ADMFDigimonVendorActor* Vendor, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier);
+
+    UFUNCTION(Client, Reliable)
+    void ClientDigimonVendorTransactionResult(bool bSuccess, const FText& Message, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier, int64 Price, int64 NewMoney);
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Vendor")
+    FDMFDigimonVendorTransactionResult OnDigimonVendorTransactionResult;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFStarterSelectionWidget> StarterWidget;
@@ -240,6 +273,12 @@ private:
 
     UPROPERTY(Transient)
     TObjectPtr<UDMFDigimonInventoryWidget> DigimonInventoryWidget;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UDMFDigimonVendorWidget> DigimonVendorWidget;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ADMFDigimonVendorActor> ActiveDigimonVendor;
 
     UPROPERTY(Transient)
     TObjectPtr<UDMFScanNotificationWidget> ScanNotificationWidget;
@@ -270,6 +309,7 @@ private:
 
     double LastWorldChatAcceptedServerTime = -1000000.0;
     double LastReturnHomeAcceptedServerTime = -1000000.0;
+    double LastDigimonVendorTransactionServerTime = -1000000.0;
     TArray<double> RecentWorldChatAcceptedServerTimes;
 
     FTimerHandle StarterUIRetryTimer;

@@ -108,6 +108,8 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execGetExperienceRequiredForNextLevel); \
 	DECLARE_FUNCTION(execGetMaximumLevelForSpecies); \
 	DECLARE_FUNCTION(execGetExperienceRequiredForLevel); \
+	DECLARE_FUNCTION(execAuthoritySellDigimonToVendor); \
+	DECLARE_FUNCTION(execAuthorityPurchaseVendorDigimon); \
 	DECLARE_FUNCTION(execGetMoney); \
 	DECLARE_FUNCTION(execGetCommandTarget); \
 	DECLARE_FUNCTION(execClientStarterSelectionResult); \

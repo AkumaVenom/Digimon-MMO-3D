@@ -781,6 +781,95 @@ void ADMFMMOGameMode::ScheduleFrameworkPlayerAvatarValidation(APlayerController*
     }));
 }
 
+bool ADMFMMOGameMode::RehydrateAuthenticatedPlayerState(APlayerController* PlayerController, const TCHAR* Context) const
+{
+    if (!HasAuthority() || !IsValid(PlayerController))
+    {
+        return false;
+    }
+
+    ADMFPlayerState* PlayerState = PlayerController->GetPlayerState<ADMFPlayerState>();
+    if (!PlayerState)
+    {
+        UE_LOG(LogDigimonMMOFramework, Error, TEXT("%s account rehydrate failed: controller has no DMF PlayerState."), Context ? Context : TEXT("Unknown"));
+        return false;
+    }
+
+    const FString Username = PlayerState->GetAuthenticatedUsername();
+    if (Username.IsEmpty())
+    {
+        UE_LOG(LogDigimonMMOFramework, Error, TEXT("%s account rehydrate failed: authenticated username is empty."), Context ? Context : TEXT("Unknown"));
+        return false;
+    }
+
+    UGameInstance* GameInstance = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GameInstance ? GameInstance->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    if (!Persistence)
+    {
+        UE_LOG(LogDigimonMMOFramework, Error, TEXT("%s account rehydrate failed for '%s': persistence subsystem unavailable."), Context ? Context : TEXT("Unknown"), *Username);
+        return false;
+    }
+
+    FDMFAccountRecord Record;
+    if (!Persistence->GetAccount(Username, Record))
+    {
+        UE_LOG(LogDigimonMMOFramework, Error, TEXT("%s account rehydrate failed for '%s': persistent record not found."), Context ? Context : TEXT("Unknown"), *Username);
+        return false;
+    }
+
+    if (PlayerState->AvatarComponent)
+    {
+        PlayerState->AvatarComponent->InitializeFromAccountRecord(Record);
+    }
+    if (PlayerState->DigimonComponent)
+    {
+        PlayerState->DigimonComponent->InitializeFromAccountRecord(Record);
+    }
+
+    UE_LOG(LogDigimonMMOFramework, Log,
+        TEXT("%s account rehydrate complete for '%s' (Party=%d, Bank=%d, ActivePartner=%s, Starter=%s, Skin=%s)."),
+        Context ? Context : TEXT("Unknown"),
+        *Username,
+        Record.DigimonInventory.Num(),
+        Record.DigimonBank.Num(),
+        *Record.ActivePartnerInstanceId.ToString(),
+        Record.bStarterSelected ? TEXT("true") : TEXT("false"),
+        *Record.SelectedPlayerSkinId.ToString());
+    return true;
+}
+
+void ADMFMMOGameMode::PostLogin(APlayerController* NewPlayer)
+{
+    // AGameMode::PostLogin normally calls FindInactivePlayer and can replace the freshly initialized
+    // PlayerState with a duplicated disconnected PlayerState. DMF deliberately disables that path below:
+    // the authenticated persistent account is the sole reconnect authority.
+    Super::PostLogin(NewPlayer);
+
+    ADMFPlayerState* PlayerState = NewPlayer ? NewPlayer->GetPlayerState<ADMFPlayerState>() : nullptr;
+    if (PlayerState && PlayerState->DigimonComponent && !PlayerState->DigimonComponent->HasAuthoritativeAccountStateInitialized())
+    {
+        RehydrateAuthenticatedPlayerState(NewPlayer, TEXT("PostLogin integrity"));
+    }
+}
+
+void ADMFMMOGameMode::AddInactivePlayer(APlayerState* PlayerState, APlayerController* PC)
+{
+    // Intentionally do NOT call Super. AGameMode's default implementation duplicates PlayerState into
+    // InactivePlayerArray. That cache is unsuitable for DMF because the PlayerState owns replicated Party/Bank
+    // and avatar components while the server account database is already our durable reconnect source.
+    // Keeping the duplicate permits PostLogin to substitute stale teardown state over a freshly loaded account.
+    UE_LOG(LogDigimonMMOFramework, Verbose,
+        TEXT("DMF skipped inactive PlayerState caching for '%s'; reconnect will reload the authenticated account database."),
+        PlayerState ? *PlayerState->GetPlayerName() : TEXT("Unknown"));
+}
+
+bool ADMFMMOGameMode::FindInactivePlayer(APlayerController* PC)
+{
+    // Never reassociate an engine-cached PlayerState. Authentication + UDMFAccountPersistenceSubsystem is the
+    // canonical reconnect contract, including reconnects from another machine/IP and Shipping builds.
+    return false;
+}
+
 void ADMFMMOGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
     // Preserve Unreal's normal PlayerStart/restart path, then validate the result. Late-joining remote
@@ -791,45 +880,110 @@ void ADMFMMOGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
     ScheduleFrameworkPlayerAvatarValidation(NewPlayer);
 }
 
-void ADMFMMOGameMode::SavePlayerState(ADMFPlayerState* PlayerState) const
+bool ADMFMMOGameMode::SavePlayerState(ADMFPlayerState* PlayerState) const
 {
     if (!PlayerState || !PlayerState->DigimonComponent || PlayerState->GetAuthenticatedUsername().IsEmpty())
     {
-        return;
+        return false;
+    }
+
+    // Never serialize a default/half-initialized PlayerState over an established account. This matters most
+    // during remote Shipping disconnects where network teardown can race owner/pawn destruction.
+    if (!PlayerState->DigimonComponent->HasAuthoritativeAccountStateInitialized())
+    {
+        UE_LOG(LogDigimonMMOFramework, Warning,
+            TEXT("Refusing disconnect save for '%s' because its authoritative account state was not fully initialized; preserving the existing persistent record."),
+            *PlayerState->GetAuthenticatedUsername());
+        return false;
     }
 
     UGameInstance* GI = GetGameInstance();
     UDMFAccountPersistenceSubsystem* Persistence = GI ? GI->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
     if (!Persistence)
     {
-        return;
+        return false;
     }
 
     FDMFAccountRecord Record;
     if (!Persistence->GetAccount(PlayerState->GetAuthenticatedUsername(), Record))
     {
-        return;
+        UE_LOG(LogDigimonMMOFramework, Error,
+            TEXT("Disconnect save could not reload the persistent account record for '%s'."),
+            *PlayerState->GetAuthenticatedUsername());
+        return false;
     }
 
+    // Pull the final authoritative HP/SP directly from the live partner before building the account snapshot.
+    // This closes the last-frame gap between combat replication/delegates and a sudden remote disconnect.
+    PlayerState->DigimonComponent->SynchronizeActivePartnerRuntimeForPersistence();
     PlayerState->DigimonComponent->ApplyToAccountRecord(Record);
+
     if (PlayerState->AvatarComponent)
     {
         PlayerState->AvatarComponent->ApplyToAccountRecord(Record);
+        // If Unreal has already detached the pawn, this intentionally returns false and leaves the most recent
+        // valid world checkpoint in Record untouched rather than replacing it with invalid/default coordinates.
         PlayerState->AvatarComponent->ApplyCurrentWorldLocationToAccountRecord(Record);
     }
+
     FString Error;
     if (!Persistence->SaveAccount(Record, Error))
     {
         UE_LOG(LogDigimonMMOFramework, Error, TEXT("Logout save failed for '%s': %s"), *PlayerState->GetAuthenticatedUsername(), *Error);
+        return false;
     }
+
+    UE_LOG(LogDigimonMMOFramework, Log,
+        TEXT("Committed disconnect account snapshot for '%s' (Party=%d, Bank=%d, ActivePartner=%s, Skin=%s)."),
+        *PlayerState->GetAuthenticatedUsername(),
+        Record.DigimonInventory.Num(),
+        Record.DigimonBank.Num(),
+        *Record.ActivePartnerInstanceId.ToString(),
+        *Record.SelectedPlayerSkinId.ToString());
+    return true;
+}
+
+bool ADMFMMOGameMode::FinalizeAuthenticatedPlayerSession(APlayerController* PlayerController)
+{
+    if (!HasAuthority() || !IsValid(PlayerController))
+    {
+        return false;
+    }
+
+    ADMFPlayerState* PlayerState = PlayerController->GetPlayerState<ADMFPlayerState>();
+    if (!PlayerState)
+    {
+        return false;
+    }
+
+    if (PlayerState->DigimonComponent && PlayerState->DigimonComponent->IsDisconnectPersistenceFinalized())
+    {
+        // Logout and PlayerController::EndPlay can legitimately observe the same disconnect. Once the canonical
+        // snapshot has committed, this path must be a no-op instead of issuing another teardown-time disk write.
+        PlayerState->DigimonComponent->FinalizeForOwnerDisconnect(true);
+        InitialWorldLocationApplied.Remove(TWeakObjectPtr<APlayerController>(PlayerController));
+        return true;
+    }
+
+    const bool bSaved = SavePlayerState(PlayerState);
+    if (PlayerState->DigimonComponent)
+    {
+        // Destroy the transient partner regardless of disk-save outcome so disconnected sessions never leave
+        // combat-capable orphan actors. If bSaved is false, EndPlay keeps one guarded persistence retry available.
+        PlayerState->DigimonComponent->FinalizeForOwnerDisconnect(bSaved);
+    }
+
+    InitialWorldLocationApplied.Remove(TWeakObjectPtr<APlayerController>(PlayerController));
+    return bSaved;
 }
 
 void ADMFMMOGameMode::Logout(AController* Exiting)
 {
     if (APlayerController* PC = Cast<APlayerController>(Exiting))
     {
-        SavePlayerState(PC->GetPlayerState<ADMFPlayerState>());
-        InitialWorldLocationApplied.Remove(TWeakObjectPtr<APlayerController>(PC));
+        // Canonical disconnect transaction MUST happen before Super::Logout, because Unreal may detach/retain
+        // PlayerState/Pawn objects as part of the inactive-player lifecycle after this point.
+        FinalizeAuthenticatedPlayerSession(PC);
     }
 
     Super::Logout(Exiting);

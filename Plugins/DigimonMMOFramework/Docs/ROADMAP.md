@@ -249,3 +249,10 @@ Completed: persistent server-authoritative Attribute Point spending for HP/SP/ST
 - Return Home is server-authoritative and resolves the v0.15.1 `DMFNewPlayerStart`; no client transform is trusted.
 - Successful teleports cleanly terminate the partner encounter/projectiles, reposition the summoned partner, checkpoint v6 location immediately, restore gameplay input, and show an owner-only configurable result toast.
 - Blueprint custom HUDs may request/bind presentation while GameMode retains destination/teleport/save authority.
+
+## Completed in v0.18.0-alpha — Digimon vendor economy
+- Blueprint-derivable replicated Digimon vendor NPC with per-NPC stock configuration.
+- Server randomized level/stat/ABI/CAM/training stock and independent rotating stock scheduler.
+- Progression-aware automatic Buy/Sell valuation with lifetime battle EXP and exact Attribute Point investment provenance.
+- Native owner-local BUY / SELL market UI, transaction confirmation and server result feedback.
+- Atomic Bits/Party/Bank mutation, immediate account persistence, concurrency/range/storage validation and Blueprint trade presentation hooks.

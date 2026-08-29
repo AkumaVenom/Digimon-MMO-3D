@@ -6,6 +6,7 @@
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
 #include "Game/DMFDigimonCharacter.h"
+#include "Game/DMFDigimonVendorActor.h"
 #include "Game/DMFHealerActor.h"
 #include "Game/DMFMMOGameMode.h"
 #include "Game/DMFPlayerAvatarCharacter.h"
@@ -17,12 +18,31 @@
 #include "UI/DMFCombatQuickBarWidget.h"
 #include "UI/DMFPartyQuickBarWidget.h"
 #include "UI/DMFDigimonInventoryWidget.h"
+#include "UI/DMFDigimonVendorWidget.h"
 #include "UI/DMFScanNotificationWidget.h"
 #include "UI/DMFExperienceNotificationWidget.h"
 #include "UI/DMFHomeTeleportNotificationWidget.h"
 #include "UI/DMFPlayerSkinSelectionWidget.h"
 #include "UI/DMFStarterSelectionWidget.h"
 #include "UI/DMFWorldChatWidget.h"
+
+void ADMFMMOPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (HasAuthority())
+    {
+        // GameMode::Logout is the primary path. This is an idempotent safety net for unusual net-driver/world
+        // teardown ordering so an internet client cannot bypass account finalization by disappearing abruptly.
+        if (UWorld* World = GetWorld())
+        {
+            if (ADMFMMOGameMode* GameMode = World->GetAuthGameMode<ADMFMMOGameMode>())
+            {
+                GameMode->FinalizeAuthenticatedPlayerSession(this);
+            }
+        }
+    }
+
+    Super::EndPlay(EndPlayReason);
+}
 
 void ADMFMMOPlayerController::SetupInputComponent()
 {
@@ -456,7 +476,7 @@ void ADMFMMOPlayerController::RefreshPlayerSkinSelectionUI()
         {
             RefreshStarterSelectionUI();
         }
-        else if (!DigimonInventoryWidget)
+        else if (!DigimonInventoryWidget && !DigimonVendorWidget)
         {
             RestoreGameplayInputMode();
             RefreshCombatQuickBar();
@@ -475,6 +495,12 @@ void ADMFMMOPlayerController::RefreshPlayerSkinSelectionUI()
     {
         DigimonInventoryWidget->RemoveFromParent();
         DigimonInventoryWidget = nullptr;
+    }
+    if (DigimonVendorWidget)
+    {
+        DigimonVendorWidget->RemoveFromParent();
+        DigimonVendorWidget = nullptr;
+        ActiveDigimonVendor = nullptr;
     }
 
     if (CombatQuickBarWidget)
@@ -578,7 +604,7 @@ void ADMFMMOPlayerController::RefreshStarterSelectionUI()
             StarterWidget = nullptr;
         }
 
-        if (!PlayerSkinWidget && !DigimonInventoryWidget)
+        if (!PlayerSkinWidget && !DigimonInventoryWidget && !DigimonVendorWidget)
         {
             RestoreGameplayInputMode();
             RefreshCombatQuickBar();
@@ -596,6 +622,12 @@ void ADMFMMOPlayerController::RefreshStarterSelectionUI()
     {
         DigimonInventoryWidget->RemoveFromParent();
         DigimonInventoryWidget = nullptr;
+    }
+    if (DigimonVendorWidget)
+    {
+        DigimonVendorWidget->RemoveFromParent();
+        DigimonVendorWidget = nullptr;
+        ActiveDigimonVendor = nullptr;
     }
 
     if (CombatQuickBarWidget)
@@ -659,6 +691,10 @@ void ADMFMMOPlayerController::OpenDigimonInventoryUI()
     if (bPartyQuickAccessInteractionActive)
     {
         ClosePartyQuickAccessInteraction();
+    }
+    if (DigimonVendorWidget)
+    {
+        CloseDigimonVendorUI();
     }
     if (CombatQuickBarWidget)
     {
@@ -785,6 +821,170 @@ void ADMFMMOPlayerController::OpenDigivolutionUI()
     }
 }
 
+void ADMFMMOPlayerController::OpenDigimonVendorUI(ADMFDigimonVendorActor* Vendor)
+{
+    if (!IsLocalController() || !IsValid(Vendor) || IsWorldPresentationActive())
+    {
+        return;
+    }
+
+    ADMFPlayerState* DMFPlayerState = GetPlayerState<ADMFPlayerState>();
+    if (!DMFPlayerState || !DMFPlayerState->DigimonComponent || IsMandatoryPlayerSkinSelectionActive()
+        || DMFPlayerState->DigimonComponent->IsStarterSelectionRequired())
+    {
+        return;
+    }
+
+    if (!Vendor->IsVendorEnabled() || !Vendor->IsPlayerWithinTradeRange(this))
+    {
+        return;
+    }
+
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->RemoveFromParent();
+        DigimonInventoryWidget = nullptr;
+    }
+    if (bPartyQuickAccessInteractionActive)
+    {
+        ClosePartyQuickAccessInteraction();
+    }
+    if (bWorldChatInputActive)
+    {
+        CloseWorldChatInput();
+    }
+    if (CombatQuickBarWidget)
+    {
+        CombatQuickBarWidget->RemoveFromParent();
+        CombatQuickBarWidget = nullptr;
+    }
+    if (PartyQuickBarWidget)
+    {
+        PartyQuickBarWidget->RemoveFromParent();
+        PartyQuickBarWidget = nullptr;
+    }
+
+    if (DigimonVendorWidget && ActiveDigimonVendor != Vendor)
+    {
+        DigimonVendorWidget->RemoveFromParent();
+        DigimonVendorWidget = nullptr;
+    }
+    ActiveDigimonVendor = Vendor;
+
+    if (!DigimonVendorWidget)
+    {
+        TSubclassOf<UDMFDigimonVendorWidget> WidgetClass = Vendor->VendorWidgetClass;
+        if (!WidgetClass)
+        {
+            WidgetClass = UDMFDigimonVendorWidget::StaticClass();
+        }
+        DigimonVendorWidget = CreateWidget<UDMFDigimonVendorWidget>(this, WidgetClass);
+        if (DigimonVendorWidget)
+        {
+            DigimonVendorWidget->AddToViewport(950);
+        }
+    }
+
+    if (DigimonVendorWidget)
+    {
+        DigimonVendorWidget->InitializeVendor(Vendor);
+        ApplyFrameworkModalInputMode();
+    }
+}
+
+void ADMFMMOPlayerController::CloseDigimonVendorUI()
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    if (DigimonVendorWidget)
+    {
+        DigimonVendorWidget->RemoveFromParent();
+        DigimonVendorWidget = nullptr;
+    }
+    ActiveDigimonVendor = nullptr;
+
+    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget)
+    {
+        RestoreGameplayInputMode();
+        RefreshCombatQuickBar();
+        RefreshPartyQuickBar();
+    }
+}
+
+void ADMFMMOPlayerController::RefreshDigimonVendorUI()
+{
+    if (IsLocalController() && DigimonVendorWidget)
+    {
+        if (!IsValid(ActiveDigimonVendor) || !ActiveDigimonVendor->IsVendorEnabled())
+        {
+            CloseDigimonVendorUI();
+            return;
+        }
+        DigimonVendorWidget->RefreshVendorUI();
+    }
+}
+
+void ADMFMMOPlayerController::RequestDigimonVendorTransaction(ADMFDigimonVendorActor* Vendor, const EDMFDigimonVendorTransactionType TransactionType, const FGuid Identifier)
+{
+    if (!IsLocalController() || !IsValid(Vendor) || !Identifier.IsValid())
+    {
+        return;
+    }
+    ServerRequestDigimonVendorTransaction(Vendor, TransactionType, Identifier);
+}
+
+void ADMFMMOPlayerController::ServerRequestDigimonVendorTransaction_Implementation(ADMFDigimonVendorActor* Vendor, const EDMFDigimonVendorTransactionType TransactionType, const FGuid Identifier)
+{
+    if (!IsValid(Vendor) || !Identifier.IsValid()
+        || (TransactionType != EDMFDigimonVendorTransactionType::Buy && TransactionType != EDMFDigimonVendorTransactionType::Sell))
+    {
+        ClientDigimonVendorTransactionResult(false, NSLOCTEXT("DMF", "VendorInvalidRequest", "That trade request is invalid."), TransactionType, Identifier, 0, 0);
+        return;
+    }
+
+    const double ServerTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+    if (ServerTime - LastDigimonVendorTransactionServerTime < 0.10)
+    {
+        ClientDigimonVendorTransactionResult(false, NSLOCTEXT("DMF", "VendorTransactionRateLimited", "Please wait a moment before making another trade."), TransactionType, Identifier, 0, 0);
+        return;
+    }
+    LastDigimonVendorTransactionServerTime = ServerTime;
+
+    bool bSuccess = false;
+    int64 Price = 0;
+    FText Message;
+    if (TransactionType == EDMFDigimonVendorTransactionType::Buy)
+    {
+        FGuid PurchasedInstanceId;
+        bSuccess = Vendor->TryPurchaseStockAuthoritative(this, Identifier, PurchasedInstanceId, Price, Message);
+    }
+    else
+    {
+        bSuccess = Vendor->TrySellDigimonAuthoritative(this, Identifier, Price, Message);
+    }
+
+    int64 CurrentMoney = 0;
+    if (ADMFPlayerState* DMFPlayerState = GetPlayerState<ADMFPlayerState>())
+    {
+        if (DMFPlayerState->DigimonComponent)
+        {
+            CurrentMoney = DMFPlayerState->DigimonComponent->GetMoney();
+        }
+    }
+    ClientDigimonVendorTransactionResult(bSuccess, Message, TransactionType, Identifier, Price, CurrentMoney);
+}
+
+void ADMFMMOPlayerController::ClientDigimonVendorTransactionResult_Implementation(const bool bSuccess, const FText& Message, const EDMFDigimonVendorTransactionType TransactionType, const FGuid Identifier, const int64 Price, const int64 NewMoney)
+{
+    OnDigimonVendorTransactionResult.Broadcast(bSuccess, Message, TransactionType, Identifier, Price, NewMoney);
+    RefreshDigimonVendorUI();
+    RefreshCombatQuickBar();
+    RefreshPartyQuickBar();
+}
+
 void ADMFMMOPlayerController::ApplyFrameworkModalInputMode()
 {
     if (bPartyQuickAccessInteractionActive)
@@ -895,7 +1095,7 @@ void ADMFMMOPlayerController::RefreshWorldChatUI()
 void ADMFMMOPlayerController::OpenWorldChatInput()
 {
     if (!IsLocalController() || bWorldChatInputActive || IsWorldPresentationActive()
-        || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bPartyQuickAccessInteractionActive)
+        || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget || bPartyQuickAccessInteractionActive)
     {
         return;
     }
@@ -1115,7 +1315,7 @@ void ADMFMMOPlayerController::ClientWorldChatSendRejected_Implementation(const F
 
 void ADMFMMOPlayerController::RefreshCombatQuickBar()
 {
-    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || IsWorldPresentationActive())
+    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget || IsWorldPresentationActive())
     {
         return;
     }
@@ -1148,7 +1348,7 @@ void ADMFMMOPlayerController::RefreshCombatQuickBar()
 
 void ADMFMMOPlayerController::RefreshPartyQuickBar()
 {
-    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || IsWorldPresentationActive())
+    if (!IsLocalController() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget || IsWorldPresentationActive())
     {
         return;
     }
@@ -1191,7 +1391,7 @@ void ADMFMMOPlayerController::RefreshPartyQuickBar()
 void ADMFMMOPlayerController::OpenPartyQuickAccessInteraction()
 {
     if (!IsLocalController() || bPartyQuickAccessInteractionActive || IsWorldPresentationActive() || bWorldChatInputActive
-        || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget)
+        || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget)
     {
         return;
     }
@@ -1261,7 +1461,7 @@ void ADMFMMOPlayerController::TogglePartyQuickAccessInteraction()
 
 void ADMFMMOPlayerController::RequestReturnHome()
 {
-    if (!IsLocalController() || IsWorldPresentationActive() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || bWorldChatInputActive)
+    if (!IsLocalController() || IsWorldPresentationActive() || PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget || bWorldChatInputActive)
     {
         return;
     }
@@ -1496,7 +1696,7 @@ void ADMFMMOPlayerController::ClientHealerInteractionResult_Implementation(const
 
 void ADMFMMOPlayerController::HandleDefaultTargetInput()
 {
-    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !IsWorldPresentationActive() && !bWorldChatInputActive && !bPartyQuickAccessInteractionActive)
+    if (!PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !DigimonVendorWidget && !IsWorldPresentationActive() && !bWorldChatInputActive && !bPartyQuickAccessInteractionActive)
     {
         SelectDigimonCommandTargetUnderCursor();
     }
@@ -1512,7 +1712,7 @@ void ADMFMMOPlayerController::HandleWorldChatInput()
 
 void ADMFMMOPlayerController::HandlePartyQuickAccessInput()
 {
-    if (!bWorldChatInputActive && !PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !IsWorldPresentationActive())
+    if (!bWorldChatInputActive && !PlayerSkinWidget && !StarterWidget && !DigimonInventoryWidget && !DigimonVendorWidget && !IsWorldPresentationActive())
     {
         TogglePartyQuickAccessInteraction();
     }
@@ -1544,7 +1744,7 @@ void ADMFMMOPlayerController::HandleDigimonInventoryMenuInput()
 
 void ADMFMMOPlayerController::ExecuteDefaultAbilitySlot(const int32 SlotIndex)
 {
-    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || IsWorldPresentationActive() || bWorldChatInputActive || bPartyQuickAccessInteractionActive)
+    if (PlayerSkinWidget || StarterWidget || DigimonInventoryWidget || DigimonVendorWidget || IsWorldPresentationActive() || bWorldChatInputActive || bPartyQuickAccessInteractionActive)
     {
         return;
     }

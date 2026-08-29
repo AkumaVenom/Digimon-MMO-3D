@@ -357,3 +357,28 @@ The 12-hour HUD clock is **presentation-only**. `DMFCombatQuickBarWidget` reads 
 - The owning client's OnRep path is hardened against property ordering, so the water pointer and underwater correction converge immediately. Post-process/fog stays local and is reconstructed from the local camera after that correction.
 - Water actors remain zero-tick and no periodic world scan was added; the scan occurs only at explicit restore/teleport/Blueprint refresh boundaries.
 
+
+## v0.18.0 — vendor economy networking contract
+
+The Digimon vendor is server-authoritative. A client request contains only `Vendor`, `EDMFDigimonVendorTransactionType`, and one GUID (StockId for Buy, owned InstanceId for Sell). The server validates vendor enabled/policy, range, authoritative stock/ownership, current price, Bits, Party/Bank capacity and mutation locks before any change. Clients never submit Digimon stats, price, payout, money or destination storage.
+
+Vendor stock/configuration and next-rotation endpoint are replicated public actor state subject to normal relevancy. Stock generation and rotation occur only on authority and vendor actors remain zero-tick. Party, Bank and Money continue using the established owner-private `UDMFPlayerDigimonComponent` replication. Successful transactions persist the authoritative account immediately.
+
+v0.18.0 adds two RPCs: reliable Server `ServerRequestDigimonVendorTransaction` and reliable owner Client `ClientDigimonVendorTransactionResult`, increasing the framework RPC count from 47 to 49. A server-side minimum transaction interval limits request spam. Concurrent purchase attempts for the same StockId serialize on the server; the first successful mutation removes the offer and subsequent requests fail against the now-missing StockId.
+
+## v0.18.2 reconnect PlayerState contract
+
+- Authenticated reconnects never accept cached `AGameMode::InactivePlayerArray` state as authoritative.
+- `AddInactivePlayer` is intentionally disabled for DMF PlayerStates and `FindInactivePlayer` returns false, so the engine cannot swap a stale disconnected PlayerState over the freshly authenticated one.
+- The server account SaveGame/database remains authoritative for Party, Bank, active partner GUID, avatar, Bits, progression, ABI and world location.
+- Reconnect does not add a client persistence payload or RPC; credentials identify the server-owned account record exactly as before.
+- The post-login integrity check only reloads server-owned persistent state if the authoritative component was not initialized as expected.
+
+## v0.18.1 disconnect persistence networking contract
+
+- Disconnect persistence is server-owned. No client RPC submits account contents, saved transforms, Digimon state, Bits or logout-save payloads.
+- `ADMFMMOGameMode::Logout` finalizes the authenticated session before `Super::Logout`; the owner PlayerController `EndPlay` path is only an idempotent authority-side fallback.
+- The final save synchronizes live partner HP/SP from the server combat component and merges only server-resident Party/Bank/avatar/location state into the existing account record.
+- Once the pre-teardown save commits, `UDMFPlayerDigimonComponent::EndPlay` cannot perform a second account write. A failed primary save retains one guarded retry. An uninitialized account component is never allowed to overwrite persistent data.
+- Summoned partners are destroyed on disconnect after their persistent instance has been saved. The persistent active-partner GUID remains private account state and is reconstructed on reconnect.
+- RPC count remains 49 and account schema remains v7.

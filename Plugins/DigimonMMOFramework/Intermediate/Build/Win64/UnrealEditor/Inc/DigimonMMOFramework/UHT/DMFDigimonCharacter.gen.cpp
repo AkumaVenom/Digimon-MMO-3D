@@ -558,7 +558,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromInstance Property Definitions ***************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InOwningPlayerState = { "InOwningPlayerState", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventInitializeFromInstance_Parms, InOwningPlayerState), Z_Construct_UClass_ADMFPlayerState, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Instance,
@@ -1078,7 +1078,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function RefreshProgressionFromInstance Property Definitions *******************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Instance = { "Instance", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonCharacter_eventRefreshProgressionFromInstance_Parms, Instance), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Instance_MetaData), NewProp_Instance_MetaData) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Instance,
 };
@@ -1651,7 +1651,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ClearDefeatedPresentation, "ClearDefeatedPresentation" }, // b14c38225239b24d0a997c135d0859f12f75d5e9
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ConfigureCombatAutomation, "ConfigureCombatAutomation" }, // 9d9c31dff8b2ca3b69dfcb03e31bd8de62e3d82b
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_GetCombatFacingTarget, "GetCombatFacingTarget" }, // 88fac54dc3269cdadfd3e0457f15e26072aef18c
-		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // 237b7a81ce84964aa91328613346d08c43f30e86
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_InitializeFromInstance, "InitializeFromInstance" }, // 4ddd688530914e0276cdd2a3337671e88fa13399
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsDefeatedPresentationActive, "IsDefeatedPresentationActive" }, // c6f3ef436154295f09326cdd11f522bb80a74f73
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_IsFacingActor, "IsFacingActor" }, // 7668a789a94fa255d97d4f46cba6c0236f4e2153
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_MulticastPlayCareFeedingCue, "MulticastPlayCareFeedingCue" }, // a0e74399d79f72c637f3d96e47a259d85b814675
@@ -1660,7 +1660,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_OnRep_DigimonState, "OnRep_DigimonState" }, // b2f4e8bee6dd0ce8231489f594fa247c332ff9e3
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshCameraCollisionPolicy, "RefreshCameraCollisionPolicy" }, // ab4db5a823f707f593372c460034e9f30c054a58
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshFrameworkCustomDepth, "RefreshFrameworkCustomDepth" }, // 4e9969585bc503169e729bae41f2908af14f30db
-		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshProgressionFromInstance, "RefreshProgressionFromInstance" }, // 4db84a85de38f8d91808fe1267d34cbc99a1a5fc
+		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshProgressionFromInstance, "RefreshProgressionFromInstance" }, // bfcc5e21d24e4d059d11f1909293ebd9f56a0d85
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_RefreshWorldNameplate, "RefreshWorldNameplate" }, // 6bd71dc2f39809ecbe83a51eb8aa9897fa31053d
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_ResolveSpeciesData, "ResolveSpeciesData" }, // ef9c63bfa88bbcf754437dd5749581017e42c278
 		{ &Z_Construct_UFunction_ADMFDigimonCharacter_SetCombatTeamId, "SetCombatTeamId" }, // c8e085c086216ee6ee1e0581032ffa1db9f74954
@@ -1817,10 +1817,10 @@ ADMFDigimonCharacter::~ADMFDigimonCharacter() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 3644971814U) },
+		{ Z_Construct_UClass_ADMFDigimonCharacter, TEXT("ADMFDigimonCharacter"), &Z_Registration_Info_UClass_ADMFDigimonCharacter, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFDigimonCharacter), 4211628095U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_f92d616c1a60a2b1258bc040c1200d07a4228631{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFDigimonCharacter_h__Script_DigimonMMOFramework_aeab83cb28fd1fe88487190814d1c996f820716e{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

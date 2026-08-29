@@ -225,3 +225,10 @@ The v0.14 DigiDex reads the same authored `Digivolutions` arrays to show incomin
 ## Stage text source of truth (v0.15.3)
 
 Every Digivolution source/target/path label is derived from the source or target `DMFDigimonSpeciesData::Stage`. Framework UI does not infer stage from species name or evolution-path position. Set the correct **Stage** on each Species Data Asset and the shared canonical formatter will present Fresh / In-Training / Rookie / Champion / Ultimate / Mega / Ultra / Armor / Hybrid consistently across Digivolution and the rest of the native UI.
+
+## v0.18 vendor economy integration
+
+Digivolution and De-Digivolution continue to mutate the **same persistent Digimon instance GUID**, so vendor valuation naturally follows that individual through its full training history. ABI, current trained stats, `TotalAttributePointsSpent`, `LifetimeBattleExperience`, and `DigivolutionHistory` remain attached to the individual across form changes.
+
+The default vendor pricing model intentionally gives ABI a strong contribution and also rewards visited Digivolution forms. This makes repeated Digivolution/De-Digivolution training economically meaningful without giving the vendor permission to bypass Digivolution requirements or mutate provenance itself. See `SETUP_DIGIMON_VENDOR.md`.
+

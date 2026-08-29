@@ -53,6 +53,31 @@
                             }
                         }
                     ]
+                },
+                {
+                    "ruleId": "C4996",
+                    "message": {
+                        "text": "'AActor::NetUpdateFrequency': Public access to NetUpdateFrequency has been deprecated. Use SetNetUpdateFrequency() and GetNetUpdateFrequency() instead. - Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile."
+                    },
+                    "analysisTarget": {
+                        "uri": "file:///C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Module.DigimonMMOFramework.2.cpp"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "file:///C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Game/DMFSwimmableWater.cpp"
+                                },
+                                "region": {
+                                    "startLine": 21,
+                                    "startColumn": 5,
+                                    "snippet": {
+                                        "text": "    NetUpdateFrequency = 2.0f;"
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 }
             ],
             "tool": {

@@ -38,3 +38,10 @@ If the Digimon is the currently summoned partner, `RefreshProgressionFromInstanc
 6. Summon a partner, spend a stat, and confirm the public actor/nameplate/combat calculation sees the new stat without respawning.
 7. Reconnect and confirm the spent stats and remaining points persist.
 8. Two-client test: only the owning player can see/request private spending; the other client sees only the normal replicated public active-partner result.
+
+## v0.18 vendor valuation integration
+
+Every successful Attribute Point spend also increments the persistent `TotalAttributePointsSpent` provenance counter on that exact `FDMFDigimonInstance`. Vendor resale therefore rewards real training investment even after Digivolution changes the species/form. Unspent Attribute Points are valued separately so a trained Digimon and an unallocated Digimon can be priced differently by each vendor's `FDMFDigimonVendorPricingSettings`.
+
+Legacy schema-v6 individuals receive a conservative schema-v7 estimate of spent points from earned level-up points minus currently unspent points. Future spends are tracked exactly.
+

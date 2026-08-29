@@ -22,14 +22,18 @@ ENGINE_API UClass* Z_Construct_UClass_APlayerController(ETypeConstructPhase);
 // ********** Begin Same Module References *********************************************************
 UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonVendorTransactionResult__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHealerInteractionResult__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHomeTeleportResult__DelegateSignature(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFCombatQuickBarWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCharacter(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonVendorActor(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonVendorWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFExperienceNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFHealerActor(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFHomeTeleportNotificationWidget(ETypeConstructPhase);
@@ -197,6 +201,179 @@ UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHomeTeleportResu
 }
 #undef UHT_STATICS
 // ********** End Delegate FDMFHomeTeleportResult **************************************************
+
+// ********** Begin Delegate FDMFDigimonVendorTransactionResult ************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonVendorTransactionResult__DelegateSignature_Statics
+struct UHT_STATICS
+{
+	struct _Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms
+	{
+		bool bSuccess;
+		FText Message;
+		EDMFDigimonVendorTransactionType TransactionType;
+		FGuid Identifier;
+		int64 Price;
+		int64 NewMoney;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Delegate FDMFDigimonVendorTransactionResult constinit property declarations ****
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_TransactionType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_TransactionType;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Identifier;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_Price;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_NewMoney;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Delegate FDMFDigimonVendorTransactionResult constinit property declarations ******
+	static const UECodeGen_Private::FDelegateFunctionParams FuncParams;
+};
+
+// ********** Begin Delegate FDMFDigimonVendorTransactionResult Property Definitions ***************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms, Message), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_TransactionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_TransactionType = { "TransactionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms, TransactionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, METADATA_PARAMS(0, nullptr) }; // 6676c757df95095b2e84331cef8acecfb8735f51
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Identifier = { "Identifier", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms, Identifier), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_Price = { "Price", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms, Price), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_NewMoney = { "NewMoney", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms, NewMoney), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Identifier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Price,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewMoney,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Delegate FDMFDigimonVendorTransactionResult Property Definitions *****************
+const UECodeGen_Private::FDelegateFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework, nullptr, "DMFDigimonVendorTransactionResult__DelegateSignature", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00130000, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::_Script_DigimonMMOFramework_eventDMFDigimonVendorTransactionResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonVendorTransactionResult__DelegateSignature(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUDelegateFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+// ********** End Delegate FDMFDigimonVendorTransactionResult **************************************
+
+// ********** Begin Class ADMFMMOPlayerController Function ClientDigimonVendorTransactionResult ****
+struct DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms
+{
+	bool bSuccess;
+	FText Message;
+	EDMFDigimonVendorTransactionType TransactionType;
+	FGuid Identifier;
+	int64 Price;
+	int64 NewMoney;
+};
+static FName NAME_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult = FName(TEXT("ClientDigimonVendorTransactionResult"));
+void ADMFMMOPlayerController::ClientDigimonVendorTransactionResult(bool bSuccess, FText const& Message, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier, int64 Price, int64 NewMoney)
+{
+	DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms Parms;
+	Parms.bSuccess=bSuccess ? true : false;
+	Parms.Message=Message;
+	Parms.TransactionType=TransactionType;
+	Parms.Identifier=Identifier;
+	Parms.Price=Price;
+	Parms.NewMoney=NewMoney;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Message_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ClientDigimonVendorTransactionResult constinit property declarations **
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_TransactionType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_TransactionType;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Identifier;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_Price;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_NewMoney;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ClientDigimonVendorTransactionResult constinit property declarations ****
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ClientDigimonVendorTransactionResult Property Definitions *************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms, Message), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Message_MetaData), NewProp_Message_MetaData) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_TransactionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_TransactionType = { "TransactionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms, TransactionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, METADATA_PARAMS(0, nullptr) }; // 6676c757df95095b2e84331cef8acecfb8735f51
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Identifier = { "Identifier", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms, Identifier), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_Price = { "Price", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms, Price), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_NewMoney = { "NewMoney", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms, NewMoney), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Identifier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Price,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewMoney,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ClientDigimonVendorTransactionResult Property Definitions ***************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "ClientDigimonVendorTransactionResult", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x01820CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFMMOPlayerController_eventClientDigimonVendorTransactionResult_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execClientDigimonVendorTransactionResult)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY(FTextProperty,Z_Param_Message);
+	P_GET_ENUM(EDMFDigimonVendorTransactionType,Z_Param_TransactionType);
+	P_GET_STRUCT(FGuid,Z_Param_Identifier);
+	P_GET_PROPERTY(FInt64Property,Z_Param_Price);
+	P_GET_PROPERTY(FInt64Property,Z_Param_NewMoney);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ClientDigimonVendorTransactionResult_Implementation(Z_Param_bSuccess,Z_Param_Message,EDMFDigimonVendorTransactionType(Z_Param_TransactionType),Z_Param_Identifier,Z_Param_Price,Z_Param_NewMoney);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function ClientDigimonVendorTransactionResult ******
 
 // ********** Begin Class ADMFMMOPlayerController Function ClientHealerInteractionResult ***********
 struct DMFMMOPlayerController_eventClientHealerInteractionResult_Parms
@@ -623,6 +800,44 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execCloseDigimonMenuUI)
 }
 // ********** End Class ADMFMMOPlayerController Function CloseDigimonMenuUI ************************
 
+// ********** Begin Class ADMFMMOPlayerController Function CloseDigimonVendorUI ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonVendorUI_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function CloseDigimonVendorUI constinit property declarations ******************
+// ********** End Function CloseDigimonVendorUI constinit property declarations ********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "CloseDigimonVendorUI", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonVendorUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execCloseDigimonVendorUI)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->CloseDigimonVendorUI();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function CloseDigimonVendorUI **********************
+
 // ********** Begin Class ADMFMMOPlayerController Function ClosePartyQuickAccessInteraction ********
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -868,6 +1083,59 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execCommandPartnerTargetAndAttack)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function CommandPartnerTargetAndAttack *************
+
+// ********** Begin Class ADMFMMOPlayerController Function GetActiveDigimonVendor ******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_GetActiveDigimonVendor_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventGetActiveDigimonVendor_Parms
+	{
+		ADMFDigimonVendorActor* ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetActiveDigimonVendor constinit property declarations ****************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetActiveDigimonVendor constinit property declarations ******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetActiveDigimonVendor Property Definitions ***************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventGetActiveDigimonVendor_Parms, ReturnValue), Z_Construct_UClass_ADMFDigimonVendorActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetActiveDigimonVendor Property Definitions *****************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "GetActiveDigimonVendor", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventGetActiveDigimonVendor_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventGetActiveDigimonVendor_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_GetActiveDigimonVendor(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execGetActiveDigimonVendor)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(ADMFDigimonVendorActor**)Z_Param__Result=P_THIS->GetActiveDigimonVendor();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function GetActiveDigimonVendor ********************
 
 // ********** Begin Class ADMFMMOPlayerController Function GetTargetingPresentationActor ***********
 #ifdef UHT_STATICS
@@ -1648,6 +1916,63 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execIsDigimonMenuUIOpen)
 }
 // ********** End Class ADMFMMOPlayerController Function IsDigimonMenuUIOpen ***********************
 
+// ********** Begin Class ADMFMMOPlayerController Function IsDigimonVendorUIOpen *******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonVendorUIOpen_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventIsDigimonVendorUIOpen_Parms
+	{
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function IsDigimonVendorUIOpen constinit property declarations *****************
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOPlayerController_eventIsDigimonVendorUIOpen_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function IsDigimonVendorUIOpen constinit property declarations *******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function IsDigimonVendorUIOpen Property Definitions ****************************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOPlayerController_eventIsDigimonVendorUIOpen_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function IsDigimonVendorUIOpen Property Definitions ******************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "IsDigimonVendorUIOpen", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventIsDigimonVendorUIOpen_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventIsDigimonVendorUIOpen_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonVendorUIOpen(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execIsDigimonVendorUIOpen)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->IsDigimonVendorUIOpen();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function IsDigimonVendorUIOpen *********************
+
 // ********** Begin Class ADMFMMOPlayerController Function IsDigivolutionPresentationActive ********
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2109,6 +2434,66 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenDigimonMenuUI)
 }
 // ********** End Class ADMFMMOPlayerController Function OpenDigimonMenuUI *************************
 
+// ********** Begin Class ADMFMMOPlayerController Function OpenDigimonVendorUI *********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonVendorUI_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventOpenDigimonVendorUI_Parms
+	{
+		ADMFDigimonVendorActor* Vendor;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor|UI" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Opens the owner-local native BUY / SELL market UI for a nearby replicated vendor. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Opens the owner-local native BUY / SELL market UI for a nearby replicated vendor." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function OpenDigimonVendorUI constinit property declarations *******************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_Vendor;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function OpenDigimonVendorUI constinit property declarations *********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function OpenDigimonVendorUI Property Definitions ******************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_Vendor = { "Vendor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventOpenDigimonVendorUI_Parms, Vendor), Z_Construct_UClass_ADMFDigimonVendorActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Vendor,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function OpenDigimonVendorUI Property Definitions ********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "OpenDigimonVendorUI", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventOpenDigimonVendorUI_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventOpenDigimonVendorUI_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonVendorUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execOpenDigimonVendorUI)
+{
+	P_GET_OBJECT(ADMFDigimonVendorActor,Z_Param_Vendor);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->OpenDigimonVendorUI(Z_Param_Vendor);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function OpenDigimonVendorUI ***********************
+
 // ********** Begin Class ADMFMMOPlayerController Function OpenDigivolutionUI **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2437,6 +2822,44 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshDigimonInventoryUI)
 }
 // ********** End Class ADMFMMOPlayerController Function RefreshDigimonInventoryUI *****************
 
+// ********** Begin Class ADMFMMOPlayerController Function RefreshDigimonVendorUI ******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_RefreshDigimonVendorUI_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor|UI" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshDigimonVendorUI constinit property declarations ****************
+// ********** End Function RefreshDigimonVendorUI constinit property declarations ******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "RefreshDigimonVendorUI", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_RefreshDigimonVendorUI(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshDigimonVendorUI)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshDigimonVendorUI();
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function RefreshDigimonVendorUI ********************
+
 // ********** Begin Class ADMFMMOPlayerController Function RefreshPartyQuickBar ********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2638,6 +3061,79 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execRefreshWorldChatUI)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function RefreshWorldChatUI ************************
+
+// ********** Begin Class ADMFMMOPlayerController Function RequestDigimonVendorTransaction *********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_RequestDigimonVendorTransaction_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms
+	{
+		ADMFDigimonVendorActor* Vendor;
+		EDMFDigimonVendorTransactionType TransactionType;
+		FGuid Identifier;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Client-facing request. Price/stats/money are intentionally never accepted from the caller. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Client-facing request. Price/stats/money are intentionally never accepted from the caller." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RequestDigimonVendorTransaction constinit property declarations *******
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_Vendor;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_TransactionType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_TransactionType;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Identifier;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function RequestDigimonVendorTransaction constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function RequestDigimonVendorTransaction Property Definitions ******************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_Vendor = { "Vendor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms, Vendor), Z_Construct_UClass_ADMFDigimonVendorActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_TransactionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_TransactionType = { "TransactionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms, TransactionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, METADATA_PARAMS(0, nullptr) }; // 6676c757df95095b2e84331cef8acecfb8735f51
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Identifier = { "Identifier", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms, Identifier), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Vendor,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Identifier,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function RequestDigimonVendorTransaction Property Definitions ********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "RequestDigimonVendorTransaction", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04820401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOPlayerController_eventRequestDigimonVendorTransaction_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_RequestDigimonVendorTransaction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execRequestDigimonVendorTransaction)
+{
+	P_GET_OBJECT(ADMFDigimonVendorActor,Z_Param_Vendor);
+	P_GET_ENUM(EDMFDigimonVendorTransactionType,Z_Param_TransactionType);
+	P_GET_STRUCT(FGuid,Z_Param_Identifier);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RequestDigimonVendorTransaction(Z_Param_Vendor,EDMFDigimonVendorTransactionType(Z_Param_TransactionType),Z_Param_Identifier);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function RequestDigimonVendorTransaction ***********
 
 // ********** Begin Class ADMFMMOPlayerController Function RequestReturnHome ***********************
 #ifdef UHT_STATICS
@@ -2912,6 +3408,82 @@ DEFINE_FUNCTION(ADMFMMOPlayerController::execServerEnsureFrameworkPlayerAvatar)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOPlayerController Function ServerEnsureFrameworkPlayerAvatar *********
+
+// ********** Begin Class ADMFMMOPlayerController Function ServerRequestDigimonVendorTransaction ***
+struct DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms
+{
+	ADMFDigimonVendorActor* Vendor;
+	EDMFDigimonVendorTransactionType TransactionType;
+	FGuid Identifier;
+};
+static FName NAME_ADMFMMOPlayerController_ServerRequestDigimonVendorTransaction = FName(TEXT("ServerRequestDigimonVendorTransaction"));
+void ADMFMMOPlayerController::ServerRequestDigimonVendorTransaction(ADMFDigimonVendorActor* Vendor, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier)
+{
+	DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms Parms;
+	Parms.Vendor=Vendor;
+	Parms.TransactionType=TransactionType;
+	Parms.Identifier=Identifier;
+	UFunction* Func = FindFunctionChecked(NAME_ADMFMMOPlayerController_ServerRequestDigimonVendorTransaction);
+	ProcessEvent(Func,&Parms);
+}
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestDigimonVendorTransaction_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ServerRequestDigimonVendorTransaction constinit property declarations *
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_Vendor;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_TransactionType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_TransactionType;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Identifier;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ServerRequestDigimonVendorTransaction constinit property declarations ***
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ServerRequestDigimonVendorTransaction Property Definitions ************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_Vendor = { "Vendor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms, Vendor), Z_Construct_UClass_ADMFDigimonVendorActor, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_TransactionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_TransactionType = { "TransactionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms, TransactionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, METADATA_PARAMS(0, nullptr) }; // 6676c757df95095b2e84331cef8acecfb8735f51
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Identifier = { "Identifier", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms, Identifier), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Vendor,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TransactionType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Identifier,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ServerRequestDigimonVendorTransaction Property Definitions **************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOPlayerController, nullptr, "ServerRequestDigimonVendorTransaction", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00A20CC0, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(DMFMMOPlayerController_eventServerRequestDigimonVendorTransaction_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestDigimonVendorTransaction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOPlayerController::execServerRequestDigimonVendorTransaction)
+{
+	P_GET_OBJECT(ADMFDigimonVendorActor,Z_Param_Vendor);
+	P_GET_ENUM(EDMFDigimonVendorTransactionType,Z_Param_TransactionType);
+	P_GET_STRUCT(FGuid,Z_Param_Identifier);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->ServerRequestDigimonVendorTransaction_Implementation(Z_Param_Vendor,EDMFDigimonVendorTransactionType(Z_Param_TransactionType),Z_Param_Identifier);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOPlayerController Function ServerRequestDigimonVendorTransaction *****
 
 // ********** Begin Class ADMFMMOPlayerController Function ServerRequestReturnHome *****************
 static FName NAME_ADMFMMOPlayerController_ServerRequestReturnHome = FName(TEXT("ServerRequestReturnHome"));
@@ -3407,6 +3979,10 @@ struct UHT_STATICS
 		{ "Category", "Digimon MMO|World Chat" },
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OnDigimonVendorTransactionResult_MetaData[] = {
+		{ "Category", "Digimon MMO|Vendor" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StarterWidget_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
@@ -3425,6 +4001,13 @@ struct UHT_STATICS
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonInventoryWidget_MetaData[] = {
 		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonVendorWidget_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActiveDigimonVendor_MetaData[] = {
 		{ "ModuleRelativePath", "Public/Game/DMFMMOPlayerController.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ScanNotificationWidget_MetaData[] = {
@@ -3458,11 +4041,14 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnHealerInteractionResult;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnHomeTeleportResult;
 	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnWorldChatMessageReceived;
+	static const UECodeGen_Private::FMulticastDelegatePropertyParams NewProp_OnDigimonVendorTransactionResult;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_StarterWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CombatQuickBarWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PartyQuickBarWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PlayerSkinWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigimonInventoryWidget;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigimonVendorWidget;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_ActiveDigimonVendor;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ScanNotificationWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ExperienceNotificationWidget;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_HomeTeleportNotificationWidget;
@@ -3471,6 +4057,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ADMFMMOPlayerController constinit property declarations ********************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
+		{ .NameUTF8 = UTF8TEXT("ClientDigimonVendorTransactionResult"), .Pointer = &ADMFMMOPlayerController::execClientDigimonVendorTransactionResult },
 		{ .NameUTF8 = UTF8TEXT("ClientHealerInteractionResult"), .Pointer = &ADMFMMOPlayerController::execClientHealerInteractionResult },
 		{ .NameUTF8 = UTF8TEXT("ClientReceiveWorldChatHistory"), .Pointer = &ADMFMMOPlayerController::execClientReceiveWorldChatHistory },
 		{ .NameUTF8 = UTF8TEXT("ClientReceiveWorldChatMessage"), .Pointer = &ADMFMMOPlayerController::execClientReceiveWorldChatMessage },
@@ -3478,11 +4065,13 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("ClientWorldChatSendRejected"), .Pointer = &ADMFMMOPlayerController::execClientWorldChatSendRejected },
 		{ .NameUTF8 = UTF8TEXT("CloseDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execCloseDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("CloseDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execCloseDigimonMenuUI },
+		{ .NameUTF8 = UTF8TEXT("CloseDigimonVendorUI"), .Pointer = &ADMFMMOPlayerController::execCloseDigimonVendorUI },
 		{ .NameUTF8 = UTF8TEXT("ClosePartyQuickAccessInteraction"), .Pointer = &ADMFMMOPlayerController::execClosePartyQuickAccessInteraction },
 		{ .NameUTF8 = UTF8TEXT("ClosePlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execClosePlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("CloseWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execCloseWorldChatInput },
 		{ .NameUTF8 = UTF8TEXT("CommandActivePartnerAbilitySlot"), .Pointer = &ADMFMMOPlayerController::execCommandActivePartnerAbilitySlot },
 		{ .NameUTF8 = UTF8TEXT("CommandPartnerTargetAndAttack"), .Pointer = &ADMFMMOPlayerController::execCommandPartnerTargetAndAttack },
+		{ .NameUTF8 = UTF8TEXT("GetActiveDigimonVendor"), .Pointer = &ADMFMMOPlayerController::execGetActiveDigimonVendor },
 		{ .NameUTF8 = UTF8TEXT("GetTargetingPresentationActor"), .Pointer = &ADMFMMOPlayerController::execGetTargetingPresentationActor },
 		{ .NameUTF8 = UTF8TEXT("GetWorldChatWidget"), .Pointer = &ADMFMMOPlayerController::execGetWorldChatWidget },
 		{ .NameUTF8 = UTF8TEXT("HandleCareSequenceFinished"), .Pointer = &ADMFMMOPlayerController::execHandleCareSequenceFinished },
@@ -3496,6 +4085,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("IsCarePresentationActive"), .Pointer = &ADMFMMOPlayerController::execIsCarePresentationActive },
 		{ .NameUTF8 = UTF8TEXT("IsDigimonInventoryUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonInventoryUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsDigimonMenuUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonMenuUIOpen },
+		{ .NameUTF8 = UTF8TEXT("IsDigimonVendorUIOpen"), .Pointer = &ADMFMMOPlayerController::execIsDigimonVendorUIOpen },
 		{ .NameUTF8 = UTF8TEXT("IsDigivolutionPresentationActive"), .Pointer = &ADMFMMOPlayerController::execIsDigivolutionPresentationActive },
 		{ .NameUTF8 = UTF8TEXT("IsFrameworkPlayerAvatarPossessed"), .Pointer = &ADMFMMOPlayerController::execIsFrameworkPlayerAvatarPossessed },
 		{ .NameUTF8 = UTF8TEXT("IsPartyQuickAccessInteractionActive"), .Pointer = &ADMFMMOPlayerController::execIsPartyQuickAccessInteractionActive },
@@ -3505,6 +4095,7 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("OpenCareUI"), .Pointer = &ADMFMMOPlayerController::execOpenCareUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonInventoryUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigimonMenuUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonMenuUI },
+		{ .NameUTF8 = UTF8TEXT("OpenDigimonVendorUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigimonVendorUI },
 		{ .NameUTF8 = UTF8TEXT("OpenDigivolutionUI"), .Pointer = &ADMFMMOPlayerController::execOpenDigivolutionUI },
 		{ .NameUTF8 = UTF8TEXT("OpenPartyQuickAccessInteraction"), .Pointer = &ADMFMMOPlayerController::execOpenPartyQuickAccessInteraction },
 		{ .NameUTF8 = UTF8TEXT("OpenPartyUI"), .Pointer = &ADMFMMOPlayerController::execOpenPartyUI },
@@ -3513,16 +4104,19 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("OpenWorldChatInput"), .Pointer = &ADMFMMOPlayerController::execOpenWorldChatInput },
 		{ .NameUTF8 = UTF8TEXT("RefreshCombatQuickBar"), .Pointer = &ADMFMMOPlayerController::execRefreshCombatQuickBar },
 		{ .NameUTF8 = UTF8TEXT("RefreshDigimonInventoryUI"), .Pointer = &ADMFMMOPlayerController::execRefreshDigimonInventoryUI },
+		{ .NameUTF8 = UTF8TEXT("RefreshDigimonVendorUI"), .Pointer = &ADMFMMOPlayerController::execRefreshDigimonVendorUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshPartyQuickBar"), .Pointer = &ADMFMMOPlayerController::execRefreshPartyQuickBar },
 		{ .NameUTF8 = UTF8TEXT("RefreshPlayerSkinSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshPlayerSkinSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshStarterSelectionUI"), .Pointer = &ADMFMMOPlayerController::execRefreshStarterSelectionUI },
 		{ .NameUTF8 = UTF8TEXT("RefreshTargetingVisuals"), .Pointer = &ADMFMMOPlayerController::execRefreshTargetingVisuals },
 		{ .NameUTF8 = UTF8TEXT("RefreshWorldChatUI"), .Pointer = &ADMFMMOPlayerController::execRefreshWorldChatUI },
+		{ .NameUTF8 = UTF8TEXT("RequestDigimonVendorTransaction"), .Pointer = &ADMFMMOPlayerController::execRequestDigimonVendorTransaction },
 		{ .NameUTF8 = UTF8TEXT("RequestReturnHome"), .Pointer = &ADMFMMOPlayerController::execRequestReturnHome },
 		{ .NameUTF8 = UTF8TEXT("RequestUseHealer"), .Pointer = &ADMFMMOPlayerController::execRequestUseHealer },
 		{ .NameUTF8 = UTF8TEXT("SelectDigimonCommandTargetUnderCursor"), .Pointer = &ADMFMMOPlayerController::execSelectDigimonCommandTargetUnderCursor },
 		{ .NameUTF8 = UTF8TEXT("SendWorldChatMessage"), .Pointer = &ADMFMMOPlayerController::execSendWorldChatMessage },
 		{ .NameUTF8 = UTF8TEXT("ServerEnsureFrameworkPlayerAvatar"), .Pointer = &ADMFMMOPlayerController::execServerEnsureFrameworkPlayerAvatar },
+		{ .NameUTF8 = UTF8TEXT("ServerRequestDigimonVendorTransaction"), .Pointer = &ADMFMMOPlayerController::execServerRequestDigimonVendorTransaction },
 		{ .NameUTF8 = UTF8TEXT("ServerRequestReturnHome"), .Pointer = &ADMFMMOPlayerController::execServerRequestReturnHome },
 		{ .NameUTF8 = UTF8TEXT("ServerRequestUseHealer"), .Pointer = &ADMFMMOPlayerController::execServerRequestUseHealer },
 		{ .NameUTF8 = UTF8TEXT("ServerRequestWorldChatHistory"), .Pointer = &ADMFMMOPlayerController::execServerRequestWorldChatHistory },
@@ -3536,6 +4130,7 @@ struct UHT_STATICS
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult, "ClientDigimonVendorTransactionResult" }, // 8d96dbfef83e61721b7003b7c3a5dadfb6073fb4
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientHealerInteractionResult, "ClientHealerInteractionResult" }, // fd0bd79f47752d4aeb3d61f8889502552ad8dfd2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatHistory, "ClientReceiveWorldChatHistory" }, // 6057cac47a039332944027e85681a915fce91bcc
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatMessage, "ClientReceiveWorldChatMessage" }, // dd21e14e744731cdaa9eab03158211713f8a27c9
@@ -3543,11 +4138,13 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientWorldChatSendRejected, "ClientWorldChatSendRejected" }, // fe92f9e1dfd43bc01b0516e4be75a84702aa5424
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonInventoryUI, "CloseDigimonInventoryUI" }, // 9bdf8979d95ee2d0690ca274ebd92aeebb491e59
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonMenuUI, "CloseDigimonMenuUI" }, // 2d4c0431c81fb1351a38ec9b84d9cdca2104fc31
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonVendorUI, "CloseDigimonVendorUI" }, // 2855f54d733dbc574136309c074d2819ff71446f
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClosePartyQuickAccessInteraction, "ClosePartyQuickAccessInteraction" }, // 7e9ac10edacaeb3e4890cd5d0ab7eecc582d7532
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClosePlayerSkinSelectionUI, "ClosePlayerSkinSelectionUI" }, // aea3717f1069c904491fb40ceb6a641c4744099b
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseWorldChatInput, "CloseWorldChatInput" }, // adcedc494f95685c5079b99a417855a026a22121
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandActivePartnerAbilitySlot, "CommandActivePartnerAbilitySlot" }, // 23e8ffa3a886714910a4020728670525fc575c67
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CommandPartnerTargetAndAttack, "CommandPartnerTargetAndAttack" }, // 29f86ad7ebe90c83566ec078666ff7b3fed62be5
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_GetActiveDigimonVendor, "GetActiveDigimonVendor" }, // 40f3556486198bd29b4fac15990c2e92125e4a73
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_GetTargetingPresentationActor, "GetTargetingPresentationActor" }, // 3027e85cfd2b3dd27749040fe21eb38fedec6e86
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_GetWorldChatWidget, "GetWorldChatWidget" }, // b264e970e7dcdb0c062385db218646c865077e93
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_HandleCareSequenceFinished, "HandleCareSequenceFinished" }, // 19f516ba8872840b2c39243f2545fb5cb8c6d50f
@@ -3561,6 +4158,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsCarePresentationActive, "IsCarePresentationActive" }, // 5a7fc4571c9e51c59d73d7457472045128624433
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonInventoryUIOpen, "IsDigimonInventoryUIOpen" }, // 30dca46d49345b134256374d71d946aaaaf02902
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonMenuUIOpen, "IsDigimonMenuUIOpen" }, // 28782c7ad6876aac2319228f063dafa4993ac8ce
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigimonVendorUIOpen, "IsDigimonVendorUIOpen" }, // 3b1e77e95099bcd609fb46f0120fd1ad60a08db7
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsDigivolutionPresentationActive, "IsDigivolutionPresentationActive" }, // caf79b441580fa1797a22e49fa278d4b26b1d5e1
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsFrameworkPlayerAvatarPossessed, "IsFrameworkPlayerAvatarPossessed" }, // 137e1d5c5a9b74264ed1d4818e7daa146901353f
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_IsPartyQuickAccessInteractionActive, "IsPartyQuickAccessInteractionActive" }, // bdaee1622d563d8bf327794fc948c4307f5eb54f
@@ -3570,6 +4168,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenCareUI, "OpenCareUI" }, // 4dbc31bd7c13010e3254b6d69f91cd5480fb52f2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonInventoryUI, "OpenDigimonInventoryUI" }, // 3947e5ecc7643b8a10541f4dc0cb64fdc929fe37
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonMenuUI, "OpenDigimonMenuUI" }, // 787480e966b131e71ec312ab075f06312bab1600
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigimonVendorUI, "OpenDigimonVendorUI" }, // 5655705e1faf5427451aeab2d046847e92d1ea05
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenDigivolutionUI, "OpenDigivolutionUI" }, // 6411f92a2d004bb4eea0ffdb9a5eca1db9b210fe
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyQuickAccessInteraction, "OpenPartyQuickAccessInteraction" }, // 4fa78b4a8cc9ecb28451bd69f43c6fe9dac2a7e0
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenPartyUI, "OpenPartyUI" }, // b78a5dde0f669370c4a793d5dc3199c7bf16f888
@@ -3578,16 +4177,19 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_OpenWorldChatInput, "OpenWorldChatInput" }, // 7233eb813566faabfa52b52afa89630fe4ccb76d
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshCombatQuickBar, "RefreshCombatQuickBar" }, // 55dfa403a03ba1802f9cdfed6954fe8855a9a3c9
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshDigimonInventoryUI, "RefreshDigimonInventoryUI" }, // 2eb6bbbfb19e039f95fba79d2ad9df2b035f7d97
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshDigimonVendorUI, "RefreshDigimonVendorUI" }, // 8c964c9d0c2552b3f3e32337247b5728175153ce
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPartyQuickBar, "RefreshPartyQuickBar" }, // 26d49dc08a1e05ec8c762195c40ad5fe60d7fa72
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshPlayerSkinSelectionUI, "RefreshPlayerSkinSelectionUI" }, // 63c4b16d73d5d5b889759ffda68ec30442000bb2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshStarterSelectionUI, "RefreshStarterSelectionUI" }, // d7dbaa478809f0e8e263917c1869d4d1e4c66543
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshTargetingVisuals, "RefreshTargetingVisuals" }, // 0fb1a439a67c7035c806b41797a56c12ebcc01bb
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RefreshWorldChatUI, "RefreshWorldChatUI" }, // c7bea9fe9f25e72e3aee0396d97947d4a2f4b521
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RequestDigimonVendorTransaction, "RequestDigimonVendorTransaction" }, // 22bc23b38eb34a7b8ac7cc9ee4081766588e6cf0
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RequestReturnHome, "RequestReturnHome" }, // 86d0e6ede7aa21feee2e8c6cba2dc0d9b6d03016
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_RequestUseHealer, "RequestUseHealer" }, // 8b7c978fd62e9a2fccc659796cd3dcecd42dd1c2
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_SelectDigimonCommandTargetUnderCursor, "SelectDigimonCommandTargetUnderCursor" }, // b31362fed008ea36285bb10bd1c1e764c00c95d5
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_SendWorldChatMessage, "SendWorldChatMessage" }, // 19fa6a3f4e69b7ed2c5fc12f23b28dbf24932862
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ServerEnsureFrameworkPlayerAvatar, "ServerEnsureFrameworkPlayerAvatar" }, // 5547590643a8cd2b864d0724cf9d4aa59fd1d83f
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestDigimonVendorTransaction, "ServerRequestDigimonVendorTransaction" }, // 6516f3adeae73bb2b7e36dd6de9699f0e865f7e0
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestReturnHome, "ServerRequestReturnHome" }, // ac64724c915a6560e24a80c8a99a26f2b2aeb590
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestUseHealer, "ServerRequestUseHealer" }, // 6a423e4241ab2b3633c55f745a05341f15f81895
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ServerRequestWorldChatHistory, "ServerRequestWorldChatHistory" }, // 904bcf51dac8e9f68a90984b458a469c443e5e5c
@@ -3610,11 +4212,14 @@ struct UHT_STATICS
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnHealerInteractionResult = { "OnHealerInteractionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnHealerInteractionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHealerInteractionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnHealerInteractionResult_MetaData), NewProp_OnHealerInteractionResult_MetaData) }; // 9ba86616cb8239af890236ec23f5944e3890a6ae
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnHomeTeleportResult = { "OnHomeTeleportResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnHomeTeleportResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHomeTeleportResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnHomeTeleportResult_MetaData), NewProp_OnHomeTeleportResult_MetaData) }; // d8221dc513c60c1c4398e8dba5368e7d9b57428e
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnWorldChatMessageReceived = { "OnWorldChatMessageReceived", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnWorldChatMessageReceived), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnWorldChatMessageReceived_MetaData), NewProp_OnWorldChatMessageReceived_MetaData) }; // 94761aafd38e174865aca0bf93f8a0402e5c870a
+const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnDigimonVendorTransactionResult = { "OnDigimonVendorTransactionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnDigimonVendorTransactionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonVendorTransactionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnDigimonVendorTransactionResult_MetaData), NewProp_OnDigimonVendorTransactionResult_MetaData) }; // a15751fae7c91e1b0be6573a26643bec28dea23d
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_StarterWidget = { "StarterWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, StarterWidget), Z_Construct_UClass_UDMFStarterSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StarterWidget_MetaData), NewProp_StarterWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidget = { "CombatQuickBarWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, CombatQuickBarWidget), Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidget_MetaData), NewProp_CombatQuickBarWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidget = { "PartyQuickBarWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, PartyQuickBarWidget), Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidget_MetaData), NewProp_PartyQuickBarWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_PlayerSkinWidget = { "PlayerSkinWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, PlayerSkinWidget), Z_Construct_UClass_UDMFPlayerSkinSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerSkinWidget_MetaData), NewProp_PlayerSkinWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidget = { "DigimonInventoryWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, DigimonInventoryWidget), Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidget_MetaData), NewProp_DigimonInventoryWidget_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigimonVendorWidget = { "DigimonVendorWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, DigimonVendorWidget), Z_Construct_UClass_UDMFDigimonVendorWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonVendorWidget_MetaData), NewProp_DigimonVendorWidget_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ActiveDigimonVendor = { "ActiveDigimonVendor", nullptr, (EPropertyFlags)0x0144000000002000, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, ActiveDigimonVendor), Z_Construct_UClass_ADMFDigimonVendorActor, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActiveDigimonVendor_MetaData), NewProp_ActiveDigimonVendor_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanNotificationWidget = { "ScanNotificationWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, ScanNotificationWidget), Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidget_MetaData), NewProp_ScanNotificationWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ExperienceNotificationWidget = { "ExperienceNotificationWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, ExperienceNotificationWidget), Z_Construct_UClass_UDMFExperienceNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationWidget_MetaData), NewProp_ExperienceNotificationWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_HomeTeleportNotificationWidget = { "HomeTeleportNotificationWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, HomeTeleportNotificationWidget), Z_Construct_UClass_UDMFHomeTeleportNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HomeTeleportNotificationWidget_MetaData), NewProp_HomeTeleportNotificationWidget_MetaData) };
@@ -3624,11 +4229,14 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnHealerInteractionResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnHomeTeleportResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnWorldChatMessageReceived,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OnDigimonVendorTransactionResult,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_StarterWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerSkinWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidget,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonVendorWidget,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActiveDigimonVendor,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationWidget,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_HomeTeleportNotificationWidget,
@@ -3709,10 +4317,10 @@ ADMFMMOPlayerController::~ADMFMMOPlayerController() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 1890192112U) },
+		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 3689544843U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_b9932aa8b9fec4426f01491790d9ec6f0aab1ccf{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_88a46951496fc7c3deefa92ce5c99e7ea2d89b53{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

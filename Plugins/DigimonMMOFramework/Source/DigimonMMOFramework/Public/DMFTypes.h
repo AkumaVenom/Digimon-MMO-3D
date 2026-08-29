@@ -95,7 +95,18 @@ enum class EDMFPlayerInteractionType : uint8
     DigimonTarget,
     DigimonTargetAndAttack,
     Healer,
-    Unhandled
+    Unhandled,
+
+    /** Appended in v0.18.0; existing serialized interaction values remain stable. */
+    DigimonVendor UMETA(DisplayName="Digimon Vendor")
+};
+
+/** Transaction direction for the server-authoritative Digimon vendor economy. */
+UENUM(BlueprintType)
+enum class EDMFDigimonVendorTransactionType : uint8
+{
+    Buy,
+    Sell
 };
 
 UENUM(BlueprintType)
@@ -297,6 +308,14 @@ struct DIGIMONMMOFRAMEWORK_API FDMFDigimonInstance
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Progression")
     int32 UnspentAttributePoints = 0;
+
+    /** Lifetime server-authored EXP earned by this persistent individual. Added in account schema v7 for economy/progression valuation. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Progression")
+    int64 LifetimeBattleExperience = 0;
+
+    /** Exact count of committed +1 core-stat Attribute Point spends. Added in account schema v7. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Progression")
+    int32 TotalAttributePointsSpent = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Digimon|Abilities")
     TArray<FName> EquippedAbilityIds;
@@ -508,6 +527,14 @@ struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Economy")
     int64 Money = 0;
+
+    /**
+     * Per-account one-way marker for the v0.18 Digimon valuation provenance migration.
+     * Legacy records deserialize as 0; current/new accounts are persisted as 1 so a legitimately
+     * zero-spend high-level vendor Digimon is never reinterpreted as legacy on a later reconnect.
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Economy")
+    int32 DigimonEconomyProvenanceVersion = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Ranked")
     int32 RankedBattlePoints = 0;

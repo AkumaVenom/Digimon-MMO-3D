@@ -280,3 +280,7 @@ Clients cannot use `Interact` to directly set damage, HP, SP, inventory or SaveG
 ## 13. Custom input recommendation
 
 For the final game, Enhanced Input is still appropriate. The framework-native `E` binding exists as a ready-to-use fallback/test path. A production Input Action should simply call the same inherited `Interact` function, preserving the native interaction implementation while allowing the project to own key rebinding and input contexts.
+
+## Digimon vendors (v0.18.0)
+
+The native player interaction dispatcher recognizes `DMFDigimonVendorActor`. A successful trace/interaction calls `Interact With Digimon Vendor`, opens the owner-local tabbed market through `DMFMMOPlayerController`, and reports interaction type `DigimonVendor`. The vendor's **Interaction Prompt**, **Interaction Radius**, **Interaction Collision Radius**, and **Interaction Trace Channel** are exposed per placed Blueprint. The server still rechecks transaction distance independently of the local interaction trace.

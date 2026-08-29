@@ -154,6 +154,12 @@
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonspeciesdata.gen.cpp",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\data\\dmfdigimonspeciesdata.h",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonspeciesdata.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonvendoractor.gen.cpp",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\game\\dmfdigimonvendoractor.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonvendoractor.generated.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonvendorwidget.gen.cpp",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\ui\\dmfdigimonvendorwidget.h",
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfdigimonvendorwidget.generated.h",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfexperiencenotificationwidget.gen.cpp",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\ui\\dmfexperiencenotificationwidget.h",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\intermediate\\build\\win64\\unrealeditor\\inc\\digimonmmoframework\\uht\\dmfexperiencenotificationwidget.generated.h",
@@ -499,9 +505,7 @@
             "c:\\program files\\epic games\\ue_5.8\\engine\\plugins\\fx\\niagara\\intermediate\\build\\win64\\unrealeditor\\inc\\niagara\\uht\\niagaracomponentpool.generated.h",
             "c:\\program files\\epic games\\ue_5.8\\engine\\plugins\\fx\\niagara\\intermediate\\build\\win64\\unrealeditor\\inc\\niagara\\uht\\niagarafunctionlibrary.generated.h",
             "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\components\\dmfplayeravatarcomponent.cpp",
-            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\digimonmmoframework.h",
-            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\components\\dmfplayerdigimoncomponent.cpp",
-            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\private\\progression\\dmflevelprogressionmath.h"
+            "c:\\users\\leen\\documents\\unreal projects\\digimon-mmo-3d\\plugins\\digimonmmoframework\\source\\digimonmmoframework\\public\\digimonmmoframework.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

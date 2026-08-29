@@ -201,3 +201,10 @@ Clients do not submit reward values, new Level, requirements, stat-growth values
 11. Test `Max Level Override`, then repeat at the cap.
 
 Do not promote the package to runtime-accepted until the UE5.8.1 compile and multiplayer tests pass.
+
+## v0.18 Digimon vendor valuation provenance
+
+The replicated Digimon vendor economy values the **individual persistent Digimon**, not only its current species. `FDMFDigimonInstance::LifetimeBattleExperience` now records every positive battle EXP reward, including rewards earned at maximum Level. This lifetime counter is separate from the normal current-level `Stats.Experience` bank and is used only as durable progression provenance/valuation input.
+
+Schema-v7 accounts preserve this field. Older owned Digimon are migrated conservatively by reconstructing completed-level EXP from the current species progression curve plus the currently banked EXP. This avoids assigning a legacy trained Digimon the value of an untouched Level 1 individual.
+

@@ -48,6 +48,7 @@ DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimon
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStage(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier(ETypeConstructPhase);
@@ -568,6 +569,10 @@ struct UHT_STATICS
 #endif
 		{ "DigimonTarget.Name", "EDMFPlayerInteractionType::DigimonTarget" },
 		{ "DigimonTargetAndAttack.Name", "EDMFPlayerInteractionType::DigimonTargetAndAttack" },
+		{ "DigimonVendor.Comment", "/** Appended in v0.18.0; existing serialized interaction values remain stable. */" },
+		{ "DigimonVendor.DisplayName", "Digimon Vendor" },
+		{ "DigimonVendor.Name", "EDMFPlayerInteractionType::DigimonVendor" },
+		{ "DigimonVendor.ToolTip", "Appended in v0.18.0; existing serialized interaction values remain stable." },
 		{ "Healer.Name", "EDMFPlayerInteractionType::Healer" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 		{ "None.Name", "EDMFPlayerInteractionType::None" },
@@ -583,6 +588,7 @@ struct UHT_STATICS
 		{ "EDMFPlayerInteractionType::DigimonTargetAndAttack", (int64)EDMFPlayerInteractionType::DigimonTargetAndAttack },
 		{ "EDMFPlayerInteractionType::Healer", (int64)EDMFPlayerInteractionType::Healer },
 		{ "EDMFPlayerInteractionType::Unhandled", (int64)EDMFPlayerInteractionType::Unhandled },
+		{ "EDMFPlayerInteractionType::DigimonVendor", (int64)EDMFPlayerInteractionType::DigimonVendor },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct UHT_STATICS 
@@ -618,6 +624,70 @@ UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeCons
 }
 #undef UHT_STATICS
 // ********** End Enum EDMFPlayerInteractionType ***************************************************
+
+// ********** Begin Enum EDMFDigimonVendorTransactionType ******************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFDigimonVendorTransactionType>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+		{ "Buy.Name", "EDMFDigimonVendorTransactionType::Buy" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Transaction direction for the server-authoritative Digimon vendor economy. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "Sell.Name", "EDMFDigimonVendorTransactionType::Sell" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Transaction direction for the server-authoritative Digimon vendor economy." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFDigimonVendorTransactionType::Buy", (int64)EDMFDigimonVendorTransactionType::Buy },
+		{ "EDMFDigimonVendorTransactionType::Sell", (int64)EDMFDigimonVendorTransactionType::Sell },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFDigimonVendorTransactionType",
+	"EDMFDigimonVendorTransactionType",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFDigimonVendorTransactionType;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFDigimonVendorTransactionType.OuterSingleton)
+		{
+			ZRIE_EDMFDigimonVendorTransactionType.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFDigimonVendorTransactionType"));
+		}
+		return ZRIE_EDMFDigimonVendorTransactionType.OuterSingleton;
+	}
+	if (!ZRIE_EDMFDigimonVendorTransactionType.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFDigimonVendorTransactionType.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFDigimonVendorTransactionType.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFDigimonVendorTransactionType ********************************************
 
 // ********** Begin Enum EDMFRankedTier ************************************************************
 #ifdef UHT_STATICS
@@ -1508,6 +1578,26 @@ struct UHT_STATICS
 		{ "Category", "Digimon|Progression" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_LifetimeBattleExperience_MetaData[] = {
+		{ "Category", "Digimon|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Lifetime server-authored EXP earned by this persistent individual. Added in account schema v7 for economy/progression valuation. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Lifetime server-authored EXP earned by this persistent individual. Added in account schema v7 for economy/progression valuation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TotalAttributePointsSpent_MetaData[] = {
+		{ "Category", "Digimon|Progression" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Exact count of committed +1 core-stat Attribute Point spends. Added in account schema v7. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Exact count of committed +1 core-stat Attribute Point spends. Added in account schema v7." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_EquippedAbilityIds_MetaData[] = {
 		{ "Category", "Digimon|Abilities" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
@@ -1550,6 +1640,8 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FIntPropertyParams NewProp_CurrentHP;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_CurrentSP;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_UnspentAttributePoints;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_LifetimeBattleExperience;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_TotalAttributePointsSpent;
 	static const UECodeGen_Private::FNamePropertyParams NewProp_EquippedAbilityIds_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_EquippedAbilityIds;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_Care;
@@ -1578,6 +1670,8 @@ const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Stats = { "S
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_CurrentHP = { "CurrentHP", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, CurrentHP), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CurrentHP_MetaData), NewProp_CurrentHP_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_CurrentSP = { "CurrentSP", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, CurrentSP), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CurrentSP_MetaData), NewProp_CurrentSP_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_UnspentAttributePoints = { "UnspentAttributePoints", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, UnspentAttributePoints), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_UnspentAttributePoints_MetaData), NewProp_UnspentAttributePoints_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_LifetimeBattleExperience = { "LifetimeBattleExperience", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, LifetimeBattleExperience), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LifetimeBattleExperience_MetaData), NewProp_LifetimeBattleExperience_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_TotalAttributePointsSpent = { "TotalAttributePointsSpent", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, TotalAttributePointsSpent), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TotalAttributePointsSpent_MetaData), NewProp_TotalAttributePointsSpent_MetaData) };
 const UECodeGen_Private::FNamePropertyParams UHT_STATICS::NewProp_EquippedAbilityIds_Inner = { "EquippedAbilityIds", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Name, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_EquippedAbilityIds = { "EquippedAbilityIds", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, EquippedAbilityIds), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_EquippedAbilityIds_MetaData), NewProp_EquippedAbilityIds_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Care = { "Care", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFDigimonInstance, Care), Z_Construct_UScriptStruct_FDMFDigimonCareState, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Care_MetaData), NewProp_Care_MetaData) }; // 424313712cc83304aba267fa4dfab31c9d6ce242
@@ -1593,6 +1687,8 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CurrentHP,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CurrentSP,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_UnspentAttributePoints,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LifetimeBattleExperience,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TotalAttributePointsSpent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EquippedAbilityIds_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_EquippedAbilityIds,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Care,
@@ -2531,6 +2627,16 @@ struct UHT_STATICS
 		{ "Category", "Economy" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigimonEconomyProvenanceVersion_MetaData[] = {
+		{ "Category", "Economy" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/**\n     * Per-account one-way marker for the v0.18 Digimon valuation provenance migration.\n     * Legacy records deserialize as 0; current/new accounts are persisted as 1 so a legitimately\n     * zero-spend high-level vendor Digimon is never reinterpreted as legacy on a later reconnect.\n     */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Per-account one-way marker for the v0.18 Digimon valuation provenance migration.\nLegacy records deserialize as 0; current/new accounts are persisted as 1 so a legitimately\nzero-spend high-level vendor Digimon is never reinterpreted as legacy on a later reconnect." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_RankedBattlePoints_MetaData[] = {
 		{ "Category", "Ranked" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
@@ -2559,6 +2665,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FStructPropertyParams NewProp_ScanData_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_ScanData;
 	static const UECodeGen_Private::FInt64PropertyParams NewProp_Money;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_DigimonEconomyProvenanceVersion;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_RankedBattlePoints;
 	static const UECodeGen_Private::FBytePropertyParams NewProp_RankedTier_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_RankedTier;
@@ -2576,15 +2683,16 @@ const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "U
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_CredentialDigest = { "CredentialDigest", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, CredentialDigest), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CredentialDigest_MetaData), NewProp_CredentialDigest_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_SelectedPlayerSkinId = { "SelectedPlayerSkinId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, SelectedPlayerSkinId), Z_Construct_UScriptStruct_FPrimaryAssetId, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SelectedPlayerSkinId_MetaData), NewProp_SelectedPlayerSkinId_MetaData) }; // 51539104367397b403249c27cab9a0578cde1246
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PlayerWorldLocation = { "PlayerWorldLocation", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, PlayerWorldLocation), Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerWorldLocation_MetaData), NewProp_PlayerWorldLocation_MetaData) }; // 3da1182c33c10c46f30ec4281e56989e564deb66
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInventory_Inner = { "DigimonInventory", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 90e3d7b8644ae8290e535284f655b83595374193
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DigimonInventory = { "DigimonInventory", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonInventory), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventory_MetaData), NewProp_DigimonInventory_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonBank_Inner = { "DigimonBank", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 90e3d7b8644ae8290e535284f655b83595374193
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DigimonBank = { "DigimonBank", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonBank), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonBank_MetaData), NewProp_DigimonBank_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonInventory_Inner = { "DigimonInventory", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DigimonInventory = { "DigimonInventory", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonInventory), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventory_MetaData), NewProp_DigimonInventory_MetaData) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_DigimonBank_Inner = { "DigimonBank", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(0, nullptr) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_DigimonBank = { "DigimonBank", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonBank), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonBank_MetaData), NewProp_DigimonBank_MetaData) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ActivePartnerInstanceId = { "ActivePartnerInstanceId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, ActivePartnerInstanceId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActivePartnerInstanceId_MetaData), NewProp_ActivePartnerInstanceId_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bStarterSelected = { "bStarterSelected", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFAccountRecord), &UHT_STATICS::NewProp_bStarterSelected_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bStarterSelected_MetaData), NewProp_bStarterSelected_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ScanData_Inner = { "ScanData", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFScanDataEntry, METADATA_PARAMS(0, nullptr) }; // 59f4009213044f4b0a6d66fb70c1172b5bb2c761
 const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ScanData = { "ScanData", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, ScanData), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanData_MetaData), NewProp_ScanData_MetaData) }; // 59f4009213044f4b0a6d66fb70c1172b5bb2c761
 const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_Money = { "Money", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, Money), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Money_MetaData), NewProp_Money_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonEconomyProvenanceVersion = { "DigimonEconomyProvenanceVersion", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, DigimonEconomyProvenanceVersion), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonEconomyProvenanceVersion_MetaData), NewProp_DigimonEconomyProvenanceVersion_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_RankedBattlePoints = { "RankedBattlePoints", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, RankedBattlePoints), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RankedBattlePoints_MetaData), NewProp_RankedBattlePoints_MetaData) };
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_RankedTier_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_RankedTier = { "RankedTier", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, RankedTier), Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RankedTier_MetaData), NewProp_RankedTier_MetaData) }; // 4d9e64bdb2b39496009abe633f2187584c439425
@@ -2602,6 +2710,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanData_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanData,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Money,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonEconomyProvenanceVersion,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedBattlePoints,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedTier_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedTier,
@@ -2674,7 +2783,7 @@ struct UHT_STATICS
 static_assert(std::is_polymorphic<FDMFReplicatedDigimonEntry>() == std::is_polymorphic<FFastArraySerializerItem>(), "USTRUCT FDMFReplicatedDigimonEntry cannot be polymorphic unless super FFastArraySerializerItem is polymorphic");
 
 // ********** Begin ScriptStruct FDMFReplicatedDigimonEntry Property Definitions *******************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Digimon = { "Digimon", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFReplicatedDigimonEntry, Digimon), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Digimon_MetaData), NewProp_Digimon_MetaData) }; // 90e3d7b8644ae8290e535284f655b83595374193
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Digimon = { "Digimon", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFReplicatedDigimonEntry, Digimon), Z_Construct_UScriptStruct_FDMFDigimonInstance, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Digimon_MetaData), NewProp_Digimon_MetaData) }; // 4e507a01c7f3f7d9482109ce7a0bc560288acac2
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Digimon,
 };
@@ -2752,8 +2861,8 @@ UE_NET_IMPLEMENT_FASTARRAY_STUB(FDMFReplicatedDigimonList);
 #endif
 
 // ********** Begin ScriptStruct FDMFReplicatedDigimonList Property Definitions ********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Items_Inner = { "Items", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, METADATA_PARAMS(0, nullptr) }; // ef55f46d00d1b3f8c04f7159cd42027c54cad14a
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_Items = { "Items", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFReplicatedDigimonList, Items), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Items_MetaData), NewProp_Items_MetaData) }; // ef55f46d00d1b3f8c04f7159cd42027c54cad14a
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Items_Inner = { "Items", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, METADATA_PARAMS(0, nullptr) }; // 9aeb743608e455b1fbe2cd2b4f59ea24224693bd
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_Items = { "Items", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFReplicatedDigimonList, Items), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Items_MetaData), NewProp_Items_MetaData) }; // 9aeb743608e455b1fbe2cd2b4f59ea24224693bd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Items_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Items,
@@ -2808,7 +2917,8 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightTimeSource, TEXT("EDMFDayNightTimeSource"), &ZRIE_EDMFDayNightTimeSource, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2584868163U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDayNightPhase, TEXT("EDMFDayNightPhase"), &ZRIE_EDMFDayNightPhase, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2025563883U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode, TEXT("EDMFWildPopulationScheduleMode"), &ZRIE_EDMFWildPopulationScheduleMode, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1125248795U) },
-		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 785946822U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4005593762U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, TEXT("EDMFDigimonVendorTransactionType"), &ZRIE_EDMFDigimonVendorTransactionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1719060311U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1155505937U) },
@@ -2823,19 +2933,19 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation, Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation_Statics::NewStructOps, TEXT("DMFDigivolutionEvaluation"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionEvaluation, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionEvaluation), 3554612414U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonStats, Z_Construct_UScriptStruct_FDMFDigimonStats_Statics::NewStructOps, TEXT("DMFDigimonStats"),&Z_Registration_Info_UScriptStruct_FDMFDigimonStats, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonStats), 1376484503U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonCareState, Z_Construct_UScriptStruct_FDMFDigimonCareState_Statics::NewStructOps, TEXT("DMFDigimonCareState"),&Z_Registration_Info_UScriptStruct_FDMFDigimonCareState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonCareState), 1111692145U) },
-		{ Z_Construct_UScriptStruct_FDMFDigimonInstance, Z_Construct_UScriptStruct_FDMFDigimonInstance_Statics::NewStructOps, TEXT("DMFDigimonInstance"),&Z_Registration_Info_UScriptStruct_FDMFDigimonInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonInstance), 2430851000U) },
+		{ Z_Construct_UScriptStruct_FDMFDigimonInstance, Z_Construct_UScriptStruct_FDMFDigimonInstance_Statics::NewStructOps, TEXT("DMFDigimonInstance"),&Z_Registration_Info_UScriptStruct_FDMFDigimonInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonInstance), 1313896961U) },
 		{ Z_Construct_UScriptStruct_FDMFScanDataEntry, Z_Construct_UScriptStruct_FDMFScanDataEntry_Statics::NewStructOps, TEXT("DMFScanDataEntry"),&Z_Registration_Info_UScriptStruct_FDMFScanDataEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFScanDataEntry), 1509163154U) },
 		{ Z_Construct_UScriptStruct_FDMFAbilityCooldownState, Z_Construct_UScriptStruct_FDMFAbilityCooldownState_Statics::NewStructOps, TEXT("DMFAbilityCooldownState"),&Z_Registration_Info_UScriptStruct_FDMFAbilityCooldownState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAbilityCooldownState), 758764662U) },
 		{ Z_Construct_UScriptStruct_FDMFBattleReward, Z_Construct_UScriptStruct_FDMFBattleReward_Statics::NewStructOps, TEXT("DMFBattleReward"),&Z_Registration_Info_UScriptStruct_FDMFBattleReward, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFBattleReward), 2382040011U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression_Statics::NewStructOps, TEXT("DMFDigimonExperienceProgression"),&Z_Registration_Info_UScriptStruct_FDMFDigimonExperienceProgression, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonExperienceProgression), 2497719822U) },
 		{ Z_Construct_UScriptStruct_FDMFDayNightPersistentState, Z_Construct_UScriptStruct_FDMFDayNightPersistentState_Statics::NewStructOps, TEXT("DMFDayNightPersistentState"),&Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDayNightPersistentState), 1517771470U) },
 		{ Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState_Statics::NewStructOps, TEXT("DMFPlayerWorldLocationState"),&Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFPlayerWorldLocationState), 1033967660U) },
-		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 3938075674U) },
-		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics::NewStructOps, TEXT("DMFReplicatedDigimonEntry"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonEntry), 4015387757U) },
-		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 1241286755U) },
+		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 797273154U) },
+		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics::NewStructOps, TEXT("DMFReplicatedDigimonEntry"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonEntry), 2599121974U) },
+		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 3360219910U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_232fc7e25fa98851f42d3039a5703206e2783982{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_990ebdfa69577692e41fb5b6ee98319e0b8d3c5a{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

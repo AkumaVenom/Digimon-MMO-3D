@@ -1,5 +1,67 @@
 # Changelog
 
+## 0.18.2-alpha — Authenticated Reconnect Persistent Account Authority Fix
+
+### Fixed — remote client reconnect could replace a good persisted account with stale inactive PlayerState state
+- Root-caused the remaining Shipping/internet reconnect loop: v0.18.1 was already committing the remote account to the host save database, but `AGameMode` could duplicate the disconnecting `PlayerState` into `InactivePlayerArray` and later reassociate that stale in-memory state when the same client rejoined the still-running host. Restarting the host cleared that engine cache, explaining why the same disk save then loaded correctly.
+- DMF now overrides `AddInactivePlayer` and intentionally does not create an inactive PlayerState duplicate. The authenticated account database, not Unreal's reconnect cache, is the sole reconnect authority.
+- DMF overrides `FindInactivePlayer` to always return false, preventing `PostLogin` from replacing the newly authenticated/initialized PlayerState with stale teardown state.
+- Added a post-login integrity rehydrate check: if the active DMF PlayerState somehow reaches PostLogin without an initialized authoritative Digimon account state, the server reloads Party/Bank/avatar state from the authenticated persistent account rather than accepting empty defaults.
+- Retains v0.18.1's idempotent save-before-teardown transaction, initialization guard, guarded fallback retry and explicit summoned-partner cleanup.
+
+### Compatibility / persistence
+- Account SaveGame schema remains **v7**; no account reset or migration is required.
+- RPC count remains **49**; no client-authored persistence or reconnect payload was added.
+- Vendor economy, swimming, underwater presentation, Day/Night, Digivolution, ABI, Party/Bank and world-location persistence contracts are unchanged.
+
+## 0.18.1-alpha — Disconnect-Safe Account Persistence & Partner Cleanup Fix
+
+### Fixed — remote client logout/reconnect account loss
+- Reworked authenticated disconnect handling into one idempotent **pre-teardown session finalization** transaction. `ADMFMMOGameMode::Logout` now commits the account before `Super::Logout` can detach/inactivate the PlayerState or Pawn.
+- The final snapshot explicitly synchronizes the summoned partner's live authoritative HP/SP, then merges Party, Bank, active-partner GUID, starter state, Bits, scan data, avatar skin and the current valid player-world transform into the existing account record.
+- Added an authoritative-account-initialized guard. A default/partially initialized `UDMFPlayerDigimonComponent` is no longer permitted to overwrite an established persistent account with empty arrays during network teardown.
+- Removed the destructive double-save window: after the canonical disconnect snapshot succeeds, component `EndPlay` is marked persistence-finalized and cannot issue a second teardown-time account write. A failed primary save deliberately keeps one guarded `EndPlay` retry available.
+- Added an idempotent authority-side `DMFMMOPlayerController::EndPlay` fallback so abnormal/abrupt net-driver teardown still attempts session finalization when the authoritative GameMode remains available.
+
+### Fixed — orphaned player partner after disconnect
+- Disconnect finalization now removes the partner combat-vitals delegate, force-disengages its encounter, destroys the transient summoned partner actor and clears Care presentation props without invalidating the persistent active-partner GUID.
+- This applies even when Unreal temporarily retains an inactive PlayerState, preventing logged-out players from leaving combat-capable Digimon behind in the shared world.
+
+### Compatibility / persistence
+- Account SaveGame schema remains **v7**; no migration or reset is required.
+- Vendor economy, lifetime battle EXP, spent Attribute Points, Digivolution/ABI provenance, Party/Bank, avatar skin and player-location fields are unchanged.
+- RPC count remains **49**; no client-authored persistence or logout RPC was added.
+
+## 0.18.0-alpha — Replicated Digimon Vendor Economy & Rotating Stock UI
+
+### Fixed — UE5.8 native vendor widget compile
+- Fixed `DMFDigimonVendorWidget.h` deriving `UDMFDigimonVendorEntryButton` from a forward-declared/incomplete `UButton`. The public header now includes `Components/Button.h` before the generated header, resolving UE5.8 `C2504` / `C2027` and the cascading `OnClicked`, `StyleButton`, `AddChild` and `AddChildToVerticalBox` conversion errors.
+- Updated the new `DMFDigimonVendorActor` constructor to use `SetNetUpdateFrequency()` / `SetMinNetUpdateFrequency()` rather than introducing additional deprecated direct `AActor` network-frequency member access.
+- No vendor economy behavior, replicated stock format, transaction RPC, SaveGame schema, progression valuation or existing baseline contract changed.
+
+### Added — Blueprint-derivable replicated Digimon vendor NPC
+- Added zero-tick `DMFDigimonVendorActor` with an exposed skeletal presentation component, interaction collision/prompt/range, per-NPC identity, Buy/Sell policies and per-NPC native-widget subclass override. The player interaction dispatcher recognizes vendors without Blueprint casts.
+- Added server-owned weighted species pools, configurable stock-slot count, duplicate policy, immediate-refill policy and independent randomized min/max stock-rotation scheduler. Stock snapshots, generation serial and next-rotation server timestamp replicate to nearby clients; the actor uses a sparse timer rather than Tick.
+- Added randomized stock generation for level, current-level EXP, ABI, CAM, spent Attribute Points, unspent Attribute Points and resulting HP/SP/STR/INT/DEF/SPD. Vendors/species overrides also expose independent min/max **natural HP, SP and combat-stat bonus rolls**, so same-species/same-level offers can still have meaningful natural variation before trained Attribute Points are applied. Species-specific generation ranges preserve each Species Data Asset's normal level growth and ability setup.
+- Added authority Blueprint calls for vendor enablement, Buy/Sell enablement, pricing replacement, manual stock refresh and rotation restart, plus stock/config/trade Blueprint events.
+
+### Added — automatic persistent individual valuation
+- Added `FDMFDigimonVendorPricingSettings` and `FDMFDigimonVendorValueBreakdown`. Market value automatically considers stage, level, lifetime battle EXP, MaxHP/MaxSP, STR/INT/DEF/SPD, ABI, CAM, exact committed Attribute Points, unspent Attribute Points and unique Digivolution forms visited. ABI has a deliberately strong default weight to reward Digivolution/De-Digivolution progression.
+- Vendor purchase price applies a configurable markup; player resale applies a configurable payout multiplier. Per-stock species multipliers can modify offers while an automatic anti-arbitrage floor prevents a generated offer from being cheaper than that same vendor's immediate resale quote.
+- Added persistent `LifetimeBattleExperience` and `TotalAttributePointsSpent` to `FDMFDigimonInstance`. Positive authoritative EXP rewards accumulate lifetime EXP even at level cap, and every committed +1 Attribute Point increments the exact spend counter. These fields survive Digivolution/De-Digivolution because the individual instance identity remains unchanged.
+- Account SaveGame schema advances **v6 → v7**. Legacy individuals conservatively infer lifetime progression EXP and spent points at authoritative load; the account then stamps `DigimonEconomyProvenanceVersion = 1`, making migration explicitly one-way so legitimate modern high-level/zero-spend Digimon are never re-inferred on later reconnects. Existing Digimon, stats, ABI, history, Party/Bank ownership and world location remain intact.
+
+### Added — native BUY / SELL market UI and server transaction path
+- Added polished native `DMFDigimonVendorWidget` with BUY/SELL tabs, Bits balance, replicated stock countdown, scrollable stock/collection rows, portrait/stage/attribute presentation, complete stat/progression detail, automatic value breakdown and two-step Buy/Sell confirmation. A vendor Blueprint can override the widget class without replacing transaction authority.
+- Purchases atomically **reserve/remove the shared StockId before account-side mutation/delegates**, then deduct Bits, place the exact generated individual into Party/Bank, persist immediately and either commit the reservation or restore the exact immutable offer if the account mutation fails. This closes Blueprint/delegate re-entry and same-offer concurrency windows. Sales remove the exact owned individual, safely reconcile an active partner when necessary, credit Bits and persist immediately. Starter-sale protection and keep-one-Party-member policy are enabled by default.
+- Added `ServerRequestDigimonVendorTransaction` and owner-only `ClientDigimonVendorTransactionResult`. Clients submit only vendor + Buy/Sell + GUID; the server revalidates range, vendor policy, stock/ownership, price, money, Party/Bank capacity and mutation locks. A small server transaction throttle protects against request spam. RPC count is **47 → 49**.
+- Vendor UI is owner-local and modal; inventory/quick bars/ability input cannot race the market UI. Shared vendor stock is public only through ordinary actor relevance, while private Party/Bank/Money remain owner-only.
+
+### Compatibility / regression contracts
+- v0.17.3 network-smoothing-compatible swimming, v0.17.2 underwater reload reconstruction, v0.17.1 underwater post-process/fog, Day/Night, combat, Digivolution, Party/Bank and existing persistence contracts are preserved.
+- Existing serialized enum numeric values are unchanged; `DigimonVendor` is appended after `Unhandled` in `EDMFPlayerInteractionType`, and the new vendor transaction enum is additive.
+- Added `Docs/SETUP_DIGIMON_VENDOR.md` and updated architecture, networking, interaction, roadmap, test and validation documentation.
+
 ## 0.17.3-alpha — Network-Smoothing-Compatible Replicated Swim Presentation Fix
 
 ### Fixed — remote swim fallback now composes with CharacterMovement network smoothing
