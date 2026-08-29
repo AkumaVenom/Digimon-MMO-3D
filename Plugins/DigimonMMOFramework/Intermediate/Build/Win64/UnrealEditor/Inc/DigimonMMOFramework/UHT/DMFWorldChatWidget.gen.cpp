@@ -59,7 +59,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function AddChatMessage Property Definitions ***********************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventAddChatMessage_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventAddChatMessage_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessage,
 };
@@ -251,7 +251,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function BP_OnWorldChatMessageAdded Property Definitions ***********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventBP_OnWorldChatMessageAdded_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventBP_OnWorldChatMessageAdded_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessage,
 };
@@ -586,8 +586,8 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function SetChatHistory Property Definitions ***********************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessages_Inner = { "ChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ChatMessages = { "ChatMessages", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventSetChatHistory_Parms, ChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessages_MetaData), NewProp_ChatMessages_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessages_Inner = { "ChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ChatMessages = { "ChatMessages", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(DMFWorldChatWidget_eventSetChatHistory_Parms, ChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessages_MetaData), NewProp_ChatMessages_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessages_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessages,
@@ -701,17 +701,17 @@ struct UHT_STATICS
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_UDMFWorldChatWidget_AddChatMessage, "AddChatMessage" }, // 33cdd3b5868243fca4bb140557a6f70eda4d6b8b
+		{ &Z_Construct_UFunction_UDMFWorldChatWidget_AddChatMessage, "AddChatMessage" }, // 330f77387d56fa2cd9f1e9de17736fd04953952c
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_AddLocalSystemMessage, "AddLocalSystemMessage" }, // 8999ddec4ffc75d9f9212ffc1b844ee124d7ac3a
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_BP_OnWorldChatInputStateChanged, "BP_OnWorldChatInputStateChanged" }, // e6ff0f8de76085d563d6a385515514e5437f0237
-		{ &Z_Construct_UFunction_UDMFWorldChatWidget_BP_OnWorldChatMessageAdded, "BP_OnWorldChatMessageAdded" }, // 04fc26e7d3edee88767afcbfaf15f3581f96598d
+		{ &Z_Construct_UFunction_UDMFWorldChatWidget_BP_OnWorldChatMessageAdded, "BP_OnWorldChatMessageAdded" }, // c3a33895abc251a0cdb89d25017437dbb3b6761c
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_ClearChatHistory, "ClearChatHistory" }, // f2bf5482b94402f8959d25505f4cd67e7517cdc3
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_CloseChatInput, "CloseChatInput" }, // 960123d46e6eff9474a81cbc96de360bec2d8d16
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_GetVisibleMessageCount, "GetVisibleMessageCount" }, // 644630848d3d38b267f21f20a75f0043723ad0fd
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_HandleMessageCommitted, "HandleMessageCommitted" }, // a7e9ff84ab1ab5b1543a6100267ddbcb3e21bab1
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_IsChatInputOpen, "IsChatInputOpen" }, // cc265a6f799923e7bdcfc8f1e36442689801aaa9
 		{ &Z_Construct_UFunction_UDMFWorldChatWidget_OpenChatInput, "OpenChatInput" }, // 2f703685681dfc911d5cc4c9c3d8f1d471494893
-		{ &Z_Construct_UFunction_UDMFWorldChatWidget_SetChatHistory, "SetChatHistory" }, // 9dade42a87c47bf18fe062625620c0e5ca84dc1f
+		{ &Z_Construct_UFunction_UDMFWorldChatWidget_SetChatHistory, "SetChatHistory" }, // e2359a3dff6bb1a6085cc9bbbaf80146ba2786f3
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -727,8 +727,8 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_MessageList 
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InputPanel = { "InputPanel", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFWorldChatWidget, InputPanel), Z_Construct_UClass_UBorder, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InputPanel_MetaData), NewProp_InputPanel_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_MessageInput = { "MessageInput", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFWorldChatWidget, MessageInput), Z_Construct_UClass_UEditableTextBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MessageInput_MetaData), NewProp_MessageInput_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InputHintText = { "InputHintText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFWorldChatWidget, InputHintText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InputHintText_MetaData), NewProp_InputHintText_MetaData) };
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_LocalMessageHistory_Inner = { "LocalMessageHistory", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_LocalMessageHistory = { "LocalMessageHistory", nullptr, (EPropertyFlags)0x0040000000002000, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFWorldChatWidget, LocalMessageHistory), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LocalMessageHistory_MetaData), NewProp_LocalMessageHistory_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_LocalMessageHistory_Inner = { "LocalMessageHistory", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_LocalMessageHistory = { "LocalMessageHistory", nullptr, (EPropertyFlags)0x0040000000002000, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFWorldChatWidget, LocalMessageHistory), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LocalMessageHistory_MetaData), NewProp_LocalMessageHistory_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatPanel,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MessageScrollBox,
@@ -813,10 +813,10 @@ UDMFWorldChatWidget::~UDMFWorldChatWidget() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFWorldChatWidget, TEXT("UDMFWorldChatWidget"), &Z_Registration_Info_UClass_UDMFWorldChatWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFWorldChatWidget), 225429754U) },
+		{ Z_Construct_UClass_UDMFWorldChatWidget, TEXT("UDMFWorldChatWidget"), &Z_Registration_Info_UClass_UDMFWorldChatWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFWorldChatWidget), 1115142032U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFWorldChatWidget_h__Script_DigimonMMOFramework_a685950d973d2592b94e124aef4a98ac62951564{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFWorldChatWidget_h__Script_DigimonMMOFramework_fc3f682a6b268f84a3f536edd8f28866d6bc2889{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

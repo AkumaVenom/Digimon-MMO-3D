@@ -1,8 +1,28 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.18.2-alpha — Authenticated Reconnect Persistent Account Authority Fix`
+**Version:** `0.18.5-alpha — Replicated World Chat Presence Announcements`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.18.5-alpha — Replicated World Chat Presence Announcements
+
+The native **WORLD chat** now publishes authenticated player presence automatically. Every successful login or same-host relog emits `Username has joined the server.` from `ADMFMMOGameMode::PostLogin`; every authoritative logout emits `Username has left the server.` before Unreal removes the authenticated PlayerState. These are server-authored message types rather than client chat text, so a client cannot spoof another account joining/leaving. They use the existing reliable per-owner world-chat delivery and bounded session history, preserving the established no-replicated-array chat architecture.
+
+The native chat gives presence events their own visual language: **joined usernames are bold green**, while a departure username and its `has left the server.` statement are **red**. `PlayerJoined` / `PlayerLeft` were appended to `EDMFWorldChatMessageType`, preserving the existing `Player` and `System` values and giving Blueprint chat skins an explicit event type.
+
+Project Settings now exposes **UI → World Chat → Presence** controls, including an announcement master switch plus globally assigned **Player Joined Server Sound** and **Player Left Server Sound** assets, audio enable, volume and pitch. Live presence events play the configured 2D cue once on every connected recipient through the existing reliable client delivery. Historical messages never replay presence audio when a late client requests chat history. No new RPCs are required: the framework remains at **49 RPCs**, account SaveGame remains schema **v7**, and v0.18.4 server capacity plus all reconnect/persistence/gameplay authority is preserved. See `Docs/SETUP_WORLD_CHAT.md`.
+
+## New in v0.18.4-alpha — Global Max Players Server Capacity
+
+v0.18.4 adds a fully server-enforced **Global Maximum Players** deployment setting under **Project Settings → Game → Digimon MMO Framework → Networking → Server Capacity**. The default is **100** simultaneous gameplay players. On a listen server the host consumes one slot, so the default permits the host plus up to 99 remote players.
+
+`Host & Play` seeds Unreal's native GameSession with the configured capacity when the gameplay world is created, and `ADMFMMOGameMode::PreLogin` reasserts the server-owned Project Settings value before every normal GameSession approval. Connections beyond the cap are therefore refused by Unreal's authoritative login path; a client cannot increase capacity with its own travel URL. Lowering the cap never ejects established players—it blocks new joins until occupancy falls below the configured limit. SaveGame schema remains v7 and the framework remains at **49 RPCs**. See `Docs/SETUP_SERVER_CAPACITY.md`.
+
+## New in v0.18.3-alpha — Polished Digimon Vendor Native UI Layout Hardening
+
+v0.18.3 is a presentation-focused hardening pass for the native **Digimon Exchange**. The BUY and SELL detail panels no longer compress the complete combat/progression and market-value readout into the remaining vertical space. The information area now has its own scroll region, natural-height text cards and pinned transaction controls, so long/high-progression Digimon remain clean and readable instead of overlapping the Buy/Sell button or Close control.
+
+The stock/collection rows are also more deliberate: portraits preserve aspect ratio, rows have a stable minimum height, prices occupy a dedicated quote column, and SELL entries separate the `PARTY` / `BANK` source from the actual sale quote. The authored native window is roomier at 1280x780 but still scales down as one complete surface on smaller displays. This release is UI-only: vendor economy authority, stock/pricing, atomic purchases/sales, schema-v7 persistence and all **49 RPCs** are unchanged. See `Docs/SETUP_DIGIMON_VENDOR.md`.
 
 ## New in v0.18.2-alpha — Authenticated Reconnect Persistent Account Authority Fix
 
@@ -540,6 +560,7 @@ This maintenance release preserves the complete v0.3.0 player-avatar/skin featur
 - Username/password credential staging with server-side validation during connection.
 - Optional first-login auto-registration on the host's server-side account database.
 - Project-configurable regular-player server endpoint under `Networking → Server Endpoint`; no plugin C++ edit is required to change the host/IP used by **Join Game**.
+- Server-authoritative global player capacity under `Networking → Server Capacity`, defaulting to 100 total connected gameplay players and enforced during Unreal GameSession login approval.
 - Admin-only `Host & Play` flow protected by a Project Settings-configurable passphrase; the editor stores only its one-way digest rather than retaining plaintext.
 - Single package flow: normal users join; an unlocked admin may start the authoritative listen host.
 - Persistent account database through a host-side `USaveGame` database.
@@ -583,6 +604,7 @@ All framework player-avatar skins, Digimon, and Care presentation props automati
    - `Starter Roster`
    - `Networking → Server Endpoint → Server Public Address / Hostname`
    - `Networking → Server Endpoint → Game Port`
+   - `Networking → Server Capacity → Global Maximum Players` (default `100`; the listen host consumes one slot)
    - `Networking → Admin Hosting → Set Admin Hosting Password` (enter a project-specific password; the setter clears after hashing)
    - `Player Avatar → Footsteps → Player Footstep Sound` (assign a spatial Sound Cue; optional cadence/gain controls are alongside it)
    - optional `Default Player Skin` when skin selection is not mandatory
@@ -617,7 +639,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_SERVER_CAPACITY.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)

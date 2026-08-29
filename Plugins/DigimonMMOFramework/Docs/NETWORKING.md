@@ -1,5 +1,11 @@
 # Networking / Host Deployment
 
+## World chat authenticated presence events (v0.18.5)
+
+Player presence is a server-owned chat event, not a client RPC command. `ADMFMMOGameMode::PostLogin` emits `PlayerJoined` only after authenticated account initialization/rehydration; `Logout` performs the existing disconnect persistence/partner cleanup transaction and then emits `PlayerLeft` before `Super::Logout` tears down the PlayerState. The username comes from the authenticated server account value.
+
+Both event types reuse the established reliable `ClientReceiveWorldChatMessage` fan-out and the bounded GameMode session history, so v0.18.5 adds **no RPC** and no replicated chat array. Each receiving local PlayerController may play the globally configured 2D join/leave cue. History transfer uses `ClientReceiveWorldChatHistory` and deliberately does not invoke presence audio, preventing old events from replaying sounds for late joiners.
+
 ## Day / Night world-time authority (v0.16.0)
 
 World time is never client-authored. `ADMFDayNightSky` reads either the authority machine's local system clock or its persistent simulated clock, then replicates sparse time anchors. Clients interpolate between anchors using synchronized GameState server world time. There is no client time RPC and no per-frame light/material replication. `bIsDay` / `bIsNight` are presentation conveniences derived from the replicated authoritative phase.
@@ -62,6 +68,15 @@ The new character camera-collision policy is deterministic actor configuration r
 - A remote owning client separately predicts its own local footstep for immediate responsiveness. When the authoritative multicast returns to that owner, it is suppressed to avoid double playback; other relevant clients hear the server event.
 - Listen hosts hear the authoritative event directly. Dedicated servers never render audio locally but still originate observer multicast events.
 - The assigned Sound Cue/USoundBase and cadence controls are project configuration, not replicated runtime state. Projects should author attenuation in the Sound Cue so ordinary Unreal spatial audio limits audible range.
+
+## v0.18.4 global server-capacity contract
+
+- **Global Maximum Players** is server deployment configuration under `Networking → Server Capacity` and defaults to **100** total connected gameplay players. A listen host consumes one slot.
+- `Host & Play` includes the configured capacity as Unreal's native `MaxPlayers` world-travel option when creating the listen server.
+- `ADMFMMOGameMode::PreLogin` reasserts the authoritative `UDMFFrameworkSettings::GlobalMaxPlayers` value onto `AGameSession::MaxPlayers` **before** calling `Super::PreLogin`; native GameSession approval therefore owns the actual full-server rejection.
+- The repeated authority-side assignment is intentional defense in depth: a joining client may place arbitrary options in its own travel URL, but cannot change the server's configured capacity.
+- Capacity controls connection admission only. Reducing the configured value below current occupancy never kicks authenticated players; subsequent joins are refused until enough slots are free.
+- The feature introduces no capacity RPC, replicated player-count property or persistent account field. Normal `GameState`/GameSession player tracking remains the source used by Unreal for admission.
 
 ## v0.10.3 configurable Admin-host gate
 

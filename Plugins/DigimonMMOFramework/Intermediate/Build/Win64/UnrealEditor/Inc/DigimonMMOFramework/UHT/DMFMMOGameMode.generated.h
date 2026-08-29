@@ -20,12 +20,14 @@ class ADMFMMOPlayerController;
 class ADMFNewPlayerStart;
 class ADMFPlayerAvatarCharacter;
 class APlayerController;
+enum class EDMFWorldChatMessageType : uint8;
 struct FDMFWorldChatMessage;
 
 // ********** Begin Class ADMFMMOGameMode **********************************************************
 #define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h_15_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual ADMFNewPlayerStart* ChooseNewPlayerSpawnPoint_Implementation(APlayerController* PlayerController) const; \
 	DECLARE_FUNCTION(execSendRecentWorldChatHistory); \
+	DECLARE_FUNCTION(execBroadcastWorldChatPresenceEvent); \
 	DECLARE_FUNCTION(execBroadcastWorldChatMessage); \
 	DECLARE_FUNCTION(execReturnAuthenticatedPlayerHome); \
 	DECLARE_FUNCTION(execSaveAuthenticatedPlayerWorldLocationNow); \

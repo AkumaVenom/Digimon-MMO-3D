@@ -179,18 +179,34 @@ void UDMFWorldChatWidget::AddNativeMessageRow(const FDMFWorldChatMessage& ChatMe
 
     UTextBlock* Sender = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
     const bool bSystem = ChatMessage.MessageType == EDMFWorldChatMessageType::System;
+    const bool bPlayerJoined = ChatMessage.MessageType == EDMFWorldChatMessageType::PlayerJoined;
+    const bool bPlayerLeft = ChatMessage.MessageType == EDMFWorldChatMessageType::PlayerLeft;
+    const bool bPresenceEvent = bPlayerJoined || bPlayerLeft;
+
     const FString SenderLabel = bSystem
         ? FString(TEXT("SYSTEM  •  "))
-        : FString::Printf(TEXT("%s:  "), *ChatMessage.SenderName);
+        : (bPresenceEvent
+            ? FString::Printf(TEXT("%s  "), *ChatMessage.SenderName)
+            : FString::Printf(TEXT("%s:  "), *ChatMessage.SenderName));
     Sender->SetText(FText::FromString(SenderLabel));
-    DMFNativeUI::StyleText(Sender, 12, bSystem ? DMFNativeUI::Gold() : DMFNativeUI::Accent(), true);
+
+    const FLinearColor SenderColor = bSystem
+        ? DMFNativeUI::Gold()
+        : (bPlayerJoined ? DMFNativeUI::Success() : (bPlayerLeft ? DMFNativeUI::Danger() : DMFNativeUI::Accent()));
+    DMFNativeUI::StyleText(Sender, 12, SenderColor, true);
     MessageRow->AddChildToHorizontalBox(Sender)->SetVerticalAlignment(VAlign_Top);
 
     UTextBlock* Body = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
     Body->SetText(FText::FromString(ChatMessage.Message));
     Body->SetAutoWrapText(true);
     Body->SetWrapTextAt(430.0f);
-    DMFNativeUI::StyleText(Body, 12, bSystem ? DMFNativeUI::Muted() : DMFNativeUI::Text(), false);
+
+    // Join rows keep the requested green-highlighted authenticated username with a calm neutral body.
+    // Leave rows deliberately render the complete departure statement red for immediate readability.
+    const FLinearColor BodyColor = bSystem
+        ? DMFNativeUI::Muted()
+        : (bPlayerLeft ? DMFNativeUI::Danger() : DMFNativeUI::Text());
+    DMFNativeUI::StyleText(Body, 12, BodyColor, false);
     if (UHorizontalBoxSlot* BodySlot = MessageRow->AddChildToHorizontalBox(Body))
     {
         BodySlot->SetSize(DMFNativeUI::FillSize());

@@ -127,7 +127,13 @@ UENUM(BlueprintType)
 enum class EDMFWorldChatMessageType : uint8
 {
     Player,
-    System
+    System,
+
+    /** Server-authored authenticated presence event. Appended to preserve Player/System serialized values. */
+    PlayerJoined UMETA(DisplayName="Player Joined"),
+
+    /** Server-authored authenticated departure event. Appended to preserve Player/System serialized values. */
+    PlayerLeft UMETA(DisplayName="Player Left")
 };
 
 /**

@@ -53,3 +53,4 @@
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/PerModuleInline.gen.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Components/DMFDigimonCombatComponent.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Components/DMFPlayerAvatarComponent.cpp"
+#include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Components/DMFPlayerDigimonComponent.cpp"

@@ -352,6 +352,7 @@ private:
     void RestoreWorldChatInputMode();
     bool IsMandatoryPlayerSkinSelectionActive() const;
     FString SanitizeWorldChatMessage(const FString& Message) const;
+    void PlayWorldChatPresenceSound(EDMFWorldChatMessageType MessageType) const;
 
     void HandleDefaultTargetInput();
     void HandleWorldChatInput();

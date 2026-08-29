@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1820,
-  "VersionName": "0.18.2-alpha",
+  "Version": 1850,
+  "VersionName": "0.18.5-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with authenticated reconnects sourced exclusively from durable server account persistence, disconnect-safe account commits and partner cleanup, replicated rotating Digimon vendor economy and native BUY/SELL UI, network-smoothing-compatible swimming, persistent underwater presentation, Day/Night world time, combat, DigiDex, Digivolution, Party/Bank, Care and Scan/Materialization.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with authenticated replicated WORLD-chat join/leave presence announcements, globally configurable per-event sounds, polished green/red native presence styling, a server-enforced Project Settings maximum-player cap, durable reconnect/persistence authority, polished BUY/SELL Digimon vendor UI, replicated vendor economy, swimming/underwater presentation, Day/Night world time, combat, DigiDex, Digivolution, Party/Bank, Care and Scan/Materialization.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

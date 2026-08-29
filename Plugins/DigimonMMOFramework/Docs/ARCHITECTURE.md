@@ -1,5 +1,14 @@
 # Architecture
 
+## Authenticated WORLD-chat presence presentation (v0.18.5)
+
+- **Authority:** `ADMFMMOGameMode` owns presence creation at successful `PostLogin` and `Logout`; clients cannot submit username/type.
+- **Payload:** existing `FDMFWorldChatMessage`, with appended `PlayerJoined` / `PlayerLeft` message types. Existing `Player` / `System` ordinal values are unchanged.
+- **Transport:** existing reliable owner-client `ClientReceiveWorldChatMessage` fan-out; no multicast, replicated history array or new RPC.
+- **History:** presence rows share the bounded transient GameMode history and are not written to SaveGame.
+- **Audio:** the live client-receive path resolves the Project Settings soft sound asset and plays one local 2D cue. History hydration is silent by design.
+- **Native UI:** join username uses `DMFNativeUI::Success`; departure username/body use `DMFNativeUI::Danger`. Blueprint widget children can branch on `MessageType` without replacing networking.
+
 ## v0.16 shared Day/Night world-time architecture
 
 `ADMFDayNightSky` is one replicated map actor and the authority boundary for world time. The server/host owns either the authority PC clock or the accelerated simulated anchor. Clients receive only compact time-source/hour/day/server-timestamp/day-phase state and interpolate presentation locally from `AGameStateBase::GetServerWorldTimeSeconds()`. Sun/moon transforms and material parameter updates are local presentation; they are not replicated component-by-component.

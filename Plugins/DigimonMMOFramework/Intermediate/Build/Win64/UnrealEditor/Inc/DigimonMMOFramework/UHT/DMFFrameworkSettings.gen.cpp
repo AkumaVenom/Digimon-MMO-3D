@@ -875,6 +875,82 @@ struct UHT_STATICS
 		{ "ToolTip", "Native fallback is supplied; assign a Blueprint child to reskin chat without replacing validation/networking." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableWorldChatPresenceAnnouncements_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Automatically publish authenticated join/relogin and leave events into WORLD chat from server login/logout authority. */" },
+#endif
+		{ "DisplayName", "Announce Player Join / Leave" },
+		{ "EditCondition", "bEnableWorldChat" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Automatically publish authenticated join/relogin and leave events into WORLD chat from server login/logout authority." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableWorldChatPresenceSounds_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Play the configured join/leave cue locally when a live server presence event is received. History replay never triggers audio. */" },
+#endif
+		{ "DisplayName", "Play Player Join / Leave Sounds" },
+		{ "EditCondition", "bEnableWorldChat && bEnableWorldChatPresenceAnnouncements" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Play the configured join/leave cue locally when a live server presence event is received. History replay never triggers audio." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatPlayerJoinedSound_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global 2D Sound Cue/Wave played once on every connected recipient when an authenticated player joins or relogs. */" },
+#endif
+		{ "DisplayName", "Player Joined Server Sound" },
+		{ "EditCondition", "bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global 2D Sound Cue/Wave played once on every connected recipient when an authenticated player joins or relogs." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatPlayerLeftSound_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence|Audio" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global 2D Sound Cue/Wave played once on every remaining connected recipient when an authenticated player leaves. */" },
+#endif
+		{ "DisplayName", "Player Left Server Sound" },
+		{ "EditCondition", "bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global 2D Sound Cue/Wave played once on every remaining connected recipient when an authenticated player leaves." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatPresenceSoundVolumeMultiplier_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence|Audio" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shared gain applied to both live world-chat presence sounds after any Sound Cue-authored volume. */" },
+#endif
+		{ "DisplayName", "Presence Sound Volume Multiplier" },
+		{ "EditCondition", "bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shared gain applied to both live world-chat presence sounds after any Sound Cue-authored volume." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatPresenceSoundPitchMultiplier_MetaData[] = {
+		{ "Category", "UI|World Chat|Presence|Audio" },
+		{ "ClampMax", "4.0" },
+		{ "ClampMin", "0.25" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shared pitch multiplier applied to both live world-chat presence sounds after any Sound Cue-authored pitch. */" },
+#endif
+		{ "DisplayName", "Presence Sound Pitch Multiplier" },
+		{ "EditCondition", "bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shared pitch multiplier applied to both live world-chat presence sounds after any Sound Cue-authored pitch." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_WorldChatMaxMessageLength_MetaData[] = {
 		{ "Category", "UI|World Chat|Safety" },
 		{ "ClampMax", "1000" },
@@ -1754,6 +1830,18 @@ struct UHT_STATICS
 		{ "ToolTip", "Connection port appended to Server Public Address for Join Game. It must match the port exposed/forwarded by the host deployment." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GlobalMaxPlayers_MetaData[] = {
+		{ "Category", "Networking|Server Capacity" },
+		{ "ClampMax", "10000" },
+		{ "ClampMin", "1" },
+		{ "DisplayName", "Global Maximum Players" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum number of simultaneously connected gameplay players allowed on the authoritative server. The listen host counts as one player. Default: 100." },
+#endif
+		{ "UIMax", "1000" },
+		{ "UIMin", "1" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AdminHostingPasswordInput_MetaData[] = {
 		{ "Category", "Networking|Admin Hosting" },
 		{ "DisplayName", "Set Admin Hosting Password" },
@@ -1949,6 +2037,20 @@ struct UHT_STATICS
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultWorldChatInput;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_WorldChatWidgetClass;
+	static void NewProp_bEnableWorldChatPresenceAnnouncements_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableWorldChatPresenceAnnouncements = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableWorldChatPresenceAnnouncements;
+	static void NewProp_bEnableWorldChatPresenceSounds_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableWorldChatPresenceSounds = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableWorldChatPresenceSounds;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_WorldChatPlayerJoinedSound;
+	static const UECodeGen_Private::FSoftObjectPropertyParams NewProp_WorldChatPlayerLeftSound;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_WorldChatPresenceSoundVolumeMultiplier;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_WorldChatPresenceSoundPitchMultiplier;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatMaxMessageLength;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatClientHistoryLimit;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_WorldChatServerHistoryLimit;
@@ -2143,6 +2245,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bUseDedicatedNewPlayerSpawn;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_ServerPublicAddress;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_GamePort;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_GlobalMaxPlayers;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_AdminHostingPasswordInput;
 	static const UECodeGen_Private::FStrPropertyParams NewProp_AdminHostingPasswordDigest;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
@@ -2233,6 +2336,12 @@ const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeSca
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldChat = { "bEnableWorldChat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldChat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldChat_MetaData), NewProp_bEnableWorldChat_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultWorldChatInput = { "bEnableDefaultWorldChatInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultWorldChatInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultWorldChatInput_MetaData), NewProp_bEnableDefaultWorldChatInput_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_WorldChatWidgetClass = { "WorldChatWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFWorldChatWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatWidgetClass_MetaData), NewProp_WorldChatWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldChatPresenceAnnouncements = { "bEnableWorldChatPresenceAnnouncements", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldChatPresenceAnnouncements_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldChatPresenceAnnouncements_MetaData), NewProp_bEnableWorldChatPresenceAnnouncements_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldChatPresenceSounds = { "bEnableWorldChatPresenceSounds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldChatPresenceSounds_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldChatPresenceSounds_MetaData), NewProp_bEnableWorldChatPresenceSounds_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_WorldChatPlayerJoinedSound = { "WorldChatPlayerJoinedSound", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatPlayerJoinedSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatPlayerJoinedSound_MetaData), NewProp_WorldChatPlayerJoinedSound_MetaData) };
+const UECodeGen_Private::FSoftObjectPropertyParams UHT_STATICS::NewProp_WorldChatPlayerLeftSound = { "WorldChatPlayerLeftSound", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::SoftObject, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatPlayerLeftSound), Z_Construct_UClass_USoundBase, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatPlayerLeftSound_MetaData), NewProp_WorldChatPlayerLeftSound_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WorldChatPresenceSoundVolumeMultiplier = { "WorldChatPresenceSoundVolumeMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatPresenceSoundVolumeMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatPresenceSoundVolumeMultiplier_MetaData), NewProp_WorldChatPresenceSoundVolumeMultiplier_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_WorldChatPresenceSoundPitchMultiplier = { "WorldChatPresenceSoundPitchMultiplier", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatPresenceSoundPitchMultiplier), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatPresenceSoundPitchMultiplier_MetaData), NewProp_WorldChatPresenceSoundPitchMultiplier_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatMaxMessageLength = { "WorldChatMaxMessageLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatMaxMessageLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatMaxMessageLength_MetaData), NewProp_WorldChatMaxMessageLength_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatClientHistoryLimit = { "WorldChatClientHistoryLimit", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatClientHistoryLimit), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatClientHistoryLimit_MetaData), NewProp_WorldChatClientHistoryLimit_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_WorldChatServerHistoryLimit = { "WorldChatServerHistoryLimit", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, WorldChatServerHistoryLimit), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_WorldChatServerHistoryLimit_MetaData), NewProp_WorldChatServerHistoryLimit_MetaData) };
@@ -2319,6 +2428,7 @@ const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerW
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn = { "bUseDedicatedNewPlayerSpawn", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bUseDedicatedNewPlayerSpawn_MetaData), NewProp_bUseDedicatedNewPlayerSpawn_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_ServerPublicAddress = { "ServerPublicAddress", nullptr, (EPropertyFlags)0x0010000000004001, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ServerPublicAddress), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ServerPublicAddress_MetaData), NewProp_ServerPublicAddress_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_GamePort = { "GamePort", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, GamePort), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GamePort_MetaData), NewProp_GamePort_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_GlobalMaxPlayers = { "GlobalMaxPlayers", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, GlobalMaxPlayers), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GlobalMaxPlayers_MetaData), NewProp_GlobalMaxPlayers_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AdminHostingPasswordInput = { "AdminHostingPasswordInput", nullptr, (EPropertyFlags)0x0010000000002001, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AdminHostingPasswordInput), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AdminHostingPasswordInput_MetaData), NewProp_AdminHostingPasswordInput_MetaData) };
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_AdminHostingPasswordDigest = { "AdminHostingPasswordDigest", nullptr, (EPropertyFlags)0x0010000000004000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, AdminHostingPasswordDigest), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AdminHostingPasswordDigest_MetaData), NewProp_AdminHostingPasswordDigest_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
@@ -2400,6 +2510,12 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldChat,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultWorldChatInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldChatPresenceAnnouncements,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldChatPresenceSounds,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatPlayerJoinedSound,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatPlayerLeftSound,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatPresenceSoundVolumeMultiplier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatPresenceSoundPitchMultiplier,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatMaxMessageLength,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatClientHistoryLimit,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_WorldChatServerHistoryLimit,
@@ -2486,6 +2602,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bUseDedicatedNewPlayerSpawn,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ServerPublicAddress,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GamePort,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GlobalMaxPlayers,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AdminHostingPasswordInput,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_AdminHostingPasswordDigest,
 };
@@ -2557,10 +2674,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3814845999U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3193858331U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_3e95bcb0135cdcc7d73ed6b0b3fea8ca5adf20f9{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_53e9871981e8679e9c86e64a2c1375eeb5e18900{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

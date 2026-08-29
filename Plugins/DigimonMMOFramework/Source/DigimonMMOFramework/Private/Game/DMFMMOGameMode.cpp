@@ -16,6 +16,7 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/GameSession.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 
@@ -26,9 +27,33 @@ ADMFMMOGameMode::ADMFMMOGameMode()
     DefaultPawnClass = ADMFPlayerAvatarCharacter::StaticClass();
 }
 
+int32 ADMFMMOGameMode::ResolveConfiguredMaximumPlayers() const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    return Settings ? FMath::Clamp(Settings->GlobalMaxPlayers, 1, 10000) : 100;
+}
+
+void ADMFMMOGameMode::ApplyConfiguredPlayerCapacity()
+{
+    if (GameSession)
+    {
+        // Reassert the deployment setting on authority instead of trusting a client-supplied URL option.
+        // AGameMode::PreLogin subsequently asks GameSession to approve the connection and enforces MaxPlayers.
+        GameSession->MaxPlayers = ResolveConfiguredMaximumPlayers();
+    }
+}
+
 void ADMFMMOGameMode::StartPlay()
 {
     Super::StartPlay();
+
+    ApplyConfiguredPlayerCapacity();
+    if (HasAuthority())
+    {
+        UE_LOG(LogDigimonMMOFramework, Log,
+            TEXT("Authoritative server player capacity initialized to %d simultaneous player(s)."),
+            ResolveConfiguredMaximumPlayers());
+    }
 
     if (GetNetMode() == NM_Standalone)
     {
@@ -77,9 +102,22 @@ bool ADMFMMOGameMode::ValidateCredentialsFromOptions(const FString& Options, FSt
 
 void ADMFMMOGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
+    // Apply the server-owned Project Settings capacity immediately before Unreal's normal GameSession approval.
+    // This deliberately occurs before Super::PreLogin so AGameSession::ApproveLogin/AtCapacity uses the DMF cap.
+    // Reapplying it per connection also prevents a manually crafted client URL from changing server capacity.
+    ApplyConfiguredPlayerCapacity();
+    const int32 PlayersBeforeLogin = GetNumPlayers();
+    const int32 MaximumPlayers = ResolveConfiguredMaximumPlayers();
+
     Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
     if (!ErrorMessage.IsEmpty())
     {
+        if (PlayersBeforeLogin >= MaximumPlayers)
+        {
+            UE_LOG(LogDigimonMMOFramework, Log,
+                TEXT("Rejected incoming connection because the server is at player capacity (%d/%d)."),
+                PlayersBeforeLogin, MaximumPlayers);
+        }
         return;
     }
 
@@ -173,6 +211,48 @@ bool ADMFMMOGameMode::HasFrameworkPlayerAvatar(APlayerController* PlayerControll
     return PlayerController && IsValid(Cast<ADMFPlayerAvatarCharacter>(PlayerController->GetPawn()));
 }
 
+bool ADMFMMOGameMode::DispatchWorldChatMessage(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* EventSourceController)
+{
+    if (!HasAuthority() || ChatMessage.Message.IsEmpty())
+    {
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableWorldChat)
+    {
+        return false;
+    }
+
+    const int32 HistoryLimit = Settings ? FMath::Clamp(Settings->WorldChatServerHistoryLimit, 0, 250) : 50;
+    if (HistoryLimit > 0)
+    {
+        RecentWorldChatMessages.Add(ChatMessage);
+        while (RecentWorldChatMessages.Num() > HistoryLimit)
+        {
+            RecentWorldChatMessages.RemoveAt(0);
+        }
+    }
+    else
+    {
+        RecentWorldChatMessages.Reset();
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+        {
+            if (ADMFMMOPlayerController* Recipient = Cast<ADMFMMOPlayerController>(Iterator->Get()))
+            {
+                Recipient->ClientReceiveWorldChatMessage(ChatMessage);
+            }
+        }
+    }
+
+    BP_OnWorldChatMessageAccepted(ChatMessage, EventSourceController);
+    return true;
+}
+
 bool ADMFMMOGameMode::BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderController, const FString& SanitizedMessage)
 {
     if (!HasAuthority() || !IsValid(SenderController) || SanitizedMessage.IsEmpty())
@@ -204,34 +284,51 @@ bool ADMFMMOGameMode::BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderC
     ChatMessage.Message = SanitizedMessage;
     ChatMessage.SentUtcTicks = FDateTime::UtcNow().GetTicks();
     ChatMessage.MessageType = EDMFWorldChatMessageType::Player;
+    return DispatchWorldChatMessage(ChatMessage, SenderController);
+}
 
-    const int32 HistoryLimit = Settings ? FMath::Clamp(Settings->WorldChatServerHistoryLimit, 0, 250) : 50;
-    if (HistoryLimit > 0)
+bool ADMFMMOGameMode::BroadcastWorldChatPresenceEvent(ADMFMMOPlayerController* SubjectController, const EDMFWorldChatMessageType PresenceType)
+{
+    if (!HasAuthority() || !IsValid(SubjectController)
+        || (PresenceType != EDMFWorldChatMessageType::PlayerJoined && PresenceType != EDMFWorldChatMessageType::PlayerLeft))
     {
-        RecentWorldChatMessages.Add(ChatMessage);
-        while (RecentWorldChatMessages.Num() > HistoryLimit)
-        {
-            RecentWorldChatMessages.RemoveAt(0);
-        }
-    }
-    else
-    {
-        RecentWorldChatMessages.Reset();
+        return false;
     }
 
-    if (UWorld* World = GetWorld())
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && (!Settings->bEnableWorldChat || !Settings->bEnableWorldChatPresenceAnnouncements))
     {
-        for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
-        {
-            if (ADMFMMOPlayerController* Recipient = Cast<ADMFMMOPlayerController>(Iterator->Get()))
-            {
-                Recipient->ClientReceiveWorldChatMessage(ChatMessage);
-            }
-        }
+        return false;
     }
 
-    BP_OnWorldChatMessageAccepted(ChatMessage, SenderController);
-    return true;
+    const ADMFPlayerState* SubjectPlayerState = SubjectController->GetPlayerState<ADMFPlayerState>();
+    if (!SubjectPlayerState)
+    {
+        return false;
+    }
+
+    // Presence identity comes from the authenticated owner-only account value while it still exists on authority.
+    // PlayerName is only a defensive public-display fallback; clients never supply the event username.
+    FString PublicUsername = SubjectPlayerState->GetAuthenticatedUsername();
+    PublicUsername.TrimStartAndEndInline();
+    if (PublicUsername.IsEmpty())
+    {
+        PublicUsername = SubjectPlayerState->GetPlayerName();
+        PublicUsername.TrimStartAndEndInline();
+    }
+    if (PublicUsername.IsEmpty())
+    {
+        return false;
+    }
+
+    FDMFWorldChatMessage ChatMessage;
+    ChatMessage.SenderName = PublicUsername;
+    ChatMessage.Message = PresenceType == EDMFWorldChatMessageType::PlayerJoined
+        ? TEXT("has joined the server.")
+        : TEXT("has left the server.");
+    ChatMessage.SentUtcTicks = FDateTime::UtcNow().GetTicks();
+    ChatMessage.MessageType = PresenceType;
+    return DispatchWorldChatMessage(ChatMessage, SubjectController);
 }
 
 void ADMFMMOGameMode::SendRecentWorldChatHistory(ADMFMMOPlayerController* RecipientController) const
@@ -850,6 +947,13 @@ void ADMFMMOGameMode::PostLogin(APlayerController* NewPlayer)
     {
         RehydrateAuthenticatedPlayerState(NewPlayer, TEXT("PostLogin integrity"));
     }
+
+    // PostLogin is Unreal's first authoritative point at which it is safe to address the owning PlayerController.
+    // Announce only after DMF account integrity has been restored so reconnects always use the authenticated username.
+    if (ADMFMMOPlayerController* MMOController = Cast<ADMFMMOPlayerController>(NewPlayer))
+    {
+        BroadcastWorldChatPresenceEvent(MMOController, EDMFWorldChatMessageType::PlayerJoined);
+    }
 }
 
 void ADMFMMOGameMode::AddInactivePlayer(APlayerState* PlayerState, APlayerController* PC)
@@ -984,6 +1088,13 @@ void ADMFMMOGameMode::Logout(AController* Exiting)
         // Canonical disconnect transaction MUST happen before Super::Logout, because Unreal may detach/retain
         // PlayerState/Pawn objects as part of the inactive-player lifecycle after this point.
         FinalizeAuthenticatedPlayerSession(PC);
+
+        // Broadcast while the authenticated PlayerState still exists. Remaining peers receive the reliable event
+        // before Unreal removes this controller from the authoritative world/controller list.
+        if (ADMFMMOPlayerController* MMOController = Cast<ADMFMMOPlayerController>(PC))
+        {
+            BroadcastWorldChatPresenceEvent(MMOController, EDMFWorldChatMessageType::PlayerLeft);
+        }
     }
 
     Super::Logout(Exiting);

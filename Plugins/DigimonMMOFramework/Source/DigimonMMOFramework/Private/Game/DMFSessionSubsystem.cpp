@@ -260,10 +260,15 @@ bool UDMFSessionSubsystem::HostAndPlay(FText& OutMessage)
         return false;
     }
 
-    const FString Options = TEXT("listen") + BuildTravelOptions(true);
+    const int32 MaximumPlayers = FMath::Clamp(Settings->GlobalMaxPlayers, 1, 10000);
+
+    // Seed Unreal's native GameSession capacity as the gameplay world is created. DMFMMOGameMode also
+    // reasserts the Project Settings value before every PreLogin, so a client URL can never override it.
+    const FString Options = FString::Printf(TEXT("listen?MaxPlayers=%d"), MaximumPlayers) + BuildTravelOptions(true);
     UGameplayStatics::OpenLevel(World, FName(*PackageName), true, Options);
     OutMessage = FText::Format(
-        NSLOCTEXT("DMF", "Hosting", "Starting authoritative listen host. Configured player endpoint: {0}"),
+        NSLOCTEXT("DMF", "Hosting", "Starting authoritative listen host for up to {0} players. Configured player endpoint: {1}"),
+        FText::AsNumber(MaximumPlayers),
         FText::FromString(ConfiguredServerAddress));
     BroadcastStatus(OutMessage);
     return true;

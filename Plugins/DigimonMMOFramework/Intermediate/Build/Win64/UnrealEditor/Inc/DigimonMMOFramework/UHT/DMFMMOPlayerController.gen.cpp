@@ -129,7 +129,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Delegate FDMFWorldChatMessageReceived Property Definitions *********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFWorldChatMessageReceived_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(_Script_DigimonMMOFramework_eventDMFWorldChatMessageReceived_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessage,
 };
@@ -492,8 +492,8 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function ClientReceiveWorldChatHistory Property Definitions ********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessages_Inner = { "ChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ChatMessages = { "ChatMessages", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientReceiveWorldChatHistory_Parms, ChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessages_MetaData), NewProp_ChatMessages_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessages_Inner = { "ChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_ChatMessages = { "ChatMessages", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientReceiveWorldChatHistory_Parms, ChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessages_MetaData), NewProp_ChatMessages_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessages_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessages,
@@ -558,7 +558,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function ClientReceiveWorldChatMessage Property Definitions ********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientReceiveWorldChatMessage_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000082, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOPlayerController_eventClientReceiveWorldChatMessage_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessage,
 };
@@ -4132,8 +4132,8 @@ struct UHT_STATICS
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientDigimonVendorTransactionResult, "ClientDigimonVendorTransactionResult" }, // 8d96dbfef83e61721b7003b7c3a5dadfb6073fb4
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientHealerInteractionResult, "ClientHealerInteractionResult" }, // fd0bd79f47752d4aeb3d61f8889502552ad8dfd2
-		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatHistory, "ClientReceiveWorldChatHistory" }, // 6057cac47a039332944027e85681a915fce91bcc
-		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatMessage, "ClientReceiveWorldChatMessage" }, // dd21e14e744731cdaa9eab03158211713f8a27c9
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatHistory, "ClientReceiveWorldChatHistory" }, // 481adb314c36a01ef2bbe7987b5fd35b3633744d
+		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReceiveWorldChatMessage, "ClientReceiveWorldChatMessage" }, // e5dc158b8d2dc5069fd5cf31d0673ae4754ddec7
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientReturnHomeResult, "ClientReturnHomeResult" }, // 912c5177039d04dd476918dbeb5b7bbe1765a362
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_ClientWorldChatSendRejected, "ClientWorldChatSendRejected" }, // fe92f9e1dfd43bc01b0516e4be75a84702aa5424
 		{ &Z_Construct_UFunction_ADMFMMOPlayerController_CloseDigimonInventoryUI, "CloseDigimonInventoryUI" }, // 9bdf8979d95ee2d0690ca274ebd92aeebb491e59
@@ -4211,7 +4211,7 @@ struct UHT_STATICS
 // ********** Begin Class ADMFMMOPlayerController Property Definitions *****************************
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnHealerInteractionResult = { "OnHealerInteractionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnHealerInteractionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHealerInteractionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnHealerInteractionResult_MetaData), NewProp_OnHealerInteractionResult_MetaData) }; // 9ba86616cb8239af890236ec23f5944e3890a6ae
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnHomeTeleportResult = { "OnHomeTeleportResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnHomeTeleportResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFHomeTeleportResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnHomeTeleportResult_MetaData), NewProp_OnHomeTeleportResult_MetaData) }; // d8221dc513c60c1c4398e8dba5368e7d9b57428e
-const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnWorldChatMessageReceived = { "OnWorldChatMessageReceived", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnWorldChatMessageReceived), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnWorldChatMessageReceived_MetaData), NewProp_OnWorldChatMessageReceived_MetaData) }; // 94761aafd38e174865aca0bf93f8a0402e5c870a
+const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnWorldChatMessageReceived = { "OnWorldChatMessageReceived", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnWorldChatMessageReceived), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFWorldChatMessageReceived__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnWorldChatMessageReceived_MetaData), NewProp_OnWorldChatMessageReceived_MetaData) }; // 8eb9e70b56806831351d4abdd77ddd37008344d8
 const UECodeGen_Private::FMulticastDelegatePropertyParams UHT_STATICS::NewProp_OnDigimonVendorTransactionResult = { "OnDigimonVendorTransactionResult", nullptr, (EPropertyFlags)0x0010000010080000, UECodeGen_Private::EPropertyGenFlags::InlineMulticastDelegate, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, OnDigimonVendorTransactionResult), Z_Construct_UDelegateFunction_DigimonMMOFramework_DMFDigimonVendorTransactionResult__DelegateSignature, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OnDigimonVendorTransactionResult_MetaData), NewProp_OnDigimonVendorTransactionResult_MetaData) }; // a15751fae7c91e1b0be6573a26643bec28dea23d
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_StarterWidget = { "StarterWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, StarterWidget), Z_Construct_UClass_UDMFStarterSelectionWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StarterWidget_MetaData), NewProp_StarterWidget_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidget = { "CombatQuickBarWidget", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOPlayerController, CombatQuickBarWidget), Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidget_MetaData), NewProp_CombatQuickBarWidget_MetaData) };
@@ -4317,10 +4317,10 @@ ADMFMMOPlayerController::~ADMFMMOPlayerController() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 3689544843U) },
+		{ Z_Construct_UClass_ADMFMMOPlayerController, TEXT("ADMFMMOPlayerController"), &Z_Registration_Info_UClass_ADMFMMOPlayerController, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOPlayerController), 4267389494U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_88a46951496fc7c3deefa92ce5c99e7ea2d89b53{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h__Script_DigimonMMOFramework_c67a391b5d3cc658d13a1341cd0191d7533977b2{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

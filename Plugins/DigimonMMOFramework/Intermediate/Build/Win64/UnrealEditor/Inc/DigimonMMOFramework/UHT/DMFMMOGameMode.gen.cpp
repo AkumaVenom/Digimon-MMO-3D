@@ -23,6 +23,7 @@ ENGINE_API UClass* Z_Construct_UClass_APlayerController(ETypeConstructPhase);
 UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFNewPlayerStart(ETypeConstructPhase);
@@ -300,7 +301,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function BP_OnWorldChatMessageAccepted Property Definitions ********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnWorldChatMessageAccepted_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_ChatMessage = { "ChatMessage", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnWorldChatMessageAccepted_Parms, ChatMessage), Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChatMessage_MetaData), NewProp_ChatMessage_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SenderController = { "SenderController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBP_OnWorldChatMessageAccepted_Parms, SenderController), Z_Construct_UClass_ADMFMMOPlayerController, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ChatMessage,
@@ -397,6 +398,82 @@ DEFINE_FUNCTION(ADMFMMOGameMode::execBroadcastWorldChatMessage)
 	P_NATIVE_END;
 }
 // ********** End Class ADMFMMOGameMode Function BroadcastWorldChatMessage *************************
+
+// ********** Begin Class ADMFMMOGameMode Function BroadcastWorldChatPresenceEvent *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatPresenceEvent_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms
+	{
+		ADMFMMOPlayerController* SubjectController;
+		EDMFWorldChatMessageType PresenceType;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|World Chat" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Publishes a server-authored authenticated join/leave presence event through the same reliable WORLD chat stream. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Publishes a server-authored authenticated join/leave presence event through the same reliable WORLD chat stream." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function BroadcastWorldChatPresenceEvent constinit property declarations *******
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SubjectController;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_PresenceType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_PresenceType;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function BroadcastWorldChatPresenceEvent constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function BroadcastWorldChatPresenceEvent Property Definitions ******************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SubjectController = { "SubjectController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms, SubjectController), Z_Construct_UClass_ADMFMMOPlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_PresenceType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_PresenceType = { "PresenceType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms, PresenceType), Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, METADATA_PARAMS(0, nullptr) }; // a3bccc811944b4ddc9c67203af43a5c7b50c4534
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SubjectController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PresenceType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PresenceType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function BroadcastWorldChatPresenceEvent Property Definitions ********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "BroadcastWorldChatPresenceEvent", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOGameMode_eventBroadcastWorldChatPresenceEvent_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatPresenceEvent(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execBroadcastWorldChatPresenceEvent)
+{
+	P_GET_OBJECT(ADMFMMOPlayerController,Z_Param_SubjectController);
+	P_GET_ENUM(EDMFWorldChatMessageType,Z_Param_PresenceType);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->BroadcastWorldChatPresenceEvent(Z_Param_SubjectController,EDMFWorldChatMessageType(Z_Param_PresenceType));
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function BroadcastWorldChatPresenceEvent *******************
 
 // ********** Begin Class ADMFMMOGameMode Function ChooseNewPlayerSpawnPoint ***********************
 struct DMFMMOGameMode_eventChooseNewPlayerSpawnPoint_Parms
@@ -849,6 +926,7 @@ struct UHT_STATICS
 // ********** End Class ADMFMMOGameMode constinit property declarations ****************************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("BroadcastWorldChatMessage"), .Pointer = &ADMFMMOGameMode::execBroadcastWorldChatMessage },
+		{ .NameUTF8 = UTF8TEXT("BroadcastWorldChatPresenceEvent"), .Pointer = &ADMFMMOGameMode::execBroadcastWorldChatPresenceEvent },
 		{ .NameUTF8 = UTF8TEXT("ChooseNewPlayerSpawnPoint"), .Pointer = &ADMFMMOGameMode::execChooseNewPlayerSpawnPoint },
 		{ .NameUTF8 = UTF8TEXT("EnsureFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execEnsureFrameworkPlayerAvatar },
 		{ .NameUTF8 = UTF8TEXT("HasFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execHasFrameworkPlayerAvatar },
@@ -861,8 +939,9 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnFrameworkPlayerAvatarRecovered, "BP_OnFrameworkPlayerAvatarRecovered" }, // 6f0ea1ae4023958db8fa133b8be0b1c83968dc61
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnInitialPlayerWorldLocationApplied, "BP_OnInitialPlayerWorldLocationApplied" }, // d3466876be1a9936c6b4d1848f2693531c190ec9
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnPlayerAccountLoaded, "BP_OnPlayerAccountLoaded" }, // f02a391e4384c986783ae67a84e773493f474b6f
-		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnWorldChatMessageAccepted, "BP_OnWorldChatMessageAccepted" }, // fca3160cc0add056c954ae9d55e825026fae0c9e
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_BP_OnWorldChatMessageAccepted, "BP_OnWorldChatMessageAccepted" }, // fdb398a7c13f3d8da65646dbecc9d4a70d4d3f4b
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatMessage, "BroadcastWorldChatMessage" }, // 427ec194ea62c18be7eea2514fba7956455df193
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatPresenceEvent, "BroadcastWorldChatPresenceEvent" }, // 0f22a871606faae8916ea71bdab4014005a7a454
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint, "ChooseNewPlayerSpawnPoint" }, // 1db62d1a8957614b462cb76c54550f9b89e838ac
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_EnsureFrameworkPlayerAvatar, "EnsureFrameworkPlayerAvatar" }, // 7ccb9f3f91f51e0daedd94afae698fc94df920fa
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_HasFrameworkPlayerAvatar, "HasFrameworkPlayerAvatar" }, // 8494791abd92585c160a0fb97479552e9dc7af1c
@@ -878,8 +957,8 @@ struct UHT_STATICS
 }; // struct UHT_STATICS
 
 // ********** Begin Class ADMFMMOGameMode Property Definitions *************************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_RecentWorldChatMessages_Inner = { "RecentWorldChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
-const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_RecentWorldChatMessages = { "RecentWorldChatMessages", nullptr, (EPropertyFlags)0x0040000000002000, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOGameMode, RecentWorldChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RecentWorldChatMessages_MetaData), NewProp_RecentWorldChatMessages_MetaData) }; // bcb0c6d062a83d58a8e86d31347a72e076749d4e
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_RecentWorldChatMessages_Inner = { "RecentWorldChatMessages", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFWorldChatMessage, METADATA_PARAMS(0, nullptr) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_RecentWorldChatMessages = { "RecentWorldChatMessages", nullptr, (EPropertyFlags)0x0040000000002000, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(ADMFMMOGameMode, RecentWorldChatMessages), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RecentWorldChatMessages_MetaData), NewProp_RecentWorldChatMessages_MetaData) }; // b82f86f3fb3e358f6bcad1cb30404f77a3b069cd
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RecentWorldChatMessages_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RecentWorldChatMessages,
@@ -957,10 +1036,10 @@ ADMFMMOGameMode::~ADMFMMOGameMode() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 1513580599U) },
+		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 4226536178U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_ef8c2415404b0d897f9175694ea46a0c44ec9a12{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_1d93a002d71e743972c76daf4528743b86fbdcd6{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

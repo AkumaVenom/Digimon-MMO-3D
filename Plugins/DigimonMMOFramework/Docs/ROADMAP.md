@@ -81,6 +81,7 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Blueprint-reskinnable widget/events plus a master global enable switch and configurable history/safety limits.
 - v0.10.1 native HUD safe-layout keeps WORLD chat above/clear of the centered partner quick-access bar with a configurable bottom offset.
 - v0.10.2 centralizes the admin-host/player-join public endpoint in Project Settings; v0.10.3 also makes the Admin Host & Play password Project Settings-configurable with digest-only persistence, removing the remaining source edit from frontend deployment setup while preserving the authoritative listen-server flow.
+- v0.18.4 adds a server-authoritative global maximum-player capacity under Project Settings (default 100), seeded into native GameSession at host startup and reasserted before every PreLogin so client travel options cannot raise the deployment cap.
 - Future channel/guild/private-message/backend routing can extend the accepted-message hook without moving authority into UI.
 
 ## Phase 4 — Digimon Party & collection UX (major storage milestone implemented in v0.12.0-alpha)

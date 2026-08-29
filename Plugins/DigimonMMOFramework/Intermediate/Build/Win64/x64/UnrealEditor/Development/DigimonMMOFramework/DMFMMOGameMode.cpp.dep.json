@@ -96,7 +96,9 @@
             "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystaticstypes.generated.h",
             "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystatics.generated.h",
             "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\public\\engineutils.h",
-            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\core\\public\\misc\\stringoutputdevice.h"
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\core\\public\\misc\\stringoutputdevice.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamesession.h",
+            "c:\\program files\\epic games\\ue_5.8\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gamesession.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

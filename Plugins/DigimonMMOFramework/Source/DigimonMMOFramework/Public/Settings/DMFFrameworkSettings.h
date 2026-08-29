@@ -355,6 +355,30 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat", meta=(EditCondition="bEnableWorldChat"))
     TSubclassOf<UDMFWorldChatWidget> WorldChatWidgetClass;
 
+    /** Automatically publish authenticated join/relogin and leave events into WORLD chat from server login/logout authority. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence", meta=(EditCondition="bEnableWorldChat", DisplayName="Announce Player Join / Leave"))
+    bool bEnableWorldChatPresenceAnnouncements = true;
+
+    /** Play the configured join/leave cue locally when a live server presence event is received. History replay never triggers audio. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence|Audio", meta=(EditCondition="bEnableWorldChat && bEnableWorldChatPresenceAnnouncements", DisplayName="Play Player Join / Leave Sounds"))
+    bool bEnableWorldChatPresenceSounds = true;
+
+    /** Global 2D Sound Cue/Wave played once on every connected recipient when an authenticated player joins or relogs. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence|Audio", meta=(EditCondition="bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds", DisplayName="Player Joined Server Sound"))
+    TSoftObjectPtr<USoundBase> WorldChatPlayerJoinedSound;
+
+    /** Global 2D Sound Cue/Wave played once on every remaining connected recipient when an authenticated player leaves. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence|Audio", meta=(EditCondition="bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds", DisplayName="Player Left Server Sound"))
+    TSoftObjectPtr<USoundBase> WorldChatPlayerLeftSound;
+
+    /** Shared gain applied to both live world-chat presence sounds after any Sound Cue-authored volume. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence|Audio", meta=(EditCondition="bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds", ClampMin="0.0", ClampMax="4.0", DisplayName="Presence Sound Volume Multiplier"))
+    float WorldChatPresenceSoundVolumeMultiplier = 1.0f;
+
+    /** Shared pitch multiplier applied to both live world-chat presence sounds after any Sound Cue-authored pitch. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Presence|Audio", meta=(EditCondition="bEnableWorldChat && bEnableWorldChatPresenceAnnouncements && bEnableWorldChatPresenceSounds", ClampMin="0.25", ClampMax="4.0", DisplayName="Presence Sound Pitch Multiplier"))
+    float WorldChatPresenceSoundPitchMultiplier = 1.0f;
+
     /** Maximum accepted player message length after server sanitation. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|World Chat|Safety", meta=(EditCondition="bEnableWorldChat", ClampMin="32", ClampMax="1000"))
     int32 WorldChatMaxMessageLength = 220;
@@ -693,6 +717,14 @@ public:
     /** Connection port appended to Server Public Address for Join Game. It must match the port exposed/forwarded by the host deployment. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Networking|Server Endpoint", meta=(DisplayName="Game Port", ClampMin="1", ClampMax="65535"))
     int32 GamePort = 7777;
+
+    /**
+     * Global server-authoritative cap for simultaneously connected gameplay players.
+     * The listen host consumes one slot. New connections are refused by GameSession once this limit is reached;
+     * existing connected players are never kicked merely because an editor/runtime config change lowers the cap.
+     */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Networking|Server Capacity", meta=(DisplayName="Global Maximum Players", ClampMin="1", ClampMax="10000", UIMin="1", UIMax="1000", ToolTip="Maximum number of simultaneously connected gameplay players allowed on the authoritative server. The listen host counts as one player. Default: 100."))
+    int32 GlobalMaxPlayers = 100;
 
     /**
      * Editor-only password setter for the local Admin Host & Play gate.

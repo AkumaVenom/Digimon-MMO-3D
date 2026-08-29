@@ -182,7 +182,11 @@ void UDMFDigimonVendorWidget::BuildNativeFallbackUI()
     if (UOverlaySlot* S = Root->AddChildToOverlay(Scale)) { S->SetHorizontalAlignment(HAlign_Center); S->SetVerticalAlignment(VAlign_Center); S->SetPadding(FMargin(24.0f)); }
 
     USizeBox* WindowSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorWindowSize"));
-    WindowSize->SetWidthOverride(1180.0f); WindowSize->SetHeightOverride(720.0f); Scale->AddChild(WindowSize);
+    // Keep a generous authored layout and let the ScaleBox reduce it only on smaller displays.
+    // The previous 1180x720 layout compressed the right-hand details stack below its desired
+    // height, allowing text to paint through neighbouring widgets. The wider/taller authored
+    // canvas plus a dedicated details ScrollBox keeps every text block at natural height.
+    WindowSize->SetWidthOverride(1280.0f); WindowSize->SetHeightOverride(780.0f); Scale->AddChild(WindowSize);
     UBorder* Window = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorWindow"));
     DMFNativeUI::StylePanel(Window, DMFNativeUI::Panel(), FMargin(18.0f)); WindowSize->AddChild(Window);
     UVerticalBox* Column = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("VendorColumn")); Window->AddChild(Column);
@@ -202,25 +206,47 @@ void UDMFDigimonVendorWidget::BuildNativeFallbackUI()
     SellTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SellTabButton")); DMFNativeUI::StyleButton(SellTabButton); UTextBlock* SellLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); SellLabel->SetText(NSLOCTEXT("DMF","VendorSellTab","SELL DIGIMON")); SellLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(SellLabel, 16, DMFNativeUI::Text(), true); SellTabButton->AddChild(SellLabel); if(UHorizontalBoxSlot* S=Tabs->AddChildToHorizontalBox(SellTabButton)){S->SetSize(DMFNativeUI::FillSize());S->SetPadding(FMargin(6,0,0,0));}
 
     UHorizontalBox* Main = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("VendorMain")); if(UVerticalBoxSlot* S=Column->AddChildToVerticalBox(Main)){S->SetSize(DMFNativeUI::FillSize());}
-    USizeBox* ListSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorListSize")); ListSize->SetWidthOverride(660.0f); if(UHorizontalBoxSlot* S=Main->AddChildToHorizontalBox(ListSize)){S->SetVerticalAlignment(VAlign_Fill);S->SetPadding(FMargin(0,0,14,0));}
+    USizeBox* ListSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorListSize")); ListSize->SetWidthOverride(690.0f); if(UHorizontalBoxSlot* S=Main->AddChildToHorizontalBox(ListSize)){S->SetVerticalAlignment(VAlign_Fill);S->SetPadding(FMargin(0,0,16,0));}
     UBorder* ListBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorListBorder")); DMFNativeUI::StylePanel(ListBorder, DMFNativeUI::PanelRaised(), FMargin(12)); ListSize->AddChild(ListBorder);
     UScrollBox* ListScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("VendorListScroll")); ListBorder->AddChild(ListScroll);
     EntryListBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("EntryListBox")); ListScroll->AddChild(EntryListBox);
 
-    USizeBox* DetailsSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorDetailsSize")); DetailsSize->SetWidthOverride(465.0f); Main->AddChildToHorizontalBox(DetailsSize)->SetVerticalAlignment(VAlign_Fill);
+    USizeBox* DetailsSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorDetailsSize")); DetailsSize->SetWidthOverride(538.0f); Main->AddChildToHorizontalBox(DetailsSize)->SetVerticalAlignment(VAlign_Fill);
     UBorder* DetailsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorDetailsBorder")); DMFNativeUI::StylePanel(DetailsBorder, DMFNativeUI::PanelRaised(), FMargin(16)); DetailsSize->AddChild(DetailsBorder);
     UVerticalBox* Details = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("VendorDetails")); DetailsBorder->AddChild(Details);
-    USizeBox* PortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorPortraitSize")); PortraitSize->SetHeightOverride(190.0f); Details->AddChildToVerticalBox(PortraitSize)->SetPadding(FMargin(0,0,0,8));
+    USizeBox* PortraitSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorPortraitSize")); PortraitSize->SetHeightOverride(150.0f); Details->AddChildToVerticalBox(PortraitSize)->SetPadding(FMargin(0,0,0,10));
     UBorder* PortraitBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorPortraitBorder")); DMFNativeUI::StylePanel(PortraitBorder, DMFNativeUI::SlotEmpty(), FMargin(4)); PortraitSize->AddChild(PortraitBorder);
-    DetailPortrait = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("DetailPortrait")); DetailPortrait->SetVisibility(ESlateVisibility::Hidden); PortraitBorder->AddChild(DetailPortrait);
+    UScaleBox* PortraitScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass(), TEXT("VendorPortraitScale")); PortraitScale->SetStretch(EStretch::ScaleToFit); PortraitBorder->AddChild(PortraitScale);
+    DetailPortrait = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("DetailPortrait")); DetailPortrait->SetVisibility(ESlateVisibility::Hidden); PortraitScale->AddChild(DetailPortrait);
     DetailNameText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailNameText")); DetailNameText->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(DetailNameText, 23, DMFNativeUI::Text(), true); Details->AddChildToVerticalBox(DetailNameText);
-    DetailMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailMetaText")); DetailMetaText->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(DetailMetaText, 13, DMFNativeUI::Gold()); Details->AddChildToVerticalBox(DetailMetaText)->SetPadding(FMargin(0,2,0,8));
-    DetailStatsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailStatsText")); DetailStatsText->SetAutoWrapText(true); DMFNativeUI::StyleText(DetailStatsText, 13, DMFNativeUI::Text()); if(UVerticalBoxSlot* S=Details->AddChildToVerticalBox(DetailStatsText)){S->SetSize(DMFNativeUI::FillSize());S->SetPadding(FMargin(0,4));}
-    DetailValueText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailValueText")); DetailValueText->SetAutoWrapText(true); DMFNativeUI::StyleText(DetailValueText, 13, DMFNativeUI::Accent()); Details->AddChildToVerticalBox(DetailValueText)->SetPadding(FMargin(0,6));
-    TransactionButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("TransactionButton")); DMFNativeUI::StyleButton(TransactionButton, true); TransactionButtonText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("TransactionButtonText")); TransactionButtonText->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(TransactionButtonText, 16, DMFNativeUI::Text(), true); TransactionButton->AddChild(TransactionButtonText); Details->AddChildToVerticalBox(TransactionButton)->SetPadding(FMargin(0,4));
-    CloseButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("VendorCloseButton")); DMFNativeUI::StyleButton(CloseButton); UTextBlock* CloseLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); CloseLabel->SetText(NSLOCTEXT("DMF","VendorClose","CLOSE")); CloseLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(CloseLabel, 14, DMFNativeUI::Text(), true); CloseButton->AddChild(CloseLabel); Details->AddChildToVerticalBox(CloseButton)->SetPadding(FMargin(0,4,0,0));
+    DetailMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailMetaText")); DetailMetaText->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(DetailMetaText, 13, DMFNativeUI::Gold()); Details->AddChildToVerticalBox(DetailMetaText)->SetPadding(FMargin(0,2,0,10));
 
-    VendorStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("VendorStatusText")); VendorStatusText->SetText(NSLOCTEXT("DMF","VendorStatusReady","Select a Digimon to inspect its full market value.")); VendorStatusText->SetAutoWrapText(true); DMFNativeUI::StyleText(VendorStatusText, 13, DMFNativeUI::Muted()); Column->AddChildToVerticalBox(VendorStatusText)->SetPadding(FMargin(2,10,2,0));
+    // The information region scrolls independently while the portrait/header and transaction
+    // controls remain pinned. This is the important layout hardening: text is never placed in a
+    // compressed Fill slot, so high-progression Digimon cannot overlap valuation/actions.
+    UScrollBox* DetailsScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("VendorDetailsScroll"));
+    if (UVerticalBoxSlot* S = Details->AddChildToVerticalBox(DetailsScroll)) { S->SetSize(DMFNativeUI::FillSize()); S->SetPadding(FMargin(0,0,0,8)); }
+    UVerticalBox* DetailsScrollContent = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("VendorDetailsScrollContent")); DetailsScroll->AddChild(DetailsScrollContent);
+
+    UBorder* StatsCard = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorStatsCard")); DMFNativeUI::StylePanel(StatsCard, DMFNativeUI::PanelSoft(), FMargin(12)); DetailsScrollContent->AddChildToVerticalBox(StatsCard)->SetPadding(FMargin(0,0,0,8));
+    UVerticalBox* StatsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("VendorStatsColumn")); StatsCard->AddChild(StatsColumn);
+    UTextBlock* StatsHeading = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("VendorStatsHeading")); StatsHeading->SetText(NSLOCTEXT("DMF","VendorStatsHeading","COMBAT & PROGRESSION")); DMFNativeUI::StyleText(StatsHeading, 11, DMFNativeUI::Accent(), true); StatsColumn->AddChildToVerticalBox(StatsHeading)->SetPadding(FMargin(0,0,0,6));
+    DetailStatsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailStatsText")); DetailStatsText->SetAutoWrapText(true); DMFNativeUI::StyleText(DetailStatsText, 12, DMFNativeUI::Text()); StatsColumn->AddChildToVerticalBox(DetailStatsText);
+
+    UBorder* ValueCard = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("VendorValueCard")); DMFNativeUI::StylePanel(ValueCard, DMFNativeUI::SlotEmpty(), FMargin(12)); DetailsScrollContent->AddChildToVerticalBox(ValueCard)->SetPadding(FMargin(0,0,0,2));
+    UVerticalBox* ValueColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("VendorValueColumn")); ValueCard->AddChild(ValueColumn);
+    UTextBlock* ValueHeading = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("VendorValueHeading")); ValueHeading->SetText(NSLOCTEXT("DMF","VendorValueHeading","MARKET VALUATION")); DMFNativeUI::StyleText(ValueHeading, 11, DMFNativeUI::Gold(), true); ValueColumn->AddChildToVerticalBox(ValueHeading)->SetPadding(FMargin(0,0,0,6));
+    DetailValueText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("DetailValueText")); DetailValueText->SetAutoWrapText(true); DMFNativeUI::StyleText(DetailValueText, 12, DMFNativeUI::Accent()); ValueColumn->AddChildToVerticalBox(DetailValueText);
+
+    USizeBox* TransactionSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorTransactionSize")); TransactionSize->SetMinDesiredHeight(44.0f); Details->AddChildToVerticalBox(TransactionSize)->SetPadding(FMargin(0,2,0,6));
+    TransactionButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("TransactionButton")); DMFNativeUI::StyleButton(TransactionButton, true); TransactionSize->AddChild(TransactionButton);
+    TransactionButtonText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("TransactionButtonText")); TransactionButtonText->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(TransactionButtonText, 15, DMFNativeUI::Text(), true); TransactionButton->AddChild(TransactionButtonText);
+
+    USizeBox* CloseSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("VendorCloseSize")); CloseSize->SetMinDesiredHeight(38.0f); Details->AddChildToVerticalBox(CloseSize);
+    CloseButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("VendorCloseButton")); DMFNativeUI::StyleButton(CloseButton); CloseSize->AddChild(CloseButton);
+    UTextBlock* CloseLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); CloseLabel->SetText(NSLOCTEXT("DMF","VendorClose","CLOSE")); CloseLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(CloseLabel, 13, DMFNativeUI::Text(), true); CloseButton->AddChild(CloseLabel);
+
+    VendorStatusText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("VendorStatusText")); VendorStatusText->SetText(NSLOCTEXT("DMF","VendorStatusReady","Select a Digimon to inspect its full market value.")); VendorStatusText->SetAutoWrapText(true); DMFNativeUI::StyleText(VendorStatusText, 12, DMFNativeUI::Muted()); Column->AddChildToVerticalBox(VendorStatusText)->SetPadding(FMargin(2,10,2,0));
 }
 
 void UDMFDigimonVendorWidget::ResetTransactionConfirmation()
@@ -283,15 +309,25 @@ void UDMFDigimonVendorWidget::RefreshEntryList()
         UDMFDigimonVendorEntryButton* Button = WidgetTree->ConstructWidget<UDMFDigimonVendorEntryButton>(UDMFDigimonVendorEntryButton::StaticClass());
         Button->InitializeVendorEntry(CurrentTab, Row.Id); Button->OnVendorEntryPressed.AddDynamic(this, &UDMFDigimonVendorWidget::HandleEntryPressed);
         DMFNativeUI::StyleButton(Button, false, false, SelectedIdentifier == Row.Id);
-        UHorizontalBox* RowBox = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass()); Button->AddChild(RowBox);
-        USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); IconSize->SetWidthOverride(58); IconSize->SetHeightOverride(58); RowBox->AddChildToHorizontalBox(IconSize)->SetPadding(FMargin(2,2,10,2));
-        UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()); if(Species){ if(UTexture2D* Portrait=Species->Portrait.LoadSynchronous()) Icon->SetBrushFromTexture(Portrait,true); } IconSize->AddChild(Icon);
+        USizeBox* RowMinSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); RowMinSize->SetMinDesiredHeight(70.0f); Button->AddChild(RowMinSize);
+        UHorizontalBox* RowBox = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass()); RowMinSize->AddChild(RowBox);
+        USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); IconSize->SetWidthOverride(60); IconSize->SetHeightOverride(60); RowBox->AddChildToHorizontalBox(IconSize)->SetPadding(FMargin(2,2,12,2));
+        UScaleBox* IconScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass()); IconScale->SetStretch(EStretch::ScaleToFit); IconSize->AddChild(IconScale);
+        UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()); if(Species){ if(UTexture2D* Portrait=Species->Portrait.LoadSynchronous()) Icon->SetBrushFromTexture(Portrait,true); } IconScale->AddChild(Icon);
         UVerticalBox* Labels = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); if(UHorizontalBoxSlot* S=RowBox->AddChildToHorizontalBox(Labels)){S->SetSize(DMFNativeUI::FillSize());S->SetVerticalAlignment(VAlign_Center);}
         UTextBlock* Name = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Name->SetText(Species ? Species->DisplayName : FText::FromString(Row.Digimon.SpeciesId.PrimaryAssetName.ToString())); DMFNativeUI::StyleText(Name,16,DMFNativeUI::Text(),true); Labels->AddChildToVerticalBox(Name);
         const FText Stage = Species ? UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage) : FText::GetEmpty();
-        UTextBlock* Meta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Meta->SetText(FText::Format(NSLOCTEXT("DMF","VendorRowMetaFmt","Lv.{0}  •  {1}  •  ABI {2}{3}"),FText::AsNumber(Row.Digimon.Stats.Level),Stage,FText::AsNumber(Row.Digimon.Stats.ABI),CurrentTab==EDMFDigimonVendorTransactionType::Sell?FText::FromString(Row.Storage==EDMFDigimonStorageLocation::Party?TEXT("  •  PARTY"):TEXT("  •  BANK")):FText::GetEmpty())); DMFNativeUI::StyleText(Meta,12,DMFNativeUI::Muted()); Labels->AddChildToVerticalBox(Meta);
-        UTextBlock* Price = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Price->SetText(FText::Format(CurrentTab==EDMFDigimonVendorTransactionType::Buy?NSLOCTEXT("DMF","VendorBuyPriceFmt","{0} BITS"):NSLOCTEXT("DMF","VendorSellPriceFmt","SELL {0}"),FText::AsNumber(Row.Price))); Price->SetJustification(ETextJustify::Right); DMFNativeUI::StyleText(Price,15,DMFNativeUI::Gold(),true); RowBox->AddChildToHorizontalBox(Price)->SetVerticalAlignment(VAlign_Center);
-        EntryListBox->AddChildToVerticalBox(Button)->SetPadding(FMargin(0,0,0,7));
+        UTextBlock* Meta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Meta->SetText(FText::Format(NSLOCTEXT("DMF","VendorRowMetaFmtPolished","Lv.{0}  •  {1}  •  ABI {2}"),FText::AsNumber(Row.Digimon.Stats.Level),Stage,FText::AsNumber(Row.Digimon.Stats.ABI))); DMFNativeUI::StyleText(Meta,12,DMFNativeUI::Muted()); Labels->AddChildToVerticalBox(Meta)->SetPadding(FMargin(0,2,6,0));
+
+        USizeBox* QuoteSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); QuoteSize->SetWidthOverride(148.0f); if(UHorizontalBoxSlot* S=RowBox->AddChildToHorizontalBox(QuoteSize)){S->SetVerticalAlignment(VAlign_Center);S->SetPadding(FMargin(8,0,2,0));}
+        UVerticalBox* QuoteColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); QuoteSize->AddChild(QuoteColumn);
+        UTextBlock* QuoteHeading = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); QuoteHeading->SetText(CurrentTab==EDMFDigimonVendorTransactionType::Buy?NSLOCTEXT("DMF","VendorBuyPriceHeading","BUY PRICE"):NSLOCTEXT("DMF","VendorSellPriceHeading","SELL QUOTE")); QuoteHeading->SetJustification(ETextJustify::Right); DMFNativeUI::StyleText(QuoteHeading,10,DMFNativeUI::Muted(),true); QuoteColumn->AddChildToVerticalBox(QuoteHeading);
+        UTextBlock* Price = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Price->SetText(FText::Format(CurrentTab==EDMFDigimonVendorTransactionType::Buy?NSLOCTEXT("DMF","VendorBuyPriceFmtPolished","{0} BITS"):NSLOCTEXT("DMF","VendorSellPriceFmtPolished","+{0} BITS"),FText::AsNumber(Row.Price))); Price->SetJustification(ETextJustify::Right); DMFNativeUI::StyleText(Price,15,DMFNativeUI::Gold(),true); QuoteColumn->AddChildToVerticalBox(Price)->SetPadding(FMargin(0,1,0,0));
+        if (CurrentTab == EDMFDigimonVendorTransactionType::Sell)
+        {
+            UTextBlock* Storage = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Storage->SetText(Row.Storage==EDMFDigimonStorageLocation::Party?NSLOCTEXT("DMF","VendorPartyStorageTag","PARTY"):NSLOCTEXT("DMF","VendorBankStorageTag","BANK")); Storage->SetJustification(ETextJustify::Right); DMFNativeUI::StyleText(Storage,10,DMFNativeUI::Accent(),true); QuoteColumn->AddChildToVerticalBox(Storage)->SetPadding(FMargin(0,1,0,0));
+        }
+        EntryListBox->AddChildToVerticalBox(Button)->SetPadding(FMargin(0,0,0,8));
     }
 
     if (!SelectedIdentifier.IsValid() && !Rows.IsEmpty()) SelectedIdentifier = Rows[0].Id;
@@ -323,10 +359,44 @@ void UDMFDigimonVendorWidget::RefreshDetails()
     if(DetailPortrait){DetailPortrait->SetVisibility(Species&&Species->Portrait.LoadSynchronous()?ESlateVisibility::Visible:ESlateVisibility::Hidden);if(Species){if(UTexture2D* P=Species->Portrait.LoadSynchronous())DetailPortrait->SetBrushFromTexture(P,true);}}
     if(DetailNameText)DetailNameText->SetText(bResolved?(Species?Species->DisplayName:FText::FromString(D.SpeciesId.PrimaryAssetName.ToString())):NSLOCTEXT("DMF","VendorSelectPrompt","SELECT A DIGIMON"));
     if(DetailMetaText)DetailMetaText->SetText(bResolved&&Species?FText::Format(NSLOCTEXT("DMF","VendorDetailMetaFmt","Lv.{0}  •  {1}  •  {2}"),FText::AsNumber(D.Stats.Level),UDMFDigimonPresentationLibrary::GetDigimonStageDisplayText(Species->Stage),AttributeText(Species->Attribute)):FText::GetEmpty());
-    if(DetailStatsText)DetailStatsText->SetText(bResolved?FText::FromString(FString::Printf(TEXT("HP  %d     SP  %d\nSTR  %d     INT  %d\nDEF  %d     SPD  %d\n\nABI  %d     CAM  %d\nAttribute Points Spent  %d\nUnspent Attribute Points  %d\nLifetime Battle EXP  %lld\nDigivolution Forms Visited  %d"),D.Stats.MaxHP,D.Stats.MaxSP,D.Stats.Strength,D.Stats.Intelligence,D.Stats.Defense,D.Stats.Speed,D.Stats.ABI,D.Stats.CAM,D.TotalAttributePointsSpent,D.UnspentAttributePoints,static_cast<long long>(D.LifetimeBattleExperience),FMath::Max(1,D.DigivolutionHistory.Num()))):NSLOCTEXT("DMF","VendorDetailPrompt","Choose a stock offer or one of your owned Digimon."));
+    if(DetailStatsText)
+    {
+        if (bResolved)
+        {
+            DetailStatsText->SetText(FText::FromString(FString::Printf(
+                TEXT("HP %d  •  SP %d\nSTR %d  •  INT %d\nDEF %d  •  SPD %d\n\nABI %d  •  CAM %d\nSpent Attribute Points: %d\nUnspent Attribute Points: %d\nLifetime Battle EXP: %s\nDigivolution Forms Visited: %d"),
+                D.Stats.MaxHP, D.Stats.MaxSP,
+                D.Stats.Strength, D.Stats.Intelligence,
+                D.Stats.Defense, D.Stats.Speed,
+                D.Stats.ABI, D.Stats.CAM,
+                D.TotalAttributePointsSpent,
+                D.UnspentAttributePoints,
+                *FText::AsNumber(D.LifetimeBattleExperience).ToString(),
+                FMath::Max(1, D.DigivolutionHistory.Num()))));
+        }
+        else
+        {
+            DetailStatsText->SetText(NSLOCTEXT("DMF","VendorDetailPrompt","Choose a stock offer or one of your owned Digimon."));
+        }
+    }
     if(DetailValueText)
     {
-        if(bResolved&&Vendor.IsValid()) { const FDMFDigimonVendorValueBreakdown B=Vendor->CalculateDigimonValue(D); DetailValueText->SetText(FText::FromString(FString::Printf(TEXT("MARKET VALUE  %lld\nLevel %lld  •  Battle EXP %lld  •  Stats %lld\nABI %lld  •  CAM %lld  •  Training %lld  •  History %lld\n\n%s PRICE  %lld BITS"),static_cast<long long>(B.MarketValue),static_cast<long long>(B.LevelValue),static_cast<long long>(B.ExperienceValue),static_cast<long long>(B.StatsValue),static_cast<long long>(B.ABIValue),static_cast<long long>(B.CAMValue),static_cast<long long>(B.AttributeTrainingValue),static_cast<long long>(B.DigivolutionHistoryValue),CurrentTab==EDMFDigimonVendorTransactionType::Buy?TEXT("BUY"):TEXT("SELL"),static_cast<long long>(Price)))); }
+        if(bResolved&&Vendor.IsValid())
+        {
+            const FDMFDigimonVendorValueBreakdown B=Vendor->CalculateDigimonValue(D);
+            DetailValueText->SetText(FText::FromString(FString::Printf(
+                TEXT("Market Value: %s Bits\nLevel: +%s  •  Battle EXP: +%s\nStats: +%s\nABI: +%s  •  CAM: +%s\nTraining: +%s  •  History: +%s\n\n%s PRICE: %s BITS"),
+                *FText::AsNumber(B.MarketValue).ToString(),
+                *FText::AsNumber(B.LevelValue).ToString(),
+                *FText::AsNumber(B.ExperienceValue).ToString(),
+                *FText::AsNumber(B.StatsValue).ToString(),
+                *FText::AsNumber(B.ABIValue).ToString(),
+                *FText::AsNumber(B.CAMValue).ToString(),
+                *FText::AsNumber(B.AttributeTrainingValue).ToString(),
+                *FText::AsNumber(B.DigivolutionHistoryValue).ToString(),
+                CurrentTab==EDMFDigimonVendorTransactionType::Buy?TEXT("BUY"):TEXT("SELL"),
+                *FText::AsNumber(Price).ToString())));
+        }
         else DetailValueText->SetText(FText::GetEmpty());
     }
     if(TransactionButtonText)

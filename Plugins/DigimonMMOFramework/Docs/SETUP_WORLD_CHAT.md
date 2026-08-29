@@ -1,4 +1,4 @@
-# Polished Native World Chat — v0.10.1-alpha
+# Polished Native World Chat & Presence — v0.18.5-alpha
 
 The framework includes a ready-to-use **session-wide WORLD chat** designed for the existing multiplayer-only MMO flow. It is native C++/UMG by default, automatically created for each local gameplay client, Blueprint-reskinnable, and keeps message authority on the server.
 
@@ -12,7 +12,10 @@ With the default settings:
 4. Press **Enter** again to submit the message.
 5. The input field closes and gameplay focus returns immediately.
 6. Press **Escape** while editing to cancel without sending.
-7. Accepted messages appear on the host and every connected client as `Username: message`.
+7. Accepted player messages appear on the host and every connected client as `Username: message`.
+8. A successful authenticated login/relog automatically adds `Username has joined the server.`; the username is bold green in the native widget.
+9. An authoritative logout automatically adds `Username has left the server.`; the username and departure statement are red in the native widget.
+10. If global presence sounds are assigned, each live join/leave event plays its matching cue once for every connected recipient.
 
 The native layout deliberately stays compact and uses the framework navy/cyan/gold presentation language. The chat is persistent on the HUD but does not occupy a modal screen.
 
@@ -33,6 +36,15 @@ The server then:
 - stores only a bounded session history;
 - delivers the accepted payload to each owning framework PlayerController.
 
+Presence events use a separate server-only path on the same transport:
+
+- successful `PostLogin` emits `EDMFWorldChatMessageType::PlayerJoined` only after authenticated account integrity/rehydration;
+- `Logout` finalizes persistent account/partner teardown first, then emits `EDMFWorldChatMessageType::PlayerLeft` while the authenticated PlayerState is still available;
+- the server obtains the presence username from `GetAuthenticatedUsername()` (with public PlayerName only as a defensive fallback);
+- the client never supplies presence message text, username or presence type;
+- join/leave events enter the same bounded session history as normal WORLD chat;
+- live delivery may play the configured local cue, but history replay is intentionally silent.
+
 The client cannot choose another player's username, timestamp or message type. Credentials and the private owner-only authenticated account field are never placed into chat payloads.
 
 ## 3. Project Settings
@@ -46,6 +58,17 @@ Open:
 - **Enable World Chat** — master global switch. When false, no native chat widget is created and the server rejects chat submission.
 - **Enable Default World Chat Input** — enables the built-in **Enter** binding. Disable this if your project routes input itself and call `OpenWorldChatInput()` from Blueprint.
 - **World Chat Widget Class** — defaults to `DMFWorldChatWidget`. Assign a Blueprint child to completely reskin the presentation while retaining framework networking/validation.
+
+### Presence
+
+- **Announce Player Join / Leave** — default `true`. Publishes authenticated login/relog/logout events into WORLD chat.
+- **Play Player Join / Leave Sounds** — default `true`. Controls only presence audio; chat presence text remains available when audio is disabled.
+- **Player Joined Server Sound** — global 2D Sound Cue/Wave used for live join/relog events. Leave unassigned for silent joins.
+- **Player Left Server Sound** — independent global 2D Sound Cue/Wave used for live departure events. Leave unassigned for silent departures.
+- **Presence Sound Volume Multiplier** — default `1.0`, applied after any volume authored inside the cue.
+- **Presence Sound Pitch Multiplier** — default `1.0`, applied after any pitch authored inside the cue.
+
+A **Sound Cue is recommended** when the project wants layered samples, randomization or additional mix behavior. The framework treats these cues as non-spatial UI/session notifications and plays them only on local recipient controllers. A dedicated server has no local controller and therefore performs no audible presentation work.
 
 ### Safety
 
@@ -91,7 +114,9 @@ Chat history is **session state**, not account persistence. It is intentionally 
 - `BP_OnWorldChatMessageAdded`
 - `BP_OnWorldChatInputStateChanged`
 
-`ADMFMMOGameMode::BP_OnWorldChatMessageAccepted` is the server-side extension hook for future logging, analytics, guild/channel routing or backend integration.
+`ADMFMMOGameMode::BroadcastWorldChatPresenceEvent` is also Blueprint-callable on authority for server-owned integrations that need to publish one of the two explicit presence types. Automatic framework login/logout already calls it; clients cannot call it as an owning Server RPC.
+
+`ADMFMMOGameMode::BP_OnWorldChatMessageAccepted` is the server-side extension hook for logging, analytics, guild/channel routing or backend integration. It receives player and presence messages through the same committed server stream.
 
 ## 5. Reskinning safely
 
@@ -116,23 +141,23 @@ If Care feeding begins while chat is active, chat input closes cleanly and the w
 
 ## 7. Host + remote-client acceptance
 
-Run the normal two-player PIE test using **listen host + second client**:
+Run the normal listen host + remote-client test with **two established accounts** and assign obviously different join/leave Sound Cues first:
 
-1. Confirm both clients show the WORLD panel.
-2. Host presses Enter, types `hello from host`, presses Enter again.
-3. Confirm both host and client receive exactly one line stamped with the host's authenticated public username.
-4. Client sends `hello from client`; confirm both peers receive exactly one line with the client's username.
-5. While typing, press movement/look/ability keys and verify the avatar/partner does not execute gameplay commands.
-6. Press Escape during a draft and confirm nothing is broadcast and gameplay input returns.
-7. Send messages faster than `World Chat Minimum Send Interval`; confirm only the sender sees the rate-limit SYSTEM response.
-8. Exceed the configured burst limit; confirm the server rejects excess messages and no other peer sees those rejected texts.
-9. Send a message containing line breaks/tabs and a message longer than the maximum; confirm the server delivers one sanitized/clamped line.
-10. Join a third/late client and confirm it receives the configured bounded recent session history once.
-11. Verify WORLD chat is visually clear of the partner combat quickbar on both host and client; no part of either panel should overlap. Resize the PIE windows and repeat.
-12. If the project uses a differently sized native quickbar, adjust **World Chat Bottom Safe Offset** and verify the clearance updates without networking changes.
-13. Disable **Enable World Chat**, restart PIE, and confirm no chat UI/input path is active.
-12. Re-enable chat, perform Care feeding, and confirm chat temporarily hides and returns afterward.
-13. Regression-test world nameplates, Scan/Materialization, combat quick slots and partner replication after chat validation.
+1. Start Host & Play. Confirm the host receives exactly one `HostUsername has joined the server.` presence row. Its username must be green and the configured join cue must play once locally.
+2. Join from the remote account. Confirm **both** host and remote receive exactly one `RemoteUsername has joined the server.` live row and each hears the join cue once.
+3. Confirm neither peer can forge a join/leave event by sending chat text; normal text still renders as cyan `Username:` + white body and stays subject to rate limiting.
+4. Remote sends `hello from client`; confirm both peers receive one ordinary player message with the server-authored public username.
+5. Disconnect the remote client. Confirm the host receives exactly one `RemoteUsername has left the server.` row with red username/red departure text and hears the leave cue once.
+6. Reconnect the same account without restarting the host. Confirm the normal v0.18.2 persistent account is restored and both peers receive a fresh green join/relog event exactly once.
+7. Disconnect/reconnect several times. Each completed login must produce one join event and each processed logout one leave event; there must be no duplicate announcements from the idempotent persistence fallback.
+8. With server history enabled, create several presence/chat rows, then join a late third client. Confirm history includes the retained presence rows but **no historical join/leave sound is replayed**. The late client's own live join may play its join cue once.
+9. Toggle **Play Player Join / Leave Sounds** off and repeat. Presence text/color must continue replicating while no presence cue plays. Re-enable audio and clear one sound asset; only the still-assigned event sound should play.
+10. Toggle **Announce Player Join / Leave** off and repeat a join/leave. No presence row or presence sound should be generated; ordinary WORLD chat must continue to function.
+11. Verify input focus: Enter opens chat, gameplay input is blocked while typing, Escape cancels, rate limiting/sanitation remain server-enforced.
+12. Join a third/late client and confirm the configured bounded history arrives once without duplicated final visible rows.
+13. Verify WORLD chat remains visually clear of the partner combat quickbar on host/client and at a smaller PIE viewport.
+14. Perform Care feeding and confirm chat temporarily hides/restores with its local history intact.
+15. Regression-test v0.18.4 player capacity (temporarily cap at 2), v0.18.3 vendor BUY/SELL, same-host reconnect persistence, disconnect partner cleanup, player world-location restore, Return Home, world nameplates, combat, Party/Bank and Digivolution.
 
 ## 8. MMO scaling note
 

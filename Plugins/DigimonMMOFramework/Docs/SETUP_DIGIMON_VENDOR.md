@@ -1,6 +1,21 @@
-# Digimon Vendor Economy Setup — v0.18.0-alpha
+# Digimon Vendor Economy Setup — v0.18.3-alpha
 
 `DMFDigimonVendorActor` is the framework's placeable, Blueprint-derivable Digimon market NPC. It generates randomized server-owned stock, rotates that stock on its own schedule, sells persistent Digimon individuals to players, buys owned Digimon back for automatic progression-aware prices, and opens the native owner-local BUY / SELL market UI through the existing player interaction system.
+
+> **v0.18.3 native UI hardening:** the default Digimon Exchange now uses a roomier authored canvas, stable-height list rows, aspect-safe portraits, dedicated BUY/SELL quote columns and an independently scrollable detail-information region. Combat/progression and market-valuation text therefore keeps its natural height and cannot overlap transaction controls even for heavily progressed Digimon. This is presentation-only; all transaction authority and persistence rules below are unchanged.
+
+## Native BUY / SELL layout contract
+
+The framework fallback widget is deliberately structured so both tabs remain readable without project Blueprint work:
+
+- the left stock/collection list scrolls independently and keeps each row at a stable minimum height;
+- each row reserves a fixed quote column for BUY PRICE or SELL QUOTE, and SELL storage location is shown as its own PARTY/BANK tag;
+- the right portrait/name/meta header remains fixed;
+- **COMBAT & PROGRESSION** and **MARKET VALUATION** are natural-height cards inside a dedicated details ScrollBox;
+- BUY/SELL confirmation and CLOSE remain pinned below that scroller;
+- the entire 1280x780 authored window uses ScaleToFit / DownOnly for smaller viewports.
+
+A Blueprint subclass may still replace/bind the public widget contract, but projects using the native fallback receive this hardened layout automatically.
 
 ## 1. Create the vendor Blueprint
 

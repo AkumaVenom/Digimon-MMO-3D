@@ -142,10 +142,16 @@ DigimonNameplateHeightOffset=24.0
 bShowDigimonNumericHealthOnNameplates=True
 WorldNameplateRefreshInterval=0.15
 
-; v0.10.1 polished native MMO world-chat defaults + HUD-safe layout.
+; v0.18.5 polished native MMO world-chat defaults + authenticated presence announcements/audio.
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]
 bEnableWorldChat=True
 bEnableDefaultWorldChatInput=True
+bEnableWorldChatPresenceAnnouncements=True
+bEnableWorldChatPresenceSounds=True
+; WorldChatPlayerJoinedSound=/Game/Audio/UI/SC_PlayerJoined.SC_PlayerJoined
+; WorldChatPlayerLeftSound=/Game/Audio/UI/SC_PlayerLeft.SC_PlayerLeft
+WorldChatPresenceSoundVolumeMultiplier=1.0
+WorldChatPresenceSoundPitchMultiplier=1.0
 WorldChatMaxMessageLength=220
 WorldChatClientHistoryLimit=100
 WorldChatServerHistoryLimit=50
@@ -161,6 +167,10 @@ WorldChatBottomSafeOffset=176.0
 [/Script/DigimonMMOFramework.DMFFrameworkSettings]
 ServerPublicAddress=DigimonMMO3D.custom-gaming.net
 GamePort=7777
+
+; v0.18.4 global authoritative server capacity. The listen host consumes one slot.
+; New joins are refused by Unreal GameSession once this limit is reached.
+GlobalMaxPlayers=100
 
 
 ; v0.14 read-only implemented-species encyclopedia

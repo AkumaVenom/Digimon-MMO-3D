@@ -779,6 +779,14 @@ struct UHT_STATICS
 #endif
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 		{ "Player.Name", "EDMFWorldChatMessageType::Player" },
+		{ "PlayerJoined.Comment", "/** Server-authored authenticated presence event. Appended to preserve Player/System serialized values. */" },
+		{ "PlayerJoined.DisplayName", "Player Joined" },
+		{ "PlayerJoined.Name", "EDMFWorldChatMessageType::PlayerJoined" },
+		{ "PlayerJoined.ToolTip", "Server-authored authenticated presence event. Appended to preserve Player/System serialized values." },
+		{ "PlayerLeft.Comment", "/** Server-authored authenticated departure event. Appended to preserve Player/System serialized values. */" },
+		{ "PlayerLeft.DisplayName", "Player Left" },
+		{ "PlayerLeft.Name", "EDMFWorldChatMessageType::PlayerLeft" },
+		{ "PlayerLeft.ToolTip", "Server-authored authenticated departure event. Appended to preserve Player/System serialized values." },
 		{ "System.Name", "EDMFWorldChatMessageType::System" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Presentation category for the native session world-chat stream." },
@@ -788,6 +796,8 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
 		{ "EDMFWorldChatMessageType::Player", (int64)EDMFWorldChatMessageType::Player },
 		{ "EDMFWorldChatMessageType::System", (int64)EDMFWorldChatMessageType::System },
+		{ "EDMFWorldChatMessageType::PlayerJoined", (int64)EDMFWorldChatMessageType::PlayerJoined },
+		{ "EDMFWorldChatMessageType::PlayerLeft", (int64)EDMFWorldChatMessageType::PlayerLeft },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct UHT_STATICS 
@@ -882,7 +892,7 @@ const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_SenderName = { 
 const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFWorldChatMessage, Message), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Message_MetaData), NewProp_Message_MetaData) };
 const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_SentUtcTicks = { "SentUtcTicks", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFWorldChatMessage, SentUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SentUtcTicks_MetaData), NewProp_SentUtcTicks_MetaData) };
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_MessageType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_MessageType = { "MessageType", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFWorldChatMessage, MessageType), Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MessageType_MetaData), NewProp_MessageType_MetaData) }; // 3759a77e9dcf3050423a6677743d478033f8c3d4
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_MessageType = { "MessageType", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFWorldChatMessage, MessageType), Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MessageType_MetaData), NewProp_MessageType_MetaData) }; // a3bccc811944b4ddc9c67203af43a5c7b50c4534
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SenderName,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
@@ -2920,7 +2930,7 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType, TEXT("EDMFPlayerInteractionType"), &ZRIE_EDMFPlayerInteractionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4005593762U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, TEXT("EDMFDigimonVendorTransactionType"), &ZRIE_EDMFDigimonVendorTransactionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1719060311U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
-		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 928622462U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2747059329U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1155505937U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, TEXT("EDMFDigimonStorageLocation"), &ZRIE_EDMFDigimonStorageLocation, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2383950102U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, TEXT("EDMFDigimonAttributeStat"), &ZRIE_EDMFDigimonAttributeStat, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1166099646U) },
@@ -2929,7 +2939,7 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDamageScaling, TEXT("EDMFDamageScaling"), &ZRIE_EDMFDamageScaling, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1045003275U) },
 	};
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ Z_Construct_UScriptStruct_FDMFWorldChatMessage, Z_Construct_UScriptStruct_FDMFWorldChatMessage_Statics::NewStructOps, TEXT("DMFWorldChatMessage"),&Z_Registration_Info_UScriptStruct_FDMFWorldChatMessage, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWorldChatMessage), 3165701840U) },
+		{ Z_Construct_UScriptStruct_FDMFWorldChatMessage, Z_Construct_UScriptStruct_FDMFWorldChatMessage_Statics::NewStructOps, TEXT("DMFWorldChatMessage"),&Z_Registration_Info_UScriptStruct_FDMFWorldChatMessage, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFWorldChatMessage), 3090122483U) },
 		{ Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation, Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation_Statics::NewStructOps, TEXT("DMFDigivolutionEvaluation"),&Z_Registration_Info_UScriptStruct_FDMFDigivolutionEvaluation, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigivolutionEvaluation), 3554612414U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonStats, Z_Construct_UScriptStruct_FDMFDigimonStats_Statics::NewStructOps, TEXT("DMFDigimonStats"),&Z_Registration_Info_UScriptStruct_FDMFDigimonStats, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonStats), 1376484503U) },
 		{ Z_Construct_UScriptStruct_FDMFDigimonCareState, Z_Construct_UScriptStruct_FDMFDigimonCareState_Statics::NewStructOps, TEXT("DMFDigimonCareState"),&Z_Registration_Info_UScriptStruct_FDMFDigimonCareState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonCareState), 1111692145U) },
@@ -2945,7 +2955,7 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 3360219910U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_990ebdfa69577692e41fb5b6ee98319e0b8d3c5a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_28637defbc0d917c42655a57fe435a7a37ba3c60{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

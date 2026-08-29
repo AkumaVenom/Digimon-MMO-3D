@@ -1,5 +1,61 @@
 # Changelog
 
+## 0.18.5-alpha — Replicated World Chat Presence Announcements
+
+### Added — authenticated join / relog / leave WORLD-chat events
+- Added `PlayerJoined` and `PlayerLeft` presentation types to `EDMFWorldChatMessageType`, appended after the existing `Player` / `System` values so prior enum ordinals remain stable.
+- `ADMFMMOGameMode::PostLogin` now publishes `Username has joined the server.` only after authenticated account integrity has completed, so normal joins and same-host relogs use the authoritative account username.
+- `ADMFMMOGameMode::Logout` publishes `Username has left the server.` while the authenticated PlayerState still exists and before `Super::Logout` removes it. Disconnect persistence/partner cleanup still commits first.
+- Presence events are authored by authority and routed through the same reliable per-owner WORLD-chat delivery/history path as accepted player chat. No client can submit a presence event type or username.
+
+### Added — global replicated presence audio
+- Added **UI → World Chat → Presence** Project Settings for enabling join/leave announcements and their live audio presentation.
+- Added independently assignable **Player Joined Server Sound** and **Player Left Server Sound** soft assets plus a shared volume/pitch multiplier. Sound Cue or Sound Wave assets can be changed globally without C++ edits.
+- Presence audio plays locally exactly once from the live `ClientReceiveWorldChatMessage` path on every recipient. `ClientReceiveWorldChatHistory` intentionally never triggers audio, preventing stale join/leave sound bursts for late joiners. Dedicated servers perform no local audio work.
+
+### Polished — native presence color language
+- Native join rows render the authenticated username in bold framework **Success green** while keeping `has joined the server.` calm and readable.
+- Native leave rows render the authenticated username and `has left the server.` statement in framework **Danger red** for immediate departure visibility. Existing player chat remains cyan/white and SYSTEM lines remain gold/muted.
+- Blueprint chat skins receive the new explicit message types through the existing `FDMFWorldChatMessage` payload and `OnWorldChatMessageReceived` / `BP_OnWorldChatMessageAdded` hooks.
+
+### Compatibility / networking
+- No new RPC declarations: the framework remains at **49 RPCs**. Presence fan-out reuses the existing reliable owner-client world-chat RPC.
+- Account SaveGame schema remains **v7**; presence/history/audio are session presentation and never persisted into an account.
+- v0.18.4 global player capacity, v0.18.3 vendor UI, v0.18.2 reconnect authority, disconnect-safe persistence, Party/Bank privacy, economy, player world location, Return Home, Day/Night, swimming/underwater, combat, DigiDex, Digivolution and Care are preserved.
+
+## 0.18.4-alpha — Global Max Players Server Capacity
+
+### Added — Project Settings global player cap
+- Added **Networking → Server Capacity → Global Maximum Players** to `UDMFFrameworkSettings`, with a deployment-safe default of **100** and an enforced minimum of 1. The listen host counts as one connected gameplay player.
+- `Host & Play` seeds the gameplay-world travel URL with the configured `MaxPlayers` value so Unreal's native `AGameSession` starts with the intended capacity.
+- `ADMFMMOGameMode::PreLogin` reasserts the server-owned Project Settings value onto `GameSession->MaxPlayers` before every `Super::PreLogin` approval. Unreal therefore performs normal authoritative capacity rejection, and a crafted client travel option cannot raise the server limit.
+- `StartPlay` also reapplies/logs the authoritative capacity for explicit server diagnostics. Lowering the setting never forcibly disconnects established players; it only prevents new admissions until occupancy is below the cap.
+
+### Compatibility / networking
+- No new RPCs: the framework remains at **49** and all existing authority boundaries are preserved.
+- Account SaveGame schema remains **v7**; no account migration/reset is required.
+- No Party/Bank, vendor economy, reconnect, persistence, world-location, Return Home, Day/Night, swimming/underwater, combat, DigiDex, Digivolution, Care or native UI behavior is replaced.
+- Added `Docs/SETUP_SERVER_CAPACITY.md` and an explicit `GlobalMaxPlayers=100` deployment template entry.
+
+## 0.18.3-alpha — Polished Digimon Vendor Native UI Layout Hardening
+
+### Fixed — BUY / SELL detail text compression and overlap
+- Rebuilt the native `DMFDigimonVendorWidget` detail column so progression statistics and market valuation live inside an independent scroll region at their natural desired height. Long/high-progression Digimon can no longer be squeezed into a tiny Fill slot and paint through neighbouring text, transaction controls or the Close button.
+- Increased the authored vendor canvas to `1280x780` while retaining `ScaleToFit / DownOnly`, giving 1080p and larger displays a roomier native presentation while smaller screens still scale the complete window down safely.
+- Reduced the portrait panel height and added ScaleBox portrait fitting so the Digimon image remains prominent without consuming the vertical space required by readable information.
+- Split the right panel into explicit **COMBAT & PROGRESSION** and **MARKET VALUATION** cards with consistent padding, hierarchy and wrapping. Transaction and Close controls remain pinned below the information scroller.
+
+### Polished — BUY / SELL collection rows
+- Hardened each stock/owned-Digimon row with a minimum readable height, aspect-safe portrait fitting, dedicated metadata space and a fixed-width quote column.
+- BUY rows now separate `BUY PRICE` from the numeric Bits value. SELL rows now separate `SELL QUOTE`, the `+Bits` value and the `PARTY` / `BANK` source tag instead of concatenating storage and price into the same crowded line.
+- Reformatted detailed stats and valuation copy for clean line grouping and locale-aware number formatting while preserving every existing statistic and value contribution.
+
+### Compatibility / networking
+- Presentation-only native UI update. Vendor stock generation, pricing math, purchase reservation, sale mutation, transaction confirmation, server revalidation and persistence are unchanged.
+- Account SaveGame schema remains **v7**.
+- RPC count remains **49**; no network endpoint or client-authored economy state was added.
+- Authenticated reconnect authority, disconnect-safe persistence, Party/Bank privacy, world-location persistence, swimming, underwater state, Day/Night, combat, DigiDex, Digivolution and Care contracts remain unchanged.
+
 ## 0.18.2-alpha — Authenticated Reconnect Persistent Account Authority Fix
 
 ### Fixed — remote client reconnect could replace a good persisted account with stale inactive PlayerState state

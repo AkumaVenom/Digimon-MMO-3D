@@ -69,6 +69,10 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
     bool BroadcastWorldChatMessage(ADMFMMOPlayerController* SenderController, const FString& SanitizedMessage);
 
+    /** Publishes a server-authored authenticated join/leave presence event through the same reliable WORLD chat stream. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
+    bool BroadcastWorldChatPresenceEvent(ADMFMMOPlayerController* SubjectController, EDMFWorldChatMessageType PresenceType);
+
     /** Sends the bounded authoritative session history to one owning player controller. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
     void SendRecentWorldChatHistory(ADMFMMOPlayerController* RecipientController) const;
@@ -90,6 +94,9 @@ protected:
     void BP_OnWorldChatMessageAccepted(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* SenderController);
 
 private:
+    bool DispatchWorldChatMessage(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* EventSourceController);
+    int32 ResolveConfiguredMaximumPlayers() const;
+    void ApplyConfiguredPlayerCapacity();
     bool ValidateCredentialsFromOptions(const FString& Options, FString& OutUsername, FString& OutCredentialDigest, bool& bOutCreatedNew, FString& OutError) const;
     bool RehydrateAuthenticatedPlayerState(APlayerController* PlayerController, const TCHAR* Context) const;
     UClass* ResolveFrameworkPlayerAvatarClass() const;

@@ -1,3 +1,44 @@
+# UE5.8 Validation Plan — 0.18.5-alpha
+
+## S0 — v0.18.5 replicated world-chat presence acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → UI → World Chat → Presence** and confirm **Announce Player Join / Leave** and **Play Player Join / Leave Sounds** default enabled. Assign clearly different Sound Cues/Waves to **Player Joined Server Sound** and **Player Left Server Sound**.
+2. Start Host & Play with an established account. Confirm the host receives exactly one green-name `Username has joined the server.` row and one join cue. The username must match the authenticated account, not an arbitrary client-submitted string.
+3. Join from a second account. Confirm host and remote each receive exactly one live join row and each plays the join cue once. Ordinary player chat must remain cyan username + white message.
+4. Disconnect the remote client. Confirm the host receives exactly one leave row; username and `has left the server.` body are red and the leave cue plays once. Confirm the server still commits disconnect persistence and removes the transient summoned partner before normal teardown.
+5. Reconnect the same remote account to the still-running host. Confirm v0.18.2 account state restores correctly and the reconnect emits exactly one new join announcement/sound on both peers. Repeat at least three disconnect/relogin cycles and verify no duplicated presence events.
+6. Send text such as `PlayerX has joined the server.` manually. It must remain an ordinary player message and never acquire `PlayerJoined`/`PlayerLeft` authority, special native styling or presence sound.
+7. Generate several join/leave events, then connect a late third client with `WorldChatServerHistoryLimit > 0`. The retained presence rows may appear in history, but historical presence entries must be silent. Only the late client's own live join event may play the join cue.
+8. Disable **Play Player Join / Leave Sounds** and repeat one join/leave. Presence rows/colors must still replicate, with no audio. Re-enable sounds, leave the join asset unassigned and verify only the configured leave cue plays.
+9. Disable **Announce Player Join / Leave** while leaving WORLD chat enabled. Join/leave must produce neither presence text nor presence audio, while ordinary world chat continues normally.
+10. Disable **Enable World Chat** entirely. Confirm no native chat/presence presentation is generated and normal chat submissions remain disabled as before.
+11. Blueprint-skin regression: bind/inspect `FDMFWorldChatMessage.MessageType` and verify `PlayerJoined` / `PlayerLeft` arrive through existing `OnWorldChatMessageReceived`, `BP_OnWorldChatMessageAdded`, and GameMode `BP_OnWorldChatMessageAccepted` hooks without a new network endpoint.
+12. Re-run v0.18.4 capacity=2 admission, v0.18.3 vendor BUY/SELL, v0.18.2 same-host reconnect, abrupt disconnect persistence, Party/Bank privacy, world-location restore, Return Home, swimming/underwater, Day/Night, combat, DigiDex, Digivolution and Care. Account schema must remain v7 and RPC count 49.
+
+## S0 — v0.18.4 global maximum-player capacity acceptance
+
+1. Open **Project Settings → Game → Digimon MMO Framework → Networking → Server Capacity** and confirm **Global Maximum Players** exists and defaults to `100`. Confirm the setting is config-backed and Blueprint-readable through the developer settings class.
+2. Temporarily set **Global Maximum Players = 2**. Start **Host & Play** and confirm the status indicates a two-player authoritative host. The listen host consumes slot 1.
+3. Join from one separate packaged client/account. It must authenticate, load its persistent account and enter gameplay normally as slot 2.
+4. Attempt to join from a second remote packaged client/account while both slots are occupied. The server must reject the new connection as full. The existing host/client must remain connected and their Party/Bank/partner state must be untouched.
+5. Disconnect the first remote client and immediately retry the previously rejected client. It must now join successfully, proving the slot is released through normal disconnect/GameSession lifecycle.
+6. With the cap still at 2, manually connect a client using a URL that attempts `?MaxPlayers=9999` (or equivalent custom travel options). The authoritative server must still enforce 2 because DMF reasserts Project Settings before `Super::PreLogin`.
+7. While two players are connected in PIE, lower the editor Project Settings cap to 1. Existing players must **not** be kicked. A new connection must be denied until occupancy falls below the new cap. Restore the setting afterward.
+8. Restore **Global Maximum Players = 100**, restart the host and confirm `Host & Play` uses 100 again. Regression-test v0.18.3 BUY/SELL vendor UI, authenticated same-host reconnect, disconnect-save/partner cleanup, world-location restore, Return Home, swimming/underwater, Day/Night, combat, Party/Bank, DigiDex, Digivolution, Care and world chat.
+
+## S0 — v0.18.3 polished native Digimon vendor UI acceptance
+
+1. At 1920x1080, open the native Digimon Exchange BUY tab with a stock Digimon that has nonzero level, Lifetime Battle EXP, ABI/CAM, spent/unspent Attribute Points and Digivolution history. Confirm **COMBAT & PROGRESSION** and **MARKET VALUATION** render as separate cards with no overlapping lines, clipped text, button collision or text painting through adjacent widgets.
+2. Select enough/high-progression data to exceed the visible detail body. Confirm only the detail-information region scrolls; portrait/name/meta remain fixed above it and BUY/CONFIRM BUY plus CLOSE remain fixed below it. Mouse-wheel scrolling must reveal every statistic/value line.
+3. Verify BUY list rows maintain stable height and readable spacing for long species names and 4-6 digit prices. Confirm `BUY PRICE` and the Bits amount are visually separated and no price text collides with species metadata.
+4. Switch to SELL with Party and Bank Digimon present. Confirm `SELL QUOTE`, `+N BITS`, and `PARTY` / `BANK` are separate lines/roles; no storage label is concatenated into the price line and no row content overlaps.
+5. Select Party and Bank Digimon with different progression. Confirm the right panel updates cleanly on every selection, the sell quote matches the server-derived value, starter/final-Party protection messages remain readable, and the transaction button disables/enables exactly as before.
+6. Exercise the full two-step BUY and SELL confirmation paths. Confirm the UI polish changes do not alter the server-authoritative payload: client still submits only vendor + transaction direction + GUID, and price/ownership/range/storage are still revalidated by authority.
+7. Test 2560x1440, 1920x1080 and a viewport small enough to trigger ScaleToFit. Confirm the whole vendor window remains on-screen, text is readable, both scroll regions work, and pinned controls remain accessible.
+8. Listen host + remote client: open the same vendor simultaneously, rotate stock, buy one offer, sell one owned Digimon and reconnect. Confirm replicated stock/countdown, Bits, Party/Bank persistence and v0.18.2 authenticated reconnect behavior are unchanged. SaveGame schema must remain v7 and RPC count must remain 49.
+
+---
+
 # UE5.8 Validation Plan — 0.18.2-alpha
 
 ## S0 — v0.18.2 same-host remote reconnect persistence acceptance

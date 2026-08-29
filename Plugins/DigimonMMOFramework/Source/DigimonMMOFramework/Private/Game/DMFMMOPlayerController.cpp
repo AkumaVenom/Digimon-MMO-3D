@@ -13,6 +13,8 @@
 #include "Game/DMFPlayerState.h"
 #include "Game/DMFTargetingPresentationActor.h"
 #include "InputCoreTypes.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 #include "Settings/DMFFrameworkSettings.h"
 #include "TimerManager.h"
 #include "UI/DMFCombatQuickBarWidget.h"
@@ -1285,6 +1287,42 @@ void ADMFMMOPlayerController::ServerRequestWorldChatHistory_Implementation()
     }
 }
 
+void ADMFMMOPlayerController::PlayWorldChatPresenceSound(const EDMFWorldChatMessageType MessageType) const
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    const bool bJoined = MessageType == EDMFWorldChatMessageType::PlayerJoined;
+    const bool bLeft = MessageType == EDMFWorldChatMessageType::PlayerLeft;
+    if (!bJoined && !bLeft)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || !Settings->bEnableWorldChat || !Settings->bEnableWorldChatPresenceAnnouncements || !Settings->bEnableWorldChatPresenceSounds)
+    {
+        return;
+    }
+
+    const TSoftObjectPtr<USoundBase>& ConfiguredSound = bJoined
+        ? Settings->WorldChatPlayerJoinedSound
+        : Settings->WorldChatPlayerLeftSound;
+    if (ConfiguredSound.IsNull())
+    {
+        return;
+    }
+
+    if (USoundBase* Sound = ConfiguredSound.LoadSynchronous())
+    {
+        const float Volume = FMath::Clamp(Settings->WorldChatPresenceSoundVolumeMultiplier, 0.0f, 4.0f);
+        const float Pitch = FMath::Clamp(Settings->WorldChatPresenceSoundPitchMultiplier, 0.25f, 4.0f);
+        UGameplayStatics::PlaySound2D(this, Sound, Volume, Pitch);
+    }
+}
+
 void ADMFMMOPlayerController::ClientReceiveWorldChatMessage_Implementation(const FDMFWorldChatMessage& ChatMessage)
 {
     RefreshWorldChatUI();
@@ -1292,6 +1330,10 @@ void ADMFMMOPlayerController::ClientReceiveWorldChatMessage_Implementation(const
     {
         WorldChatWidget->AddChatMessage(ChatMessage);
     }
+
+    // Presence audio is deliberately tied only to the live reliable delivery path.
+    // ClientReceiveWorldChatHistory never calls this helper, preventing stale login/logout sounds on join.
+    PlayWorldChatPresenceSound(ChatMessage.MessageType);
     OnWorldChatMessageReceived.Broadcast(ChatMessage);
 }
 
