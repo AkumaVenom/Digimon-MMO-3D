@@ -21,6 +21,7 @@
 			"DMFDigimonVendorWidget.gen.cpp.obj",
 			"DMFExperienceNotificationWidget.gen.cpp.obj",
 			"DMFFrameworkSettings.gen.cpp.obj",
+			"DMFFriendTrackerWidget.gen.cpp.obj",
 			"DMFFrontendGameMode.gen.cpp.obj",
 			"DMFFrontendHUD.gen.cpp.obj",
 			"DMFHealerActor.gen.cpp.obj",
@@ -38,10 +39,12 @@
 			"DMFPlayerSkinData.gen.cpp.obj",
 			"DMFPlayerSkinEntryButton.gen.cpp.obj",
 			"DMFPlayerSkinSelectionWidget.gen.cpp.obj",
+			"DMFPlayerSocialContextWidget.gen.cpp.obj",
 			"DMFPlayerState.gen.cpp.obj",
 			"DMFScanNotificationWidget.gen.cpp.obj",
 			"DMFScanSpeciesEntryButton.gen.cpp.obj",
 			"DMFSessionSubsystem.gen.cpp.obj",
+			"DMFSocialActionButton.gen.cpp.obj",
 			"DMFStarterEntryButton.gen.cpp.obj",
 			"DMFStarterRosterData.gen.cpp.obj",
 			"DMFStarterSelectionWidget.gen.cpp.obj",
@@ -69,22 +72,26 @@
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
 			"DMFNewPlayerStart.cpp.obj",
-			"DMFPlayerAvatarCharacter.cpp.obj",
 			"DMFPlayerState.cpp.obj",
+			"DMFSessionSubsystem.cpp.obj",
+			"DMFMMOGameMode.cpp.obj",
+			"DMFMMOPlayerController.cpp.obj",
+			"DMFPlayerAvatarCharacter.cpp.obj"
+		],
+		"Module.DigimonMMOFramework.3.cpp.obj": [
 			"DMFSwimmableWater.cpp.obj",
 			"DMFTargetingPresentationActor.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFMMOGameMode.cpp.obj",
-			"DMFMMOPlayerController.cpp.obj",
-			"DMFSessionSubsystem.cpp.obj"
-		],
-		"Module.DigimonMMOFramework.3.cpp.obj": [
-			"DMFAccountPersistenceSubsystem.cpp.obj",
 			"DMFMusicSubsystem.cpp.obj",
 			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
-			"DMFDigimonInventoryWidget.cpp.obj",
+			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFFrameworkSettings.cpp.obj",
+			"DMFDigimonInventoryWidget.cpp.obj"
+		],
+		"Module.DigimonMMOFramework.4.cpp.obj": [
+			"DMFDigimonVendorWidget.cpp.obj",
 			"DMFExperienceNotificationWidget.cpp.obj",
 			"DMFHomeTeleportNotificationWidget.cpp.obj",
 			"DMFLoginMainMenuWidget.cpp.obj",
@@ -96,14 +103,13 @@
 			"DMFScanSpeciesEntryButton.cpp.obj",
 			"DMFStarterEntryButton.cpp.obj",
 			"DMFStarterSelectionWidget.cpp.obj",
-			"DMFFrameworkSettings.cpp.obj",
-			"DMFDigimonVendorWidget.cpp.obj"
-		],
-		"Module.DigimonMMOFramework.4.cpp.obj": [
-			"DMFWorldNameplateWidget.cpp.obj",
+			"DMFWorldChatWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
 			"DMFDigimonPresentationLibrary.cpp.obj",
-			"DMFWorldChatWidget.cpp.obj"
+			"DMFFriendTrackerWidget.cpp.obj",
+			"DMFPlayerSocialContextWidget.cpp.obj",
+			"DMFSocialActionButton.cpp.obj",
+			"DMFWorldNameplateWidget.cpp.obj"
 		]
 	}
 }

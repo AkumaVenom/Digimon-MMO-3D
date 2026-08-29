@@ -33,10 +33,17 @@ DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonExpe
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonInstance(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigimonStats(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFDigivolutionEvaluation(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildInvite(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildMemberEntry(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildRecord(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildSummary(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFReplicatedDigimonList(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFScanDataEntry(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFSocialFriendEntry(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFSocialSnapshot(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFCombatState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDamageScaling(ETypeConstructPhase);
@@ -52,6 +59,8 @@ DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimon
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFPlayerInteractionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildPopulationScheduleMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWildSpawnRarity(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType(ETypeConstructPhase);
@@ -974,6 +983,10 @@ struct UHT_STATICS
 		{ "ScanAndMaterialize.DisplayName", "Scan & Materialize" },
 		{ "ScanAndMaterialize.Name", "EDMFDigimonMenuTab::ScanAndMaterialize" },
 		{ "ScanAndMaterialize.ToolTip", "Existing serialized values remain in their pre-v0.12 order for Blueprint/save compatibility." },
+		{ "Social.Comment", "/** Appended in v0.19. Persistent friends/ignore/guild social hub. */" },
+		{ "Social.DisplayName", "Social" },
+		{ "Social.Name", "EDMFDigimonMenuTab::Social" },
+		{ "Social.ToolTip", "Appended in v0.19. Persistent friends/ignore/guild social hub." },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Current pages in the polished Digimon menu shell. Additional systems can extend this enum later." },
 #endif
@@ -986,6 +999,7 @@ struct UHT_STATICS
 		{ "EDMFDigimonMenuTab::Bank", (int64)EDMFDigimonMenuTab::Bank },
 		{ "EDMFDigimonMenuTab::Digivolution", (int64)EDMFDigimonMenuTab::Digivolution },
 		{ "EDMFDigimonMenuTab::DigiDex", (int64)EDMFDigimonMenuTab::DigiDex },
+		{ "EDMFDigimonMenuTab::Social", (int64)EDMFDigimonMenuTab::Social },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct UHT_STATICS 
@@ -1021,6 +1035,162 @@ UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPh
 }
 #undef UHT_STATICS
 // ********** End Enum EDMFDigimonMenuTab **********************************************************
+
+// ********** Begin Enum EDMFSocialMenuTab *********************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFSocialMenuTab>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Nested pages inside the extensible Social tab. */" },
+#endif
+		{ "Friends.Name", "EDMFSocialMenuTab::Friends" },
+		{ "Guild.Name", "EDMFSocialMenuTab::Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Nested pages inside the extensible Social tab." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFSocialMenuTab::Friends", (int64)EDMFSocialMenuTab::Friends },
+		{ "EDMFSocialMenuTab::Guild", (int64)EDMFSocialMenuTab::Guild },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFSocialMenuTab",
+	"EDMFSocialMenuTab",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFSocialMenuTab;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFSocialMenuTab.OuterSingleton)
+		{
+			ZRIE_EDMFSocialMenuTab.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFSocialMenuTab"));
+		}
+		return ZRIE_EDMFSocialMenuTab.OuterSingleton;
+	}
+	if (!ZRIE_EDMFSocialMenuTab.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFSocialMenuTab.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFSocialMenuTab.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFSocialMenuTab ***********************************************************
+
+// ********** Begin Enum EDMFSocialActionType ******************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType_Statics
+template<> DIGIMONMMOFRAMEWORK_NON_ATTRIBUTED_API UEnum* StaticEnum<EDMFSocialActionType>()
+{
+	return Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType(ETypeConstructPhase::Outer);
+}
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ApplyToGuild.Name", "EDMFSocialActionType::ApplyToGuild" },
+		{ "BlueprintType", "true" },
+		{ "CancelFriendRequest.Name", "EDMFSocialActionType::CancelFriendRequest" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Server-side action discriminator used by the single validated social mutation RPC. */" },
+#endif
+		{ "CreateGuild.Name", "EDMFSocialActionType::CreateGuild" },
+		{ "DisbandGuild.Name", "EDMFSocialActionType::DisbandGuild" },
+		{ "IgnorePlayer.Name", "EDMFSocialActionType::IgnorePlayer" },
+		{ "InvitePlayerToGuild.Name", "EDMFSocialActionType::InvitePlayerToGuild" },
+		{ "LeaveGuild.Name", "EDMFSocialActionType::LeaveGuild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+		{ "RemoveFriend.Name", "EDMFSocialActionType::RemoveFriend" },
+		{ "RemoveGuildMember.Name", "EDMFSocialActionType::RemoveGuildMember" },
+		{ "RemoveIgnoredPlayer.Name", "EDMFSocialActionType::RemoveIgnoredPlayer" },
+		{ "RenameGuild.Name", "EDMFSocialActionType::RenameGuild" },
+		{ "RespondFriendRequest.Name", "EDMFSocialActionType::RespondFriendRequest" },
+		{ "RespondGuildApplication.Name", "EDMFSocialActionType::RespondGuildApplication" },
+		{ "RespondGuildInvite.Name", "EDMFSocialActionType::RespondGuildInvite" },
+		{ "SendFriendRequest.Name", "EDMFSocialActionType::SendFriendRequest" },
+		{ "SetFriendTracking.Name", "EDMFSocialActionType::SetFriendTracking" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Server-side action discriminator used by the single validated social mutation RPC." },
+#endif
+	};
+#endif // WITH_METADATA
+	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
+		{ "EDMFSocialActionType::SendFriendRequest", (int64)EDMFSocialActionType::SendFriendRequest },
+		{ "EDMFSocialActionType::RespondFriendRequest", (int64)EDMFSocialActionType::RespondFriendRequest },
+		{ "EDMFSocialActionType::RemoveFriend", (int64)EDMFSocialActionType::RemoveFriend },
+		{ "EDMFSocialActionType::SetFriendTracking", (int64)EDMFSocialActionType::SetFriendTracking },
+		{ "EDMFSocialActionType::IgnorePlayer", (int64)EDMFSocialActionType::IgnorePlayer },
+		{ "EDMFSocialActionType::RemoveIgnoredPlayer", (int64)EDMFSocialActionType::RemoveIgnoredPlayer },
+		{ "EDMFSocialActionType::CreateGuild", (int64)EDMFSocialActionType::CreateGuild },
+		{ "EDMFSocialActionType::RenameGuild", (int64)EDMFSocialActionType::RenameGuild },
+		{ "EDMFSocialActionType::InvitePlayerToGuild", (int64)EDMFSocialActionType::InvitePlayerToGuild },
+		{ "EDMFSocialActionType::RespondGuildInvite", (int64)EDMFSocialActionType::RespondGuildInvite },
+		{ "EDMFSocialActionType::ApplyToGuild", (int64)EDMFSocialActionType::ApplyToGuild },
+		{ "EDMFSocialActionType::RespondGuildApplication", (int64)EDMFSocialActionType::RespondGuildApplication },
+		{ "EDMFSocialActionType::RemoveGuildMember", (int64)EDMFSocialActionType::RemoveGuildMember },
+		{ "EDMFSocialActionType::LeaveGuild", (int64)EDMFSocialActionType::LeaveGuild },
+		{ "EDMFSocialActionType::DisbandGuild", (int64)EDMFSocialActionType::DisbandGuild },
+		{ "EDMFSocialActionType::CancelFriendRequest", (int64)EDMFSocialActionType::CancelFriendRequest },
+	};
+	static const UECodeGen_Private::FEnumParams EnumParams;
+}; // struct UHT_STATICS 
+const UECodeGen_Private::FEnumParams UHT_STATICS::EnumParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	"EDMFSocialActionType",
+	"EDMFSocialActionType",
+	UHT_STATICS::Enumerators,
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	UE_ARRAY_COUNT(UHT_STATICS::Enumerators),
+	EEnumFlags::None,
+	(uint8)UEnum::ECppForm::EnumClass,
+	(uint8)UEnum::EUnderlyingType::uint8,
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FEnumRegistrationInfo ZRIE_EDMFSocialActionType;
+UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!ZRIE_EDMFSocialActionType.OuterSingleton)
+		{
+			ZRIE_EDMFSocialActionType.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("EDMFSocialActionType"));
+		}
+		return ZRIE_EDMFSocialActionType.OuterSingleton;
+	}
+	if (!ZRIE_EDMFSocialActionType.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUEnum(ZRIE_EDMFSocialActionType.InnerSingleton, UHT_STATICS::EnumParams);
+	}
+	return ZRIE_EDMFSocialActionType.InnerSingleton;
+}
+#undef UHT_STATICS
+// ********** End Enum EDMFSocialActionType ********************************************************
 
 // ********** Begin Enum EDMFDigimonStorageLocation ************************************************
 #ifdef UHT_STATICS
@@ -2571,6 +2741,864 @@ UScriptStruct* Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState(ETypeConst
 #undef UHT_STATICS
 // ********** End ScriptStruct FDMFPlayerWorldLocationState ****************************************
 
+// ********** Begin ScriptStruct FDMFSocialFriendEntry *********************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFSocialFriendEntry_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFSocialFriendEntry>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFSocialFriendEntry); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Compact owner-only friend row. Online state is live session state; tracking preference is persistent. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Compact owner-only friend row. Online state is live session state; tracking preference is persistent." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Username_MetaData[] = {
+		{ "Category", "Social|Friends" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bOnline_MetaData[] = {
+		{ "Category", "Social|Friends" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bTrackingEnabled_MetaData[] = {
+		{ "Category", "Social|Friends" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFSocialFriendEntry constinit property declarations *************
+	static const UECodeGen_Private::FStrPropertyParams NewProp_Username;
+	static void NewProp_bOnline_SetBit(void* Obj)
+	{
+		((FDMFSocialFriendEntry*)Obj)->bOnline = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bOnline;
+	static void NewProp_bTrackingEnabled_SetBit(void* Obj)
+	{
+		((FDMFSocialFriendEntry*)Obj)->bTrackingEnabled = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bTrackingEnabled;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFSocialFriendEntry constinit property declarations ***************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFSocialFriendEntry>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFSocialFriendEntry Property Definitions ************************
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "Username", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialFriendEntry, Username), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Username_MetaData), NewProp_Username_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bOnline = { "bOnline", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFSocialFriendEntry), &UHT_STATICS::NewProp_bOnline_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bOnline_MetaData), NewProp_bOnline_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bTrackingEnabled = { "bTrackingEnabled", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFSocialFriendEntry), &UHT_STATICS::NewProp_bTrackingEnabled_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bTrackingEnabled_MetaData), NewProp_bTrackingEnabled_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bOnline,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bTrackingEnabled,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFSocialFriendEntry Property Definitions **************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFSocialFriendEntry",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFSocialFriendEntry>(),
+	alignof(FDMFSocialFriendEntry),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFSocialFriendEntry(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFSocialFriendEntry, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFSocialFriendEntry"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFSocialFriendEntry ***********************************************
+
+// ********** Begin ScriptStruct FDMFNearbySocialPlayerEntry ***************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFNearbySocialPlayerEntry>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFNearbySocialPlayerEntry); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owner-local discovery row derived from already-replicated player avatars. No authority is stored here. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owner-local discovery row derived from already-replicated player avatars. No authority is stored here." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Username_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DistanceMeters_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Precise local distance used for nearest-first ordering. Native UI presents a rounded integer metre value. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Precise local distance used for nearest-first ordering. Native UI presents a rounded integer metre value." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIsFriend_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHasIncomingFriendRequest_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHasOutgoingFriendRequest_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIsIgnored_MetaData[] = {
+		{ "Category", "Social|Nearby Players" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFNearbySocialPlayerEntry constinit property declarations *******
+	static const UECodeGen_Private::FStrPropertyParams NewProp_Username;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DistanceMeters;
+	static void NewProp_bIsFriend_SetBit(void* Obj)
+	{
+		((FDMFNearbySocialPlayerEntry*)Obj)->bIsFriend = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsFriend;
+	static void NewProp_bHasIncomingFriendRequest_SetBit(void* Obj)
+	{
+		((FDMFNearbySocialPlayerEntry*)Obj)->bHasIncomingFriendRequest = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHasIncomingFriendRequest;
+	static void NewProp_bHasOutgoingFriendRequest_SetBit(void* Obj)
+	{
+		((FDMFNearbySocialPlayerEntry*)Obj)->bHasOutgoingFriendRequest = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHasOutgoingFriendRequest;
+	static void NewProp_bIsIgnored_SetBit(void* Obj)
+	{
+		((FDMFNearbySocialPlayerEntry*)Obj)->bIsIgnored = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsIgnored;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFNearbySocialPlayerEntry constinit property declarations *********
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFNearbySocialPlayerEntry>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFNearbySocialPlayerEntry Property Definitions ******************
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "Username", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFNearbySocialPlayerEntry, Username), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Username_MetaData), NewProp_Username_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_DistanceMeters = { "DistanceMeters", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFNearbySocialPlayerEntry, DistanceMeters), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DistanceMeters_MetaData), NewProp_DistanceMeters_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIsFriend = { "bIsFriend", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFNearbySocialPlayerEntry), &UHT_STATICS::NewProp_bIsFriend_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsFriend_MetaData), NewProp_bIsFriend_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bHasIncomingFriendRequest = { "bHasIncomingFriendRequest", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFNearbySocialPlayerEntry), &UHT_STATICS::NewProp_bHasIncomingFriendRequest_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHasIncomingFriendRequest_MetaData), NewProp_bHasIncomingFriendRequest_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bHasOutgoingFriendRequest = { "bHasOutgoingFriendRequest", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFNearbySocialPlayerEntry), &UHT_STATICS::NewProp_bHasOutgoingFriendRequest_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHasOutgoingFriendRequest_MetaData), NewProp_bHasOutgoingFriendRequest_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIsIgnored = { "bIsIgnored", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFNearbySocialPlayerEntry), &UHT_STATICS::NewProp_bIsIgnored_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsIgnored_MetaData), NewProp_bIsIgnored_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DistanceMeters,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bIsFriend,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bHasIncomingFriendRequest,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bHasOutgoingFriendRequest,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bIsIgnored,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFNearbySocialPlayerEntry Property Definitions ********************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFNearbySocialPlayerEntry",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFNearbySocialPlayerEntry>(),
+	alignof(FDMFNearbySocialPlayerEntry),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFNearbySocialPlayerEntry"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFNearbySocialPlayerEntry *****************************************
+
+// ********** Begin ScriptStruct FDMFGuildInvite ***************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFGuildInvite_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFGuildInvite>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFGuildInvite); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent guild invitation stored on the invited account so it survives either player going offline. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent guild invitation stored on the invited account so it survives either player going offline." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildId_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildName_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_InviterUsername_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SentUtcTicks_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFGuildInvite constinit property declarations *******************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_GuildName;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_InviterUsername;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_SentUtcTicks;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFGuildInvite constinit property declarations *********************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFGuildInvite>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFGuildInvite Property Definitions ******************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildInvite, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildId_MetaData), NewProp_GuildId_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_GuildName = { "GuildName", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildInvite, GuildName), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildName_MetaData), NewProp_GuildName_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_InviterUsername = { "InviterUsername", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildInvite, InviterUsername), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InviterUsername_MetaData), NewProp_InviterUsername_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_SentUtcTicks = { "SentUtcTicks", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildInvite, SentUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SentUtcTicks_MetaData), NewProp_SentUtcTicks_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildName,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InviterUsername,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SentUtcTicks,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFGuildInvite Property Definitions ********************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFGuildInvite",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFGuildInvite>(),
+	alignof(FDMFGuildInvite),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFGuildInvite;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildInvite(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFGuildInvite.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFGuildInvite.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFGuildInvite, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFGuildInvite"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFGuildInvite.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFGuildInvite.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFGuildInvite.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFGuildInvite.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFGuildInvite *****************************************************
+
+// ********** Begin ScriptStruct FDMFGuildRecord ***************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFGuildRecord_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFGuildRecord>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFGuildRecord); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent server-owned guild record. Membership and applications are never client-authored. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent server-owned guild record. Membership and applications are never client-authored." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildId_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Name_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OwnerUsername_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MemberUsernames_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingApplications_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CreatedUtcTicks_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_LastModifiedUtcTicks_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFGuildRecord constinit property declarations *******************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_Name;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_OwnerUsername;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_MemberUsernames_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_MemberUsernames;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingApplications_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingApplications;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_CreatedUtcTicks;
+	static const UECodeGen_Private::FInt64PropertyParams NewProp_LastModifiedUtcTicks;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFGuildRecord constinit property declarations *********************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFGuildRecord>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFGuildRecord Property Definitions ******************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildId_MetaData), NewProp_GuildId_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Name = { "Name", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, Name), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Name_MetaData), NewProp_Name_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_OwnerUsername = { "OwnerUsername", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, OwnerUsername), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OwnerUsername_MetaData), NewProp_OwnerUsername_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_MemberUsernames_Inner = { "MemberUsernames", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_MemberUsernames = { "MemberUsernames", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, MemberUsernames), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MemberUsernames_MetaData), NewProp_MemberUsernames_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingApplications_Inner = { "PendingApplications", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingApplications = { "PendingApplications", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, PendingApplications), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingApplications_MetaData), NewProp_PendingApplications_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_CreatedUtcTicks = { "CreatedUtcTicks", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, CreatedUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CreatedUtcTicks_MetaData), NewProp_CreatedUtcTicks_MetaData) };
+const UECodeGen_Private::FInt64PropertyParams UHT_STATICS::NewProp_LastModifiedUtcTicks = { "LastModifiedUtcTicks", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int64, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildRecord, LastModifiedUtcTicks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LastModifiedUtcTicks_MetaData), NewProp_LastModifiedUtcTicks_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Name,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OwnerUsername,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MemberUsernames_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MemberUsernames,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingApplications_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingApplications,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CreatedUtcTicks,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LastModifiedUtcTicks,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFGuildRecord Property Definitions ********************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFGuildRecord",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFGuildRecord>(),
+	alignof(FDMFGuildRecord),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFGuildRecord;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildRecord(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFGuildRecord.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFGuildRecord.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFGuildRecord, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFGuildRecord"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFGuildRecord.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFGuildRecord.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFGuildRecord.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFGuildRecord.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFGuildRecord *****************************************************
+
+// ********** Begin ScriptStruct FDMFGuildSummary **************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFGuildSummary_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFGuildSummary>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFGuildSummary); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Read-only search result sent to one player; member lists remain private to actual guild members. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Read-only search result sent to one player; member lists remain private to actual guild members." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildId_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Name_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_OwnerUsername_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MemberCount_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bApplicationPending_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFGuildSummary constinit property declarations ******************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_Name;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_OwnerUsername;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MemberCount;
+	static void NewProp_bApplicationPending_SetBit(void* Obj)
+	{
+		((FDMFGuildSummary*)Obj)->bApplicationPending = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bApplicationPending;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFGuildSummary constinit property declarations ********************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFGuildSummary>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFGuildSummary Property Definitions *****************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildSummary, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildId_MetaData), NewProp_GuildId_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Name = { "Name", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildSummary, Name), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Name_MetaData), NewProp_Name_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_OwnerUsername = { "OwnerUsername", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildSummary, OwnerUsername), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_OwnerUsername_MetaData), NewProp_OwnerUsername_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MemberCount = { "MemberCount", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildSummary, MemberCount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MemberCount_MetaData), NewProp_MemberCount_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bApplicationPending = { "bApplicationPending", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFGuildSummary), &UHT_STATICS::NewProp_bApplicationPending_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bApplicationPending_MetaData), NewProp_bApplicationPending_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Name,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OwnerUsername,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MemberCount,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bApplicationPending,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFGuildSummary Property Definitions *******************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFGuildSummary",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFGuildSummary>(),
+	alignof(FDMFGuildSummary),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFGuildSummary;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildSummary(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFGuildSummary.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFGuildSummary.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFGuildSummary, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFGuildSummary"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFGuildSummary.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFGuildSummary.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFGuildSummary.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFGuildSummary.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFGuildSummary ****************************************************
+
+// ********** Begin ScriptStruct FDMFGuildMemberEntry **********************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFGuildMemberEntry_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFGuildMemberEntry>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFGuildMemberEntry); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Username_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bOwner_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bOnline_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFGuildMemberEntry constinit property declarations **************
+	static const UECodeGen_Private::FStrPropertyParams NewProp_Username;
+	static void NewProp_bOwner_SetBit(void* Obj)
+	{
+		((FDMFGuildMemberEntry*)Obj)->bOwner = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bOwner;
+	static void NewProp_bOnline_SetBit(void* Obj)
+	{
+		((FDMFGuildMemberEntry*)Obj)->bOnline = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bOnline;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFGuildMemberEntry constinit property declarations ****************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFGuildMemberEntry>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFGuildMemberEntry Property Definitions *************************
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_Username = { "Username", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFGuildMemberEntry, Username), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Username_MetaData), NewProp_Username_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bOwner = { "bOwner", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFGuildMemberEntry), &UHT_STATICS::NewProp_bOwner_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bOwner_MetaData), NewProp_bOwner_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bOnline = { "bOnline", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFGuildMemberEntry), &UHT_STATICS::NewProp_bOnline_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bOnline_MetaData), NewProp_bOnline_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bOwner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bOnline,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFGuildMemberEntry Property Definitions ***************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFGuildMemberEntry",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFGuildMemberEntry>(),
+	alignof(FDMFGuildMemberEntry),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFGuildMemberEntry(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFGuildMemberEntry, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFGuildMemberEntry"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFGuildMemberEntry ************************************************
+
+// ********** Begin ScriptStruct FDMFSocialSnapshot ************************************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UScriptStruct_FDMFSocialSnapshot_Statics
+struct UHT_STATICS
+{
+	static inline consteval int32 GetStructSize() { return DataSizeOf<FDMFSocialSnapshot>(); }
+	static inline consteval int16 GetStructAlignment() { return alignof(FDMFSocialSnapshot); }
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "BlueprintType", "true" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Complete owner-only social view sent on demand and after authoritative social mutations. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Complete owner-only social view sent on demand and after authoritative social mutations." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Friends_MetaData[] = {
+		{ "Category", "Social|Friends" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingFriendRequests_MetaData[] = {
+		{ "Category", "Social|Friends" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingOutgoingFriendRequests_MetaData[] = {
+		{ "Category", "Social|Friends" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent outbound requests are returned separately so UI can show/cancel a sent request without guessing. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent outbound requests are returned separately so UI can show/cancel a sent request without guessing." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_IgnoredPlayers_MetaData[] = {
+		{ "Category", "Social|Ignore" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingGuildInvites_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildId_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildName_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildOwnerUsername_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIsGuildOwner_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildMembers_MetaData[] = {
+		{ "Category", "Social|Guild" },
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingGuildApplications_MetaData[] = {
+		{ "Category", "Social|Guild" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Populated only for the guild owner. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Populated only for the guild owner." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildSearchResults_MetaData[] = {
+		{ "Category", "Social|Guild" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Public guild directory summaries; never contains private account data. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Public guild directory summaries; never contains private account data." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin ScriptStruct FDMFSocialSnapshot constinit property declarations ****************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Friends_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_Friends;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingFriendRequests_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingFriendRequests;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingOutgoingFriendRequests_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingOutgoingFriendRequests;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_IgnoredPlayers_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_IgnoredPlayers;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_PendingGuildInvites_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingGuildInvites;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_GuildName;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_GuildOwnerUsername;
+	static void NewProp_bIsGuildOwner_SetBit(void* Obj)
+	{
+		((FDMFSocialSnapshot*)Obj)->bIsGuildOwner = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsGuildOwner;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildMembers_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_GuildMembers;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingGuildApplications_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingGuildApplications;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildSearchResults_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_GuildSearchResults;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End ScriptStruct FDMFSocialSnapshot constinit property declarations ******************
+	static void* NewStructOps()
+	{
+		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FDMFSocialSnapshot>();
+	}
+	static const UECodeGen_Private::FStructParams StructParams;
+}; // struct UHT_STATICS
+
+// ********** Begin ScriptStruct FDMFSocialSnapshot Property Definitions ***************************
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Friends_Inner = { "Friends", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFSocialFriendEntry, METADATA_PARAMS(0, nullptr) }; // 1df2b844b25a5f110f35a64bf4317c11683be6d0
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_Friends = { "Friends", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, Friends), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Friends_MetaData), NewProp_Friends_MetaData) }; // 1df2b844b25a5f110f35a64bf4317c11683be6d0
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingFriendRequests_Inner = { "PendingFriendRequests", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingFriendRequests = { "PendingFriendRequests", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, PendingFriendRequests), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingFriendRequests_MetaData), NewProp_PendingFriendRequests_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingOutgoingFriendRequests_Inner = { "PendingOutgoingFriendRequests", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingOutgoingFriendRequests = { "PendingOutgoingFriendRequests", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, PendingOutgoingFriendRequests), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingOutgoingFriendRequests_MetaData), NewProp_PendingOutgoingFriendRequests_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_IgnoredPlayers_Inner = { "IgnoredPlayers", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_IgnoredPlayers = { "IgnoredPlayers", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, IgnoredPlayers), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_IgnoredPlayers_MetaData), NewProp_IgnoredPlayers_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PendingGuildInvites_Inner = { "PendingGuildInvites", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFGuildInvite, METADATA_PARAMS(0, nullptr) }; // 67e6cf05b891016213c99e336f5e317cb06de312
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingGuildInvites = { "PendingGuildInvites", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, PendingGuildInvites), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingGuildInvites_MetaData), NewProp_PendingGuildInvites_MetaData) }; // 67e6cf05b891016213c99e336f5e317cb06de312
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildId_MetaData), NewProp_GuildId_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_GuildName = { "GuildName", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, GuildName), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildName_MetaData), NewProp_GuildName_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_GuildOwnerUsername = { "GuildOwnerUsername", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, GuildOwnerUsername), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildOwnerUsername_MetaData), NewProp_GuildOwnerUsername_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bIsGuildOwner = { "bIsGuildOwner", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(FDMFSocialSnapshot), &UHT_STATICS::NewProp_bIsGuildOwner_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsGuildOwner_MetaData), NewProp_bIsGuildOwner_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildMembers_Inner = { "GuildMembers", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFGuildMemberEntry, METADATA_PARAMS(0, nullptr) }; // c3857e23b0f1846573082388ad7ebec0e7b20ed8
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_GuildMembers = { "GuildMembers", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, GuildMembers), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildMembers_MetaData), NewProp_GuildMembers_MetaData) }; // c3857e23b0f1846573082388ad7ebec0e7b20ed8
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingGuildApplications_Inner = { "PendingGuildApplications", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingGuildApplications = { "PendingGuildApplications", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, PendingGuildApplications), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingGuildApplications_MetaData), NewProp_PendingGuildApplications_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildSearchResults_Inner = { "GuildSearchResults", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFGuildSummary, METADATA_PARAMS(0, nullptr) }; // 221e0c0beeef2e1bf365f187658a8fc8eb7d90f4
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_GuildSearchResults = { "GuildSearchResults", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFSocialSnapshot, GuildSearchResults), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildSearchResults_MetaData), NewProp_GuildSearchResults_MetaData) }; // 221e0c0beeef2e1bf365f187658a8fc8eb7d90f4
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Friends_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Friends,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingFriendRequests_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingFriendRequests,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingOutgoingFriendRequests_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingOutgoingFriendRequests,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_IgnoredPlayers_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_IgnoredPlayers,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildInvites_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildInvites,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildName,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildOwnerUsername,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bIsGuildOwner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildMembers_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildMembers,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildApplications_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildApplications,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildSearchResults_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildSearchResults,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End ScriptStruct FDMFSocialSnapshot Property Definitions *****************************
+const UECodeGen_Private::FStructParams UHT_STATICS::StructParams = {
+	(FTypeConstructFunc*)Z_Construct_UPackage__Script_DigimonMMOFramework,
+	nullptr,
+	&NewStructOps,
+	"DMFSocialSnapshot",
+	UHT_STATICS::PropPointers,
+	UE_ARRAY_COUNT(UHT_STATICS::PropPointers),
+	DataSizeOf<FDMFSocialSnapshot>(),
+	alignof(FDMFSocialSnapshot),
+	RF_Public|RF_Transient|RF_MarkAsNative,
+	EStructFlags(0x00000201),
+	METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)
+};
+static FStructRegistrationInfo Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot;
+UScriptStruct* Z_Construct_UScriptStruct_FDMFSocialSnapshot(ETypeConstructPhase Phase)
+{
+	if (Phase == ETypeConstructPhase::Outer)
+	{
+		if (!Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.OuterSingleton)
+		{
+			Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.OuterSingleton = GetStaticStruct(Z_Construct_UScriptStruct_FDMFSocialSnapshot, (UObject*)Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase::Outer), TEXT("DMFSocialSnapshot"));
+		}
+		return Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.OuterSingleton;
+	}
+	if (!Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.InnerSingleton)
+	{
+		UECodeGen_Private::ConstructUScriptStruct(Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.InnerSingleton, UHT_STATICS::StructParams);
+	}
+	return CastChecked<UScriptStruct>(Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot.InnerSingleton);
+}
+#undef UHT_STATICS
+// ********** End ScriptStruct FDMFSocialSnapshot **************************************************
+
 // ********** Begin ScriptStruct FDMFAccountRecord *************************************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2655,6 +3683,76 @@ struct UHT_STATICS
 		{ "Category", "Ranked" },
 		{ "ModuleRelativePath", "Public/DMFTypes.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FriendUsernames_MetaData[] = {
+		{ "Category", "Social|Friends" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent accepted friendships. Usernames are canonical account display names and comparisons are case-insensitive. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent accepted friendships. Usernames are canonical account display names and comparisons are case-insensitive." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingFriendRequests_MetaData[] = {
+		{ "Category", "Social|Friends" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent inbound requests. No modal popup is required; the Social/Friends tab owns acceptance/decline presentation. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent inbound requests. No modal popup is required; the Social/Friends tab owns acceptance/decline presentation." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingOutgoingFriendRequests_MetaData[] = {
+		{ "Category", "Social|Friends" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent outbound requests. Stored reciprocally with the target's inbound request so send/cancel/response stays atomic. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent outbound requests. Stored reciprocally with the target's inbound request so send/cancel/response stays atomic." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_IgnoredUsernames_MetaData[] = {
+		{ "Category", "Social|Ignore" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent per-account ignore list. Ignored players remain fully replicated in-world; only their authored chat is filtered. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent per-account ignore list. Ignored players remain fully replicated in-world; only their authored chat is filtered." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TrackedFriendUsernames_MetaData[] = {
+		{ "Category", "Social|Friends" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent subset of FriendUsernames whose local world-space distance tracker should be shown. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent subset of FriendUsernames whose local world-space distance tracker should be shown." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GuildId_MetaData[] = {
+		{ "Category", "Social|Guild" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Invalid when the account is not currently a guild member. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Invalid when the account is not currently a guild member." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingGuildInvites_MetaData[] = {
+		{ "Category", "Social|Guild" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent inbound guild invitations. Stale/disbanded guild entries are ignored by authoritative acceptance. */" },
+#endif
+		{ "ModuleRelativePath", "Public/DMFTypes.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent inbound guild invitations. Stale/disbanded guild entries are ignored by authoritative acceptance." },
+#endif
+	};
 #endif // WITH_METADATA
 
 // ********** Begin ScriptStruct FDMFAccountRecord constinit property declarations *****************
@@ -2679,6 +3777,19 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FIntPropertyParams NewProp_RankedBattlePoints;
 	static const UECodeGen_Private::FBytePropertyParams NewProp_RankedTier_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_RankedTier;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_FriendUsernames_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_FriendUsernames;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingFriendRequests_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingFriendRequests;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_PendingOutgoingFriendRequests_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingOutgoingFriendRequests;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_IgnoredUsernames_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_IgnoredUsernames;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_TrackedFriendUsernames_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_TrackedFriendUsernames;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_PendingGuildInvites_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_PendingGuildInvites;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End ScriptStruct FDMFAccountRecord constinit property declarations *******************
 	static void* NewStructOps()
@@ -2706,6 +3817,19 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonEconomyP
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_RankedBattlePoints = { "RankedBattlePoints", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, RankedBattlePoints), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RankedBattlePoints_MetaData), NewProp_RankedBattlePoints_MetaData) };
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_RankedTier_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_RankedTier = { "RankedTier", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, RankedTier), Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RankedTier_MetaData), NewProp_RankedTier_MetaData) }; // 4d9e64bdb2b39496009abe633f2187584c439425
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_FriendUsernames_Inner = { "FriendUsernames", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_FriendUsernames = { "FriendUsernames", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, FriendUsernames), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FriendUsernames_MetaData), NewProp_FriendUsernames_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingFriendRequests_Inner = { "PendingFriendRequests", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingFriendRequests = { "PendingFriendRequests", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, PendingFriendRequests), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingFriendRequests_MetaData), NewProp_PendingFriendRequests_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_PendingOutgoingFriendRequests_Inner = { "PendingOutgoingFriendRequests", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingOutgoingFriendRequests = { "PendingOutgoingFriendRequests", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, PendingOutgoingFriendRequests), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingOutgoingFriendRequests_MetaData), NewProp_PendingOutgoingFriendRequests_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_IgnoredUsernames_Inner = { "IgnoredUsernames", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_IgnoredUsernames = { "IgnoredUsernames", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, IgnoredUsernames), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_IgnoredUsernames_MetaData), NewProp_IgnoredUsernames_MetaData) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_TrackedFriendUsernames_Inner = { "TrackedFriendUsernames", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, 0, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_TrackedFriendUsernames = { "TrackedFriendUsernames", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, TrackedFriendUsernames), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TrackedFriendUsernames_MetaData), NewProp_TrackedFriendUsernames_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GuildId_MetaData), NewProp_GuildId_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PendingGuildInvites_Inner = { "PendingGuildInvites", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FDMFGuildInvite, METADATA_PARAMS(0, nullptr) }; // 67e6cf05b891016213c99e336f5e317cb06de312
+const UECodeGen_Private::FArrayPropertyParams UHT_STATICS::NewProp_PendingGuildInvites = { "PendingGuildInvites", nullptr, (EPropertyFlags)0x0010000001000005, UECodeGen_Private::EPropertyGenFlags::Array, nullptr, nullptr, 1, STRUCT_OFFSET(FDMFAccountRecord, PendingGuildInvites), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingGuildInvites_MetaData), NewProp_PendingGuildInvites_MetaData) }; // 67e6cf05b891016213c99e336f5e317cb06de312
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Username,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CredentialDigest,
@@ -2724,6 +3848,19 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedBattlePoints,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedTier_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RankedTier,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FriendUsernames_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FriendUsernames,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingFriendRequests_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingFriendRequests,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingOutgoingFriendRequests_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingOutgoingFriendRequests,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_IgnoredUsernames_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_IgnoredUsernames,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TrackedFriendUsernames_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TrackedFriendUsernames,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildInvites_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PendingGuildInvites,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End ScriptStruct FDMFAccountRecord Property Definitions ******************************
@@ -2931,7 +4068,9 @@ struct UHT_STATICS
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonVendorTransactionType, TEXT("EDMFDigimonVendorTransactionType"), &ZRIE_EDMFDigimonVendorTransactionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1719060311U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFRankedTier, TEXT("EDMFRankedTier"), &ZRIE_EDMFRankedTier, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1302226109U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType, TEXT("EDMFWorldChatMessageType"), &ZRIE_EDMFWorldChatMessageType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2747059329U) },
-		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1155505937U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, TEXT("EDMFDigimonMenuTab"), &ZRIE_EDMFDigimonMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2233747765U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab, TEXT("EDMFSocialMenuTab"), &ZRIE_EDMFSocialMenuTab, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3262589903U) },
+		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType, TEXT("EDMFSocialActionType"), &ZRIE_EDMFSocialActionType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2027009953U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation, TEXT("EDMFDigimonStorageLocation"), &ZRIE_EDMFDigimonStorageLocation, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2383950102U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat, TEXT("EDMFDigimonAttributeStat"), &ZRIE_EDMFDigimonAttributeStat, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1166099646U) },
 		{ Z_Construct_UEnum_DigimonMMOFramework_EDMFMusicState, TEXT("EDMFMusicState"), &ZRIE_EDMFMusicState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4180201259U) },
@@ -2950,12 +4089,19 @@ struct UHT_STATICS
 		{ Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression, Z_Construct_UScriptStruct_FDMFDigimonExperienceProgression_Statics::NewStructOps, TEXT("DMFDigimonExperienceProgression"),&Z_Registration_Info_UScriptStruct_FDMFDigimonExperienceProgression, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDigimonExperienceProgression), 2497719822U) },
 		{ Z_Construct_UScriptStruct_FDMFDayNightPersistentState, Z_Construct_UScriptStruct_FDMFDayNightPersistentState_Statics::NewStructOps, TEXT("DMFDayNightPersistentState"),&Z_Registration_Info_UScriptStruct_FDMFDayNightPersistentState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFDayNightPersistentState), 1517771470U) },
 		{ Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState, Z_Construct_UScriptStruct_FDMFPlayerWorldLocationState_Statics::NewStructOps, TEXT("DMFPlayerWorldLocationState"),&Z_Registration_Info_UScriptStruct_FDMFPlayerWorldLocationState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFPlayerWorldLocationState), 1033967660U) },
-		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 797273154U) },
+		{ Z_Construct_UScriptStruct_FDMFSocialFriendEntry, Z_Construct_UScriptStruct_FDMFSocialFriendEntry_Statics::NewStructOps, TEXT("DMFSocialFriendEntry"),&Z_Registration_Info_UScriptStruct_FDMFSocialFriendEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFSocialFriendEntry), 502446148U) },
+		{ Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry, Z_Construct_UScriptStruct_FDMFNearbySocialPlayerEntry_Statics::NewStructOps, TEXT("DMFNearbySocialPlayerEntry"),&Z_Registration_Info_UScriptStruct_FDMFNearbySocialPlayerEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFNearbySocialPlayerEntry), 2837670442U) },
+		{ Z_Construct_UScriptStruct_FDMFGuildInvite, Z_Construct_UScriptStruct_FDMFGuildInvite_Statics::NewStructOps, TEXT("DMFGuildInvite"),&Z_Registration_Info_UScriptStruct_FDMFGuildInvite, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFGuildInvite), 1743179525U) },
+		{ Z_Construct_UScriptStruct_FDMFGuildRecord, Z_Construct_UScriptStruct_FDMFGuildRecord_Statics::NewStructOps, TEXT("DMFGuildRecord"),&Z_Registration_Info_UScriptStruct_FDMFGuildRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFGuildRecord), 834137156U) },
+		{ Z_Construct_UScriptStruct_FDMFGuildSummary, Z_Construct_UScriptStruct_FDMFGuildSummary_Statics::NewStructOps, TEXT("DMFGuildSummary"),&Z_Registration_Info_UScriptStruct_FDMFGuildSummary, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFGuildSummary), 572394507U) },
+		{ Z_Construct_UScriptStruct_FDMFGuildMemberEntry, Z_Construct_UScriptStruct_FDMFGuildMemberEntry_Statics::NewStructOps, TEXT("DMFGuildMemberEntry"),&Z_Registration_Info_UScriptStruct_FDMFGuildMemberEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFGuildMemberEntry), 3280305699U) },
+		{ Z_Construct_UScriptStruct_FDMFSocialSnapshot, Z_Construct_UScriptStruct_FDMFSocialSnapshot_Statics::NewStructOps, TEXT("DMFSocialSnapshot"),&Z_Registration_Info_UScriptStruct_FDMFSocialSnapshot, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFSocialSnapshot), 2938822281U) },
+		{ Z_Construct_UScriptStruct_FDMFAccountRecord, Z_Construct_UScriptStruct_FDMFAccountRecord_Statics::NewStructOps, TEXT("DMFAccountRecord"),&Z_Registration_Info_UScriptStruct_FDMFAccountRecord, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFAccountRecord), 4093174890U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry, Z_Construct_UScriptStruct_FDMFReplicatedDigimonEntry_Statics::NewStructOps, TEXT("DMFReplicatedDigimonEntry"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonEntry, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonEntry), 2599121974U) },
 		{ Z_Construct_UScriptStruct_FDMFReplicatedDigimonList, Z_Construct_UScriptStruct_FDMFReplicatedDigimonList_Statics::NewStructOps, TEXT("DMFReplicatedDigimonList"),&Z_Registration_Info_UScriptStruct_FDMFReplicatedDigimonList, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FDMFReplicatedDigimonList), 3360219910U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_28637defbc0d917c42655a57fe435a7a37ba3c60{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_DMFTypes_h__Script_DigimonMMOFramework_80d68a40e252cfd52a1e4d3a052e449f5d0631f0{
 	TEXT("/Script/DigimonMMOFramework"),
 	nullptr, 0,
 	UHT_STATICS::ScriptStructInfo, UE_ARRAY_COUNT(UHT_STATICS::ScriptStructInfo),

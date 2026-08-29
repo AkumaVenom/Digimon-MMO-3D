@@ -17,6 +17,8 @@ class UDMFHomeTeleportNotificationWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFWorldNameplateWidget;
 class UDMFWorldChatWidget;
+class UDMFPlayerSocialContextWidget;
+class UDMFFriendTrackerWidget;
 class UDMFPlayerSkinData;
 class ADMFDigimonCarePropActor;
 class UStaticMesh;
@@ -335,6 +337,72 @@ public:
     /** Ready-to-use I-key toggle for the tabbed Digimon menu. Disable for project-owned input. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     bool bEnableDefaultDigimonInventoryMenuInput = true;
+
+    /** Master switch for persistent server-authoritative friends, ignore lists, guilds and friend tracking. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social")
+    bool bEnableSocialSystem = true;
+
+    /** Allows the native player nameplate to open the social action menu while the local cursor is active. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Nameplate Context", meta=(EditCondition="bEnableSocialSystem"))
+    bool bEnablePlayerNameplateSocialContext = true;
+
+    /** Native fallback is supplied; assign a Blueprint child to reskin player-nameplate social actions. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Nameplate Context", meta=(EditCondition="bEnableSocialSystem && bEnablePlayerNameplateSocialContext"))
+    TSubclassOf<UDMFPlayerSocialContextWidget> PlayerSocialContextWidgetClass;
+
+    /** Native fallback is supplied; each enabled friend tracker is created only on the owning client. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Friend Tracking", meta=(EditCondition="bEnableSocialSystem"))
+    TSubclassOf<UDMFFriendTrackerWidget> FriendTrackerWidgetClass;
+
+    /** Additional vertical offset above the normal player nameplate for the owner-local friend distance marker. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Friend Tracking", meta=(EditCondition="bEnableSocialSystem", ClampMin="0.0", ClampMax="1000.0"))
+    float FriendTrackerHeightOffset = 64.0f;
+
+    /** Local-only tracker reconciliation cadence. Distance text itself refreshes independently inside the widget. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Friend Tracking", meta=(EditCondition="bEnableSocialSystem", ClampMin="0.2", ClampMax="5.0", Units="s"))
+    float FriendTrackerReconcileInterval = 0.75f;
+
+    /** Global radius used by Social -> Friends & Ignore to discover replicated nearby players, nearest first. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Nearby Players", meta=(EditCondition="bEnableSocialSystem", ClampMin="1.0", ClampMax="100000.0", UIMin="5.0", UIMax="5000.0", Units="m", DisplayName="Nearby Player Friend Discovery Radius"))
+    float NearbyPlayerFriendDiscoveryRadiusMeters = 50.0f;
+
+    /** Owner-local refresh cadence for the Nearby Players list. No network polling is performed. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Social|Nearby Players", meta=(EditCondition="bEnableSocialSystem", ClampMin="0.1", ClampMax="5.0", Units="s", DisplayName="Nearby Player List Refresh Interval"))
+    float NearbyPlayerFriendDiscoveryRefreshInterval = 0.5f;
+
+    /** Minimum authority-side interval between Social mutations from one client. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="0.05", ClampMax="5.0", Units="s"))
+    float MinimumSocialActionInterval = 0.15f;
+
+    /** Minimum interval between explicit owner Social snapshot requests; authoritative push refreshes are unaffected. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="0.1", ClampMax="5.0", Units="s"))
+    float MinimumSocialSnapshotRequestInterval = 0.35f;
+
+    /** Persistent friend cap enforced by the server for both participants. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="1", ClampMax="1000"))
+    int32 MaximumFriendsPerAccount = 200;
+
+    /** Persistent ignore-list cap enforced by the server. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="1", ClampMax="1000"))
+    int32 MaximumIgnoredPlayersPerAccount = 200;
+
+    /** Maximum members in one guild, including the owner. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Guild|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="2", ClampMax="1000"))
+    int32 MaximumGuildMembers = 100;
+
+    /** Maximum pending guild invitations retained by one account. Prevents unbounded offline invite growth. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Guild|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="1", ClampMax="1000"))
+    int32 MaximumPendingGuildInvitesPerAccount = 100;
+
+    /** Maximum pending join applications retained by one guild. Prevents unbounded persistent request growth. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Guild|Limits", meta=(EditCondition="bEnableSocialSystem", ClampMin="1", ClampMax="5000"))
+    int32 MaximumPendingGuildApplicationsPerGuild = 500;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Guild|Naming", meta=(EditCondition="bEnableSocialSystem", ClampMin="1", ClampMax="32"))
+    int32 MinimumGuildNameLength = 3;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Social|Guild|Naming", meta=(EditCondition="bEnableSocialSystem", ClampMin="3", ClampMax="64"))
+    int32 MaximumGuildNameLength = 32;
 
     /** Native scan reward toast fallback; assign a Blueprint child to fully reskin it. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")

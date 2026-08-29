@@ -25,6 +25,7 @@ class DIGIMONMMOFRAMEWORK_API UDMFWorldNameplateWidget : public UUserWidget
 public:
     virtual TSharedRef<SWidget> RebuildWidget() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|UI|World Nameplates")
     void SetObservedActor(AActor* InObservedActor);

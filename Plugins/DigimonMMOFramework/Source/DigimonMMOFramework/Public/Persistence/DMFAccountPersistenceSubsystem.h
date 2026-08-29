@@ -25,6 +25,21 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Accounts")
     bool Flush(FString& OutError);
 
+    /** C++ server service helpers used by the persistent Social/Guild authority. */
+    bool GetAllAccounts(TArray<FDMFAccountRecord>& OutRecords);
+    bool GetGuild(const FGuid& GuildId, FDMFGuildRecord& OutGuild);
+    bool GetAllGuilds(TArray<FDMFGuildRecord>& OutGuilds);
+
+    /**
+     * Commits a social mutation as one SaveGame write. All supplied account/guild records are applied
+     * together and restored in memory if the disk write fails, preventing half-applied friendships/guild joins.
+     */
+    bool SaveSocialTransaction(
+        const TArray<FDMFAccountRecord>& AccountRecords,
+        const TArray<FDMFGuildRecord>& GuildsToUpsert,
+        const TArray<FGuid>& GuildIdsToRemove,
+        FString& OutError);
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFAccountDatabaseSaveGame> Database;

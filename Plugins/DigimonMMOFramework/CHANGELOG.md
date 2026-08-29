@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.19.2-alpha — Nearby Player Ignore Action Polish
+
+### Polished — complete Nearby Players social actions
+- Added a dedicated **IGNORE** action directly to every non-ignored row in `SOCIAL → FRIENDS & IGNORE → NEARBY PLAYERS`, so Ignore no longer depends on world-nameplate hit testing. Existing friend-state actions remain intact: **ADD FRIEND**, **ACCEPT**, **CANCEL**, or the disabled **FRIEND** state are shown above the Ignore control in a compact native action stack.
+- Already ignored nearby accounts now expose **UNIGNORE** directly from the same row. The player remains visible in Nearby Players and in the replicated world; only the existing owner-specific authored WORLD-chat filtering and incompatible Social relationship cleanup are applied.
+- Nearby Ignore/Unignore routes through the existing `RequestIgnorePlayer()` / `RequestRemoveIgnoredPlayer()` wrappers and the established server-authoritative Social mutation transaction. No client-side relationship mutation, discovery RPC or replicated Ignore state was added.
+
+### Compatibility
+- Appended `IgnoreAdd` to `EDMFSocialUIAction` after v0.19.1 `FriendAdd`, preserving every prior UI-action ordinal. Framework network RPC total remains **53** and account SaveGame remains **schema v8**.
+- v0.19.1 radius/sorting/discovery behavior and the runtime-accepted v0.19.0 Guild implementation are unchanged.
+
+
+## 0.19.1-alpha — Nearby Player Friend Discovery
+
+### Added — reliable Friends discovery inside the native Social UI
+- Added a fourth **NEARBY PLAYERS** panel to `SOCIAL → FRIENDS & IGNORE`, removing friendship discovery's dependency on world-nameplate hit testing. The panel uses already-replicated player avatars, excludes self, deduplicates transient duplicate avatars by username and sorts exact distance nearest-first.
+- Nearby rows show rounded metre distance plus relationship-aware actions: **ADD FRIEND**, **ACCEPT**, **CANCEL**, or disabled **FRIEND / IGNORED** states. Existing incoming/outgoing Friend Requests remain the durable acceptance queue.
+- The list refreshes only as owner-local presentation, automatically adds/removes players as they enter/leave radius, and sends no discovery RPC or replicated distance state. The actual friend request/accept/cancel operations reuse the existing v0.19.0 validated Social mutation endpoint.
+- Added Blueprint-readable `FDMFNearbySocialPlayerEntry`, `ADMFMMOPlayerController::GetNearbySocialPlayers()` and `UDMFDigimonInventoryWidget::RefreshNearbyPlayersData()` so Blueprint-reskinned Social UIs can consume the same discovery contract.
+
+### Project Settings / compatibility
+- Added **UI → Social → Nearby Players → Nearby Player Friend Discovery Radius**, default **50 m**, and **Nearby Player List Refresh Interval**, default **0.5 s**. Runtime values are defensively clamped.
+- `FriendAdd` is appended to `EDMFSocialUIAction`; all prior UI-action ordinals remain unchanged. No new network RPC is introduced: framework total remains **53** and account SaveGame remains **schema v8**.
+- v0.19.0 Guilds, persistent Friends/Ignore, owner-local friend trackers, Ignore chat filtering, v0.18.5 presence/audio, global server capacity, vendor economy/UI and reconnect-safe persistence are structurally unchanged.
+
+## 0.19.0-alpha — Persistent Social Friends, Ignore & Guilds
+
+### Added — extensible native Social hub
+- Appended `Social` to `EDMFDigimonMenuTab` without shifting existing serialized tab values. The shared native DIGIMON MENU now has a coherent SOCIAL page with nested `Friends` and `Guild` tabs; Friends is the first-open default and the nested shell is intentionally extensible for later social modules.
+- Added polished Friends, reciprocal incoming/outgoing pending-request and Ignore lists with non-modal accept/decline/cancel/remove controls. Added a Guild page for identity/roster management, queued invites, queued join applications and a searchable persistent guild directory.
+- Increased the authored native menu width from 1240 to 1360 while retaining ScaleToFit/DownOnly and hard clipping, giving the additional top tab and three-column social layouts room without regressing smaller viewports.
+
+### Added — server-authoritative friends / ignore / tracking
+- Added persistent symmetric friendships, reciprocal inbound/outbound friend requests, Ignore entries and per-friend tracker preferences to `FDMFAccountRecord`. Existing accounts migrate with empty defaults.
+- Remote player nameplates can open an owner-local PLAYER ACTIONS context menu with Add/Accept/Cancel/Remove Friend, Ignore/Unignore and owner-only Invite to Guild actions. The target identity is still re-resolved from the persistent account on authority.
+- Added owner-local `UDMFFriendTrackerWidget` markers. Tracking is persistent per friend, but distance presentation is computed locally from already replicated avatar transforms and therefore adds no per-tick RPC/replicated distance state. Offline tracked friends automatically regain their marker when presence refresh marks them online again.
+- WORLD chat delivery/history now checks the recipient account's Ignore list for authored `Player` messages. Ignored users remain visible/replicated in-world; server-authored join/leave presence is not hidden as if it were user-authored chat.
+
+### Added — persistent guild authority
+- Added a global SaveGame-backed `FDMFGuildRecord` registry with unique GUID/name, owner, members and persistent join applications. Accounts store current GuildId and persistent inbound guild invites.
+- Added create, validated/unique rename, nameplate owner invite, invite accept/decline, directory apply, application accept/decline, owner member removal, member leave and owner disband flows. Requests remain queued in Social rather than interrupting gameplay. Public guild-directory create/name/member-count/disband changes now push fresh owner-specific snapshots to authenticated online players so an already-open Guild page stays coherent.
+- `SaveSocialTransaction` applies multi-account/guild changes as one SaveGame write and restores the in-memory account/guild maps if persistence fails, preventing half-friendships or half-joined guilds.
+- Guild owners may be offline when applications arrive; the application remains on the guild record and appears after the owner's next authenticated login/relog.
+
+### Networking / configuration / compatibility
+- Added four reliable Social RPC declarations: request snapshot, one generic validated mutation endpoint, owner snapshot delivery and owner action result. RPC count is **49 → 53**. Public Blueprint wrappers remain strongly named for each social operation.
+- Added authority-side Social mutation throttling and defensive generic-string payload ceilings. Project Settings exposes Social enablement, nameplate context, reskinnable widget classes, tracker layout/cadence, friend/ignore/guild limits, bounded persistent guild invite/application queues and guild name constraints.
+- Account SaveGame schema advances **v7 → v8**. Existing Party/Bank, Digimon, avatar, money, world location, vendor-provenance and progression state is preserved because social fields deserialize to empty/invalid defaults.
+- v0.18.5 WORLD presence/audio, v0.18.4 global capacity, v0.18.3 vendor UI, v0.18.2 authenticated reconnect/disconnect persistence, Party/Bank privacy, economy, world location, Return Home, Day/Night, swimming/underwater, combat, DigiDex, Digivolution and Care remain preserved.
+- Added `Docs/SETUP_SOCIAL_SYSTEM.md` and expanded Social regression coverage in networking/architecture/test documentation.
+
 ## 0.18.5-alpha — Replicated World Chat Presence Announcements
 
 ### Added — authenticated join / relog / leave WORLD-chat events

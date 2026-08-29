@@ -397,3 +397,22 @@ v0.18.0 adds two RPCs: reliable Server `ServerRequestDigimonVendorTransaction` a
 - Once the pre-teardown save commits, `UDMFPlayerDigimonComponent::EndPlay` cannot perform a second account write. A failed primary save retains one guarded retry. An uninitialized account component is never allowed to overwrite persistent data.
 - Summoned partners are destroyed on disconnect after their persistent instance has been saved. The persistent active-partner GUID remains private account state and is reconstructed on reconnect.
 - RPC count remains 49 and account schema remains v7.
+
+## v0.19.1 Social networking contract
+
+The Social system adds four reliable RPC declarations, bringing the framework total from 49 to **53**:
+
+- `ServerRequestSocialSnapshot` — owner requests a fresh read-only view.
+- `ServerExecuteSocialAction` — one compact generic transport for mutations; the server derives acting identity from the authenticated PlayerState and never accepts it from the payload.
+- `ClientReceiveSocialSnapshot` — reliable owner-only social view.
+- `ClientSocialActionResult` — reliable owner feedback; the native UI uses non-modal status/chat feedback.
+
+Friend/guild mutations are low-frequency persistent transactions rather than replicated arrays. Server-side throttling limits mutation spam; incoming generic text payloads have defensive ceilings before persistence logic. Cross-account and guild changes are committed through one rollback-safe SaveGame transaction.
+
+Friend trackers add **zero distance RPCs**. The owning client observes the already replicated `ADMFPlayerAvatarCharacter` transform and calculates distance locally. Tracker Widget Components are transient and non-replicated; the persistent account stores only which accepted friends are enabled for tracking.
+
+v0.19.1 Nearby Players discovery likewise adds **zero RPCs**: `GetNearbySocialPlayers()` scans replicated player avatars on the owning client, filters them against the configured metre radius, deduplicates public usernames and sorts distance locally. The resulting row is presentation-only. Selecting ADD/ACCEPT/CANCEL invokes the existing `ServerExecuteSocialAction` contract, so clients cannot use the discovery list to author relationship state.
+
+Ignore does not alter relevancy, actor visibility, collision, possession or player replication. `ADMFMMOGameMode::DispatchWorldChatMessage` and late-join history hydration consult the recipient's persistent Ignore list only for user-authored `Player` messages. Presence events remain server-authored `PlayerJoined` / `PlayerLeft` messages.
+
+Guild invitations live on the target account and guild applications live on the guild record, so both workflows tolerate either side being offline. Login/relog uses the existing authenticated persistent account authority; there is no dependence on Unreal inactive PlayerState caching.

@@ -10,6 +10,8 @@
 #include "UI/DMFHomeTeleportNotificationWidget.h"
 #include "UI/DMFWorldNameplateWidget.h"
 #include "UI/DMFWorldChatWidget.h"
+#include "UI/DMFPlayerSocialContextWidget.h"
+#include "UI/DMFFriendTrackerWidget.h"
 #include "Utility/DMFCredentialUtility.h"
 #if WITH_EDITOR
 #include "UObject/UnrealType.h"
@@ -26,6 +28,8 @@ UDMFFrameworkSettings::UDMFFrameworkSettings()
     ExperienceNotificationWidgetClass = UDMFExperienceNotificationWidget::StaticClass();
     HomeTeleportNotificationWidgetClass = UDMFHomeTeleportNotificationWidget::StaticClass();
     WorldChatWidgetClass = UDMFWorldChatWidget::StaticClass();
+    PlayerSocialContextWidgetClass = UDMFPlayerSocialContextWidget::StaticClass();
+    FriendTrackerWidgetClass = UDMFFriendTrackerWidget::StaticClass();
     PlayerNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     DigimonNameplateWidgetClass = UDMFWorldNameplateWidget::StaticClass();
     CarePropActorClass = ADMFDigimonCarePropActor::StaticClass();

@@ -33,11 +33,13 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFDigimonCarePropActor(ETyp
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFExperienceNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFrameworkSettings(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFFriendTrackerWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFHomeTeleportNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFLoginMainMenuWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPartyQuickBarWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSkinSelectionWidget(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerSocialContextWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFScanNotificationWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterRosterData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFStarterSelectionWidget(ETypeConstructPhase);
@@ -828,6 +830,215 @@ struct UHT_STATICS
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Ready-to-use I-key toggle for the tabbed Digimon menu. Disable for project-owned input." },
 #endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnableSocialSystem_MetaData[] = {
+		{ "Category", "UI|Social" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Master switch for persistent server-authoritative friends, ignore lists, guilds and friend tracking. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Master switch for persistent server-authoritative friends, ignore lists, guilds and friend tracking." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEnablePlayerNameplateSocialContext_MetaData[] = {
+		{ "Category", "UI|Social|Nameplate Context" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Allows the native player nameplate to open the social action menu while the local cursor is active. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Allows the native player nameplate to open the social action menu while the local cursor is active." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PlayerSocialContextWidgetClass_MetaData[] = {
+		{ "Category", "UI|Social|Nameplate Context" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Native fallback is supplied; assign a Blueprint child to reskin player-nameplate social actions. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem && bEnablePlayerNameplateSocialContext" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Native fallback is supplied; assign a Blueprint child to reskin player-nameplate social actions." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FriendTrackerWidgetClass_MetaData[] = {
+		{ "Category", "UI|Social|Friend Tracking" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Native fallback is supplied; each enabled friend tracker is created only on the owning client. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Native fallback is supplied; each enabled friend tracker is created only on the owning client." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FriendTrackerHeightOffset_MetaData[] = {
+		{ "Category", "UI|Social|Friend Tracking" },
+		{ "ClampMax", "1000.0" },
+		{ "ClampMin", "0.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Additional vertical offset above the normal player nameplate for the owner-local friend distance marker. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Additional vertical offset above the normal player nameplate for the owner-local friend distance marker." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FriendTrackerReconcileInterval_MetaData[] = {
+		{ "Category", "UI|Social|Friend Tracking" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.2" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Local-only tracker reconciliation cadence. Distance text itself refreshes independently inside the widget. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Local-only tracker reconciliation cadence. Distance text itself refreshes independently inside the widget." },
+#endif
+		{ "Units", "s" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NearbyPlayerFriendDiscoveryRadiusMeters_MetaData[] = {
+		{ "Category", "UI|Social|Nearby Players" },
+		{ "ClampMax", "100000.0" },
+		{ "ClampMin", "1.0" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Global radius used by Social -> Friends & Ignore to discover replicated nearby players, nearest first. */" },
+#endif
+		{ "DisplayName", "Nearby Player Friend Discovery Radius" },
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Global radius used by Social -> Friends & Ignore to discover replicated nearby players, nearest first." },
+#endif
+		{ "UIMax", "5000.0" },
+		{ "UIMin", "5.0" },
+		{ "Units", "m" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NearbyPlayerFriendDiscoveryRefreshInterval_MetaData[] = {
+		{ "Category", "UI|Social|Nearby Players" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owner-local refresh cadence for the Nearby Players list. No network polling is performed. */" },
+#endif
+		{ "DisplayName", "Nearby Player List Refresh Interval" },
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owner-local refresh cadence for the Nearby Players list. No network polling is performed." },
+#endif
+		{ "Units", "s" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumSocialActionInterval_MetaData[] = {
+		{ "Category", "Social|Limits" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.05" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Minimum authority-side interval between Social mutations from one client. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Minimum authority-side interval between Social mutations from one client." },
+#endif
+		{ "Units", "s" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumSocialSnapshotRequestInterval_MetaData[] = {
+		{ "Category", "Social|Limits" },
+		{ "ClampMax", "5.0" },
+		{ "ClampMin", "0.1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Minimum interval between explicit owner Social snapshot requests; authoritative push refreshes are unaffected. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Minimum interval between explicit owner Social snapshot requests; authoritative push refreshes are unaffected." },
+#endif
+		{ "Units", "s" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumFriendsPerAccount_MetaData[] = {
+		{ "Category", "Social|Limits" },
+		{ "ClampMax", "1000" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent friend cap enforced by the server for both participants. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent friend cap enforced by the server for both participants." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumIgnoredPlayersPerAccount_MetaData[] = {
+		{ "Category", "Social|Limits" },
+		{ "ClampMax", "1000" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Persistent ignore-list cap enforced by the server. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Persistent ignore-list cap enforced by the server." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumGuildMembers_MetaData[] = {
+		{ "Category", "Social|Guild|Limits" },
+		{ "ClampMax", "1000" },
+		{ "ClampMin", "2" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum members in one guild, including the owner. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum members in one guild, including the owner." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumPendingGuildInvitesPerAccount_MetaData[] = {
+		{ "Category", "Social|Guild|Limits" },
+		{ "ClampMax", "1000" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum pending guild invitations retained by one account. Prevents unbounded offline invite growth. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum pending guild invitations retained by one account. Prevents unbounded offline invite growth." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumPendingGuildApplicationsPerGuild_MetaData[] = {
+		{ "Category", "Social|Guild|Limits" },
+		{ "ClampMax", "5000" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum pending join applications retained by one guild. Prevents unbounded persistent request growth. */" },
+#endif
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum pending join applications retained by one guild. Prevents unbounded persistent request growth." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MinimumGuildNameLength_MetaData[] = {
+		{ "Category", "Social|Guild|Naming" },
+		{ "ClampMax", "32" },
+		{ "ClampMin", "1" },
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaximumGuildNameLength_MetaData[] = {
+		{ "Category", "Social|Guild|Naming" },
+		{ "ClampMax", "64" },
+		{ "ClampMin", "3" },
+		{ "EditCondition", "bEnableSocialSystem" },
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ScanNotificationWidgetClass_MetaData[] = {
 		{ "Category", "UI" },
@@ -2020,6 +2231,31 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bEnableDefaultDigimonInventoryMenuInput = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableDefaultDigimonInventoryMenuInput;
+	static void NewProp_bEnableSocialSystem_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnableSocialSystem = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnableSocialSystem;
+	static void NewProp_bEnablePlayerNameplateSocialContext_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bEnablePlayerNameplateSocialContext = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bEnablePlayerNameplateSocialContext;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_PlayerSocialContextWidgetClass;
+	static const UECodeGen_Private::FClassPropertyParams NewProp_FriendTrackerWidgetClass;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FriendTrackerHeightOffset;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FriendTrackerReconcileInterval;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_NearbyPlayerFriendDiscoveryRadiusMeters;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_NearbyPlayerFriendDiscoveryRefreshInterval;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MinimumSocialActionInterval;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_MinimumSocialSnapshotRequestInterval;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumFriendsPerAccount;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumIgnoredPlayersPerAccount;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumGuildMembers;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumPendingGuildInvitesPerAccount;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumPendingGuildApplicationsPerGuild;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MinimumGuildNameLength;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaximumGuildNameLength;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_ScanNotificationWidgetClass;
 	static void NewProp_bShowNativeScanNotifications_SetBit(void* Obj)
 	{
@@ -2331,6 +2567,23 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_HomeTeleportN
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_DigimonInventoryWidgetClass = { "DigimonInventoryWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonInventoryWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFDigimonInventoryWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonInventoryWidgetClass_MetaData), NewProp_DigimonInventoryWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDigiDex = { "bEnableDigiDex", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDigiDex_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDigiDex_MetaData), NewProp_bEnableDigiDex_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput = { "bEnableDefaultDigimonInventoryMenuInput", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData), NewProp_bEnableDefaultDigimonInventoryMenuInput_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableSocialSystem = { "bEnableSocialSystem", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableSocialSystem_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableSocialSystem_MetaData), NewProp_bEnableSocialSystem_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnablePlayerNameplateSocialContext = { "bEnablePlayerNameplateSocialContext", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnablePlayerNameplateSocialContext_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnablePlayerNameplateSocialContext_MetaData), NewProp_bEnablePlayerNameplateSocialContext_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PlayerSocialContextWidgetClass = { "PlayerSocialContextWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PlayerSocialContextWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPlayerSocialContextWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PlayerSocialContextWidgetClass_MetaData), NewProp_PlayerSocialContextWidgetClass_MetaData) };
+const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_FriendTrackerWidgetClass = { "FriendTrackerWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FriendTrackerWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFFriendTrackerWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FriendTrackerWidgetClass_MetaData), NewProp_FriendTrackerWidgetClass_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_FriendTrackerHeightOffset = { "FriendTrackerHeightOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FriendTrackerHeightOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FriendTrackerHeightOffset_MetaData), NewProp_FriendTrackerHeightOffset_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_FriendTrackerReconcileInterval = { "FriendTrackerReconcileInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, FriendTrackerReconcileInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FriendTrackerReconcileInterval_MetaData), NewProp_FriendTrackerReconcileInterval_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_NearbyPlayerFriendDiscoveryRadiusMeters = { "NearbyPlayerFriendDiscoveryRadiusMeters", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, NearbyPlayerFriendDiscoveryRadiusMeters), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NearbyPlayerFriendDiscoveryRadiusMeters_MetaData), NewProp_NearbyPlayerFriendDiscoveryRadiusMeters_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_NearbyPlayerFriendDiscoveryRefreshInterval = { "NearbyPlayerFriendDiscoveryRefreshInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, NearbyPlayerFriendDiscoveryRefreshInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NearbyPlayerFriendDiscoveryRefreshInterval_MetaData), NewProp_NearbyPlayerFriendDiscoveryRefreshInterval_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumSocialActionInterval = { "MinimumSocialActionInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MinimumSocialActionInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumSocialActionInterval_MetaData), NewProp_MinimumSocialActionInterval_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_MinimumSocialSnapshotRequestInterval = { "MinimumSocialSnapshotRequestInterval", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MinimumSocialSnapshotRequestInterval), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumSocialSnapshotRequestInterval_MetaData), NewProp_MinimumSocialSnapshotRequestInterval_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumFriendsPerAccount = { "MaximumFriendsPerAccount", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumFriendsPerAccount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumFriendsPerAccount_MetaData), NewProp_MaximumFriendsPerAccount_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumIgnoredPlayersPerAccount = { "MaximumIgnoredPlayersPerAccount", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumIgnoredPlayersPerAccount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumIgnoredPlayersPerAccount_MetaData), NewProp_MaximumIgnoredPlayersPerAccount_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumGuildMembers = { "MaximumGuildMembers", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumGuildMembers), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumGuildMembers_MetaData), NewProp_MaximumGuildMembers_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumPendingGuildInvitesPerAccount = { "MaximumPendingGuildInvitesPerAccount", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumPendingGuildInvitesPerAccount), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumPendingGuildInvitesPerAccount_MetaData), NewProp_MaximumPendingGuildInvitesPerAccount_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumPendingGuildApplicationsPerGuild = { "MaximumPendingGuildApplicationsPerGuild", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumPendingGuildApplicationsPerGuild), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumPendingGuildApplicationsPerGuild_MetaData), NewProp_MaximumPendingGuildApplicationsPerGuild_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MinimumGuildNameLength = { "MinimumGuildNameLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MinimumGuildNameLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MinimumGuildNameLength_MetaData), NewProp_MinimumGuildNameLength_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaximumGuildNameLength = { "MaximumGuildNameLength", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaximumGuildNameLength), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaximumGuildNameLength_MetaData), NewProp_MaximumGuildNameLength_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_ScanNotificationWidgetClass = { "ScanNotificationWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ScanNotificationWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFScanNotificationWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScanNotificationWidgetClass_MetaData), NewProp_ScanNotificationWidgetClass_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowNativeScanNotifications = { "bShowNativeScanNotifications", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowNativeScanNotifications_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowNativeScanNotifications_MetaData), NewProp_bShowNativeScanNotifications_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableWorldChat = { "bEnableWorldChat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableWorldChat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableWorldChat_MetaData), NewProp_bEnableWorldChat_MetaData) };
@@ -2505,6 +2758,23 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonInventoryWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDigiDex,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableDefaultDigimonInventoryMenuInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableSocialSystem,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnablePlayerNameplateSocialContext,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PlayerSocialContextWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FriendTrackerWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FriendTrackerHeightOffset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_FriendTrackerReconcileInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NearbyPlayerFriendDiscoveryRadiusMeters,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NearbyPlayerFriendDiscoveryRefreshInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumSocialActionInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumSocialSnapshotRequestInterval,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumFriendsPerAccount,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumIgnoredPlayersPerAccount,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumGuildMembers,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumPendingGuildInvitesPerAccount,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumPendingGuildApplicationsPerGuild,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MinimumGuildNameLength,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaximumGuildNameLength,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ScanNotificationWidgetClass,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowNativeScanNotifications,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableWorldChat,
@@ -2674,10 +2944,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 3193858331U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2701011016U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_53e9871981e8679e9c86e64a2c1375eeb5e18900{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_80b057d2a746a64d61a52e5c68a8db35c9d82149{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

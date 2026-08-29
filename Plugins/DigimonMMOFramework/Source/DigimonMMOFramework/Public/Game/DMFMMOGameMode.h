@@ -77,6 +77,14 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|World Chat")
     void SendRecentWorldChatHistory(ADMFMMOPlayerController* RecipientController) const;
 
+    /** Builds and reliably delivers one owner-only Social snapshot from persistent account/guild authority. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Social")
+    void SendSocialSnapshot(ADMFMMOPlayerController* RecipientController) const;
+
+    /** Executes one validated persistent social mutation. Client-supplied identity is never trusted as the acting account. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Social")
+    bool ExecuteSocialAction(ADMFMMOPlayerController* RequestingController, EDMFSocialActionType ActionType, const FString& SubjectUsername, FGuid GuildId, const FString& TextValue, bool bValue, FText& OutMessage);
+
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Account")
     void BP_OnPlayerAccountLoaded(APlayerController* PlayerController, const FString& Username, bool bNewAccount);
@@ -95,6 +103,11 @@ protected:
 
 private:
     bool DispatchWorldChatMessage(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* EventSourceController);
+    bool ShouldDeliverWorldChatMessageToRecipient(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* RecipientController) const;
+    bool BuildSocialSnapshot(ADMFMMOPlayerController* RecipientController, FDMFSocialSnapshot& OutSnapshot) const;
+    void PushSocialSnapshotForUsername(const FString& Username) const;
+    void PushSocialSnapshotsToAllOnlinePlayers(const ADMFMMOPlayerController* ExcludedController = nullptr) const;
+    void RefreshSocialPresenceForUsername(const FString& Username) const;
     int32 ResolveConfiguredMaximumPlayers() const;
     void ApplyConfiguredPlayerCapacity();
     bool ValidateCredentialsFromOptions(const FString& Options, FString& OutUsername, FString& OutCredentialDigest, bool& bOutCreatedNew, FString& OutError) const;

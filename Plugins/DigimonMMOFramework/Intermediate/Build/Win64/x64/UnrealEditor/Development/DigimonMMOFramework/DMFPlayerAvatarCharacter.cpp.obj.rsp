@@ -1,12 +1,12 @@
-"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/UI/DMFWorldChatWidget.cpp"
+"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Game/DMFPlayerAvatarCharacter.cpp"
 @"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DigimonMMOFramework.Shared.rsp"
 /FI"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h"
 /FI"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/Definitions.DigimonMMOFramework.h"
 /Yu"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h"
 /Fp"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Intermediate/Build/Win64/x64/UnrealEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.pch"
-/Fo"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFWorldChatWidget.cpp.obj"
-/experimental:log "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFWorldChatWidget.cpp.sarif"
-/sourceDependencies "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFWorldChatWidget.cpp.dep.json"
+/Fo"C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFPlayerAvatarCharacter.cpp.obj"
+/experimental:log "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFPlayerAvatarCharacter.cpp.sarif"
+/sourceDependencies "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Intermediate/Build/Win64/x64/UnrealEditor/Development/DigimonMMOFramework/DMFPlayerAvatarCharacter.cpp.dep.json"
 /nologo
 /TP
 /GR-

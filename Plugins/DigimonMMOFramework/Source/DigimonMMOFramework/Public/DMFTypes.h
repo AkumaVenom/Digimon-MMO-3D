@@ -176,7 +176,40 @@ enum class EDMFDigimonMenuTab : uint8
     Digivolution UMETA(DisplayName="Digivolution"),
 
     /** Appended in v0.14. Read-only encyclopedia; earlier serialized tab values remain stable. */
-    DigiDex UMETA(DisplayName="DigiDex")
+    DigiDex UMETA(DisplayName="DigiDex"),
+
+    /** Appended in v0.19. Persistent friends/ignore/guild social hub. */
+    Social UMETA(DisplayName="Social")
+};
+
+/** Nested pages inside the extensible Social tab. */
+UENUM(BlueprintType)
+enum class EDMFSocialMenuTab : uint8
+{
+    Friends,
+    Guild
+};
+
+/** Server-side action discriminator used by the single validated social mutation RPC. */
+UENUM(BlueprintType)
+enum class EDMFSocialActionType : uint8
+{
+    SendFriendRequest,
+    RespondFriendRequest,
+    RemoveFriend,
+    SetFriendTracking,
+    IgnorePlayer,
+    RemoveIgnoredPlayer,
+    CreateGuild,
+    RenameGuild,
+    InvitePlayerToGuild,
+    RespondGuildInvite,
+    ApplyToGuild,
+    RespondGuildApplication,
+    RemoveGuildMember,
+    LeaveGuild,
+    DisbandGuild,
+    CancelFriendRequest
 };
 
 /** Authoritative owner-storage location used by Party/Bank transfer APIs. */
@@ -497,6 +530,178 @@ struct DIGIMONMMOFRAMEWORK_API FDMFPlayerWorldLocationState
     int64 SavedUtcTicks = 0;
 };
 
+/** Compact owner-only friend row. Online state is live session state; tracking preference is persistent. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFSocialFriendEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    FString Username;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    bool bOnline = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    bool bTrackingEnabled = false;
+};
+
+/** Owner-local discovery row derived from already-replicated player avatars. No authority is stored here. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFNearbySocialPlayerEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    FString Username;
+
+    /** Precise local distance used for nearest-first ordering. Native UI presents a rounded integer metre value. */
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    float DistanceMeters = 0.0f;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    bool bIsFriend = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    bool bHasIncomingFriendRequest = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    bool bHasOutgoingFriendRequest = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Nearby Players")
+    bool bIsIgnored = false;
+};
+
+/** Persistent guild invitation stored on the invited account so it survives either player going offline. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFGuildInvite
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FGuid GuildId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FString GuildName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FString InviterUsername;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    int64 SentUtcTicks = 0;
+};
+
+/** Persistent server-owned guild record. Membership and applications are never client-authored. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFGuildRecord
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FGuid GuildId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FString Name;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FString OwnerUsername;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    TArray<FString> MemberUsernames;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    TArray<FString> PendingApplications;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    int64 CreatedUtcTicks = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    int64 LastModifiedUtcTicks = 0;
+};
+
+/** Read-only search result sent to one player; member lists remain private to actual guild members. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFGuildSummary
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FGuid GuildId;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FString Name;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FString OwnerUsername;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    int32 MemberCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    bool bApplicationPending = false;
+};
+
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFGuildMemberEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FString Username;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    bool bOwner = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    bool bOnline = false;
+};
+
+/** Complete owner-only social view sent on demand and after authoritative social mutations. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFSocialSnapshot
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    TArray<FDMFSocialFriendEntry> Friends;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    TArray<FString> PendingFriendRequests;
+
+    /** Persistent outbound requests are returned separately so UI can show/cancel a sent request without guessing. */
+    UPROPERTY(BlueprintReadOnly, Category="Social|Friends")
+    TArray<FString> PendingOutgoingFriendRequests;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Ignore")
+    TArray<FString> IgnoredPlayers;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    TArray<FDMFGuildInvite> PendingGuildInvites;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FGuid GuildId;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FString GuildName;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    FString GuildOwnerUsername;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    bool bIsGuildOwner = false;
+
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    TArray<FDMFGuildMemberEntry> GuildMembers;
+
+    /** Populated only for the guild owner. */
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    TArray<FString> PendingGuildApplications;
+
+    /** Public guild directory summaries; never contains private account data. */
+    UPROPERTY(BlueprintReadOnly, Category="Social|Guild")
+    TArray<FDMFGuildSummary> GuildSearchResults;
+};
+
 USTRUCT(BlueprintType)
 struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
 {
@@ -547,6 +752,34 @@ struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Ranked")
     EDMFRankedTier RankedTier = EDMFRankedTier::F;
+
+    /** Persistent accepted friendships. Usernames are canonical account display names and comparisons are case-insensitive. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Friends")
+    TArray<FString> FriendUsernames;
+
+    /** Persistent inbound requests. No modal popup is required; the Social/Friends tab owns acceptance/decline presentation. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Friends")
+    TArray<FString> PendingFriendRequests;
+
+    /** Persistent outbound requests. Stored reciprocally with the target's inbound request so send/cancel/response stays atomic. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Friends")
+    TArray<FString> PendingOutgoingFriendRequests;
+
+    /** Persistent per-account ignore list. Ignored players remain fully replicated in-world; only their authored chat is filtered. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Ignore")
+    TArray<FString> IgnoredUsernames;
+
+    /** Persistent subset of FriendUsernames whose local world-space distance tracker should be shown. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Friends")
+    TArray<FString> TrackedFriendUsernames;
+
+    /** Invalid when the account is not currently a guild member. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    FGuid GuildId;
+
+    /** Persistent inbound guild invitations. Stale/disbanded guild entries are ignored by authoritative acceptance. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
+    TArray<FDMFGuildInvite> PendingGuildInvites;
 };
 
 USTRUCT(BlueprintType)

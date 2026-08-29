@@ -70,9 +70,9 @@ Checkpoints occur:
 
 The periodic Digimon account transaction also writes current avatar skin + world location into the same `FDMFAccountRecord`, avoiding competing save files or race-prone parallel persistence systems.
 
-## 6. Save schema v6 field (current account schema v7)
+## 6. Save schema v6 field (current account schema v8)
 
-The player-world-location block was introduced in schema v6 and is unchanged. v0.18.0 advances the overall account database to **schema v7** only to add per-Digimon vendor valuation provenance (`LifetimeBattleExperience` and `TotalAttributePointsSpent`).
+The player-world-location block was introduced in schema v6 and is unchanged. v0.18.0 advanced the overall account database to **schema v7** for per-Digimon vendor valuation provenance (`LifetimeBattleExperience` and `TotalAttributePointsSpent`); v0.19.0 advances the database to **schema v8** for persistent Social/Guild state. Neither migration changes the world-location fields or their authoritative save/restore contract.
 
 `FDMFAccountRecord` now contains `FDMFPlayerWorldLocationState`:
 - `bHasSavedLocation`

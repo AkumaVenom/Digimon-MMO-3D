@@ -205,3 +205,24 @@ EnemyTargetArrowScale=(X=1.0,Y=1.0,Z=1.0)
 EnemyTargetArrowRotation=(Pitch=0.0,Yaw=0.0,Roll=0.0)
 EnemyTargetArrowBobAmplitude=10.0
 EnemyTargetArrowBobFrequencyHz=1.5
+
+; v0.19.1 persistent server-authoritative Social hub with owner-local nearby-player friend discovery.
+; Native Social is inside the shared Digimon Menu; player-nameplate context and friend trackers are owner-local presentation.
+[/Script/DigimonMMOFramework.DMFFrameworkSettings]
+bEnableSocialSystem=True
+bEnablePlayerNameplateSocialContext=True
+; PlayerSocialContextWidgetClass=/Script/DigimonMMOFramework.DMFPlayerSocialContextWidget
+; FriendTrackerWidgetClass=/Script/DigimonMMOFramework.DMFFriendTrackerWidget
+FriendTrackerHeightOffset=64.0
+FriendTrackerReconcileInterval=0.75
+NearbyPlayerFriendDiscoveryRadiusMeters=50.0
+NearbyPlayerFriendDiscoveryRefreshInterval=0.5
+MinimumSocialActionInterval=0.15
+MinimumSocialSnapshotRequestInterval=0.35
+MaximumFriendsPerAccount=200
+MaximumIgnoredPlayersPerAccount=200
+MaximumGuildMembers=100
+MaximumPendingGuildInvitesPerAccount=100
+MaximumPendingGuildApplicationsPerGuild=500
+MinimumGuildNameLength=3
+MaximumGuildNameLength=32

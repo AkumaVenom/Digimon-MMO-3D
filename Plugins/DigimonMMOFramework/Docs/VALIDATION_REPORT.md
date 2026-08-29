@@ -1,3 +1,42 @@
+# v0.19.2-alpha validation summary
+
+Candidate: **Nearby Player Ignore Action Polish**  
+Baseline: runtime-accepted **v0.19.1-alpha_PolishedNearbyPlayerFriendDiscovery**. Guilds and nearby Friends discovery are already runtime-confirmed; this revision completes the Nearby Players interaction surface with direct Ignore/Unignore.
+
+## Nearby-player discovery validation
+
+- `ADMFMMOPlayerController::GetNearbySocialPlayers()` is owner-local and reads only already-replicated `ADMFPlayerAvatarCharacter` actors plus the controller's existing owner-only Social snapshot. It excludes the local pawn, rejects invalid/no-name actors, clamps the global radius, deduplicates reconnect-transition duplicate avatars by canonical public username and keeps the nearest instance.
+- Results remain sorted by precise local distance before presentation. Native rows show rounded integer metres and relationship state. Non-ignored rows retain `ADD FRIEND`, `ACCEPT`, `CANCEL`, or disabled `FRIEND` relationship actions and add a dedicated `IGNORE` control; ignored rows expose `UNIGNORE` directly.
+- The Friends page now contains four coherent columns: **NEARBY PLAYERS**, **FRIENDS**, **FRIEND REQUESTS**, and **IGNORE LIST**. Existing Guild layout/code paths were not replaced.
+- Nearby refresh uses a configurable owner-local timer only while Social/Friends is active. It computes a presentation hash and rebuilds dynamic UMG rows only when visible username/order/integer-distance/relationship/radius state changes, avoiding unnecessary widget churn with larger player counts.
+- Project Settings exposes **Nearby Player Friend Discovery Radius** (default `50 m`) and **Nearby Player List Refresh Interval** (default `0.5 s`) under `UI|Social|Nearby Players`; runtime reads are defensively clamped.
+- Blueprint-reskinned Social UIs can consume `FDMFNearbySocialPlayerEntry`, `GetNearbySocialPlayers()` and `RefreshNearbyPlayersData()` without replacing server authority.
+
+## Authority / networking / persistence validation
+
+- Nearby discovery adds **zero network RPCs** and no replicated Social/distance property. Framework RPC total remains **53**.
+- `IgnoreAdd` is appended after the v0.19.1 `FriendAdd` UI action, preserving all previous enum ordinals. The action routes to existing `RequestIgnorePlayer()`; nearby `UNIGNORE` reuses existing `IgnoreRemove` / `RequestRemoveIgnoredPlayer()`. Both therefore use the existing reliable `ServerExecuteSocialAction` validation/persistence transaction.
+- Add/accept/cancel/ignore/unignore from Nearby Players all reuse existing Social server actions. A nearby row never mutates friendship or Ignore state locally.
+- Account SaveGame remains **schema v8**. No Social/Guild/account migration is introduced.
+- Existing v0.19.0 Guild authority, Friends/Ignore persistence, owner-local friend tracking and Ignore chat filtering remain structurally intact. v0.18.5 presence/audio, v0.18.4 capacity, v0.18.3 vendor UI/economy and v0.18.2 reconnect/disconnect persistence contracts are unchanged.
+
+## Static validation
+
+- Plugin descriptor parses as valid JSON and reports `0.19.2-alpha` / integer version `1920`.
+- Package tree contains **153 files**, including **104 source/header/build files**; no v0.19.0 file path was removed.
+- Reflected totals: **55 UCLASS / 24 UENUM / 33 USTRUCT / 631 UFUNCTION / 1228 UPROPERTY**.
+- Public generated-header include ordering passes.
+- All **53 RPC** declarations have matching `_Implementation` functions; there are no duplicate RPC declaration names.
+- `EDMFSocialUIAction` preserves all previous values in original order; v0.19.1 `FriendAdd` remains in place and v0.19.2 appends only `IgnoreAdd`.
+- No merge-conflict markers are present. The full framework `.h/.cpp` set passes a comment/string-aware `()[]{}` delimiter-balance scan.
+- Final packaged ZIP integrity is validated with `unzip -t`; every archived file reports OK.
+
+## Runtime acceptance still required
+
+Run `TEST_PLAN.md` **S0 — v0.19.2 nearby-player Friends + Ignore discovery / persistent Social / Guild regression**. The critical new acceptance is that every eligible nearby row exposes direct IGNORE, ignored rows expose UNIGNORE, Ignore still leaves the player/world actor visible while filtering authored WORLD chat and cleaning incompatible Social state, and all v0.19.1 nearest-first/radius/Friends plus v0.19.0 Guild behavior remains unchanged.
+
+---
+
 # v0.18.5-alpha validation summary
 
 Candidate: **Replicated World Chat Presence Announcements**  

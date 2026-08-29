@@ -1171,7 +1171,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function ApplyToAccountRecord Property Definitions *****************************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // 2f856c422aaed141d21fa44341bcd0445e707cc8
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000180, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventApplyToAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(0, nullptr) }; // f3f8e46a31ecd7958aba3fc3793f86ddf3cecae1
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -3987,7 +3987,7 @@ struct UHT_STATICS
 };
 
 // ********** Begin Function InitializeFromAccountRecord Property Definitions **********************
-const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // 2f856c422aaed141d21fa44341bcd0445e707cc8
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_Record = { "Record", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFPlayerDigimonComponent_eventInitializeFromAccountRecord_Parms, Record), Z_Construct_UScriptStruct_FDMFAccountRecord, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Record_MetaData), NewProp_Record_MetaData) }; // f3f8e46a31ecd7958aba3fc3793f86ddf3cecae1
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Record,
 };
@@ -6027,7 +6027,7 @@ struct UHT_STATICS
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // df82248bbe0e54511d62ea94543a74291c688125
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_ApplyToAccountRecord, "ApplyToAccountRecord" }, // 73e53c9277d1cf6dffb3674295680c264e839ce0
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_AuthorityPurchaseVendorDigimon, "AuthorityPurchaseVendorDigimon" }, // 56e1066d7a84fa6a43e6f3bf46ff0cf908b16e78
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_AuthoritySellDigimonToVendor, "AuthoritySellDigimonToVendor" }, // 5628b5d15ff6aebf999cb827f006300e61cdf174
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_CanDigivolveOwnedDigimonTo, "CanDigivolveOwnedDigimonTo" }, // 7929c1c93eab95c4c3d366e63ed36b5b6dda760a
@@ -6067,7 +6067,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_HandleActivePartnerVitalsChanged, "HandleActivePartnerVitalsChanged" }, // 6098b0b722e070250b53e27af95bb6fd178c6328
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_HandleAuthoritativeBattleVictory, "HandleAuthoritativeBattleVictory" }, // 8a1a6e22560c1aba8fe86b86e07cb27d1ea88925
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_HealAllOwnedDigimon, "HealAllOwnedDigimon" }, // 9a1b74bd88412d2a9b3576b2a49306695d7dbe1c
-		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // 1d9675f034d65c0b347437533674c1d5c5805594
+		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_InitializeFromAccountRecord, "InitializeFromAccountRecord" }, // d865292c4991d94d733ea737be7aee313ce2fb1a
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_IsActivePartnerSummoned, "IsActivePartnerSummoned" }, // d8fc1e8ace58dc414333ffd72941117bbe7471e9
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_IsCareSequenceActive, "IsCareSequenceActive" }, // d67d5d04dc46a7018aeb43ddbd470f7cce37df5e
 		{ &Z_Construct_UFunction_UDMFPlayerDigimonComponent_IsDigivolutionSequenceActive, "IsDigivolutionSequenceActive" }, // 495f5618a0c50fb4a486deda6ad8b9fceb814d0d
@@ -6287,10 +6287,10 @@ UDMFPlayerDigimonComponent::~UDMFPlayerDigimonComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFPlayerDigimonComponent, TEXT("UDMFPlayerDigimonComponent"), &Z_Registration_Info_UClass_UDMFPlayerDigimonComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerDigimonComponent), 1588090379U) },
+		{ Z_Construct_UClass_UDMFPlayerDigimonComponent, TEXT("UDMFPlayerDigimonComponent"), &Z_Registration_Info_UClass_UDMFPlayerDigimonComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFPlayerDigimonComponent), 2071919993U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h__Script_DigimonMMOFramework_658268d5fb02b6cb36b95924806a4394f8f0571a{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFPlayerDigimonComponent_h__Script_DigimonMMOFramework_4658a6f8894ed8503eec244ebec3c9bfb712ad42{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

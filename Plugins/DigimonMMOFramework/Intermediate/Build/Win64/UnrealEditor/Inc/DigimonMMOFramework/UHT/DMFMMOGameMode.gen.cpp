@@ -13,6 +13,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 void EmptyLinkFunctionForGeneratedCodeDMFMMOGameMode() {}
 
 // ********** Begin Cross Module References ********************************************************
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FGuid(ETypeConstructPhase);
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator(ETypeConstructPhase);
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector(ETypeConstructPhase);
 ENGINE_API UClass* Z_Construct_UClass_AGameMode(ETypeConstructPhase);
@@ -23,6 +24,7 @@ ENGINE_API UClass* Z_Construct_UClass_APlayerController(ETypeConstructPhase);
 UPackage* Z_Construct_UPackage__Script_DigimonMMOFramework(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UScriptStruct* Z_Construct_UScriptStruct_FDMFWorldChatMessage(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFWorldChatMessageType(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOGameMode(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
@@ -629,6 +631,117 @@ DEFINE_FUNCTION(ADMFMMOGameMode::execEnsureFrameworkPlayerAvatar)
 }
 // ********** End Class ADMFMMOGameMode Function EnsureFrameworkPlayerAvatar ***********************
 
+// ********** Begin Class ADMFMMOGameMode Function ExecuteSocialAction *****************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_ExecuteSocialAction_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOGameMode_eventExecuteSocialAction_Parms
+	{
+		ADMFMMOPlayerController* RequestingController;
+		EDMFSocialActionType ActionType;
+		FString SubjectUsername;
+		FGuid GuildId;
+		FString TextValue;
+		bool bValue;
+		FText OutMessage;
+		bool ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Executes one validated persistent social mutation. Client-supplied identity is never trusted as the acting account. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Executes one validated persistent social mutation. Client-supplied identity is never trusted as the acting account." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SubjectUsername_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TextValue_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function ExecuteSocialAction constinit property declarations *******************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_RequestingController;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_ActionType_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_ActionType;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_SubjectUsername;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_GuildId;
+	static const UECodeGen_Private::FStrPropertyParams NewProp_TextValue;
+	static void NewProp_bValue_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventExecuteSocialAction_Parms*)Obj)->bValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bValue;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_OutMessage;
+	static void NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((DMFMMOGameMode_eventExecuteSocialAction_Parms*)Obj)->ReturnValue = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function ExecuteSocialAction constinit property declarations *********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function ExecuteSocialAction Property Definitions ******************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_RequestingController = { "RequestingController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, RequestingController), Z_Construct_UClass_ADMFMMOPlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ActionType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ActionType = { "ActionType", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, ActionType), Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialActionType, METADATA_PARAMS(0, nullptr) }; // 78d1b7a1f2f66e4fa9da9380e56013f59d156bb3
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_SubjectUsername = { "SubjectUsername", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, SubjectUsername), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SubjectUsername_MetaData), NewProp_SubjectUsername_MetaData) };
+const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_GuildId = { "GuildId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, GuildId), Z_Construct_UScriptStruct_FGuid, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStrPropertyParams UHT_STATICS::NewProp_TextValue = { "TextValue", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Str, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, TextValue), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TextValue_MetaData), NewProp_TextValue_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bValue = { "bValue", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventExecuteSocialAction_Parms), &UHT_STATICS::NewProp_bValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_OutMessage = { "OutMessage", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventExecuteSocialAction_Parms, OutMessage), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFMMOGameMode_eventExecuteSocialAction_Parms), &UHT_STATICS::NewProp_ReturnValue_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RequestingController,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActionType_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ActionType,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SubjectUsername,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_GuildId,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_TextValue,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bValue,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_OutMessage,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function ExecuteSocialAction Property Definitions ********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "ExecuteSocialAction", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOGameMode_eventExecuteSocialAction_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04C20405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOGameMode_eventExecuteSocialAction_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_ExecuteSocialAction(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execExecuteSocialAction)
+{
+	P_GET_OBJECT(ADMFMMOPlayerController,Z_Param_RequestingController);
+	P_GET_ENUM(EDMFSocialActionType,Z_Param_ActionType);
+	P_GET_PROPERTY(FStrProperty,Z_Param_SubjectUsername);
+	P_GET_STRUCT(FGuid,Z_Param_GuildId);
+	P_GET_PROPERTY(FStrProperty,Z_Param_TextValue);
+	P_GET_UBOOL(Z_Param_bValue);
+	P_GET_PROPERTY_REF(FTextProperty,Z_Param_Out_OutMessage);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(bool*)Z_Param__Result=P_THIS->ExecuteSocialAction(Z_Param_RequestingController,EDMFSocialActionType(Z_Param_ActionType),Z_Param_SubjectUsername,Z_Param_GuildId,Z_Param_TextValue,Z_Param_bValue,Z_Param_Out_OutMessage);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function ExecuteSocialAction *******************************
+
 // ********** Begin Class ADMFMMOGameMode Function HasFrameworkPlayerAvatar ************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -898,6 +1011,66 @@ DEFINE_FUNCTION(ADMFMMOGameMode::execSendRecentWorldChatHistory)
 }
 // ********** End Class ADMFMMOGameMode Function SendRecentWorldChatHistory ************************
 
+// ********** Begin Class ADMFMMOGameMode Function SendSocialSnapshot ******************************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_ADMFMMOGameMode_SendSocialSnapshot_Statics
+struct UHT_STATICS
+{
+	struct DMFMMOGameMode_eventSendSocialSnapshot_Parms
+	{
+		ADMFMMOPlayerController* RecipientController;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Builds and reliably delivers one owner-only Social snapshot from persistent account/guild authority. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Game/DMFMMOGameMode.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Builds and reliably delivers one owner-only Social snapshot from persistent account/guild authority." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function SendSocialSnapshot constinit property declarations ********************
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_RecipientController;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function SendSocialSnapshot constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function SendSocialSnapshot Property Definitions *******************************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_RecipientController = { "RecipientController", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFMMOGameMode_eventSendSocialSnapshot_Parms, RecipientController), Z_Construct_UClass_ADMFMMOPlayerController, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_RecipientController,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function SendSocialSnapshot Property Definitions *********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_ADMFMMOGameMode, nullptr, "SendSocialSnapshot", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFMMOGameMode_eventSendSocialSnapshot_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x44020405, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFMMOGameMode_eventSendSocialSnapshot_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_ADMFMMOGameMode_SendSocialSnapshot(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(ADMFMMOGameMode::execSendSocialSnapshot)
+{
+	P_GET_OBJECT(ADMFMMOPlayerController,Z_Param_RecipientController);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->SendSocialSnapshot(Z_Param_RecipientController);
+	P_NATIVE_END;
+}
+// ********** End Class ADMFMMOGameMode Function SendSocialSnapshot ********************************
+
 // ********** Begin Class ADMFMMOGameMode **********************************************************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -929,10 +1102,12 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("BroadcastWorldChatPresenceEvent"), .Pointer = &ADMFMMOGameMode::execBroadcastWorldChatPresenceEvent },
 		{ .NameUTF8 = UTF8TEXT("ChooseNewPlayerSpawnPoint"), .Pointer = &ADMFMMOGameMode::execChooseNewPlayerSpawnPoint },
 		{ .NameUTF8 = UTF8TEXT("EnsureFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execEnsureFrameworkPlayerAvatar },
+		{ .NameUTF8 = UTF8TEXT("ExecuteSocialAction"), .Pointer = &ADMFMMOGameMode::execExecuteSocialAction },
 		{ .NameUTF8 = UTF8TEXT("HasFrameworkPlayerAvatar"), .Pointer = &ADMFMMOGameMode::execHasFrameworkPlayerAvatar },
 		{ .NameUTF8 = UTF8TEXT("ReturnAuthenticatedPlayerHome"), .Pointer = &ADMFMMOGameMode::execReturnAuthenticatedPlayerHome },
 		{ .NameUTF8 = UTF8TEXT("SaveAuthenticatedPlayerWorldLocationNow"), .Pointer = &ADMFMMOGameMode::execSaveAuthenticatedPlayerWorldLocationNow },
 		{ .NameUTF8 = UTF8TEXT("SendRecentWorldChatHistory"), .Pointer = &ADMFMMOGameMode::execSendRecentWorldChatHistory },
+		{ .NameUTF8 = UTF8TEXT("SendSocialSnapshot"), .Pointer = &ADMFMMOGameMode::execSendSocialSnapshot },
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
@@ -944,10 +1119,12 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_BroadcastWorldChatPresenceEvent, "BroadcastWorldChatPresenceEvent" }, // 0f22a871606faae8916ea71bdab4014005a7a454
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_ChooseNewPlayerSpawnPoint, "ChooseNewPlayerSpawnPoint" }, // 1db62d1a8957614b462cb76c54550f9b89e838ac
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_EnsureFrameworkPlayerAvatar, "EnsureFrameworkPlayerAvatar" }, // 7ccb9f3f91f51e0daedd94afae698fc94df920fa
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_ExecuteSocialAction, "ExecuteSocialAction" }, // b514bc8dd917633a240a1f8a8ed71ca77c6dd2c8
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_HasFrameworkPlayerAvatar, "HasFrameworkPlayerAvatar" }, // 8494791abd92585c160a0fb97479552e9dc7af1c
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_ReturnAuthenticatedPlayerHome, "ReturnAuthenticatedPlayerHome" }, // 5d9e85d70fae7add7c17d44983cabdb87173a37d
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_SaveAuthenticatedPlayerWorldLocationNow, "SaveAuthenticatedPlayerWorldLocationNow" }, // c8a70d51e04800392a0c902fa38be5f03e96bd53
 		{ &Z_Construct_UFunction_ADMFMMOGameMode_SendRecentWorldChatHistory, "SendRecentWorldChatHistory" }, // 1471f7c9b132550e298f97a90ab1d583f94e0d8f
+		{ &Z_Construct_UFunction_ADMFMMOGameMode_SendSocialSnapshot, "SendSocialSnapshot" }, // e7738a72f145e6215ad4c3c17a89cda68088165e
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -1036,10 +1213,10 @@ ADMFMMOGameMode::~ADMFMMOGameMode() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 4226536178U) },
+		{ Z_Construct_UClass_ADMFMMOGameMode, TEXT("ADMFMMOGameMode"), &Z_Registration_Info_UClass_ADMFMMOGameMode, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ADMFMMOGameMode), 3671006667U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_1d93a002d71e743972c76daf4528743b86fbdcd6{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOGameMode_h__Script_DigimonMMOFramework_0491279da38f104c654448eec065cf7fb19502f6{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

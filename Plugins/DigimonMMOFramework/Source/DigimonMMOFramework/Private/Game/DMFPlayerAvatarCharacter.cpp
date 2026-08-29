@@ -23,6 +23,7 @@
 #include "Game/DMFSwimmableWater.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/LocalPlayer.h"
 #include "EngineUtils.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputCoreTypes.h"
@@ -261,6 +262,18 @@ void ADMFPlayerAvatarCharacter::RefreshWorldNameplate()
     NameplateWidgetComponent->SetCullDistance(FMath::Max(0.0f, Settings->PlayerNameplateMaxDrawDistance));
     NameplateWidgetComponent->SetRedrawTime(FMath::Clamp(Settings->WorldNameplateRefreshInterval, 0.05f, 1.0f));
     NameplateWidgetComponent->SetTickWhenOffscreen(false);
+
+    // Screen-space widgets must be associated with the local viewport to receive deterministic mouse hit testing.
+    if (UWorld* World = GetWorld())
+    {
+        if (APlayerController* LocalController = World->GetFirstPlayerController())
+        {
+            if (ULocalPlayer* LocalPlayer = LocalController->GetLocalPlayer())
+            {
+                NameplateWidgetComponent->SetOwnerPlayer(LocalPlayer);
+            }
+        }
+    }
 
     TSubclassOf<UDMFWorldNameplateWidget> DesiredClass = Settings->PlayerNameplateWidgetClass;
     if (!DesiredClass)

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "DMFTypes.h"
+#include "TimerManager.h"
 #include "DMFDigimonInventoryWidget.generated.h"
 
 class UVerticalBox;
@@ -16,6 +17,8 @@ class UEditableTextBox;
 class UDMFPlayerDigimonComponent;
 class UDMFDigimonSpeciesData;
 class UDMFPartyDestinationButton;
+class UDMFSocialActionButton;
+enum class EDMFSocialUIAction : uint8;
 
 /**
  * Polished native Digimon roster/partner menu.
@@ -44,6 +47,24 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Care")
     void RefreshCareData();
+
+    /** Refreshes the owner-only persistent Social presentation from the controller's last authoritative snapshot. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social")
+    void RefreshSocialData();
+
+    /** Refreshes the owner-local nearest-first player discovery panel from already-replicated avatar transforms. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends|Nearby Players")
+    void RefreshNearbyPlayersData();
+
+    /** Owner-local non-modal feedback hook used by reliable Social action results. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social")
+    void HandleSocialActionFeedback(bool bSuccess, const FText& Message);
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social")
+    void SetActiveSocialTab(EDMFSocialMenuTab NewTab);
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Social")
+    EDMFSocialMenuTab GetActiveSocialTab() const { return ActiveSocialTab; }
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Digivolution")
     void RefreshDigivolutionData();
@@ -148,6 +169,9 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> DigiDexTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> SocialTabButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> BankDigimonGrid;
@@ -330,6 +354,26 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> DigivolveButton;
 
+    // Social shell. Friends is the default nested page the first time Social is opened.
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialFriendsTabButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialGuildTabButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialNearbyPlayersList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialFriendsList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialFriendRequestsList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialIgnoreList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> SocialGuildIdentityText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> SocialGuildMetaText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialGuildMembersList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialGuildInvitesList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialGuildApplicationsList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UVerticalBox> SocialGuildSearchList;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UEditableTextBox> SocialGuildNameInput;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UEditableTextBox> SocialGuildSearchInput;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialGuildCreateButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialGuildRenameButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialGuildLeaveButton;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> SocialGuildDisbandButton;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFPlayerDigimonComponent> BoundDigimonComponent;
@@ -347,6 +391,12 @@ private:
     int32 BankPageIndex = 0;
     int32 SelectedBankPartyDestinationIndex = INDEX_NONE;
     EDMFDigimonMenuTab ActiveMenuTab = EDMFDigimonMenuTab::Collection;
+    EDMFSocialMenuTab ActiveSocialTab = EDMFSocialMenuTab::Friends;
+    bool bHasOpenedSocialTab = false;
+    FString SocialGuildSearchQuery;
+    FTimerHandle NearbyPlayersRefreshTimer;
+    uint32 NearbyPlayersPresentationHash = 0;
+    bool bNearbyPlayersPresentationInitialized = false;
 
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> InventoryContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> BankContentRow;
@@ -354,6 +404,9 @@ private:
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> CareContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigivolutionContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigiDexContentRow;
+    UPROPERTY(Transient) TObjectPtr<UVerticalBox> SocialContentRoot;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> SocialFriendsContentRow;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> SocialGuildContentRow;
 
     void BuildNativeFallbackUI();
     void BindDigimonComponent();
@@ -364,6 +417,9 @@ private:
     void RefreshSelectedDigiDexDetails();
     TArray<UDMFDigimonSpeciesData*> GatherRegisteredDigiDexSpecies() const;
     void RefreshTabPresentation();
+    void RefreshSocialTabPresentation();
+    void HandleNearbyPlayersRefreshTimer();
+    UDMFSocialActionButton* MakeSocialActionButton(const FText& Label, EDMFSocialUIAction Action, const FString& Username = FString(), const FGuid& GuildId = FGuid(), bool bValue = false, bool bPrimary = false, bool bDanger = false);
     UDMFDigimonSpeciesData* ResolveSpecies(FPrimaryAssetId SpeciesId) const;
     void RequestAttributePointSpend(EDMFDigimonAttributeStat Stat, bool bUseBankSelection);
     void SetPartyAttributeSpendEnabled(bool bEnabled);
@@ -404,6 +460,33 @@ private:
 
     UFUNCTION()
     void HandleDigiDexTab();
+
+    UFUNCTION()
+    void HandleSocialTab();
+
+    UFUNCTION()
+    void HandleSocialFriendsTab();
+
+    UFUNCTION()
+    void HandleSocialGuildTab();
+
+    UFUNCTION()
+    void HandleSocialActionButtonPressed(UDMFSocialActionButton* Button);
+
+    UFUNCTION()
+    void HandleSocialGuildCreate();
+
+    UFUNCTION()
+    void HandleSocialGuildRename();
+
+    UFUNCTION()
+    void HandleSocialGuildLeave();
+
+    UFUNCTION()
+    void HandleSocialGuildDisband();
+
+    UFUNCTION()
+    void HandleSocialGuildSearchChanged(const FText& SearchText);
 
     UFUNCTION()
     void HandleDigiDexSpeciesPressed(FPrimaryAssetId SpeciesId);

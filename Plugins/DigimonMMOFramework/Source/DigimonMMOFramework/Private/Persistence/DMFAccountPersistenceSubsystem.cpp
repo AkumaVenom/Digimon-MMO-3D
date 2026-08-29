@@ -71,6 +71,13 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // during authoritative account initialization; no owned Digimon or legacy stat is discarded.
             Database->SchemaVersion = 7;
         }
+
+        if (Database->SchemaVersion < 8)
+        {
+            // v8 adds persistent friends, ignore/tracker preferences, guild membership/invites, and the global guild
+            // registry. Existing accounts deserialize with empty social collections and no guild, requiring no rewrite.
+            Database->SchemaVersion = 8;
+        }
     }
     else
     {
@@ -162,6 +169,107 @@ bool UDMFAccountPersistenceSubsystem::SaveAccount(const FDMFAccountRecord& Recor
 
     Database->Accounts.Add(NormalizeAccountKey(Record.Username), Record);
     return Flush(OutError);
+}
+
+bool UDMFAccountPersistenceSubsystem::GetAllAccounts(TArray<FDMFAccountRecord>& OutRecords)
+{
+    OutRecords.Reset();
+    FString Error;
+    if (!EnsureLoaded(Error) || !Database)
+    {
+        return false;
+    }
+
+    Database->Accounts.GenerateValueArray(OutRecords);
+    return true;
+}
+
+bool UDMFAccountPersistenceSubsystem::GetGuild(const FGuid& GuildId, FDMFGuildRecord& OutGuild)
+{
+    FString Error;
+    if (!GuildId.IsValid() || !EnsureLoaded(Error) || !Database)
+    {
+        return false;
+    }
+
+    if (const FDMFGuildRecord* Guild = Database->Guilds.Find(GuildId))
+    {
+        OutGuild = *Guild;
+        return true;
+    }
+    return false;
+}
+
+bool UDMFAccountPersistenceSubsystem::GetAllGuilds(TArray<FDMFGuildRecord>& OutGuilds)
+{
+    OutGuilds.Reset();
+    FString Error;
+    if (!EnsureLoaded(Error) || !Database)
+    {
+        return false;
+    }
+
+    Database->Guilds.GenerateValueArray(OutGuilds);
+    return true;
+}
+
+bool UDMFAccountPersistenceSubsystem::SaveSocialTransaction(
+    const TArray<FDMFAccountRecord>& AccountRecords,
+    const TArray<FDMFGuildRecord>& GuildsToUpsert,
+    const TArray<FGuid>& GuildIdsToRemove,
+    FString& OutError)
+{
+    OutError.Reset();
+    if (!EnsureLoaded(OutError) || !Database)
+    {
+        return false;
+    }
+
+    for (const FDMFAccountRecord& Record : AccountRecords)
+    {
+        if (Record.Username.TrimStartAndEnd().IsEmpty())
+        {
+            OutError = TEXT("Refusing social transaction containing an account with an empty username.");
+            return false;
+        }
+    }
+    for (const FDMFGuildRecord& Guild : GuildsToUpsert)
+    {
+        if (!Guild.GuildId.IsValid() || Guild.Name.TrimStartAndEnd().IsEmpty() || Guild.OwnerUsername.TrimStartAndEnd().IsEmpty())
+        {
+            OutError = TEXT("Refusing social transaction containing an invalid guild record.");
+            return false;
+        }
+    }
+
+    // Transactions are comparatively rare and the SaveGame backend already serializes the complete database.
+    // Copying the two maps gives us a simple, deterministic rollback if SaveGameToSlot fails.
+    const TMap<FString, FDMFAccountRecord> AccountsBefore = Database->Accounts;
+    const TMap<FGuid, FDMFGuildRecord> GuildsBefore = Database->Guilds;
+
+    for (const FDMFAccountRecord& Record : AccountRecords)
+    {
+        Database->Accounts.Add(NormalizeAccountKey(Record.Username), Record);
+    }
+    for (const FDMFGuildRecord& Guild : GuildsToUpsert)
+    {
+        Database->Guilds.Add(Guild.GuildId, Guild);
+    }
+    for (const FGuid& GuildId : GuildIdsToRemove)
+    {
+        if (GuildId.IsValid())
+        {
+            Database->Guilds.Remove(GuildId);
+        }
+    }
+
+    if (!Flush(OutError))
+    {
+        Database->Accounts = AccountsBefore;
+        Database->Guilds = GuildsBefore;
+        return false;
+    }
+    return true;
 }
 
 bool UDMFAccountPersistenceSubsystem::Flush(FString& OutError)

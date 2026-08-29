@@ -244,7 +244,10 @@ bool ADMFMMOGameMode::DispatchWorldChatMessage(const FDMFWorldChatMessage& ChatM
         {
             if (ADMFMMOPlayerController* Recipient = Cast<ADMFMMOPlayerController>(Iterator->Get()))
             {
-                Recipient->ClientReceiveWorldChatMessage(ChatMessage);
+                if (ShouldDeliverWorldChatMessageToRecipient(ChatMessage, Recipient))
+                {
+                    Recipient->ClientReceiveWorldChatMessage(ChatMessage);
+                }
             }
         }
     }
@@ -357,9 +360,1007 @@ void ADMFMMOGameMode::SendRecentWorldChatHistory(ADMFMMOPlayerController* Recipi
     BoundedHistory.Reserve(RecentWorldChatMessages.Num() - StartIndex);
     for (int32 Index = StartIndex; Index < RecentWorldChatMessages.Num(); ++Index)
     {
-        BoundedHistory.Add(RecentWorldChatMessages[Index]);
+        if (ShouldDeliverWorldChatMessageToRecipient(RecentWorldChatMessages[Index], RecipientController))
+        {
+            BoundedHistory.Add(RecentWorldChatMessages[Index]);
+        }
     }
     RecipientController->ClientReceiveWorldChatHistory(BoundedHistory);
+}
+
+bool ADMFMMOGameMode::ShouldDeliverWorldChatMessageToRecipient(const FDMFWorldChatMessage& ChatMessage, ADMFMMOPlayerController* RecipientController) const
+{
+    if (!IsValid(RecipientController) || ChatMessage.MessageType != EDMFWorldChatMessageType::Player || ChatMessage.SenderName.TrimStartAndEnd().IsEmpty())
+    {
+        return true;
+    }
+
+    const ADMFPlayerState* RecipientState = RecipientController->GetPlayerState<ADMFPlayerState>();
+    const FString RecipientUsername = RecipientState ? RecipientState->GetAuthenticatedUsername().TrimStartAndEnd() : FString();
+    if (RecipientUsername.IsEmpty())
+    {
+        return true;
+    }
+
+    UGameInstance* GI = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GI ? GI->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    FDMFAccountRecord RecipientRecord;
+    if (!Persistence || !Persistence->GetAccount(RecipientUsername, RecipientRecord))
+    {
+        return true;
+    }
+
+    return !RecipientRecord.IgnoredUsernames.ContainsByPredicate([&ChatMessage](const FString& IgnoredName)
+    {
+        return IgnoredName.Equals(ChatMessage.SenderName, ESearchCase::IgnoreCase);
+    });
+}
+
+bool ADMFMMOGameMode::BuildSocialSnapshot(ADMFMMOPlayerController* RecipientController, FDMFSocialSnapshot& OutSnapshot) const
+{
+    OutSnapshot = FDMFSocialSnapshot();
+    if (!HasAuthority() || !IsValid(RecipientController))
+    {
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableSocialSystem)
+    {
+        return true;
+    }
+
+    const ADMFPlayerState* RecipientState = RecipientController->GetPlayerState<ADMFPlayerState>();
+    const FString Username = RecipientState ? RecipientState->GetAuthenticatedUsername().TrimStartAndEnd() : FString();
+    UGameInstance* GI = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GI ? GI->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    FDMFAccountRecord Account;
+    if (Username.IsEmpty() || !Persistence || !Persistence->GetAccount(Username, Account))
+    {
+        return false;
+    }
+
+    auto IsOnline = [this](const FString& CandidateUsername) -> bool
+    {
+        if (CandidateUsername.TrimStartAndEnd().IsEmpty() || !GetWorld())
+        {
+            return false;
+        }
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            const ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(It->Get());
+            const ADMFPlayerState* PS = PC ? PC->GetPlayerState<ADMFPlayerState>() : nullptr;
+            if (PS && PS->GetAuthenticatedUsername().Equals(CandidateUsername, ESearchCase::IgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    for (const FString& FriendUsername : Account.FriendUsernames)
+    {
+        if (FriendUsername.TrimStartAndEnd().IsEmpty())
+        {
+            continue;
+        }
+        FDMFSocialFriendEntry Entry;
+        Entry.Username = FriendUsername;
+        Entry.bOnline = IsOnline(FriendUsername);
+        Entry.bTrackingEnabled = Account.TrackedFriendUsernames.ContainsByPredicate([&FriendUsername](const FString& TrackedName)
+        {
+            return TrackedName.Equals(FriendUsername, ESearchCase::IgnoreCase);
+        });
+        OutSnapshot.Friends.Add(Entry);
+    }
+    OutSnapshot.Friends.Sort([](const FDMFSocialFriendEntry& A, const FDMFSocialFriendEntry& B)
+    {
+        if (A.bOnline != B.bOnline)
+        {
+            return A.bOnline && !B.bOnline;
+        }
+        return A.Username.Compare(B.Username, ESearchCase::IgnoreCase) < 0;
+    });
+
+    OutSnapshot.PendingFriendRequests = Account.PendingFriendRequests;
+    OutSnapshot.PendingFriendRequests.Sort([](const FString& A, const FString& B) { return A.Compare(B, ESearchCase::IgnoreCase) < 0; });
+    OutSnapshot.PendingOutgoingFriendRequests = Account.PendingOutgoingFriendRequests;
+    OutSnapshot.PendingOutgoingFriendRequests.Sort([](const FString& A, const FString& B) { return A.Compare(B, ESearchCase::IgnoreCase) < 0; });
+    OutSnapshot.IgnoredPlayers = Account.IgnoredUsernames;
+    OutSnapshot.IgnoredPlayers.Sort([](const FString& A, const FString& B) { return A.Compare(B, ESearchCase::IgnoreCase) < 0; });
+
+    for (const FDMFGuildInvite& StoredInvite : Account.PendingGuildInvites)
+    {
+        FDMFGuildRecord Guild;
+        if (!StoredInvite.GuildId.IsValid() || !Persistence->GetGuild(StoredInvite.GuildId, Guild))
+        {
+            continue;
+        }
+        FDMFGuildInvite Invite = StoredInvite;
+        Invite.GuildName = Guild.Name;
+        OutSnapshot.PendingGuildInvites.Add(Invite);
+    }
+
+    TArray<FDMFGuildRecord> Guilds;
+    Persistence->GetAllGuilds(Guilds);
+    Guilds.Sort([](const FDMFGuildRecord& A, const FDMFGuildRecord& B)
+    {
+        return A.Name.Compare(B.Name, ESearchCase::IgnoreCase) < 0;
+    });
+
+    for (const FDMFGuildRecord& Guild : Guilds)
+    {
+        if (!Guild.GuildId.IsValid() || Guild.Name.TrimStartAndEnd().IsEmpty())
+        {
+            continue;
+        }
+        FDMFGuildSummary Summary;
+        Summary.GuildId = Guild.GuildId;
+        Summary.Name = Guild.Name;
+        Summary.OwnerUsername = Guild.OwnerUsername;
+        Summary.MemberCount = Guild.MemberUsernames.Num();
+        Summary.bApplicationPending = Guild.PendingApplications.ContainsByPredicate([&Username](const FString& Applicant)
+        {
+            return Applicant.Equals(Username, ESearchCase::IgnoreCase);
+        });
+        OutSnapshot.GuildSearchResults.Add(Summary);
+    }
+
+    FDMFGuildRecord OwnGuild;
+    if (Account.GuildId.IsValid() && Persistence->GetGuild(Account.GuildId, OwnGuild))
+    {
+        const bool bIsMember = OwnGuild.MemberUsernames.ContainsByPredicate([&Username](const FString& Member)
+        {
+            return Member.Equals(Username, ESearchCase::IgnoreCase);
+        });
+        if (bIsMember)
+        {
+            OutSnapshot.GuildId = OwnGuild.GuildId;
+            OutSnapshot.GuildName = OwnGuild.Name;
+            OutSnapshot.GuildOwnerUsername = OwnGuild.OwnerUsername;
+            OutSnapshot.bIsGuildOwner = OwnGuild.OwnerUsername.Equals(Username, ESearchCase::IgnoreCase);
+            for (const FString& MemberUsername : OwnGuild.MemberUsernames)
+            {
+                FDMFGuildMemberEntry Member;
+                Member.Username = MemberUsername;
+                Member.bOwner = OwnGuild.OwnerUsername.Equals(MemberUsername, ESearchCase::IgnoreCase);
+                Member.bOnline = IsOnline(MemberUsername);
+                OutSnapshot.GuildMembers.Add(Member);
+            }
+            OutSnapshot.GuildMembers.Sort([](const FDMFGuildMemberEntry& A, const FDMFGuildMemberEntry& B)
+            {
+                if (A.bOwner != B.bOwner) return A.bOwner && !B.bOwner;
+                if (A.bOnline != B.bOnline) return A.bOnline && !B.bOnline;
+                return A.Username.Compare(B.Username, ESearchCase::IgnoreCase) < 0;
+            });
+            if (OutSnapshot.bIsGuildOwner)
+            {
+                OutSnapshot.PendingGuildApplications = OwnGuild.PendingApplications;
+                OutSnapshot.PendingGuildApplications.Sort([](const FString& A, const FString& B) { return A.Compare(B, ESearchCase::IgnoreCase) < 0; });
+            }
+        }
+    }
+
+    return true;
+}
+
+void ADMFMMOGameMode::SendSocialSnapshot(ADMFMMOPlayerController* RecipientController) const
+{
+    if (!HasAuthority() || !IsValid(RecipientController))
+    {
+        return;
+    }
+
+    FDMFSocialSnapshot Snapshot;
+    if (BuildSocialSnapshot(RecipientController, Snapshot))
+    {
+        RecipientController->ClientReceiveSocialSnapshot(Snapshot);
+    }
+}
+
+void ADMFMMOGameMode::PushSocialSnapshotForUsername(const FString& Username) const
+{
+    if (!HasAuthority() || Username.TrimStartAndEnd().IsEmpty() || !GetWorld())
+    {
+        return;
+    }
+
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(It->Get());
+        const ADMFPlayerState* PS = PC ? PC->GetPlayerState<ADMFPlayerState>() : nullptr;
+        if (PS && PS->GetAuthenticatedUsername().Equals(Username, ESearchCase::IgnoreCase))
+        {
+            SendSocialSnapshot(PC);
+            return;
+        }
+    }
+}
+
+void ADMFMMOGameMode::PushSocialSnapshotsToAllOnlinePlayers(const ADMFMMOPlayerController* ExcludedController) const
+{
+    if (!HasAuthority() || !GetWorld())
+    {
+        return;
+    }
+
+    // Guild-directory identity/member-count changes are rare but globally visible. Build each snapshot
+    // independently so every connected account receives only its own private friends/ignore/request data.
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (ADMFMMOPlayerController* PC = Cast<ADMFMMOPlayerController>(It->Get()))
+        {
+            if (PC == ExcludedController)
+            {
+                continue;
+            }
+            const ADMFPlayerState* PS = PC->GetPlayerState<ADMFPlayerState>();
+            if (PS && !PS->GetAuthenticatedUsername().TrimStartAndEnd().IsEmpty())
+            {
+                SendSocialSnapshot(PC);
+            }
+        }
+    }
+}
+
+void ADMFMMOGameMode::RefreshSocialPresenceForUsername(const FString& Username) const
+{
+    if (!HasAuthority() || Username.TrimStartAndEnd().IsEmpty())
+    {
+        return;
+    }
+
+    UGameInstance* GI = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GI ? GI->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    FDMFAccountRecord Account;
+    if (!Persistence || !Persistence->GetAccount(Username, Account))
+    {
+        return;
+    }
+
+    PushSocialSnapshotForUsername(Username);
+    for (const FString& FriendUsername : Account.FriendUsernames)
+    {
+        PushSocialSnapshotForUsername(FriendUsername);
+    }
+
+    FDMFGuildRecord Guild;
+    if (Account.GuildId.IsValid() && Persistence->GetGuild(Account.GuildId, Guild))
+    {
+        for (const FString& MemberUsername : Guild.MemberUsernames)
+        {
+            if (!MemberUsername.Equals(Username, ESearchCase::IgnoreCase))
+            {
+                PushSocialSnapshotForUsername(MemberUsername);
+            }
+        }
+    }
+}
+
+bool ADMFMMOGameMode::ExecuteSocialAction(ADMFMMOPlayerController* RequestingController, const EDMFSocialActionType ActionType, const FString& SubjectUsername, const FGuid GuildId, const FString& TextValue, const bool bValue, FText& OutMessage)
+{
+    OutMessage = FText::GetEmpty();
+    if (!HasAuthority() || !IsValid(RequestingController))
+    {
+        OutMessage = NSLOCTEXT("DMF", "SocialInvalidRequester", "Social services are unavailable for this player.");
+        return false;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableSocialSystem)
+    {
+        OutMessage = NSLOCTEXT("DMF", "SocialDisabled", "The Social system is disabled on this server.");
+        return false;
+    }
+
+    ADMFPlayerState* ActorState = RequestingController->GetPlayerState<ADMFPlayerState>();
+    const FString ActorUsername = ActorState ? ActorState->GetAuthenticatedUsername().TrimStartAndEnd() : FString();
+    UGameInstance* GI = GetGameInstance();
+    UDMFAccountPersistenceSubsystem* Persistence = GI ? GI->GetSubsystem<UDMFAccountPersistenceSubsystem>() : nullptr;
+    FDMFAccountRecord Actor;
+    if (ActorUsername.IsEmpty() || !Persistence || !Persistence->GetAccount(ActorUsername, Actor))
+    {
+        OutMessage = NSLOCTEXT("DMF", "SocialAccountUnavailable", "Your authenticated account could not be loaded.");
+        return false;
+    }
+
+    auto ContainsUsername = [](const TArray<FString>& Names, const FString& Candidate) -> bool
+    {
+        return Names.ContainsByPredicate([&Candidate](const FString& Existing)
+        {
+            return Existing.Equals(Candidate, ESearchCase::IgnoreCase);
+        });
+    };
+    auto RemoveUsername = [](TArray<FString>& Names, const FString& Candidate) -> bool
+    {
+        const int32 Removed = Names.RemoveAll([&Candidate](const FString& Existing)
+        {
+            return Existing.Equals(Candidate, ESearchCase::IgnoreCase);
+        });
+        return Removed > 0;
+    };
+    auto AddUsernameUnique = [&ContainsUsername](TArray<FString>& Names, const FString& CanonicalName)
+    {
+        if (!ContainsUsername(Names, CanonicalName))
+        {
+            Names.Add(CanonicalName);
+        }
+    };
+    auto Commit = [Persistence](const TArray<FDMFAccountRecord>& Accounts, const TArray<FDMFGuildRecord>& Guilds, const TArray<FGuid>& RemovedGuilds, FText& Message) -> bool
+    {
+        FString Error;
+        if (!Persistence->SaveSocialTransaction(Accounts, Guilds, RemovedGuilds, Error))
+        {
+            UE_LOG(LogDigimonMMOFramework, Error, TEXT("Social persistence transaction failed: %s"), *Error);
+            Message = NSLOCTEXT("DMF", "SocialSaveFailed", "The server could not save that Social change. Nothing was committed.");
+            return false;
+        }
+        return true;
+    };
+    auto ResolveTarget = [Persistence](const FString& RequestedName, FDMFAccountRecord& OutTarget) -> bool
+    {
+        const FString Trimmed = RequestedName.TrimStartAndEnd();
+        return !Trimmed.IsEmpty() && Persistence->GetAccount(Trimmed, OutTarget);
+    };
+    auto GuildExistsForAccount = [Persistence](const FDMFAccountRecord& Account, FDMFGuildRecord& OutGuild) -> bool
+    {
+        return Account.GuildId.IsValid() && Persistence->GetGuild(Account.GuildId, OutGuild);
+    };
+    auto SanitizeGuildName = [](const FString& Raw) -> FString
+    {
+        FString Name = Raw;
+        Name.ReplaceInline(TEXT("\r"), TEXT(" "));
+        Name.ReplaceInline(TEXT("\n"), TEXT(" "));
+        Name.ReplaceInline(TEXT("\t"), TEXT(" "));
+        Name.TrimStartAndEndInline();
+        while (Name.Contains(TEXT("  ")))
+        {
+            Name.ReplaceInline(TEXT("  "), TEXT(" "));
+        }
+        return Name;
+    };
+    auto ValidateGuildName = [Settings, Persistence, &SanitizeGuildName](const FString& Raw, const FGuid ExcludedGuildId, FString& OutSanitized, FText& Message) -> bool
+    {
+        OutSanitized = SanitizeGuildName(Raw);
+        const int32 MinLength = Settings ? FMath::Clamp(Settings->MinimumGuildNameLength, 1, 32) : 3;
+        const int32 MaxLength = Settings ? FMath::Clamp(Settings->MaximumGuildNameLength, MinLength, 64) : 32;
+        if (OutSanitized.Len() < MinLength || OutSanitized.Len() > MaxLength)
+        {
+            Message = FText::Format(NSLOCTEXT("DMF", "GuildNameLength", "Guild names must be between {0} and {1} characters."), FText::AsNumber(MinLength), FText::AsNumber(MaxLength));
+            return false;
+        }
+        for (const TCHAR Char : OutSanitized)
+        {
+            if (!(FChar::IsAlnum(Char) || Char == TCHAR(' ') || Char == TCHAR('-') || Char == TCHAR('_') || Char == TCHAR('\'')))
+            {
+                Message = NSLOCTEXT("DMF", "GuildNameCharacters", "Guild names may use letters, numbers, spaces, apostrophes, hyphens and underscores.");
+                return false;
+            }
+        }
+        TArray<FDMFGuildRecord> Guilds;
+        Persistence->GetAllGuilds(Guilds);
+        for (const FDMFGuildRecord& Guild : Guilds)
+        {
+            if (Guild.GuildId != ExcludedGuildId && Guild.Name.Equals(OutSanitized, ESearchCase::IgnoreCase))
+            {
+                Message = NSLOCTEXT("DMF", "GuildNameTaken", "That guild name is already in use.");
+                return false;
+            }
+        }
+        return true;
+    };
+    auto RemoveApplicantFromOtherGuilds = [Persistence, &RemoveUsername](const FString& Username, const FGuid KeepGuildId, TArray<FDMFGuildRecord>& InOutUpserts)
+    {
+        TArray<FDMFGuildRecord> AllGuilds;
+        Persistence->GetAllGuilds(AllGuilds);
+        for (FDMFGuildRecord& Other : AllGuilds)
+        {
+            if (Other.GuildId == KeepGuildId)
+            {
+                continue;
+            }
+            if (RemoveUsername(Other.PendingApplications, Username))
+            {
+                Other.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+                InOutUpserts.Add(Other);
+            }
+        }
+    };
+
+    const int32 MaxFriends = Settings ? FMath::Clamp(Settings->MaximumFriendsPerAccount, 1, 1000) : 200;
+    const int32 MaxIgnored = Settings ? FMath::Clamp(Settings->MaximumIgnoredPlayersPerAccount, 1, 1000) : 200;
+    const int32 MaxGuildMembers = Settings ? FMath::Clamp(Settings->MaximumGuildMembers, 2, 1000) : 100;
+    const int32 MaxGuildInvites = Settings ? FMath::Clamp(Settings->MaximumPendingGuildInvitesPerAccount, 1, 1000) : 100;
+    const int32 MaxGuildApplications = Settings ? FMath::Clamp(Settings->MaximumPendingGuildApplicationsPerGuild, 1, 5000) : 500;
+
+    if (ActionType == EDMFSocialActionType::SendFriendRequest)
+    {
+        FDMFAccountRecord Target;
+        if (!ResolveTarget(SubjectUsername, Target))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendTargetNotFound", "That player account could not be found.");
+            return false;
+        }
+        if (Target.Username.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendSelf", "You cannot add yourself as a friend.");
+            return false;
+        }
+        if (ContainsUsername(Actor.IgnoredUsernames, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendTargetIgnoredBySelf", "Remove this player from your Ignore list before adding them as a friend.");
+            return false;
+        }
+        if (ContainsUsername(Target.IgnoredUsernames, Actor.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendRequestBlocked", "That friend request could not be delivered.");
+            return false;
+        }
+        if (ContainsUsername(Actor.FriendUsernames, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "AlreadyFriends", "That player is already on your Friends list.");
+            return false;
+        }
+        if (Actor.FriendUsernames.Num() >= MaxFriends || Target.FriendUsernames.Num() >= MaxFriends)
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendLimitReached", "A Friends list is at its configured maximum capacity.");
+            return false;
+        }
+
+        if (ContainsUsername(Actor.PendingFriendRequests, Target.Username))
+        {
+            RemoveUsername(Actor.PendingFriendRequests, Target.Username);
+            RemoveUsername(Actor.PendingOutgoingFriendRequests, Target.Username);
+            RemoveUsername(Target.PendingFriendRequests, Actor.Username);
+            RemoveUsername(Target.PendingOutgoingFriendRequests, Actor.Username);
+            AddUsernameUnique(Actor.FriendUsernames, Target.Username);
+            AddUsernameUnique(Target.FriendUsernames, Actor.Username);
+            if (!Commit({Actor, Target}, {}, {}, OutMessage)) return false;
+            PushSocialSnapshotForUsername(Target.Username);
+            OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendMutualAccepted", "You and {0} are now friends."), FText::FromString(Target.Username));
+            return true;
+        }
+        if (ContainsUsername(Target.PendingFriendRequests, Actor.Username) || ContainsUsername(Actor.PendingOutgoingFriendRequests, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendRequestAlreadyPending", "A friend request is already pending for that player.");
+            return false;
+        }
+        if (Actor.PendingOutgoingFriendRequests.Num() >= MaxFriends || Target.PendingFriendRequests.Num() >= MaxFriends)
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendRequestInboxFull", "That player's friend-request list is currently full.");
+            return false;
+        }
+
+        Target.PendingFriendRequests.Add(Actor.Username);
+        Actor.PendingOutgoingFriendRequests.Add(Target.Username);
+        if (!Commit({Actor, Target}, {}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Target.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendRequestSent", "Friend request sent to {0}."), FText::FromString(Target.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RespondFriendRequest)
+    {
+        FDMFAccountRecord Requester;
+        if (!ResolveTarget(SubjectUsername, Requester) || !ContainsUsername(Actor.PendingFriendRequests, Requester.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendRequestMissing", "That friend request is no longer available.");
+            return false;
+        }
+
+        if (!bValue)
+        {
+            RemoveUsername(Actor.PendingFriendRequests, Requester.Username);
+            RemoveUsername(Requester.PendingOutgoingFriendRequests, Actor.Username);
+            if (!Commit({Actor, Requester}, {}, {}, OutMessage)) return false;
+            PushSocialSnapshotForUsername(Requester.Username);
+            OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendRequestDeclined", "Friend request from {0} declined."), FText::FromString(Requester.Username));
+            return true;
+        }
+
+        if (ContainsUsername(Actor.IgnoredUsernames, Requester.Username) || ContainsUsername(Requester.IgnoredUsernames, Actor.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendAcceptBlocked", "That friend request cannot be accepted while either player is ignoring the other.");
+            return false;
+        }
+        if (Actor.FriendUsernames.Num() >= MaxFriends || Requester.FriendUsernames.Num() >= MaxFriends)
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendAcceptLimit", "A Friends list is at its configured maximum capacity.");
+            return false;
+        }
+
+        RemoveUsername(Actor.PendingFriendRequests, Requester.Username);
+        RemoveUsername(Actor.PendingOutgoingFriendRequests, Requester.Username);
+        RemoveUsername(Requester.PendingFriendRequests, Actor.Username);
+        RemoveUsername(Requester.PendingOutgoingFriendRequests, Actor.Username);
+        AddUsernameUnique(Actor.FriendUsernames, Requester.Username);
+        AddUsernameUnique(Requester.FriendUsernames, Actor.Username);
+        if (!Commit({Actor, Requester}, {}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Requester.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendRequestAccepted", "{0} is now your friend."), FText::FromString(Requester.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::CancelFriendRequest)
+    {
+        FDMFAccountRecord Target;
+        if (!ResolveTarget(SubjectUsername, Target) || !ContainsUsername(Actor.PendingOutgoingFriendRequests, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendCancelMissing", "That outgoing friend request is no longer pending.");
+            return false;
+        }
+
+        RemoveUsername(Actor.PendingOutgoingFriendRequests, Target.Username);
+        RemoveUsername(Target.PendingFriendRequests, Actor.Username);
+        if (!Commit({Actor, Target}, {}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Target.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendRequestCancelled", "Friend request to {0} cancelled."), FText::FromString(Target.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RemoveFriend)
+    {
+        FDMFAccountRecord FriendAccount;
+        if (!ResolveTarget(SubjectUsername, FriendAccount) || !ContainsUsername(Actor.FriendUsernames, FriendAccount.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendRemoveMissing", "That player is not on your Friends list.");
+            return false;
+        }
+        RemoveUsername(Actor.FriendUsernames, FriendAccount.Username);
+        RemoveUsername(Actor.TrackedFriendUsernames, FriendAccount.Username);
+        RemoveUsername(FriendAccount.FriendUsernames, Actor.Username);
+        RemoveUsername(FriendAccount.TrackedFriendUsernames, Actor.Username);
+        if (!Commit({Actor, FriendAccount}, {}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(FriendAccount.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "FriendRemoved", "{0} was removed from your Friends list."), FText::FromString(FriendAccount.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::SetFriendTracking)
+    {
+        FDMFAccountRecord FriendAccount;
+        if (!ResolveTarget(SubjectUsername, FriendAccount) || !ContainsUsername(Actor.FriendUsernames, FriendAccount.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "FriendTrackMissing", "Only accepted friends can be tracked.");
+            return false;
+        }
+        if (bValue) AddUsernameUnique(Actor.TrackedFriendUsernames, FriendAccount.Username);
+        else RemoveUsername(Actor.TrackedFriendUsernames, FriendAccount.Username);
+        if (!Commit({Actor}, {}, {}, OutMessage)) return false;
+        OutMessage = bValue
+            ? FText::Format(NSLOCTEXT("DMF", "FriendTrackingEnabled", "Distance tracking enabled for {0}."), FText::FromString(FriendAccount.Username))
+            : FText::Format(NSLOCTEXT("DMF", "FriendTrackingDisabled", "Distance tracking hidden for {0}."), FText::FromString(FriendAccount.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::IgnorePlayer)
+    {
+        FDMFAccountRecord Target;
+        if (!ResolveTarget(SubjectUsername, Target))
+        {
+            OutMessage = NSLOCTEXT("DMF", "IgnoreTargetMissing", "That player account could not be found.");
+            return false;
+        }
+        if (Target.Username.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "IgnoreSelf", "You cannot ignore yourself.");
+            return false;
+        }
+        if (ContainsUsername(Actor.IgnoredUsernames, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "AlreadyIgnored", "That player is already ignored.");
+            return false;
+        }
+        if (Actor.IgnoredUsernames.Num() >= MaxIgnored)
+        {
+            OutMessage = NSLOCTEXT("DMF", "IgnoreLimit", "Your Ignore list is at its configured maximum capacity.");
+            return false;
+        }
+
+        Actor.IgnoredUsernames.Add(Target.Username);
+        RemoveUsername(Actor.FriendUsernames, Target.Username);
+        RemoveUsername(Actor.TrackedFriendUsernames, Target.Username);
+        RemoveUsername(Actor.PendingFriendRequests, Target.Username);
+        RemoveUsername(Actor.PendingOutgoingFriendRequests, Target.Username);
+        RemoveUsername(Target.FriendUsernames, Actor.Username);
+        RemoveUsername(Target.TrackedFriendUsernames, Actor.Username);
+        RemoveUsername(Target.PendingFriendRequests, Actor.Username);
+        RemoveUsername(Target.PendingOutgoingFriendRequests, Actor.Username);
+
+        // Ignore is also a social-request boundary. Remove outstanding direct guild invitations in either
+        // direction and owner-facing guild applications between these two accounts so an ignored player
+        // cannot remain in a queued Social request surface after the block is committed.
+        Actor.PendingGuildInvites.RemoveAll([&Target](const FDMFGuildInvite& Invite)
+        {
+            return Invite.InviterUsername.Equals(Target.Username, ESearchCase::IgnoreCase);
+        });
+        Target.PendingGuildInvites.RemoveAll([&Actor](const FDMFGuildInvite& Invite)
+        {
+            return Invite.InviterUsername.Equals(Actor.Username, ESearchCase::IgnoreCase);
+        });
+
+        TArray<FDMFGuildRecord> GuildUpserts;
+        FDMFGuildRecord ActorGuild;
+        if (GuildExistsForAccount(Actor, ActorGuild)
+            && ActorGuild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase)
+            && RemoveUsername(ActorGuild.PendingApplications, Target.Username))
+        {
+            ActorGuild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+            GuildUpserts.Add(ActorGuild);
+        }
+        FDMFGuildRecord TargetGuild;
+        if (GuildExistsForAccount(Target, TargetGuild)
+            && TargetGuild.OwnerUsername.Equals(Target.Username, ESearchCase::IgnoreCase)
+            && RemoveUsername(TargetGuild.PendingApplications, Actor.Username))
+        {
+            TargetGuild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+            GuildUpserts.Add(TargetGuild);
+        }
+
+        if (!Commit({Actor, Target}, GuildUpserts, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Target.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "PlayerIgnored", "{0} is now ignored. Their authored WORLD chat will be filtered; their world actor remains visible."), FText::FromString(Target.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RemoveIgnoredPlayer)
+    {
+        FDMFAccountRecord Target;
+        if (!ResolveTarget(SubjectUsername, Target) || !RemoveUsername(Actor.IgnoredUsernames, Target.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "IgnoreRemoveMissing", "That player is not on your Ignore list.");
+            return false;
+        }
+        if (!Commit({Actor}, {}, {}, OutMessage)) return false;
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "IgnoreRemoved", "{0} was removed from your Ignore list."), FText::FromString(Target.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::CreateGuild)
+    {
+        FDMFGuildRecord ExistingGuild;
+        if (GuildExistsForAccount(Actor, ExistingGuild))
+        {
+            OutMessage = NSLOCTEXT("DMF", "AlreadyInGuildCreate", "Leave your current guild before creating another one.");
+            return false;
+        }
+        if (Actor.GuildId.IsValid())
+        {
+            Actor.GuildId.Invalidate();
+        }
+
+        FString GuildName;
+        if (!ValidateGuildName(TextValue, FGuid(), GuildName, OutMessage)) return false;
+        FDMFGuildRecord NewGuild;
+        NewGuild.GuildId = FGuid::NewGuid();
+        NewGuild.Name = GuildName;
+        NewGuild.OwnerUsername = Actor.Username;
+        NewGuild.MemberUsernames.Add(Actor.Username);
+        NewGuild.CreatedUtcTicks = FDateTime::UtcNow().GetTicks();
+        NewGuild.LastModifiedUtcTicks = NewGuild.CreatedUtcTicks;
+        Actor.GuildId = NewGuild.GuildId;
+        Actor.PendingGuildInvites.Reset();
+        if (!Commit({Actor}, {NewGuild}, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildCreated", "Guild {0} created."), FText::FromString(GuildName));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RenameGuild)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild) || !Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildRenameOwnerOnly", "Only the guild owner can rename this guild.");
+            return false;
+        }
+        FString NewName;
+        if (!ValidateGuildName(TextValue, Guild.GuildId, NewName, OutMessage)) return false;
+        Guild.Name = NewName;
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        if (!Commit({}, {Guild}, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildRenamed", "Guild renamed to {0}."), FText::FromString(NewName));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::InvitePlayerToGuild)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild) || !Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteOwnerOnly", "Only the guild owner can invite players.");
+            return false;
+        }
+        if (Guild.MemberUsernames.Num() >= MaxGuildMembers)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildFullInvite", "Your guild is at its configured member limit.");
+            return false;
+        }
+        FDMFAccountRecord Target;
+        if (!ResolveTarget(SubjectUsername, Target) || Target.Username.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteTargetMissing", "That player cannot be invited.");
+            return false;
+        }
+        FDMFGuildRecord TargetGuild;
+        if (GuildExistsForAccount(Target, TargetGuild))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteAlreadyMember", "That player is already in a guild.");
+            return false;
+        }
+        if (ContainsUsername(Actor.IgnoredUsernames, Target.Username) || ContainsUsername(Target.IgnoredUsernames, Actor.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteBlocked", "That guild invitation could not be delivered while either player is ignoring the other.");
+            return false;
+        }
+        if (Target.PendingGuildInvites.ContainsByPredicate([&Guild](const FDMFGuildInvite& Invite) { return Invite.GuildId == Guild.GuildId; }))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInvitePending", "That player already has a pending invitation from your guild.");
+            return false;
+        }
+        if (Target.PendingGuildInvites.Num() >= MaxGuildInvites)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteInboxFull", "That player's guild-invitation list is full.");
+            return false;
+        }
+
+        FDMFGuildInvite Invite;
+        Invite.GuildId = Guild.GuildId;
+        Invite.GuildName = Guild.Name;
+        Invite.InviterUsername = Actor.Username;
+        Invite.SentUtcTicks = FDateTime::UtcNow().GetTicks();
+        Target.PendingGuildInvites.Add(Invite);
+        if (Target.GuildId.IsValid()) Target.GuildId.Invalidate();
+        if (!Commit({Target}, {}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Target.Username);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildInviteSent", "Guild invitation sent to {0}."), FText::FromString(Target.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RespondGuildInvite)
+    {
+        const int32 InviteIndex = Actor.PendingGuildInvites.IndexOfByPredicate([&GuildId](const FDMFGuildInvite& Invite) { return Invite.GuildId == GuildId; });
+        if (InviteIndex == INDEX_NONE)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteMissing", "That guild invitation is no longer available.");
+            return false;
+        }
+        const FDMFGuildInvite Invite = Actor.PendingGuildInvites[InviteIndex];
+        if (!bValue)
+        {
+            Actor.PendingGuildInvites.RemoveAt(InviteIndex);
+            if (!Commit({Actor}, {}, {}, OutMessage)) return false;
+            OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildInviteDeclined", "Invitation to {0} declined."), FText::FromString(Invite.GuildName));
+            return true;
+        }
+
+        FDMFGuildRecord Guild;
+        if (!Persistence->GetGuild(GuildId, Guild))
+        {
+            Actor.PendingGuildInvites.RemoveAt(InviteIndex);
+            if (!Commit({Actor}, {}, {}, OutMessage)) return false;
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteDisbanded", "That guild no longer exists.");
+            return false;
+        }
+        FDMFGuildRecord CurrentGuild;
+        if (GuildExistsForAccount(Actor, CurrentGuild))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteAlreadyInGuild", "Leave your current guild before accepting another invitation.");
+            return false;
+        }
+        if (Guild.MemberUsernames.Num() >= MaxGuildMembers)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildInviteGuildFull", "That guild is currently full.");
+            return false;
+        }
+
+        Actor.GuildId = Guild.GuildId;
+        Actor.PendingGuildInvites.Reset();
+        AddUsernameUnique(Guild.MemberUsernames, Actor.Username);
+        RemoveUsername(Guild.PendingApplications, Actor.Username);
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        TArray<FDMFGuildRecord> Upserts;
+        Upserts.Add(Guild);
+        RemoveApplicantFromOtherGuilds(Actor.Username, Guild.GuildId, Upserts);
+        if (!Commit({Actor}, Upserts, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildInviteAccepted", "You joined {0}."), FText::FromString(Guild.Name));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::ApplyToGuild)
+    {
+        FDMFGuildRecord CurrentGuild;
+        if (GuildExistsForAccount(Actor, CurrentGuild))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplyAlreadyMember", "Leave your current guild before applying to another one.");
+            return false;
+        }
+        if (Actor.GuildId.IsValid()) Actor.GuildId.Invalidate();
+
+        FDMFGuildRecord Guild;
+        if (!GuildId.IsValid() || !Persistence->GetGuild(GuildId, Guild))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplyMissing", "That guild no longer exists.");
+            return false;
+        }
+        if (Guild.MemberUsernames.Num() >= MaxGuildMembers)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplyFull", "That guild is currently full.");
+            return false;
+        }
+        FDMFAccountRecord GuildOwner;
+        if (!ResolveTarget(Guild.OwnerUsername, GuildOwner))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationOwnerUnavailable", "That guild cannot currently receive applications.");
+            return false;
+        }
+        if (ContainsUsername(Actor.IgnoredUsernames, GuildOwner.Username) || ContainsUsername(GuildOwner.IgnoredUsernames, Actor.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationBlocked", "That guild application could not be delivered while either account is ignoring the other.");
+            return false;
+        }
+        if (ContainsUsername(Guild.PendingApplications, Actor.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationPending", "Your application to that guild is already pending.");
+            return false;
+        }
+        if (Guild.PendingApplications.Num() >= MaxGuildApplications)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationQueueFull", "That guild's application queue is currently full.");
+            return false;
+        }
+        Guild.PendingApplications.Add(Actor.Username);
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        if (!Commit({Actor}, {Guild}, {}, OutMessage)) return false;
+        PushSocialSnapshotForUsername(Guild.OwnerUsername);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildApplicationSent", "Application sent to {0}."), FText::FromString(Guild.Name));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RespondGuildApplication)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild) || !Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationOwnerOnly", "Only the guild owner can review join applications.");
+            return false;
+        }
+        FDMFAccountRecord Applicant;
+        if (!ResolveTarget(SubjectUsername, Applicant) || !ContainsUsername(Guild.PendingApplications, Applicant.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationMissing", "That guild application is no longer available.");
+            return false;
+        }
+
+        if (!bValue)
+        {
+            RemoveUsername(Guild.PendingApplications, Applicant.Username);
+            Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+            if (!Commit({}, {Guild}, {}, OutMessage)) return false;
+            PushSocialSnapshotForUsername(Applicant.Username);
+            OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildApplicationDeclined", "Application from {0} declined."), FText::FromString(Applicant.Username));
+            return true;
+        }
+        if (Guild.MemberUsernames.Num() >= MaxGuildMembers)
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationGuildFull", "Your guild is at its configured member limit.");
+            return false;
+        }
+        FDMFGuildRecord ApplicantGuild;
+        if (GuildExistsForAccount(Applicant, ApplicantGuild))
+        {
+            RemoveUsername(Guild.PendingApplications, Applicant.Username);
+            Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+            if (!Commit({}, {Guild}, {}, OutMessage)) return false;
+            PushSocialSnapshotForUsername(Applicant.Username);
+            OutMessage = NSLOCTEXT("DMF", "GuildApplicationJoinedElsewhere", "That player has already joined another guild; the stale application was removed.");
+            return false;
+        }
+
+        Applicant.GuildId = Guild.GuildId;
+        Applicant.PendingGuildInvites.Reset();
+        AddUsernameUnique(Guild.MemberUsernames, Applicant.Username);
+        RemoveUsername(Guild.PendingApplications, Applicant.Username);
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        TArray<FDMFGuildRecord> Upserts;
+        Upserts.Add(Guild);
+        RemoveApplicantFromOtherGuilds(Applicant.Username, Guild.GuildId, Upserts);
+        if (!Commit({Applicant}, Upserts, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildApplicationAccepted", "{0} joined the guild."), FText::FromString(Applicant.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::RemoveGuildMember)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild) || !Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildRemoveOwnerOnly", "Only the guild owner can remove members.");
+            return false;
+        }
+        FDMFAccountRecord Member;
+        if (!ResolveTarget(SubjectUsername, Member) || Member.Username.Equals(Actor.Username, ESearchCase::IgnoreCase) || !ContainsUsername(Guild.MemberUsernames, Member.Username))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildRemoveInvalidMember", "That guild member cannot be removed.");
+            return false;
+        }
+        RemoveUsername(Guild.MemberUsernames, Member.Username);
+        if (Member.GuildId == Guild.GuildId) Member.GuildId.Invalidate();
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        if (!Commit({Member}, {Guild}, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildMemberRemoved", "{0} was removed from the guild."), FText::FromString(Member.Username));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::LeaveGuild)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild))
+        {
+            if (Actor.GuildId.IsValid())
+            {
+                Actor.GuildId.Invalidate();
+                if (!Commit({Actor}, {}, {}, OutMessage)) return false;
+            }
+            OutMessage = NSLOCTEXT("DMF", "GuildLeaveNotMember", "You are not currently in a guild.");
+            return false;
+        }
+        if (Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildOwnerLeave", "Guild owners must disband the guild instead of leaving it.");
+            return false;
+        }
+        RemoveUsername(Guild.MemberUsernames, Actor.Username);
+        Actor.GuildId.Invalidate();
+        Guild.LastModifiedUtcTicks = FDateTime::UtcNow().GetTicks();
+        if (!Commit({Actor}, {Guild}, {}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildLeft", "You left {0}."), FText::FromString(Guild.Name));
+        return true;
+    }
+
+    if (ActionType == EDMFSocialActionType::DisbandGuild)
+    {
+        FDMFGuildRecord Guild;
+        if (!GuildExistsForAccount(Actor, Guild) || !Guild.OwnerUsername.Equals(Actor.Username, ESearchCase::IgnoreCase))
+        {
+            OutMessage = NSLOCTEXT("DMF", "GuildDisbandOwnerOnly", "Only the guild owner can disband the guild.");
+            return false;
+        }
+
+        TArray<FDMFAccountRecord> AllAccounts;
+        Persistence->GetAllAccounts(AllAccounts);
+        TArray<FDMFAccountRecord> ChangedAccounts;
+        for (FDMFAccountRecord& Account : AllAccounts)
+        {
+            bool bChanged = false;
+            if (Account.GuildId == Guild.GuildId)
+            {
+                Account.GuildId.Invalidate();
+                bChanged = true;
+            }
+            const int32 RemovedInvites = Account.PendingGuildInvites.RemoveAll([&Guild](const FDMFGuildInvite& Invite)
+            {
+                return Invite.GuildId == Guild.GuildId;
+            });
+            bChanged |= RemovedInvites > 0;
+            if (bChanged)
+            {
+                ChangedAccounts.Add(Account);
+            }
+        }
+        if (!Commit(ChangedAccounts, {}, {Guild.GuildId}, OutMessage)) return false;
+        PushSocialSnapshotsToAllOnlinePlayers(RequestingController);
+        OutMessage = FText::Format(NSLOCTEXT("DMF", "GuildDisbanded", "Guild {0} was disbanded."), FText::FromString(Guild.Name));
+        return true;
+    }
+
+    OutMessage = NSLOCTEXT("DMF", "SocialUnknownAction", "The requested Social action is not supported.");
+    return false;
 }
 
 ADMFNewPlayerStart* ADMFMMOGameMode::ChooseNewPlayerSpawnPoint_Implementation(APlayerController* PlayerController) const
@@ -953,6 +1954,10 @@ void ADMFMMOGameMode::PostLogin(APlayerController* NewPlayer)
     if (ADMFMMOPlayerController* MMOController = Cast<ADMFMMOPlayerController>(NewPlayer))
     {
         BroadcastWorldChatPresenceEvent(MMOController, EDMFWorldChatMessageType::PlayerJoined);
+        if (const ADMFPlayerState* SocialPlayerState = MMOController->GetPlayerState<ADMFPlayerState>())
+        {
+            RefreshSocialPresenceForUsername(SocialPlayerState->GetAuthenticatedUsername());
+        }
     }
 }
 
@@ -1083,8 +2088,14 @@ bool ADMFMMOGameMode::FinalizeAuthenticatedPlayerSession(APlayerController* Play
 
 void ADMFMMOGameMode::Logout(AController* Exiting)
 {
+    FString DepartingUsername;
     if (APlayerController* PC = Cast<APlayerController>(Exiting))
     {
+        if (const ADMFPlayerState* DepartingState = PC->GetPlayerState<ADMFPlayerState>())
+        {
+            DepartingUsername = DepartingState->GetAuthenticatedUsername();
+        }
+
         // Canonical disconnect transaction MUST happen before Super::Logout, because Unreal may detach/retain
         // PlayerState/Pawn objects as part of the inactive-player lifecycle after this point.
         FinalizeAuthenticatedPlayerSession(PC);
@@ -1098,4 +2109,11 @@ void ADMFMMOGameMode::Logout(AController* Exiting)
     }
 
     Super::Logout(Exiting);
+
+    // Refresh after Super so friends/guildmates resolve the departed account as genuinely offline rather than
+    // observing the still-present controller during the final teardown frame.
+    if (!DepartingUsername.TrimStartAndEnd().IsEmpty())
+    {
+        RefreshSocialPresenceForUsername(DepartingUsername);
+    }
 }

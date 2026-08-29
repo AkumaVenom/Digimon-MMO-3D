@@ -1,8 +1,32 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.18.5-alpha — Replicated World Chat Presence Announcements`
+**Version:** `0.19.2-alpha — Nearby Player Ignore Action Polish`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.19.2-alpha — Nearby Player Ignore Action Polish
+
+Social → **FRIENDS & IGNORE → NEARBY PLAYERS** now provides the complete Friends/Ignore workflow without requiring a clickable world nameplate. Every non-ignored nearby player keeps the appropriate relationship action (**ADD FRIEND**, **ACCEPT**, **CANCEL**, or disabled **FRIEND**) and now also exposes a dedicated red **IGNORE** action in the same compact native row. Already ignored nearby players expose **UNIGNORE** directly.
+
+Ignore/Unignore still uses the existing server-authoritative Social mutation and schema-v8 persistence path. Ignored players remain fully visible and replicated in the game world, while their authored WORLD-chat messages are filtered for the ignoring account and incompatible friendship/request state is cleaned using the established v0.19.0 transaction rules. No new RPCs, replicated proximity state or client-authored Ignore state were added: the framework remains at **53 RPCs**. v0.19.1 nearest-first discovery/radius behavior and the runtime-accepted Guild system are unchanged. See `Docs/SETUP_SOCIAL_SYSTEM.md`.
+
+## New in v0.19.1-alpha — Nearby Player Friend Discovery
+
+Social → **FRIENDS & IGNORE** now includes a dedicated **NEARBY PLAYERS** column so friendship discovery no longer depends on clicking a world nameplate. The owning client gathers already-replicated `ADMFPlayerAvatarCharacter` actors inside the globally configured radius, deduplicates by authenticated public player name, sorts the result by precise distance nearest-first, and refreshes the panel while it is open. Players automatically appear when they enter range and disappear when they leave it.
+
+Each row shows the public username, rounded integer distance in metres and current relationship state. Available players expose **ADD FRIEND**; incoming requests expose **ACCEPT**; outgoing requests expose **CANCEL**; established friends and ignored accounts render stable non-action states. Sending/accepting/cancelling still uses the existing v0.19.0 server-authoritative Social mutation path and rollback-safe persistence—nearby discovery itself creates no new RPC or replicated state.
+
+Project Settings → **UI → Social → Nearby Players** exposes **Nearby Player Friend Discovery Radius** (default **50 m**) and **Nearby Player List Refresh Interval** (default **0.5 s**). The list refresh is owner-local and reads normal replicated transforms, so changing its cadence does not create network polling. Existing nameplate actions remain available for projects that want them, while the native Social menu now provides a reliable mouse-driven discovery path even when nameplate hit testing is unavailable. Guild behavior, schema-v8 Social persistence and the **53-RPC** network contract are unchanged. See `Docs/SETUP_SOCIAL_SYSTEM.md`.
+
+## New in v0.19.0-alpha — Persistent Social Friends, Ignore & Guilds
+
+The shared native **DIGIMON MENU** now includes a polished **SOCIAL** top-level tab with its own extensible nested tab shell. **FRIENDS & IGNORE** is the default page on first open and **GUILD** is the second module. The complete feature is authenticated-account persistent and server-authoritative: clients request actions, while `ADMFMMOGameMode` resolves the acting identity from the authenticated PlayerState and commits cross-account/guild mutations through one rollback-safe SaveGame transaction. Account schema advances from **v7 → v8** with backward-compatible empty defaults for existing accounts.
+
+Friends are added from the exact replicated player nameplate through a native WoW-style **PLAYER ACTIONS** menu. Requests queue in Social rather than spawning disruptive modal dialogs; incoming Accept/Decline and outgoing Cancel state persists coherently across relogs, friend removal is symmetric, and every accepted friend can independently enable an owner-local world tracker showing an integer distance in metres. The marker consumes already replicated actor transforms—there is no distance RPC or per-tick network traffic. The same nameplate menu provides Ignore/Unignore and, for guild owners, Invite to Guild.
+
+Ignore is deliberately presentation-scoped: the ignored player remains fully visible and replicated in the world, while that sender's authored `Player` WORLD-chat messages are filtered from both live reliable delivery and session-history hydration for the ignoring account. Guilds provide persistent create/rename/disband, owner-controlled member removal, queued invitations, normal-member leave, a searchable server guild directory, and persistent join applications that can be reviewed after the owner comes back online. Project Settings exposes the Social master switch, nameplate context, reskinnable context/tracker widget classes, tracker offsets/reconciliation, action/snapshot throttling, friend/ignore/guild limits and bounded pending guild invite/application queues. Public guild-directory identity/member-count changes are pushed to authenticated online players as freshly built owner-specific snapshots so an already-open Guild page remains coherent. See `Docs/SETUP_SOCIAL_SYSTEM.md`.
+
+Networking remains compact: four Social RPC declarations are added (**49 → 53**): owner snapshot request, one generic validated mutation transport, owner snapshot delivery and owner action result. Strongly named Blueprint wrappers keep game/UI code readable while preventing a large RPC surface. All v0.18.5 WORLD presence/audio, v0.18.4 server capacity, v0.18.3 vendor UI and v0.18.2 reconnect/persistence authority contracts remain intact.
 
 ## New in v0.18.5-alpha — Replicated World Chat Presence Announcements
 
@@ -639,7 +663,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_SERVER_CAPACITY.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SOCIAL_SYSTEM.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_SERVER_CAPACITY.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)

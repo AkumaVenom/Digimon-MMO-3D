@@ -35,9 +35,11 @@ DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ET
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonAttributeStat(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonStorageLocation(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UEnum* Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonSpeciesData(ETypeConstructPhase);
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFPlayerDigimonComponent(ETypeConstructPhase);
+DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFSocialActionButton(ETypeConstructPhase);
 // ********** End Same Module References ***********************************************************
 #define UHT_STRUCT_BASE(INIT) UE::CodeGen::ConstInit::TCompiledInObjectPtr<const FStructBaseChain>(UE::Private::AsStructBaseChain(INIT))
 
@@ -258,7 +260,7 @@ struct UHT_STATICS
 
 // ********** Begin Function GetActiveMenuTab Property Definitions *********************************
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ReturnValue_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventGetActiveMenuTab_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 44df9f11a2e9b4f87a75f8865c72b3c5e7a2a834
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventGetActiveMenuTab_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 852449354d178a314ff17e0e8d18ca162511f67f
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
@@ -285,6 +287,62 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execGetActiveMenuTab)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFDigimonInventoryWidget Function GetActiveMenuTab ***********************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function GetActiveSocialTab *******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveSocialTab_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventGetActiveSocialTab_Parms
+	{
+		EDMFSocialMenuTab ReturnValue;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function GetActiveSocialTab constinit property declarations ********************
+	static const UECodeGen_Private::FBytePropertyParams NewProp_ReturnValue_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_ReturnValue;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function GetActiveSocialTab constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function GetActiveSocialTab Property Definitions *******************************
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_ReturnValue_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventGetActiveSocialTab_Parms, ReturnValue), Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab, METADATA_PARAMS(0, nullptr) }; // c2772bcfe79854528e4846d626dc8fb9d264a833
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ReturnValue,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function GetActiveSocialTab Property Definitions *********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "GetActiveSocialTab", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventGetActiveSocialTab_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventGetActiveSocialTab_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveSocialTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execGetActiveSocialTab)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	*(EDMFSocialMenuTab*)Z_Param__Result=P_THIS->GetActiveSocialTab();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function GetActiveSocialTab *********************
 
 // ********** Begin Class UDMFDigimonInventoryWidget Function GetDigiDexSpeciesIds *****************
 #ifdef UHT_STATICS
@@ -2071,6 +2129,449 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleScanSpeciesPressed)
 }
 // ********** End Class UDMFDigimonInventoryWidget Function HandleScanSpeciesPressed ***************
 
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialActionButtonPressed ******
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionButtonPressed_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleSocialActionButtonPressed_Parms
+	{
+		UDMFSocialActionButton* Button;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Button_MetaData[] = {
+		{ "EditInline", "true" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialActionButtonPressed constinit property declarations *******
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_Button;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleSocialActionButtonPressed constinit property declarations *********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleSocialActionButtonPressed Property Definitions ******************
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_Button = { "Button", nullptr, (EPropertyFlags)0x0010000000080080, UECodeGen_Private::EPropertyGenFlags::Object, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleSocialActionButtonPressed_Parms, Button), Z_Construct_UClass_UDMFSocialActionButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Button_MetaData), NewProp_Button_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Button,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleSocialActionButtonPressed Property Definitions ********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialActionButtonPressed", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialActionButtonPressed_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialActionButtonPressed_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionButtonPressed(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialActionButtonPressed)
+{
+	P_GET_OBJECT(UDMFSocialActionButton,Z_Param_Button);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialActionButtonPressed(Z_Param_Button);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialActionButtonPressed ********
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialActionFeedback ***********
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionFeedback_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms
+	{
+		bool bSuccess;
+		FText Message;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Owner-local non-modal feedback hook used by reliable Social action results. */" },
+#endif
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Owner-local non-modal feedback hook used by reliable Social action results." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Message_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialActionFeedback constinit property declarations ************
+	static void NewProp_bSuccess_SetBit(void* Obj)
+	{
+		((DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms*)Obj)->bSuccess = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bSuccess;
+	static const UECodeGen_Private::FTextPropertyParams NewProp_Message;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleSocialActionFeedback constinit property declarations **************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleSocialActionFeedback Property Definitions ***********************
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bSuccess = { "bSuccess", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms), &UHT_STATICS::NewProp_bSuccess_SetBit, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_Message = { "Message", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms, Message), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Message_MetaData), NewProp_Message_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bSuccess,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_Message,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleSocialActionFeedback Property Definitions *************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialActionFeedback", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04420401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialActionFeedback_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionFeedback(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialActionFeedback)
+{
+	P_GET_UBOOL(Z_Param_bSuccess);
+	P_GET_PROPERTY_REF(FTextProperty,Z_Param_Out_Message);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialActionFeedback(Z_Param_bSuccess,Z_Param_Out_Message);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialActionFeedback *************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialFriendsTab ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialFriendsTab_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialFriendsTab constinit property declarations ****************
+// ********** End Function HandleSocialFriendsTab constinit property declarations ******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialFriendsTab", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialFriendsTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialFriendsTab)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialFriendsTab();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialFriendsTab *****************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildCreate **************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildCreate_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildCreate constinit property declarations ***************
+// ********** End Function HandleSocialGuildCreate constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildCreate", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildCreate(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildCreate)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildCreate();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildCreate ****************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildDisband *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildDisband_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildDisband constinit property declarations **************
+// ********** End Function HandleSocialGuildDisband constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildDisband", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildDisband(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildDisband)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildDisband();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildDisband ***************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildLeave ***************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildLeave_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildLeave constinit property declarations ****************
+// ********** End Function HandleSocialGuildLeave constinit property declarations ******************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildLeave", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildLeave(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildLeave)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildLeave();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildLeave *****************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildRename **************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildRename_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildRename constinit property declarations ***************
+// ********** End Function HandleSocialGuildRename constinit property declarations *****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildRename", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildRename(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildRename)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildRename();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildRename ****************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildSearchChanged *******
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildSearchChanged_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventHandleSocialGuildSearchChanged_Parms
+	{
+		FText SearchText;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SearchText_MetaData[] = {
+		{ "NativeConst", "" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildSearchChanged constinit property declarations ********
+	static const UECodeGen_Private::FTextPropertyParams NewProp_SearchText;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function HandleSocialGuildSearchChanged constinit property declarations **********
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function HandleSocialGuildSearchChanged Property Definitions *******************
+const UECodeGen_Private::FTextPropertyParams UHT_STATICS::NewProp_SearchText = { "SearchText", nullptr, (EPropertyFlags)0x0010000008000182, UECodeGen_Private::EPropertyGenFlags::Text, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventHandleSocialGuildSearchChanged_Parms, SearchText), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SearchText_MetaData), NewProp_SearchText_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SearchText,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function HandleSocialGuildSearchChanged Property Definitions *********************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildSearchChanged", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialGuildSearchChanged_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00440401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventHandleSocialGuildSearchChanged_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildSearchChanged(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildSearchChanged)
+{
+	P_GET_PROPERTY_REF(FTextProperty,Z_Param_Out_SearchText);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildSearchChanged(Z_Param_Out_SearchText);
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildSearchChanged *********
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialGuildTab *****************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildTab_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialGuildTab constinit property declarations ******************
+// ********** End Function HandleSocialGuildTab constinit property declarations ********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialGuildTab", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialGuildTab)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialGuildTab();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialGuildTab *******************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function HandleSocialTab **********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialTab_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function HandleSocialTab constinit property declarations ***********************
+// ********** End Function HandleSocialTab constinit property declarations *************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "HandleSocialTab", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execHandleSocialTab)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->HandleSocialTab();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function HandleSocialTab ************************
+
 // ********** Begin Class UDMFDigimonInventoryWidget Function HandleSpendBankDefense ***************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2823,6 +3324,50 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execRefreshInventory)
 }
 // ********** End Class UDMFDigimonInventoryWidget Function RefreshInventory ***********************
 
+// ********** Begin Class UDMFDigimonInventoryWidget Function RefreshNearbyPlayersData *************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshNearbyPlayersData_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social|Friends|Nearby Players" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Refreshes the owner-local nearest-first player discovery panel from already-replicated avatar transforms. */" },
+#endif
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Refreshes the owner-local nearest-first player discovery panel from already-replicated avatar transforms." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshNearbyPlayersData constinit property declarations **************
+// ********** End Function RefreshNearbyPlayersData constinit property declarations ****************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "RefreshNearbyPlayersData", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshNearbyPlayersData(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execRefreshNearbyPlayersData)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshNearbyPlayersData();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function RefreshNearbyPlayersData ***************
+
 // ********** Begin Class UDMFDigimonInventoryWidget Function RefreshScanData **********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2861,6 +3406,50 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execRefreshScanData)
 }
 // ********** End Class UDMFDigimonInventoryWidget Function RefreshScanData ************************
 
+// ********** Begin Class UDMFDigimonInventoryWidget Function RefreshSocialData ********************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshSocialData_Statics
+struct UHT_STATICS
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Refreshes the owner-only persistent Social presentation from the controller's last authoritative snapshot. */" },
+#endif
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Refreshes the owner-only persistent Social presentation from the controller's last authoritative snapshot." },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function RefreshSocialData constinit property declarations *********************
+// ********** End Function RefreshSocialData constinit property declarations ***********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "RefreshSocialData", nullptr, 0, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshSocialData(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execRefreshSocialData)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->RefreshSocialData();
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function RefreshSocialData **********************
+
 // ********** Begin Class UDMFDigimonInventoryWidget Function SetActiveMenuTab *********************
 #ifdef UHT_STATICS
 #error UHT_STATICS already defined
@@ -2889,7 +3478,7 @@ struct UHT_STATICS
 
 // ********** Begin Function SetActiveMenuTab Property Definitions *********************************
 const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_NewTab_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewTab = { "NewTab", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventSetActiveMenuTab_Parms, NewTab), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 44df9f11a2e9b4f87a75f8865c72b3c5e7a2a834
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewTab = { "NewTab", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventSetActiveMenuTab_Parms, NewTab), Z_Construct_UEnum_DigimonMMOFramework_EDMFDigimonMenuTab, METADATA_PARAMS(0, nullptr) }; // 852449354d178a314ff17e0e8d18ca162511f67f
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab,
@@ -2917,6 +3506,63 @@ DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execSetActiveMenuTab)
 	P_NATIVE_END;
 }
 // ********** End Class UDMFDigimonInventoryWidget Function SetActiveMenuTab ***********************
+
+// ********** Begin Class UDMFDigimonInventoryWidget Function SetActiveSocialTab *******************
+#ifdef UHT_STATICS
+#error UHT_STATICS already defined
+#endif
+#define UHT_STATICS Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveSocialTab_Statics
+struct UHT_STATICS
+{
+	struct DMFDigimonInventoryWidget_eventSetActiveSocialTab_Parms
+	{
+		EDMFSocialMenuTab NewTab;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
+		{ "Category", "Digimon MMO|Social" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function SetActiveSocialTab constinit property declarations ********************
+	static const UECodeGen_Private::FBytePropertyParams NewProp_NewTab_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_NewTab;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function SetActiveSocialTab constinit property declarations **********************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function SetActiveSocialTab Property Definitions *******************************
+const UECodeGen_Private::FBytePropertyParams UHT_STATICS::NewProp_NewTab_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams UHT_STATICS::NewProp_NewTab = { "NewTab", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, nullptr, nullptr, 1, STRUCT_OFFSET(DMFDigimonInventoryWidget_eventSetActiveSocialTab_Parms, NewTab), Z_Construct_UEnum_DigimonMMOFramework_EDMFSocialMenuTab, METADATA_PARAMS(0, nullptr) }; // c2772bcfe79854528e4846d626dc8fb9d264a833
+const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_NewTab,
+};
+static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
+// ********** End Function SetActiveSocialTab Property Definitions *********************************
+const UECodeGen_Private::FFunctionParams UHT_STATICS::FuncParams = { { (FTypeConstructFunc*)Z_Construct_UClass_UDMFDigimonInventoryWidget, nullptr, "SetActiveSocialTab", UHT_STATICS::PropPointers, UE_ARRAY_COUNT(UHT_STATICS::PropPointers), DataSizeOf<UHT_STATICS::DMFDigimonInventoryWidget_eventSetActiveSocialTab_Parms>(), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(UHT_STATICS::Type_MetaData), UHT_STATICS::Type_MetaData)},  };
+static_assert(sizeof(UHT_STATICS::DMFDigimonInventoryWidget_eventSetActiveSocialTab_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveSocialTab(ETypeConstructPhase Phase)
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, UHT_STATICS::FuncParams);
+	}
+	return ReturnFunction;
+}
+#undef UHT_STATICS
+DEFINE_FUNCTION(UDMFDigimonInventoryWidget::execSetActiveSocialTab)
+{
+	P_GET_ENUM(EDMFSocialMenuTab,Z_Param_NewTab);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->SetActiveSocialTab(EDMFSocialMenuTab(Z_Param_NewTab));
+	P_NATIVE_END;
+}
+// ********** End Class UDMFDigimonInventoryWidget Function SetActiveSocialTab *********************
 
 // ********** Begin Class UDMFDigimonInventoryWidget ***********************************************
 #ifdef UHT_STATICS
@@ -3107,6 +3753,12 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiDexTabButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialTabButton_MetaData[] = {
 		{ "BindWidgetOptional", "" },
 		{ "Category", "DMFDigimonInventoryWidget" },
 		{ "EditInline", "true" },
@@ -3496,6 +4148,120 @@ struct UHT_STATICS
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialFriendsTabButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "// Social shell. Friends is the default nested page the first time Social is opened.\n" },
+#endif
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Social shell. Friends is the default nested page the first time Social is opened." },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildTabButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialNearbyPlayersList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialFriendsList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialFriendRequestsList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialIgnoreList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildIdentityText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildMetaText_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildMembersList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildInvitesList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildApplicationsList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildSearchList_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildNameInput_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildSearchInput_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildCreateButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildRenameButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildLeaveButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildDisbandButton_MetaData[] = {
+		{ "BindWidgetOptional", "" },
+		{ "Category", "DMFDigimonInventoryWidget" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_BoundDigimonComponent_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
@@ -3521,6 +4287,18 @@ struct UHT_STATICS
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DigiDexContentRow_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialContentRoot_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialFriendsContentRow_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SocialGuildContentRow_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/UI/DMFDigimonInventoryWidget.h" },
 	};
@@ -3554,6 +4332,7 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CareTabButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigivolutionTabButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigiDexTabButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialTabButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankDigimonGrid;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankCountText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankPageText;
@@ -3618,6 +4397,24 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigivolutionTargetMetaText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigivolutionRequirementText;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigivolveButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialFriendsTabButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildTabButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialNearbyPlayersList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialFriendsList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialFriendRequestsList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialIgnoreList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildIdentityText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildMetaText;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildMembersList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildInvitesList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildApplicationsList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildSearchList;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildNameInput;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildSearchInput;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildCreateButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildRenameButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildLeaveButton;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildDisbandButton;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BoundDigimonComponent;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_InventoryContentRow;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_BankContentRow;
@@ -3625,10 +4422,14 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_CareContentRow;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigivolutionContentRow;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_DigiDexContentRow;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialContentRoot;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialFriendsContentRow;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SocialGuildContentRow;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class UDMFDigimonInventoryWidget constinit property declarations *****************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("GetActiveMenuTab"), .Pointer = &UDMFDigimonInventoryWidget::execGetActiveMenuTab },
+		{ .NameUTF8 = UTF8TEXT("GetActiveSocialTab"), .Pointer = &UDMFDigimonInventoryWidget::execGetActiveSocialTab },
 		{ .NameUTF8 = UTF8TEXT("GetDigiDexSpeciesIds"), .Pointer = &UDMFDigimonInventoryWidget::execGetDigiDexSpeciesIds },
 		{ .NameUTF8 = UTF8TEXT("GetSelectedDigiDexSpeciesId"), .Pointer = &UDMFDigimonInventoryWidget::execGetSelectedDigiDexSpeciesId },
 		{ .NameUTF8 = UTF8TEXT("GetSelectedDigimonInstanceId"), .Pointer = &UDMFDigimonInventoryWidget::execGetSelectedDigimonInstanceId },
@@ -3666,6 +4467,16 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("HandleScanDataChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanDataChanged },
 		{ .NameUTF8 = UTF8TEXT("HandleScanMaterializeTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanMaterializeTab },
 		{ .NameUTF8 = UTF8TEXT("HandleScanSpeciesPressed"), .Pointer = &UDMFDigimonInventoryWidget::execHandleScanSpeciesPressed },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialActionButtonPressed"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialActionButtonPressed },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialActionFeedback"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialActionFeedback },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialFriendsTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialFriendsTab },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildCreate"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildCreate },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildDisband"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildDisband },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildLeave"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildLeave },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildRename"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildRename },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildSearchChanged"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildSearchChanged },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialGuildTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialGuildTab },
+		{ .NameUTF8 = UTF8TEXT("HandleSocialTab"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSocialTab },
 		{ .NameUTF8 = UTF8TEXT("HandleSpendBankDefense"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSpendBankDefense },
 		{ .NameUTF8 = UTF8TEXT("HandleSpendBankHP"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSpendBankHP },
 		{ .NameUTF8 = UTF8TEXT("HandleSpendBankIntelligence"), .Pointer = &UDMFDigimonInventoryWidget::execHandleSpendBankIntelligence },
@@ -3685,15 +4496,19 @@ struct UHT_STATICS
 		{ .NameUTF8 = UTF8TEXT("RefreshDigiDexData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshDigiDexData },
 		{ .NameUTF8 = UTF8TEXT("RefreshDigivolutionData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshDigivolutionData },
 		{ .NameUTF8 = UTF8TEXT("RefreshInventory"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshInventory },
+		{ .NameUTF8 = UTF8TEXT("RefreshNearbyPlayersData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshNearbyPlayersData },
 		{ .NameUTF8 = UTF8TEXT("RefreshScanData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshScanData },
+		{ .NameUTF8 = UTF8TEXT("RefreshSocialData"), .Pointer = &UDMFDigimonInventoryWidget::execRefreshSocialData },
 		{ .NameUTF8 = UTF8TEXT("SetActiveMenuTab"), .Pointer = &UDMFDigimonInventoryWidget::execSetActiveMenuTab },
+		{ .NameUTF8 = UTF8TEXT("SetActiveSocialTab"), .Pointer = &UDMFDigimonInventoryWidget::execSetActiveSocialTab },
 	};
 	static FTypeConstructFunc* DependentSingletons[];
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_BP_OnDigiDexSelectionChanged, "BP_OnDigiDexSelectionChanged" }, // 2f2747d4903c654022690ece805fba3cb5747851
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_BP_OnDigimonPreviewChanged, "BP_OnDigimonPreviewChanged" }, // 622e0a91ea09846567561cb4fcb10f6ce6edb6ae
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_BP_OnPartnerActionResult, "BP_OnPartnerActionResult" }, // 53795b8dddaa4fd76ff5279e629c6e336fc6fcc3
-		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveMenuTab, "GetActiveMenuTab" }, // 507a1d800d7e6cc3cd189f0411dd508c3b76fe71
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveMenuTab, "GetActiveMenuTab" }, // a7815f40fcef9acde97eeab613960bbb01738671
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetActiveSocialTab, "GetActiveSocialTab" }, // f546d92d1caac42b2214386b3e7a6e642027e4d9
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetDigiDexSpeciesIds, "GetDigiDexSpeciesIds" }, // 32b0d89402b7f277591e84150783735571b7b866
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetSelectedDigiDexSpeciesId, "GetSelectedDigiDexSpeciesId" }, // 33a611e78f5091bbc9b30793a29724624a8ccd51
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_GetSelectedDigimonInstanceId, "GetSelectedDigimonInstanceId" }, // 14399957d0996c285444e28d739eb535c4f017d5
@@ -3731,6 +4546,16 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanDataChanged, "HandleScanDataChanged" }, // cbfd164ed6547fdd9fd7e1724f1538877399a940
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanMaterializeTab, "HandleScanMaterializeTab" }, // 6f3f6687566a6bad859cdaac7c69535b64fb9ffa
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleScanSpeciesPressed, "HandleScanSpeciesPressed" }, // 9513951e9f84b4f85b6d0e96f949d819d5fddc84
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionButtonPressed, "HandleSocialActionButtonPressed" }, // 34667f3142239b4257d0286627123a43525ec4af
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialActionFeedback, "HandleSocialActionFeedback" }, // 80ef972c423462e043b2f39e3b859dd22f26d2a2
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialFriendsTab, "HandleSocialFriendsTab" }, // 4de362c0502c3a3491b02e78011d5fc1119ffcbb
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildCreate, "HandleSocialGuildCreate" }, // 7ad454cf6c48d600ff610533f6b7aae704731c54
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildDisband, "HandleSocialGuildDisband" }, // 1623a7da5bbf0bf5724ca0bfb83aa05252af8f4a
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildLeave, "HandleSocialGuildLeave" }, // d0c36fbd153353bde0333c144813608bea7bbf9c
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildRename, "HandleSocialGuildRename" }, // c3b6637077cdf65e21ca49d3d3b0fbb64f17bbff
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildSearchChanged, "HandleSocialGuildSearchChanged" }, // 32ec9e485181cfb1fd166c73890c3d5245671e5f
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialGuildTab, "HandleSocialGuildTab" }, // 6af007bbe7b7b7d8ede58c3c80e01a050c12ebfb
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSocialTab, "HandleSocialTab" }, // 31312c4d87cfb27c3d6a8e09b26f042da6a35bf6
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSpendBankDefense, "HandleSpendBankDefense" }, // 21e03bfb15b54fe302821e033ce9b0bc955e4d4f
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSpendBankHP, "HandleSpendBankHP" }, // fc99dc6904151881e54da171ba7f08ea1b6b8bfa
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_HandleSpendBankIntelligence, "HandleSpendBankIntelligence" }, // 1a493d548cefaee384ed49e7002415bfffe5cafe
@@ -3750,8 +4575,11 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshDigiDexData, "RefreshDigiDexData" }, // 428abc7bf23c3d7413185e6d15343e0ecf909f48
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshDigivolutionData, "RefreshDigivolutionData" }, // a884423172bd0a5ba4c07b379f6e668536b994ae
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshInventory, "RefreshInventory" }, // 8a93754174372b52bfea8109b1c82af35e69dc4b
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshNearbyPlayersData, "RefreshNearbyPlayersData" }, // d4d354734557ee915894382d9b13d0699990c43f
 		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshScanData, "RefreshScanData" }, // bd4d62282ee4dfeeb547d4063c5d339c485984b3
-		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveMenuTab, "SetActiveMenuTab" }, // 6e649a9b004ac32f798f95d9da28049253ee0bbb
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_RefreshSocialData, "RefreshSocialData" }, // 9bee0bfa6b9ad68c2704ba1720423fc9695ffae0
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveMenuTab, "SetActiveMenuTab" }, // 6364ae4856389c74e8d7573a092271e552106666
+		{ &Z_Construct_UFunction_UDMFDigimonInventoryWidget_SetActiveSocialTab, "SetActiveSocialTab" }, // 455df2ecf1767d847c1af64f656b537e241cf36d
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -3788,6 +4616,7 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanMaterial
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CareTabButton = { "CareTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CareTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareTabButton_MetaData), NewProp_CareTabButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigivolutionTabButton = { "DigivolutionTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigivolutionTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionTabButton_MetaData), NewProp_DigivolutionTabButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigiDexTabButton = { "DigiDexTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigiDexTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiDexTabButton_MetaData), NewProp_DigiDexTabButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialTabButton = { "SocialTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialTabButton_MetaData), NewProp_SocialTabButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankDigimonGrid = { "BankDigimonGrid", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankDigimonGrid), Z_Construct_UClass_UUniformGridPanel, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankDigimonGrid_MetaData), NewProp_BankDigimonGrid_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankCountText = { "BankCountText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankCountText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankCountText_MetaData), NewProp_BankCountText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankPageText = { "BankPageText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankPageText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankPageText_MetaData), NewProp_BankPageText_MetaData) };
@@ -3852,6 +4681,24 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_Digivolution
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigivolutionTargetMetaText = { "DigivolutionTargetMetaText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigivolutionTargetMetaText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionTargetMetaText_MetaData), NewProp_DigivolutionTargetMetaText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigivolutionRequirementText = { "DigivolutionRequirementText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigivolutionRequirementText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionRequirementText_MetaData), NewProp_DigivolutionRequirementText_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigivolveButton = { "DigivolveButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigivolveButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolveButton_MetaData), NewProp_DigivolveButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialFriendsTabButton = { "SocialFriendsTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialFriendsTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialFriendsTabButton_MetaData), NewProp_SocialFriendsTabButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildTabButton = { "SocialGuildTabButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildTabButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildTabButton_MetaData), NewProp_SocialGuildTabButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialNearbyPlayersList = { "SocialNearbyPlayersList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialNearbyPlayersList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialNearbyPlayersList_MetaData), NewProp_SocialNearbyPlayersList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialFriendsList = { "SocialFriendsList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialFriendsList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialFriendsList_MetaData), NewProp_SocialFriendsList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialFriendRequestsList = { "SocialFriendRequestsList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialFriendRequestsList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialFriendRequestsList_MetaData), NewProp_SocialFriendRequestsList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialIgnoreList = { "SocialIgnoreList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialIgnoreList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialIgnoreList_MetaData), NewProp_SocialIgnoreList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildIdentityText = { "SocialGuildIdentityText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildIdentityText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildIdentityText_MetaData), NewProp_SocialGuildIdentityText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildMetaText = { "SocialGuildMetaText", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildMetaText), Z_Construct_UClass_UTextBlock, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildMetaText_MetaData), NewProp_SocialGuildMetaText_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildMembersList = { "SocialGuildMembersList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildMembersList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildMembersList_MetaData), NewProp_SocialGuildMembersList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildInvitesList = { "SocialGuildInvitesList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildInvitesList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildInvitesList_MetaData), NewProp_SocialGuildInvitesList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildApplicationsList = { "SocialGuildApplicationsList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildApplicationsList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildApplicationsList_MetaData), NewProp_SocialGuildApplicationsList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildSearchList = { "SocialGuildSearchList", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildSearchList), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildSearchList_MetaData), NewProp_SocialGuildSearchList_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildNameInput = { "SocialGuildNameInput", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildNameInput), Z_Construct_UClass_UEditableTextBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildNameInput_MetaData), NewProp_SocialGuildNameInput_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildSearchInput = { "SocialGuildSearchInput", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildSearchInput), Z_Construct_UClass_UEditableTextBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildSearchInput_MetaData), NewProp_SocialGuildSearchInput_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildCreateButton = { "SocialGuildCreateButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildCreateButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildCreateButton_MetaData), NewProp_SocialGuildCreateButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildRenameButton = { "SocialGuildRenameButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildRenameButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildRenameButton_MetaData), NewProp_SocialGuildRenameButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildLeaveButton = { "SocialGuildLeaveButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildLeaveButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildLeaveButton_MetaData), NewProp_SocialGuildLeaveButton_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildDisbandButton = { "SocialGuildDisbandButton", nullptr, (EPropertyFlags)0x012408000008001c, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildDisbandButton), Z_Construct_UClass_UButton, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildDisbandButton_MetaData), NewProp_SocialGuildDisbandButton_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BoundDigimonComponent = { "BoundDigimonComponent", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BoundDigimonComponent), Z_Construct_UClass_UDMFPlayerDigimonComponent, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BoundDigimonComponent_MetaData), NewProp_BoundDigimonComponent_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_InventoryContentRow = { "InventoryContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, InventoryContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InventoryContentRow_MetaData), NewProp_InventoryContentRow_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_BankContentRow = { "BankContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, BankContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BankContentRow_MetaData), NewProp_BankContentRow_MetaData) };
@@ -3859,6 +4706,9 @@ const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_ScanContentR
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_CareContentRow = { "CareContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, CareContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CareContentRow_MetaData), NewProp_CareContentRow_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigivolutionContentRow = { "DigivolutionContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigivolutionContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigivolutionContentRow_MetaData), NewProp_DigivolutionContentRow_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_DigiDexContentRow = { "DigiDexContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, DigiDexContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigiDexContentRow_MetaData), NewProp_DigiDexContentRow_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialContentRoot = { "SocialContentRoot", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialContentRoot), Z_Construct_UClass_UVerticalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialContentRoot_MetaData), NewProp_SocialContentRoot_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialFriendsContentRow = { "SocialFriendsContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialFriendsContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialFriendsContentRow_MetaData), NewProp_SocialFriendsContentRow_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams UHT_STATICS::NewProp_SocialGuildContentRow = { "SocialGuildContentRow", nullptr, (EPropertyFlags)0x0144000000082008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFDigimonInventoryWidget, SocialGuildContentRow), Z_Construct_UClass_UHorizontalBox, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SocialGuildContentRow_MetaData), NewProp_SocialGuildContentRow_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonChoicesBox,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonGrid,
@@ -3887,6 +4737,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareTabButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionTabButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiDexTabButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialTabButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankDigimonGrid,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankCountText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankPageText,
@@ -3951,6 +4802,24 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionTargetMetaText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionRequirementText,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolveButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialFriendsTabButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildTabButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialNearbyPlayersList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialFriendsList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialFriendRequestsList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialIgnoreList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildIdentityText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildMetaText,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildMembersList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildInvitesList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildApplicationsList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildSearchList,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildNameInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildSearchInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildCreateButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildRenameButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildLeaveButton,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildDisbandButton,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BoundDigimonComponent,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_InventoryContentRow,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_BankContentRow,
@@ -3958,6 +4827,9 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CareContentRow,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigivolutionContentRow,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigiDexContentRow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialContentRoot,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialFriendsContentRow,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_SocialGuildContentRow,
 };
 static_assert(UE_ARRAY_COUNT(UHT_STATICS::PropPointers) < 2048);
 // ********** End Class UDMFDigimonInventoryWidget Property Definitions ****************************
@@ -4033,10 +4905,10 @@ UDMFDigimonInventoryWidget::~UDMFDigimonInventoryWidget() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonInventoryWidget, TEXT("UDMFDigimonInventoryWidget"), &Z_Registration_Info_UClass_UDMFDigimonInventoryWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonInventoryWidget), 3300777997U) },
+		{ Z_Construct_UClass_UDMFDigimonInventoryWidget, TEXT("UDMFDigimonInventoryWidget"), &Z_Registration_Info_UClass_UDMFDigimonInventoryWidget, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonInventoryWidget), 115411615U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h__Script_DigimonMMOFramework_708f2f554ea80c658bec21347f6fbcd8f3abc931{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h__Script_DigimonMMOFramework_936b2b31232b5f58f203d718de34d1cdd610e16d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

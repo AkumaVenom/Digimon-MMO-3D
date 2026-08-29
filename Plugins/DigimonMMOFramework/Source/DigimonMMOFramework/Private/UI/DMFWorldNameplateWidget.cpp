@@ -15,9 +15,12 @@
 #include "Engine/World.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFPlayerAvatarCharacter.h"
+#include "Game/DMFMMOPlayerController.h"
 #include "Game/DMFPlayerState.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Input/Events.h"
+#include "InputCoreTypes.h"
 #include "Settings/DMFFrameworkSettings.h"
 #include "UI/DMFNativeUIStyle.h"
 
@@ -53,6 +56,32 @@ void UDMFWorldNameplateWidget::NativeTick(const FGeometry& MyGeometry, const flo
     }
 }
 
+FReply UDMFWorldNameplateWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    ADMFPlayerAvatarCharacter* PlayerAvatar = Cast<ADMFPlayerAvatarCharacter>(ObservedActor);
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const FKey Button = InMouseEvent.GetEffectingButton();
+    if (IsValid(PlayerAvatar)
+        && Settings && Settings->bEnableSocialSystem && Settings->bEnablePlayerNameplateSocialContext
+        && (Button == EKeys::LeftMouseButton || Button == EKeys::RightMouseButton))
+    {
+        APlayerController* LocalController = GetOwningPlayer();
+        if (!LocalController && GetWorld())
+        {
+            LocalController = GetWorld()->GetFirstPlayerController();
+        }
+        if (ADMFMMOPlayerController* MMOController = Cast<ADMFMMOPlayerController>(LocalController))
+        {
+            if (PlayerAvatar != MMOController->GetPawn())
+            {
+                MMOController->OpenPlayerSocialContext(PlayerAvatar);
+                return FReply::Handled();
+            }
+        }
+    }
+    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
 void UDMFWorldNameplateWidget::SetObservedActor(AActor* InObservedActor)
 {
     ObservedActor = InObservedActor;
@@ -68,12 +97,17 @@ void UDMFWorldNameplateWidget::RefreshPresentation()
         return;
     }
 
-    SetVisibility(ESlateVisibility::HitTestInvisible);
+    const bool bObservedPlayer = Cast<ADMFPlayerAvatarCharacter>(ObservedActor) != nullptr;
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bInteractivePlayerPlate = bObservedPlayer
+        && Settings
+        && Settings->bEnableSocialSystem
+        && Settings->bEnablePlayerNameplateSocialContext;
+    SetVisibility(bInteractivePlayerPlate ? ESlateVisibility::Visible : ESlateVisibility::HitTestInvisible);
 
     // Screen-space Widget Components stay crisp and camera-facing. Apply an explicit local camera
     // distance gate as well as the component cull distance so projects get predictable MMO clutter
     // control even if a platform treats Screen-space component culling differently.
-    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
     float MaxDrawDistance = 0.0f;
     if (Cast<ADMFPlayerAvatarCharacter>(ObservedActor))
     {
@@ -95,6 +129,7 @@ void UDMFWorldNameplateWidget::RefreshPresentation()
                     if (FVector::DistSquared(CameraManager->GetCameraLocation(), ObservedActor->GetActorLocation()) > FMath::Square(MaxDrawDistance))
                     {
                         SetRenderOpacity(0.0f);
+                        SetVisibility(ESlateVisibility::HitTestInvisible);
                         return;
                     }
                 }

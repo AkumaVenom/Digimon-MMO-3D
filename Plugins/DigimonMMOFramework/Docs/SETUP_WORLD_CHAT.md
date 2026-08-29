@@ -162,3 +162,7 @@ Run the normal listen host + remote-client test with **two established accounts*
 ## 8. MMO scaling note
 
 This release is appropriate for the framework's current listen-server/session architecture. It deliberately avoids a replicated chat array: each accepted message is one server-to-owner delivery per connected player, while history is transferred only on request/join. A future dedicated-service/backend phase can replace the GameMode fan-out with regional/sharded chat infrastructure without changing the native widget contract.
+
+## v0.19.0 Ignore-list integration
+
+The persistent Social Ignore list filters only player-authored WORLD messages for that recipient. Filtering occurs on the server for both live fan-out and session-history hydration, so ignored text does not reappear when the player relogs or when the native chat widget rebuilds. Ignoring does **not** hide the player's replicated world avatar and does not reinterpret server-authored `PlayerJoined` / `PlayerLeft` presence events as normal user chat. Manage Ignore entries from **DIGIMON MENU → SOCIAL → FRIENDS & IGNORE** or from the player-nameplate context menu. See `SETUP_SOCIAL_SYSTEM.md`.

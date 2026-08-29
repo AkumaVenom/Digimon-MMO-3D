@@ -29,10 +29,12 @@
 #include "Game/DMFMMOPlayerController.h"
 #include "Game/DMFPlayerState.h"
 #include "Settings/DMFFrameworkSettings.h"
+#include "TimerManager.h"
 #include "UI/DMFDigimonInventoryEntryButton.h"
 #include "UI/DMFScanSpeciesEntryButton.h"
 #include "UI/DMFNativeUIStyle.h"
 #include "UI/DMFPartyDestinationButton.h"
+#include "UI/DMFSocialActionButton.h"
 
 namespace DMFInventoryUI
 {
@@ -106,6 +108,17 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     {
         CareTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleCareTab);
     }
+    if (SocialTabButton)
+    {
+        SocialTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialTab);
+    }
+    if (SocialFriendsTabButton) SocialFriendsTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialFriendsTab);
+    if (SocialGuildTabButton) SocialGuildTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildTab);
+    if (SocialGuildCreateButton) SocialGuildCreateButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildCreate);
+    if (SocialGuildRenameButton) SocialGuildRenameButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildRename);
+    if (SocialGuildLeaveButton) SocialGuildLeaveButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildLeave);
+    if (SocialGuildDisbandButton) SocialGuildDisbandButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildDisband);
+    if (SocialGuildSearchInput) SocialGuildSearchInput->OnTextChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildSearchChanged);
     if (DigivolutionTabButton)
     {
         DigivolutionTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleDigivolutionTab);
@@ -170,11 +183,32 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     RefreshCareData();
     RefreshDigivolutionData();
     RefreshDigiDexData();
+    RefreshSocialData();
     RefreshTabPresentation();
+
+    if (UWorld* World = GetWorld())
+    {
+        const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+        if (!Settings || Settings->bEnableSocialSystem)
+        {
+            const float RefreshInterval = FMath::Clamp(Settings ? Settings->NearbyPlayerFriendDiscoveryRefreshInterval : 0.5f, 0.1f, 5.0f);
+            World->GetTimerManager().SetTimer(NearbyPlayersRefreshTimer, this, &UDMFDigimonInventoryWidget::HandleNearbyPlayersRefreshTimer, RefreshInterval, true, RefreshInterval);
+        }
+    }
+
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        Controller->RequestSocialSnapshot();
+    }
 }
 
 void UDMFDigimonInventoryWidget::NativeDestruct()
 {
+    if (UWorld* World = GetWorld())
+    {
+        World->GetTimerManager().ClearTimer(NearbyPlayersRefreshTimer);
+    }
+
     if (BoundDigimonComponent)
     {
         BoundDigimonComponent->OnDigimonInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
@@ -233,7 +267,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     }
 
     USizeBox* WindowSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("InventoryWindowSize"));
-    WindowSize->SetWidthOverride(1240.0f);
+    WindowSize->SetWidthOverride(1360.0f);
     WindowSize->SetHeightOverride(900.0f);
     ScreenScale->AddChild(WindowSize);
 
@@ -329,7 +363,15 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     CareTabLabel->SetText(NSLOCTEXT("DMF", "CareTabLabel", "CARE"));
     DMFNativeUI::StyleText(CareTabLabel, 15, DMFNativeUI::Text(), true);
     CareTabButton->AddChild(CareTabLabel);
-    TabRow->AddChildToHorizontalBox(CareTabButton);
+    TabRow->AddChildToHorizontalBox(CareTabButton)->SetPadding(FMargin(0,0,8,0));
+
+    SocialTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialTabButton"));
+    DMFNativeUI::StyleButton(SocialTabButton);
+    UTextBlock* SocialTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialTabLabel"));
+    SocialTabLabel->SetText(NSLOCTEXT("DMF", "SocialTabLabel", "SOCIAL"));
+    DMFNativeUI::StyleText(SocialTabLabel, 15, DMFNativeUI::Text(), true);
+    SocialTabButton->AddChild(SocialTabLabel);
+    TabRow->AddChildToHorizontalBox(SocialTabButton);
 
     UTextBlock* FutureTabsLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FutureTabsLabel"));
     FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "FUTURE MODULES"));
@@ -1193,7 +1235,136 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     CareSafetyScroll->AddChild(CareSafetyText);
     FeedDigiMeatButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("FeedDigiMeatButton")); DMFNativeUI::StyleButton(FeedDigiMeatButton,true);
     UTextBlock* FeedLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FeedDigiMeatLabel")); FeedLabel->SetText(NSLOCTEXT("DMF","FeedDigiMeatUntilFull","FEED DIGIMEAT UNTIL FULL")); FeedLabel->SetJustification(ETextJustify::Center); FeedLabel->SetAutoWrapText(true); DMFNativeUI::StyleText(FeedLabel,14,DMFNativeUI::Text(),true); FeedDigiMeatButton->AddChild(FeedLabel); CareActionColumn->AddChildToVerticalBox(FeedDigiMeatButton);
+
+    // SOCIAL — persistent owner-only social hub. Nested tabs deliberately reserve one stable shell for future modules.
+    SocialContentRoot = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("SocialContentRoot"));
+    if (UVerticalBoxSlot* SocialRootSlot = WindowColumn->AddChildToVerticalBox(SocialContentRoot))
+    {
+        SocialRootSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    UBorder* SocialSubTabPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("SocialSubTabPanel"));
+    DMFNativeUI::StylePanel(SocialSubTabPanel, DMFNativeUI::PanelSoft(), FMargin(8.0f));
+    SocialContentRoot->AddChildToVerticalBox(SocialSubTabPanel)->SetPadding(FMargin(0,0,0,10));
+    UHorizontalBox* SocialSubTabRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("SocialSubTabRow"));
+    SocialSubTabPanel->AddChild(SocialSubTabRow);
+
+    SocialFriendsTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialFriendsTabButton"));
+    DMFNativeUI::StyleButton(SocialFriendsTabButton, false, false, true);
+    UTextBlock* SocialFriendsTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialFriendsTabLabel"));
+    SocialFriendsTabLabel->SetText(NSLOCTEXT("DMF","SocialFriendsTabLabel","FRIENDS & IGNORE"));
+    DMFNativeUI::StyleText(SocialFriendsTabLabel, 14, DMFNativeUI::Text(), true);
+    SocialFriendsTabButton->AddChild(SocialFriendsTabLabel);
+    SocialSubTabRow->AddChildToHorizontalBox(SocialFriendsTabButton)->SetPadding(FMargin(0,0,8,0));
+
+    SocialGuildTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialGuildTabButton"));
+    DMFNativeUI::StyleButton(SocialGuildTabButton);
+    UTextBlock* SocialGuildTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialGuildTabLabel"));
+    SocialGuildTabLabel->SetText(NSLOCTEXT("DMF","SocialGuildTabLabel","GUILD"));
+    DMFNativeUI::StyleText(SocialGuildTabLabel, 14, DMFNativeUI::Text(), true);
+    SocialGuildTabButton->AddChild(SocialGuildTabLabel);
+    SocialSubTabRow->AddChildToHorizontalBox(SocialGuildTabButton)->SetPadding(FMargin(0,0,10,0));
+
+    UTextBlock* SocialFutureLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialFutureModulesLabel"));
+    SocialFutureLabel->SetText(NSLOCTEXT("DMF","SocialFutureModulesLabel","SOCIAL HUB"));
+    DMFNativeUI::StyleText(SocialFutureLabel, 10, DMFNativeUI::Muted(), true);
+    if (UHorizontalBoxSlot* SocialFutureSlot = SocialSubTabRow->AddChildToHorizontalBox(SocialFutureLabel))
+    {
+        SocialFutureSlot->SetSize(DMFNativeUI::FillSize());
+        SocialFutureSlot->SetHorizontalAlignment(HAlign_Right);
+        SocialFutureSlot->SetVerticalAlignment(VAlign_Center);
+    }
+
+    SocialFriendsContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("SocialFriendsContentRow"));
+    if (UVerticalBoxSlot* FriendsRootSlot = SocialContentRoot->AddChildToVerticalBox(SocialFriendsContentRow)) FriendsRootSlot->SetSize(DMFNativeUI::FillSize());
+
+    auto MakeSocialListPanel = [this](UHorizontalBox* Parent, const FName PanelName, const FText& HeaderText, const FText& HelpText, UVerticalBox*& OutList, const float Width)
+    {
+        USizeBox* PanelSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), *(PanelName.ToString() + TEXT("Size")));
+        if (Width > 0.0f) PanelSize->SetWidthOverride(Width);
+        if (UHorizontalBoxSlot* PanelLayout = Parent->AddChildToHorizontalBox(PanelSize))
+        {
+            if (Width <= 0.0f) PanelLayout->SetSize(DMFNativeUI::FillSize());
+            PanelLayout->SetVerticalAlignment(VAlign_Fill);
+            PanelLayout->SetPadding(FMargin(0,0,10,0));
+        }
+        UBorder* Panel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), PanelName);
+        DMFNativeUI::StylePanel(Panel, DMFNativeUI::PanelRaised(), FMargin(12));
+        PanelSize->AddChild(Panel);
+        UVerticalBox* Column = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), *(PanelName.ToString() + TEXT("Column")));
+        Panel->AddChild(Column);
+        UTextBlock* Header = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Header->SetText(HeaderText); DMFNativeUI::StyleText(Header, 15, DMFNativeUI::Accent(), true);
+        Column->AddChildToVerticalBox(Header);
+        UTextBlock* Help = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Help->SetText(HelpText); Help->SetAutoWrapText(true); DMFNativeUI::StyleText(Help, 10, DMFNativeUI::Muted());
+        Column->AddChildToVerticalBox(Help)->SetPadding(FMargin(0,2,0,8));
+        UScrollBox* Scroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass());
+        if (UVerticalBoxSlot* ScrollSlot = Column->AddChildToVerticalBox(Scroll)) ScrollSlot->SetSize(DMFNativeUI::FillSize());
+        OutList = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Scroll->AddChild(OutList);
+    };
+
+    const UDMFFrameworkSettings* SocialSettings = GetDefault<UDMFFrameworkSettings>();
+    const int32 NearbyRadiusMeters = FMath::RoundToInt(FMath::Clamp(SocialSettings ? SocialSettings->NearbyPlayerFriendDiscoveryRadiusMeters : 50.0f, 1.0f, 100000.0f));
+
+    UVerticalBox* NearbyPanelList = nullptr;
+    MakeSocialListPanel(SocialFriendsContentRow, TEXT("SocialNearbyPlayersPanel"), NSLOCTEXT("DMF","SocialNearbyPlayersHeader","NEARBY PLAYERS"),
+        FText::Format(NSLOCTEXT("DMF","SocialNearbyPlayersHelp","Online players within {0} m. Add friends or ignore players here; nearest players stay at the top and leave automatically when out of range."), FText::AsNumber(NearbyRadiusMeters)), NearbyPanelList, 325.0f);
+    SocialNearbyPlayersList = NearbyPanelList;
+
+    UVerticalBox* FriendsPanelList = nullptr;
+    MakeSocialListPanel(SocialFriendsContentRow, TEXT("SocialFriendsPanel"), NSLOCTEXT("DMF","SocialFriendsHeader","FRIENDS"), NSLOCTEXT("DMF","SocialFriendsHelp","Accepted friends persist across sessions. Toggle a local world tracker for any online friend."), FriendsPanelList, 305.0f);
+    SocialFriendsList = FriendsPanelList;
+
+    UVerticalBox* RequestsPanelList = nullptr;
+    MakeSocialListPanel(SocialFriendsContentRow, TEXT("SocialFriendRequestsPanel"), NSLOCTEXT("DMF","SocialRequestsHeader","FRIEND REQUESTS"), NSLOCTEXT("DMF","SocialRequestsHelp","Requests wait here for clean accept, decline or cancellation without popup spam."), RequestsPanelList, 350.0f);
+    SocialFriendRequestsList = RequestsPanelList;
+
+    UVerticalBox* IgnorePanelList = nullptr;
+    MakeSocialListPanel(SocialFriendsContentRow, TEXT("SocialIgnorePanel"), NSLOCTEXT("DMF","SocialIgnoreHeader","IGNORE LIST"), NSLOCTEXT("DMF","SocialIgnoreHelp","Ignored players stay visible in the world, but their authored WORLD chat is hidden from you."), IgnorePanelList, 0.0f);
+    SocialIgnoreList = IgnorePanelList;
+
+    SocialGuildContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("SocialGuildContentRow"));
+    if (UVerticalBoxSlot* GuildRootSlot = SocialContentRoot->AddChildToVerticalBox(SocialGuildContentRow)) GuildRootSlot->SetSize(DMFNativeUI::FillSize());
+
+    USizeBox* GuildManageSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("SocialGuildManageSize"));
+    GuildManageSize->SetWidthOverride(500.0f);
+    SocialGuildContentRow->AddChildToHorizontalBox(GuildManageSize)->SetPadding(FMargin(0,0,10,0));
+    UBorder* GuildManagePanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("SocialGuildManagePanel"));
+    DMFNativeUI::StylePanel(GuildManagePanel, DMFNativeUI::PanelRaised(), FMargin(12)); GuildManageSize->AddChild(GuildManagePanel);
+    UVerticalBox* GuildManageColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("SocialGuildManageColumn")); GuildManagePanel->AddChild(GuildManageColumn);
+    UTextBlock* GuildManageHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); GuildManageHeader->SetText(NSLOCTEXT("DMF","SocialGuildManageHeader","YOUR GUILD")); DMFNativeUI::StyleText(GuildManageHeader,15,DMFNativeUI::Accent(),true); GuildManageColumn->AddChildToVerticalBox(GuildManageHeader);
+    SocialGuildIdentityText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialGuildIdentityText")); SocialGuildIdentityText->SetAutoWrapText(true); DMFNativeUI::StyleText(SocialGuildIdentityText,22,DMFNativeUI::Text(),true); GuildManageColumn->AddChildToVerticalBox(SocialGuildIdentityText)->SetPadding(FMargin(0,4,0,0));
+    SocialGuildMetaText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialGuildMetaText")); SocialGuildMetaText->SetAutoWrapText(true); DMFNativeUI::StyleText(SocialGuildMetaText,11,DMFNativeUI::Muted()); GuildManageColumn->AddChildToVerticalBox(SocialGuildMetaText)->SetPadding(FMargin(0,0,0,8));
+    SocialGuildNameInput = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass(), TEXT("SocialGuildNameInput")); DMFNativeUI::StyleInput(SocialGuildNameInput); SocialGuildNameInput->SetHintText(NSLOCTEXT("DMF","SocialGuildNameHint","Guild name")); GuildManageColumn->AddChildToVerticalBox(SocialGuildNameInput)->SetPadding(FMargin(0,0,0,6));
+    UHorizontalBox* GuildNameActionRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass()); GuildManageColumn->AddChildToVerticalBox(GuildNameActionRow)->SetPadding(FMargin(0,0,0,8));
+    SocialGuildCreateButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialGuildCreateButton")); DMFNativeUI::StyleButton(SocialGuildCreateButton,true); UTextBlock* CreateGuildLabel=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); CreateGuildLabel->SetText(NSLOCTEXT("DMF","CreateGuildLabel","CREATE GUILD")); DMFNativeUI::StyleText(CreateGuildLabel,11,DMFNativeUI::Text(),true); SocialGuildCreateButton->AddChild(CreateGuildLabel); GuildNameActionRow->AddChildToHorizontalBox(SocialGuildCreateButton)->SetPadding(FMargin(0,0,6,0));
+    SocialGuildRenameButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialGuildRenameButton")); DMFNativeUI::StyleButton(SocialGuildRenameButton); UTextBlock* RenameGuildLabel=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); RenameGuildLabel->SetText(NSLOCTEXT("DMF","RenameGuildLabel","RENAME")); DMFNativeUI::StyleText(RenameGuildLabel,11,DMFNativeUI::Gold(),true); SocialGuildRenameButton->AddChild(RenameGuildLabel); GuildNameActionRow->AddChildToHorizontalBox(SocialGuildRenameButton);
+    UTextBlock* MembersHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); MembersHeader->SetText(NSLOCTEXT("DMF","GuildMembersHeader","MEMBERS")); DMFNativeUI::StyleText(MembersHeader,12,DMFNativeUI::Gold(),true); GuildManageColumn->AddChildToVerticalBox(MembersHeader)->SetPadding(FMargin(0,2,0,4));
+    UScrollBox* GuildMembersScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass()); if(UVerticalBoxSlot* S=GuildManageColumn->AddChildToVerticalBox(GuildMembersScroll)){S->SetSize(DMFNativeUI::FillSize());} SocialGuildMembersList=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); GuildMembersScroll->AddChild(SocialGuildMembersList);
+    UHorizontalBox* GuildExitRow=WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass()); GuildManageColumn->AddChildToVerticalBox(GuildExitRow)->SetPadding(FMargin(0,8,0,0));
+    SocialGuildLeaveButton=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(),TEXT("SocialGuildLeaveButton")); DMFNativeUI::StyleButton(SocialGuildLeaveButton,false,true); UTextBlock* LeaveGuildLabel=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); LeaveGuildLabel->SetText(NSLOCTEXT("DMF","LeaveGuildLabel","LEAVE GUILD")); DMFNativeUI::StyleText(LeaveGuildLabel,11,DMFNativeUI::Text(),true); SocialGuildLeaveButton->AddChild(LeaveGuildLabel); GuildExitRow->AddChildToHorizontalBox(SocialGuildLeaveButton)->SetPadding(FMargin(0,0,6,0));
+    SocialGuildDisbandButton=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(),TEXT("SocialGuildDisbandButton")); DMFNativeUI::StyleButton(SocialGuildDisbandButton,false,true); UTextBlock* DisbandGuildLabel=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); DisbandGuildLabel->SetText(NSLOCTEXT("DMF","DisbandGuildLabel","DISBAND")); DMFNativeUI::StyleText(DisbandGuildLabel,11,DMFNativeUI::Danger(),true); SocialGuildDisbandButton->AddChild(DisbandGuildLabel); GuildExitRow->AddChildToHorizontalBox(SocialGuildDisbandButton);
+
+    USizeBox* GuildRequestsSize=WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(),TEXT("SocialGuildRequestsSize")); GuildRequestsSize->SetWidthOverride(400.0f); SocialGuildContentRow->AddChildToHorizontalBox(GuildRequestsSize)->SetPadding(FMargin(0,0,10,0));
+    UBorder* GuildRequestsPanel=WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(),TEXT("SocialGuildRequestsPanel")); DMFNativeUI::StylePanel(GuildRequestsPanel,DMFNativeUI::PanelRaised(),FMargin(12)); GuildRequestsSize->AddChild(GuildRequestsPanel); UVerticalBox* GuildRequestsColumn=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); GuildRequestsPanel->AddChild(GuildRequestsColumn);
+    UTextBlock* InvitesHeader=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); InvitesHeader->SetText(NSLOCTEXT("DMF","GuildInvitesHeader","GUILD INVITES")); DMFNativeUI::StyleText(InvitesHeader,14,DMFNativeUI::Accent(),true); GuildRequestsColumn->AddChildToVerticalBox(InvitesHeader);
+    UScrollBox* InvitesScroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass()); if(UVerticalBoxSlot* S=GuildRequestsColumn->AddChildToVerticalBox(InvitesScroll)){S->SetSize(DMFNativeUI::FillSize(0.45f));S->SetPadding(FMargin(0,4,0,8));} SocialGuildInvitesList=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); InvitesScroll->AddChild(SocialGuildInvitesList);
+    UTextBlock* ApplicationsHeader=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); ApplicationsHeader->SetText(NSLOCTEXT("DMF","GuildApplicationsHeader","JOIN APPLICATIONS • OWNER")); DMFNativeUI::StyleText(ApplicationsHeader,14,DMFNativeUI::Gold(),true); GuildRequestsColumn->AddChildToVerticalBox(ApplicationsHeader);
+    UTextBlock* ApplicationsHelp=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); ApplicationsHelp->SetText(NSLOCTEXT("DMF","GuildApplicationsHelp","Applications persist while you are offline and wait here for review.")); ApplicationsHelp->SetAutoWrapText(true); DMFNativeUI::StyleText(ApplicationsHelp,10,DMFNativeUI::Muted()); GuildRequestsColumn->AddChildToVerticalBox(ApplicationsHelp)->SetPadding(FMargin(0,2,0,4));
+    UScrollBox* ApplicationsScroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass()); if(UVerticalBoxSlot* S=GuildRequestsColumn->AddChildToVerticalBox(ApplicationsScroll)){S->SetSize(DMFNativeUI::FillSize(0.55f));} SocialGuildApplicationsList=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); ApplicationsScroll->AddChild(SocialGuildApplicationsList);
+
+    UBorder* GuildSearchPanel=WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(),TEXT("SocialGuildSearchPanel")); DMFNativeUI::StylePanel(GuildSearchPanel,DMFNativeUI::PanelRaised(),FMargin(12)); if(UHorizontalBoxSlot* S=SocialGuildContentRow->AddChildToHorizontalBox(GuildSearchPanel)){S->SetSize(DMFNativeUI::FillSize());S->SetVerticalAlignment(VAlign_Fill);} UVerticalBox* GuildSearchColumn=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); GuildSearchPanel->AddChild(GuildSearchColumn);
+    UTextBlock* SearchHeader=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); SearchHeader->SetText(NSLOCTEXT("DMF","GuildDirectoryHeader","GUILD DIRECTORY")); DMFNativeUI::StyleText(SearchHeader,14,DMFNativeUI::Accent(),true); GuildSearchColumn->AddChildToVerticalBox(SearchHeader);
+    UTextBlock* SearchHelp=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); SearchHelp->SetText(NSLOCTEXT("DMF","GuildDirectoryHelp","Search guilds on this server and apply without interrupting the guild owner.")); SearchHelp->SetAutoWrapText(true); DMFNativeUI::StyleText(SearchHelp,10,DMFNativeUI::Muted()); GuildSearchColumn->AddChildToVerticalBox(SearchHelp)->SetPadding(FMargin(0,2,0,6));
+    SocialGuildSearchInput=WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass(),TEXT("SocialGuildSearchInput")); DMFNativeUI::StyleInput(SocialGuildSearchInput); SocialGuildSearchInput->SetHintText(NSLOCTEXT("DMF","GuildSearchHint","Search guild name or owner…")); GuildSearchColumn->AddChildToVerticalBox(SocialGuildSearchInput)->SetPadding(FMargin(0,0,0,7));
+    UScrollBox* GuildSearchScroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass()); if(UVerticalBoxSlot* S=GuildSearchColumn->AddChildToVerticalBox(GuildSearchScroll))S->SetSize(DMFNativeUI::FillSize()); SocialGuildSearchList=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); GuildSearchScroll->AddChild(SocialGuildSearchList);
+
+    SocialContentRoot->SetVisibility(ESlateVisibility::Collapsed);
+    SocialGuildContentRow->SetVisibility(ESlateVisibility::Collapsed);
 }
+
 
 void UDMFDigimonInventoryWidget::BindDigimonComponent()
 {
@@ -2049,16 +2220,45 @@ void UDMFDigimonInventoryWidget::RequestAttributePointSpend(const EDMFDigimonAtt
 void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTab)
 {
     const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
-    ActiveMenuTab = (NewTab == EDMFDigimonMenuTab::DigiDex && Settings && !Settings->bEnableDigiDex)
-        ? EDMFDigimonMenuTab::Collection
-        : NewTab;
+    const bool bDigiDexUnavailable = NewTab == EDMFDigimonMenuTab::DigiDex && Settings && !Settings->bEnableDigiDex;
+    const bool bSocialUnavailable = NewTab == EDMFDigimonMenuTab::Social && Settings && !Settings->bEnableSocialSystem;
+    ActiveMenuTab = (bDigiDexUnavailable || bSocialUnavailable) ? EDMFDigimonMenuTab::Collection : NewTab;
+
+    if (ActiveMenuTab == EDMFDigimonMenuTab::Social)
+    {
+        if (!bHasOpenedSocialTab)
+        {
+            ActiveSocialTab = EDMFSocialMenuTab::Friends;
+            bHasOpenedSocialTab = true;
+        }
+        if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+        {
+            Controller->RequestSocialSnapshot();
+        }
+    }
+
     RefreshTabPresentation();
     if (ActiveMenuTab == EDMFDigimonMenuTab::Collection) RefreshInventory();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Bank) RefreshBankData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize) RefreshScanData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) RefreshDigivolutionData();
+    else if (ActiveMenuTab == EDMFDigimonMenuTab::Social) RefreshSocialData();
     else RefreshCareData();
+}
+
+void UDMFDigimonInventoryWidget::SetActiveSocialTab(const EDMFSocialMenuTab NewTab)
+{
+    ActiveSocialTab = NewTab;
+    RefreshSocialTabPresentation();
+    RefreshSocialData();
+
+    // Nested Social pages may expose persistent data that changed while this menu remained open
+    // (for example, an offline guild application or a renamed guild in the directory).
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        Controller->RequestSocialSnapshot();
+    }
 }
 
 void UDMFDigimonInventoryWidget::RefreshTabPresentation()
@@ -2069,17 +2269,29 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
     if (CareContentRow) CareContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Care ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (DigivolutionContentRow) DigivolutionContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Digivolution ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (DigiDexContentRow) DigiDexContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::DigiDex ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (SocialContentRoot) SocialContentRoot->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Social ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+
     DMFNativeUI::StyleButton(CollectionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Collection);
     DMFNativeUI::StyleButton(BankTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Bank);
     DMFNativeUI::StyleButton(ScanMaterializeTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::ScanAndMaterialize);
     DMFNativeUI::StyleButton(DigivolutionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Digivolution);
     DMFNativeUI::StyleButton(DigiDexTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::DigiDex);
+    DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
+    DMFNativeUI::StyleButton(SocialTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Social);
+
     if (DigiDexTabButton)
     {
         const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
         DigiDexTabButton->SetVisibility(!Settings || Settings->bEnableDigiDex ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     }
-    DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
+    if (SocialTabButton)
+    {
+        const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+        SocialTabButton->SetVisibility(!Settings || Settings->bEnableSocialSystem ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    }
+
+    RefreshSocialTabPresentation();
+
     if (DigimonStatusText)
     {
         FText Status = NSLOCTEXT("DMF","PartyTabStatus","Manage the six-Digimon active Party, summon your partner or deposit Party members into Bank.");
@@ -2088,8 +2300,369 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
         else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) Status = NSLOCTEXT("DMF","DigiDexTabStatus","Browse the complete implemented-species encyclopedia. DigiDex is read-only and never summons, moves or mutates Digimon.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) Status = NSLOCTEXT("DMF","DigivolutionTabStatus","Inspect branching evolution paths for any Party or Bank Digimon. Requirements and transformation commits are server-authoritative.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Care) Status = NSLOCTEXT("DMF","CareTabStatus","Care for your summoned partner with unlimited DigiMeat and monitor its persistent virtual-pet needs.");
+        else if (ActiveMenuTab == EDMFDigimonMenuTab::Social) Status = ActiveSocialTab == EDMFSocialMenuTab::Friends
+            ? NSLOCTEXT("DMF","SocialFriendsTabStatus","Discover nearby players, manage persistent friends and requests, toggle distance trackers, and control your personal ignore list.")
+            : NSLOCTEXT("DMF","SocialGuildTabStatus","Create, manage, search and apply to persistent server-authoritative guilds without disruptive request popups.");
         DigimonStatusText->SetText(Status);
         DigimonStatusText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
+    }
+}
+
+void UDMFDigimonInventoryWidget::RefreshSocialTabPresentation()
+{
+    if (SocialFriendsContentRow) SocialFriendsContentRow->SetVisibility(ActiveSocialTab == EDMFSocialMenuTab::Friends ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (SocialGuildContentRow) SocialGuildContentRow->SetVisibility(ActiveSocialTab == EDMFSocialMenuTab::Guild ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    DMFNativeUI::StyleButton(SocialFriendsTabButton, false, false, ActiveSocialTab == EDMFSocialMenuTab::Friends);
+    DMFNativeUI::StyleButton(SocialGuildTabButton, false, false, ActiveSocialTab == EDMFSocialMenuTab::Guild);
+}
+
+UDMFSocialActionButton* UDMFDigimonInventoryWidget::MakeSocialActionButton(const FText& Label, const EDMFSocialUIAction Action, const FString& Username, const FGuid& GuildId, const bool bValue, const bool bPrimary, const bool bDanger)
+{
+    if (!WidgetTree) return nullptr;
+    UDMFSocialActionButton* Button = WidgetTree->ConstructWidget<UDMFSocialActionButton>(UDMFSocialActionButton::StaticClass());
+    Button->InitializeSocialAction(Action, Username, GuildId, bValue);
+    Button->OnSocialActionPressed.AddDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialActionButtonPressed);
+    DMFNativeUI::StyleButton(Button, bPrimary, bDanger);
+    UTextBlock* LabelText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+    LabelText->SetText(Label);
+    LabelText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(LabelText, 10, bDanger ? DMFNativeUI::Danger() : (bPrimary ? DMFNativeUI::Text() : DMFNativeUI::Accent()), true);
+    Button->AddChild(LabelText);
+    return Button;
+}
+
+void UDMFDigimonInventoryWidget::HandleNearbyPlayersRefreshTimer()
+{
+    if (ActiveMenuTab == EDMFDigimonMenuTab::Social && ActiveSocialTab == EDMFSocialMenuTab::Friends && IsVisible())
+    {
+        RefreshNearbyPlayersData();
+    }
+}
+
+void UDMFDigimonInventoryWidget::RefreshNearbyPlayersData()
+{
+    if (!WidgetTree || !SocialNearbyPlayersList)
+    {
+        return;
+    }
+
+    ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer());
+    if (!Controller)
+    {
+        return;
+    }
+
+    const TArray<FDMFNearbySocialPlayerEntry> NearbyPlayers = Controller->GetNearbySocialPlayers();
+
+    // The list may contain up to the server's player capacity. Poll replicated transforms cheaply, but rebuild UMG
+    // rows only when the visible order/distance/relationship state actually changes.
+    uint32 PresentationHash = GetTypeHash(NearbyPlayers.Num());
+    for (const FDMFNearbySocialPlayerEntry& Entry : NearbyPlayers)
+    {
+        PresentationHash = HashCombineFast(PresentationHash, GetTypeHash(Entry.Username.ToLower()));
+        PresentationHash = HashCombineFast(PresentationHash, GetTypeHash(FMath::RoundToInt(Entry.DistanceMeters)));
+        uint8 RelationshipBits = 0;
+        RelationshipBits |= Entry.bIsFriend ? 1 << 0 : 0;
+        RelationshipBits |= Entry.bHasIncomingFriendRequest ? 1 << 1 : 0;
+        RelationshipBits |= Entry.bHasOutgoingFriendRequest ? 1 << 2 : 0;
+        RelationshipBits |= Entry.bIsIgnored ? 1 << 3 : 0;
+        PresentationHash = HashCombineFast(PresentationHash, GetTypeHash(RelationshipBits));
+    }
+    const UDMFFrameworkSettings* NearbySettings = GetDefault<UDMFFrameworkSettings>();
+    const int32 ConfiguredRadiusMeters = FMath::RoundToInt(FMath::Clamp(NearbySettings ? NearbySettings->NearbyPlayerFriendDiscoveryRadiusMeters : 50.0f, 1.0f, 100000.0f));
+    PresentationHash = HashCombineFast(PresentationHash, GetTypeHash(ConfiguredRadiusMeters));
+
+    if (bNearbyPlayersPresentationInitialized && PresentationHash == NearbyPlayersPresentationHash)
+    {
+        return;
+    }
+    bNearbyPlayersPresentationInitialized = true;
+    NearbyPlayersPresentationHash = PresentationHash;
+    SocialNearbyPlayersList->ClearChildren();
+
+    auto AddNearbyRow = [this](const FDMFNearbySocialPlayerEntry& Entry)
+    {
+        UBorder* RowBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(RowBorder, DMFNativeUI::PanelSoft(), FMargin(8));
+        SocialNearbyPlayersList->AddChildToVerticalBox(RowBorder)->SetPadding(FMargin(0,0,0,5));
+
+        UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        RowBorder->AddChild(Row);
+
+        UVerticalBox* Identity = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        if (UHorizontalBoxSlot* Slot = Row->AddChildToHorizontalBox(Identity))
+        {
+            Slot->SetSize(DMFNativeUI::FillSize());
+            Slot->SetVerticalAlignment(VAlign_Center);
+        }
+
+        const FLinearColor IdentityColor = Entry.bIsIgnored ? DMFNativeUI::Danger()
+            : (Entry.bIsFriend ? DMFNativeUI::Success()
+            : (Entry.bHasIncomingFriendRequest ? DMFNativeUI::Gold() : DMFNativeUI::Accent()));
+
+        UTextBlock* Name = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Name->SetText(FText::FromString(Entry.Username));
+        Name->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(Name, 12, IdentityColor, true);
+        Identity->AddChildToVerticalBox(Name);
+
+        FText Relationship;
+        if (Entry.bIsIgnored) Relationship = NSLOCTEXT("DMF","SocialNearbyRelationshipIgnored","IGNORED");
+        else if (Entry.bIsFriend) Relationship = NSLOCTEXT("DMF","SocialNearbyRelationshipFriend","FRIEND");
+        else if (Entry.bHasIncomingFriendRequest) Relationship = NSLOCTEXT("DMF","SocialNearbyRelationshipReceived","REQUEST RECEIVED");
+        else if (Entry.bHasOutgoingFriendRequest) Relationship = NSLOCTEXT("DMF","SocialNearbyRelationshipSent","REQUEST SENT");
+        else Relationship = NSLOCTEXT("DMF","SocialNearbyRelationshipAvailable","AVAILABLE");
+
+        UTextBlock* Meta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Meta->SetText(FText::Format(NSLOCTEXT("DMF","SocialNearbyPlayerMeta","{0} m away  •  {1}"), FText::AsNumber(FMath::RoundToInt(Entry.DistanceMeters)), Relationship));
+        Meta->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(Meta, 9, DMFNativeUI::Muted());
+        Identity->AddChildToVerticalBox(Meta)->SetPadding(FMargin(0,1,4,0));
+
+        // Keep the Nearby Players workflow complete even when project nameplates are not hit-testable:
+        // the relationship action and Ignore/Unignore action are presented together in a compact vertical stack.
+        // All mutations still route through the existing authoritative Social RPC/transaction path.
+        UVerticalBox* Actions = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        if (UHorizontalBoxSlot* Slot = Row->AddChildToHorizontalBox(Actions))
+        {
+            Slot->SetVerticalAlignment(VAlign_Center);
+            Slot->SetPadding(FMargin(4,0,0,0));
+        }
+
+        if (Entry.bIsIgnored)
+        {
+            UDMFSocialActionButton* Unignore = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyUnignore","UNIGNORE"), EDMFSocialUIAction::IgnoreRemove, Entry.Username, FGuid(), false, false, true);
+            if (Unignore) Actions->AddChildToVerticalBox(Unignore);
+        }
+        else
+        {
+            UDMFSocialActionButton* RelationshipAction = nullptr;
+            if (Entry.bIsFriend)
+            {
+                RelationshipAction = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyFriend","FRIEND"), EDMFSocialUIAction::FriendAdd, Entry.Username);
+                if (RelationshipAction) RelationshipAction->SetIsEnabled(false);
+            }
+            else if (Entry.bHasIncomingFriendRequest)
+            {
+                RelationshipAction = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyAccept","ACCEPT"), EDMFSocialUIAction::FriendAccept, Entry.Username, FGuid(), false, true, false);
+            }
+            else if (Entry.bHasOutgoingFriendRequest)
+            {
+                RelationshipAction = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyCancel","CANCEL"), EDMFSocialUIAction::FriendCancel, Entry.Username, FGuid(), false, false, true);
+            }
+            else
+            {
+                RelationshipAction = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyAddFriend","ADD FRIEND"), EDMFSocialUIAction::FriendAdd, Entry.Username, FGuid(), false, true, false);
+            }
+
+            if (RelationshipAction)
+            {
+                Actions->AddChildToVerticalBox(RelationshipAction);
+            }
+
+            UDMFSocialActionButton* Ignore = MakeSocialActionButton(NSLOCTEXT("DMF","SocialNearbyIgnore","IGNORE"), EDMFSocialUIAction::IgnoreAdd, Entry.Username, FGuid(), false, false, true);
+            if (Ignore)
+            {
+                Actions->AddChildToVerticalBox(Ignore)->SetPadding(FMargin(0,4,0,0));
+            }
+        }
+    };
+
+    for (const FDMFNearbySocialPlayerEntry& Entry : NearbyPlayers)
+    {
+        AddNearbyRow(Entry);
+    }
+
+    if (SocialNearbyPlayersList->GetChildrenCount() == 0)
+    {
+        UTextBlock* Empty = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Empty->SetText(FText::Format(NSLOCTEXT("DMF","SocialNoNearbyPlayers","No other players are currently within {0} m."), FText::AsNumber(ConfiguredRadiusMeters)));
+        Empty->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(Empty, 11, DMFNativeUI::Muted());
+        SocialNearbyPlayersList->AddChildToVerticalBox(Empty)->SetPadding(FMargin(4,7));
+    }
+}
+
+void UDMFDigimonInventoryWidget::RefreshSocialData()
+{
+    if (!WidgetTree) return;
+    ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer());
+    if (!Controller) return;
+    const FDMFSocialSnapshot Snapshot = Controller->GetCachedSocialSnapshot();
+    RefreshNearbyPlayersData();
+
+    auto AddEmptyState = [this](UVerticalBox* List, const FText& Text)
+    {
+        if (!List || List->GetChildrenCount() > 0) return;
+        UTextBlock* Empty = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        Empty->SetText(Text); Empty->SetAutoWrapText(true); DMFNativeUI::StyleText(Empty, 11, DMFNativeUI::Muted());
+        List->AddChildToVerticalBox(Empty)->SetPadding(FMargin(4,7));
+    };
+
+    auto AddSocialRow = [this](UVerticalBox* List, const FString& Primary, const FText& Secondary, const FLinearColor& PrimaryColor, const TArray<UDMFSocialActionButton*>& Actions)
+    {
+        if (!List) return;
+        UBorder* RowBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(RowBorder, DMFNativeUI::PanelSoft(), FMargin(8));
+        List->AddChildToVerticalBox(RowBorder)->SetPadding(FMargin(0,0,0,5));
+        UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass()); RowBorder->AddChild(Row);
+        UVerticalBox* Identity = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        if (UHorizontalBoxSlot* S = Row->AddChildToHorizontalBox(Identity)) { S->SetSize(DMFNativeUI::FillSize()); S->SetVerticalAlignment(VAlign_Center); }
+        UTextBlock* Name = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Name->SetText(FText::FromString(Primary)); Name->SetAutoWrapText(true); DMFNativeUI::StyleText(Name, 12, PrimaryColor, true); Identity->AddChildToVerticalBox(Name);
+        UTextBlock* Meta = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Meta->SetText(Secondary); Meta->SetAutoWrapText(true); DMFNativeUI::StyleText(Meta, 9, DMFNativeUI::Muted()); Identity->AddChildToVerticalBox(Meta)->SetPadding(FMargin(0,1,4,0));
+        for (UDMFSocialActionButton* Action : Actions)
+        {
+            if (!Action) continue;
+            if (UHorizontalBoxSlot* S = Row->AddChildToHorizontalBox(Action)) { S->SetVerticalAlignment(VAlign_Center); S->SetPadding(FMargin(4,0,0,0)); }
+        }
+    };
+
+    if (SocialFriendsList)
+    {
+        SocialFriendsList->ClearChildren();
+        for (const FDMFSocialFriendEntry& Friend : Snapshot.Friends)
+        {
+            UDMFSocialActionButton* Track = MakeSocialActionButton(
+                Friend.bTrackingEnabled ? NSLOCTEXT("DMF","SocialHideTracker","HIDE TRACKER") : NSLOCTEXT("DMF","SocialShowTracker","TRACK"),
+                EDMFSocialUIAction::FriendTrackToggle, Friend.Username, FGuid(), !Friend.bTrackingEnabled, Friend.bOnline, false);
+            if (Track) Track->SetIsEnabled(Friend.bOnline || Friend.bTrackingEnabled);
+            UDMFSocialActionButton* Remove = MakeSocialActionButton(NSLOCTEXT("DMF","SocialRemoveFriend","REMOVE"), EDMFSocialUIAction::FriendRemove, Friend.Username, FGuid(), false, false, true);
+            AddSocialRow(SocialFriendsList, Friend.Username,
+                Friend.bOnline ? NSLOCTEXT("DMF","SocialFriendOnline","ONLINE • distance tracker available") : NSLOCTEXT("DMF","SocialFriendOffline","OFFLINE • saved to your Friends list"),
+                Friend.bOnline ? DMFNativeUI::Success() : DMFNativeUI::Muted(), { Track, Remove });
+        }
+        AddEmptyState(SocialFriendsList, NSLOCTEXT("DMF","SocialNoFriends","No friends yet. Use NEARBY PLAYERS to send a request; they can accept it from their Friend Requests list."));
+    }
+
+    if (SocialFriendRequestsList)
+    {
+        SocialFriendRequestsList->ClearChildren();
+        for (const FString& Requester : Snapshot.PendingFriendRequests)
+        {
+            AddSocialRow(SocialFriendRequestsList, Requester, NSLOCTEXT("DMF","SocialFriendRequestPending","INCOMING • wants to add you as a friend"), DMFNativeUI::Gold(),
+                { MakeSocialActionButton(NSLOCTEXT("DMF","SocialAccept","ACCEPT"), EDMFSocialUIAction::FriendAccept, Requester, FGuid(), true, true, false),
+                  MakeSocialActionButton(NSLOCTEXT("DMF","SocialDecline","DECLINE"), EDMFSocialUIAction::FriendDecline, Requester, FGuid(), false, false, true) });
+        }
+        for (const FString& Target : Snapshot.PendingOutgoingFriendRequests)
+        {
+            AddSocialRow(SocialFriendRequestsList, Target, NSLOCTEXT("DMF","SocialFriendRequestOutgoing","OUTGOING • waiting for response"), DMFNativeUI::Accent(),
+                { MakeSocialActionButton(NSLOCTEXT("DMF","SocialCancelFriendRequest","CANCEL"), EDMFSocialUIAction::FriendCancel, Target, FGuid(), false, false, true) });
+        }
+        AddEmptyState(SocialFriendRequestsList, NSLOCTEXT("DMF","SocialNoFriendRequests","No incoming or outgoing friend requests."));
+    }
+
+    if (SocialIgnoreList)
+    {
+        SocialIgnoreList->ClearChildren();
+        for (const FString& Ignored : Snapshot.IgnoredPlayers)
+        {
+            AddSocialRow(SocialIgnoreList, Ignored, NSLOCTEXT("DMF","SocialIgnoredMeta","CHAT HIDDEN • player remains visible in the world"), DMFNativeUI::Danger(),
+                { MakeSocialActionButton(NSLOCTEXT("DMF","SocialUnignore","UNIGNORE"), EDMFSocialUIAction::IgnoreRemove, Ignored, FGuid(), false, false, true) });
+        }
+        AddEmptyState(SocialIgnoreList, NSLOCTEXT("DMF","SocialNoIgnoredPlayers","Nobody is ignored."));
+    }
+
+    const bool bInGuild = Snapshot.GuildId.IsValid();
+    if (SocialGuildIdentityText)
+    {
+        SocialGuildIdentityText->SetText(bInGuild ? FText::FromString(Snapshot.GuildName) : NSLOCTEXT("DMF","SocialNoGuildTitle","NO GUILD"));
+        SocialGuildIdentityText->SetColorAndOpacity(FSlateColor(bInGuild ? DMFNativeUI::Gold() : DMFNativeUI::Muted()));
+    }
+    if (SocialGuildMetaText)
+    {
+        SocialGuildMetaText->SetText(bInGuild
+            ? FText::Format(NSLOCTEXT("DMF","SocialGuildMeta","OWNER: {0}  •  {1} MEMBER(S)"), FText::FromString(Snapshot.GuildOwnerUsername), FText::AsNumber(Snapshot.GuildMembers.Num()))
+            : NSLOCTEXT("DMF","SocialGuildCreateHelp","Create a persistent guild, accept an invite, or apply through the directory."));
+    }
+    if (SocialGuildNameInput)
+    {
+        if (bInGuild && Snapshot.bIsGuildOwner && !SocialGuildNameInput->HasKeyboardFocus()) SocialGuildNameInput->SetText(FText::FromString(Snapshot.GuildName));
+        SocialGuildNameInput->SetIsReadOnly(bInGuild && !Snapshot.bIsGuildOwner);
+    }
+    if (SocialGuildCreateButton) SocialGuildCreateButton->SetVisibility(!bInGuild ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (SocialGuildRenameButton) SocialGuildRenameButton->SetVisibility(bInGuild && Snapshot.bIsGuildOwner ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (SocialGuildLeaveButton) SocialGuildLeaveButton->SetVisibility(bInGuild && !Snapshot.bIsGuildOwner ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (SocialGuildDisbandButton) SocialGuildDisbandButton->SetVisibility(bInGuild && Snapshot.bIsGuildOwner ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+
+    if (SocialGuildMembersList)
+    {
+        SocialGuildMembersList->ClearChildren();
+        for (const FDMFGuildMemberEntry& Member : Snapshot.GuildMembers)
+        {
+            TArray<UDMFSocialActionButton*> Actions;
+            if (Snapshot.bIsGuildOwner && !Member.bOwner)
+            {
+                Actions.Add(MakeSocialActionButton(NSLOCTEXT("DMF","SocialGuildKick","REMOVE"), EDMFSocialUIAction::GuildRemoveMember, Member.Username, FGuid(), false, false, true));
+            }
+            AddSocialRow(SocialGuildMembersList, Member.Username,
+                Member.bOwner ? (Member.bOnline ? NSLOCTEXT("DMF","SocialGuildOwnerOnline","OWNER • ONLINE") : NSLOCTEXT("DMF","SocialGuildOwnerOffline","OWNER • OFFLINE"))
+                              : (Member.bOnline ? NSLOCTEXT("DMF","SocialGuildMemberOnline","MEMBER • ONLINE") : NSLOCTEXT("DMF","SocialGuildMemberOffline","MEMBER • OFFLINE")),
+                Member.bOnline ? DMFNativeUI::Success() : DMFNativeUI::Muted(), Actions);
+        }
+        AddEmptyState(SocialGuildMembersList, NSLOCTEXT("DMF","SocialNoGuildMembers","Create or join a guild to see its member roster."));
+    }
+
+    if (SocialGuildInvitesList)
+    {
+        SocialGuildInvitesList->ClearChildren();
+        for (const FDMFGuildInvite& Invite : Snapshot.PendingGuildInvites)
+        {
+            AddSocialRow(SocialGuildInvitesList, Invite.GuildName,
+                FText::Format(NSLOCTEXT("DMF","SocialGuildInviteMeta","Invited by {0}"), FText::FromString(Invite.InviterUsername)), DMFNativeUI::Gold(),
+                { MakeSocialActionButton(NSLOCTEXT("DMF","SocialGuildInviteAccept","ACCEPT"), EDMFSocialUIAction::GuildInviteAccept, FString(), Invite.GuildId, true, true, false),
+                  MakeSocialActionButton(NSLOCTEXT("DMF","SocialGuildInviteDecline","DECLINE"), EDMFSocialUIAction::GuildInviteDecline, FString(), Invite.GuildId, false, false, true) });
+        }
+        AddEmptyState(SocialGuildInvitesList, NSLOCTEXT("DMF","SocialNoGuildInvites","No pending guild invitations."));
+    }
+
+    if (SocialGuildApplicationsList)
+    {
+        SocialGuildApplicationsList->ClearChildren();
+        if (Snapshot.bIsGuildOwner)
+        {
+            for (const FString& Applicant : Snapshot.PendingGuildApplications)
+            {
+                AddSocialRow(SocialGuildApplicationsList, Applicant, NSLOCTEXT("DMF","SocialGuildApplicantMeta","Applied to join your guild"), DMFNativeUI::Gold(),
+                    { MakeSocialActionButton(NSLOCTEXT("DMF","SocialGuildApplicationAccept","ACCEPT"), EDMFSocialUIAction::GuildApplicationAccept, Applicant, Snapshot.GuildId, true, true, false),
+                      MakeSocialActionButton(NSLOCTEXT("DMF","SocialGuildApplicationDecline","DECLINE"), EDMFSocialUIAction::GuildApplicationDecline, Applicant, Snapshot.GuildId, false, false, true) });
+            }
+            AddEmptyState(SocialGuildApplicationsList, NSLOCTEXT("DMF","SocialNoGuildApplications","No pending applications."));
+        }
+        else
+        {
+            AddEmptyState(SocialGuildApplicationsList, NSLOCTEXT("DMF","SocialApplicationsOwnerOnly","Guild applications are visible to the guild owner only."));
+        }
+    }
+
+    if (SocialGuildSearchList)
+    {
+        SocialGuildSearchList->ClearChildren();
+        const FString Search = SocialGuildSearchQuery.TrimStartAndEnd();
+        for (const FDMFGuildSummary& Guild : Snapshot.GuildSearchResults)
+        {
+            if (!Search.IsEmpty() && !Guild.Name.Contains(Search, ESearchCase::IgnoreCase) && !Guild.OwnerUsername.Contains(Search, ESearchCase::IgnoreCase)) continue;
+            TArray<UDMFSocialActionButton*> Actions;
+            if (!bInGuild)
+            {
+                UDMFSocialActionButton* Apply = MakeSocialActionButton(Guild.bApplicationPending ? NSLOCTEXT("DMF","SocialGuildApplied","APPLIED") : NSLOCTEXT("DMF","SocialGuildApply","APPLY"), EDMFSocialUIAction::GuildApply, FString(), Guild.GuildId, true, !Guild.bApplicationPending, false);
+                if (Apply) Apply->SetIsEnabled(!Guild.bApplicationPending);
+                Actions.Add(Apply);
+            }
+            AddSocialRow(SocialGuildSearchList, Guild.Name,
+                FText::Format(NSLOCTEXT("DMF","SocialGuildDirectoryMeta","Owner {0}  •  {1} member(s)"), FText::FromString(Guild.OwnerUsername), FText::AsNumber(Guild.MemberCount)), DMFNativeUI::Text(), Actions);
+        }
+        AddEmptyState(SocialGuildSearchList, Search.IsEmpty() ? NSLOCTEXT("DMF","SocialNoGuilds","No guilds have been created yet.") : NSLOCTEXT("DMF","SocialNoGuildSearchResults","No guilds match this search."));
+    }
+
+    RefreshSocialTabPresentation();
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialActionFeedback(const bool bSuccess, const FText& Message)
+{
+    if (DigimonStatusText && !Message.IsEmpty())
+    {
+        DigimonStatusText->SetText(Message);
+        DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger()));
     }
 }
 
@@ -3222,6 +3795,65 @@ void UDMFDigimonInventoryWidget::HandleCollectionTab() { SetActiveMenuTab(EDMFDi
 void UDMFDigimonInventoryWidget::HandleBankTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Bank); }
 void UDMFDigimonInventoryWidget::HandleScanMaterializeTab() { SetActiveMenuTab(EDMFDigimonMenuTab::ScanAndMaterialize); }
 void UDMFDigimonInventoryWidget::HandleCareTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Care); }
+void UDMFDigimonInventoryWidget::HandleSocialTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Social); }
+void UDMFDigimonInventoryWidget::HandleSocialFriendsTab() { SetActiveSocialTab(EDMFSocialMenuTab::Friends); }
+void UDMFDigimonInventoryWidget::HandleSocialGuildTab() { SetActiveSocialTab(EDMFSocialMenuTab::Guild); }
+
+void UDMFDigimonInventoryWidget::HandleSocialActionButtonPressed(UDMFSocialActionButton* Button)
+{
+    ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer());
+    if (!Controller || !Button) return;
+    switch (Button->SocialAction)
+    {
+        case EDMFSocialUIAction::FriendAdd: Controller->RequestAddFriend(Button->SubjectUsername); break;
+        case EDMFSocialUIAction::IgnoreAdd: Controller->RequestIgnorePlayer(Button->SubjectUsername); break;
+        case EDMFSocialUIAction::FriendAccept: Controller->RespondToFriendRequest(Button->SubjectUsername, true); break;
+        case EDMFSocialUIAction::FriendDecline: Controller->RespondToFriendRequest(Button->SubjectUsername, false); break;
+        case EDMFSocialUIAction::FriendCancel: Controller->RequestCancelFriendRequest(Button->SubjectUsername); break;
+        case EDMFSocialUIAction::FriendRemove: Controller->RequestRemoveFriend(Button->SubjectUsername); break;
+        case EDMFSocialUIAction::FriendTrackToggle: Controller->RequestSetFriendTracking(Button->SubjectUsername, Button->bValue); break;
+        case EDMFSocialUIAction::IgnoreRemove: Controller->RequestRemoveIgnoredPlayer(Button->SubjectUsername); break;
+        case EDMFSocialUIAction::GuildInviteAccept: Controller->RespondToGuildInvite(Button->SubjectGuildId, true); break;
+        case EDMFSocialUIAction::GuildInviteDecline: Controller->RespondToGuildInvite(Button->SubjectGuildId, false); break;
+        case EDMFSocialUIAction::GuildApply: Controller->RequestApplyToGuild(Button->SubjectGuildId); break;
+        case EDMFSocialUIAction::GuildApplicationAccept: Controller->RespondToGuildApplication(Button->SubjectUsername, true); break;
+        case EDMFSocialUIAction::GuildApplicationDecline: Controller->RespondToGuildApplication(Button->SubjectUsername, false); break;
+        case EDMFSocialUIAction::GuildRemoveMember: Controller->RequestRemoveGuildMember(Button->SubjectUsername); break;
+        default: break;
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialGuildCreate()
+{
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        Controller->RequestCreateGuild(SocialGuildNameInput ? SocialGuildNameInput->GetText().ToString() : FString());
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialGuildRename()
+{
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer()))
+    {
+        Controller->RequestRenameGuild(SocialGuildNameInput ? SocialGuildNameInput->GetText().ToString() : FString());
+    }
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialGuildLeave()
+{
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer())) Controller->RequestLeaveGuild();
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialGuildDisband()
+{
+    if (ADMFMMOPlayerController* Controller = Cast<ADMFMMOPlayerController>(GetOwningPlayer())) Controller->RequestDisbandGuild();
+}
+
+void UDMFDigimonInventoryWidget::HandleSocialGuildSearchChanged(const FText& SearchText)
+{
+    SocialGuildSearchQuery = SearchText.ToString();
+    RefreshSocialData();
+}
 void UDMFDigimonInventoryWidget::HandleFeedDigiMeat() { if (BoundDigimonComponent) BoundDigimonComponent->ServerFeedActivePartnerUntilFull(); }
 void UDMFDigimonInventoryWidget::HandleCareStateChanged(const FGuid DigimonInstanceId, const FDMFDigimonCareState CareState) { RefreshCareData(); }
 void UDMFDigimonInventoryWidget::HandleCareSequenceFinished(const bool bSuccess, const FText Message, const FGuid DigimonInstanceId) { RefreshCareData(); if (DigimonStatusText && !Message.IsEmpty()) { DigimonStatusText->SetText(Message); DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger())); } }

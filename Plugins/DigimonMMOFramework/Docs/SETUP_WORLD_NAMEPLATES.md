@@ -96,3 +96,13 @@ Widget presentation is disabled on dedicated-server instances. The server still 
 ## Canonical Digivolution stage labels (v0.15.3)
 
 Digimon world nameplates read the stage directly from the resolved `DMFDigimonSpeciesData::Stage`. Native presentation then passes that value through `Get Digimon Stage Display Text`, so runtime/cooked builds always show canonical labels (`Fresh`, `In-Training`, `Rookie`, `Champion`, `Ultimate`, `Mega`, `Ultra`, `Armor`, `Hybrid`, `Unknown`) rather than serialized enum identifiers such as `BabyI`. Configure the **Stage** on each Species Data Asset; do not duplicate stage text in a nameplate Blueprint.
+
+## v0.19.1 Nearby Players fallback
+
+Friend discovery no longer depends on nameplate hit testing. **DIGIMON MENU → SOCIAL → FRIENDS & IGNORE → NEARBY PLAYERS** lists replicated players inside the globally configured radius nearest-first and routes ADD/ACCEPT/CANCEL through the same server-authoritative Social actions. Nameplate context remains an optional shortcut when a project wants clickable world labels.
+
+## v0.19.0 player Social context
+
+When **Enable Social System** and **Enable Player Nameplate Social Context** are enabled, remote player nameplates become mouse-hit-testable owner-local presentation. Left- or right-clicking the exact nameplate opens `DMFPlayerSocialContextWidget` near the cursor with relationship-aware Friend, Ignore and guild-owner Invite actions. The context widget routes requests through the owning `DMFMMOPlayerController`; the world widget does not own social authority.
+
+Tracked-friend distance markers are separate non-replicated screen-space Widget Components placed above the normal player nameplate. They use the remote avatar's already replicated transform and can be independently toggled from **SOCIAL → FRIENDS & IGNORE**. See `SETUP_SOCIAL_SYSTEM.md`.

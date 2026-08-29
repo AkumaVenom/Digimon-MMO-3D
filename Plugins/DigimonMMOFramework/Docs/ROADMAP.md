@@ -257,3 +257,7 @@ Completed: persistent server-authoritative Attribute Point spending for HP/SP/ST
 - Progression-aware automatic Buy/Sell valuation with lifetime battle EXP and exact Attribute Point investment provenance.
 - Native owner-local BUY / SELL market UI, transaction confirmation and server result feedback.
 - Atomic Bits/Party/Bank mutation, immediate account persistence, concurrency/range/storage validation and Blueprint trade presentation hooks.
+
+## v0.19 Social foundation completed
+
+The framework now has an extensible persistent Social shell with Friends/Ignore and Guild modules. Future Social sub-tabs can reuse the existing nested-menu structure and owner-only snapshot pattern rather than adding new top-level menus. Candidate future modules include party/group matchmaking, whispers/mail, guild ranks/permissions, guild message-of-the-day and richer online-status/presence states; none of those are required by the v0.19.x Social baseline. Nearby-player friend discovery is already provided by v0.19.1.

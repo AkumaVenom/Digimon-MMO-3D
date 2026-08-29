@@ -12,8 +12,12 @@ class DIGIMONMMOFRAMEWORK_API UDMFAccountDatabaseSaveGame : public USaveGame
 
 public:
     UPROPERTY(SaveGame)
-    int32 SchemaVersion = 7;
+    int32 SchemaVersion = 8;
 
     UPROPERTY(SaveGame)
     TMap<FString, FDMFAccountRecord> Accounts;
+
+    /** Persistent global guild registry introduced in schema v8. */
+    UPROPERTY(SaveGame)
+    TMap<FGuid, FDMFGuildRecord> Guilds;
 };

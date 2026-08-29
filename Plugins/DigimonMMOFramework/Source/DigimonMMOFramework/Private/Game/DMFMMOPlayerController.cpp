@@ -4,7 +4,11 @@
 #include "Components/DMFPlayerAvatarComponent.h"
 #include "Components/DMFPlayerDigimonComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/World.h"
+#include "Engine/LocalPlayer.h"
+#include "EngineUtils.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFDigimonVendorActor.h"
 #include "Game/DMFHealerActor.h"
@@ -27,9 +31,18 @@
 #include "UI/DMFPlayerSkinSelectionWidget.h"
 #include "UI/DMFStarterSelectionWidget.h"
 #include "UI/DMFWorldChatWidget.h"
+#include "UI/DMFPlayerSocialContextWidget.h"
+#include "UI/DMFFriendTrackerWidget.h"
 
 void ADMFMMOPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    if (IsLocalController())
+    {
+        GetWorldTimerManager().ClearTimer(FriendTrackerRefreshTimer);
+        ClosePlayerSocialContextUI();
+        DestroyFriendTrackerComponents();
+    }
+
     if (HasAuthority())
     {
         // GameMode::Logout is the primary path. This is an idempotent safety net for unusual net-driver/world
@@ -114,6 +127,16 @@ void ADMFMMOPlayerController::BeginPlay()
     if (!ChatSettings || ChatSettings->bEnableWorldChat)
     {
         ServerRequestWorldChatHistory();
+    }
+
+    const UDMFFrameworkSettings* SocialSettings = GetDefault<UDMFFrameworkSettings>();
+    if (!SocialSettings || SocialSettings->bEnableSocialSystem)
+    {
+        ServerRequestSocialSnapshot();
+        const float ReconcileInterval = SocialSettings
+            ? FMath::Clamp(SocialSettings->FriendTrackerReconcileInterval, 0.2f, 5.0f)
+            : 0.75f;
+        GetWorldTimerManager().SetTimer(FriendTrackerRefreshTimer, this, &ADMFMMOPlayerController::RefreshFriendTrackingPresentation, ReconcileInterval, true);
     }
 
     // Only remote network clients need the late-join possession safety net. The listen-host path is
@@ -775,6 +798,7 @@ void ADMFMMOPlayerController::RefreshDigimonInventoryUI()
         DigimonInventoryWidget->RefreshScanData();
         DigimonInventoryWidget->RefreshDigivolutionData();
         DigimonInventoryWidget->RefreshCareData();
+        DigimonInventoryWidget->RefreshSocialData();
     }
 }
 
@@ -820,6 +844,15 @@ void ADMFMMOPlayerController::OpenDigivolutionUI()
     if (DigimonInventoryWidget)
     {
         DigimonInventoryWidget->SetActiveMenuTab(EDMFDigimonMenuTab::Digivolution);
+    }
+}
+
+void ADMFMMOPlayerController::OpenSocialUI()
+{
+    OpenDigimonInventoryUI();
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->SetActiveMenuTab(EDMFDigimonMenuTab::Social);
     }
 }
 
@@ -1352,6 +1385,469 @@ void ADMFMMOPlayerController::ClientWorldChatSendRejected_Implementation(const F
     if (WorldChatWidget)
     {
         WorldChatWidget->AddLocalSystemMessage(Reason);
+    }
+}
+
+void ADMFMMOPlayerController::RequestSocialSnapshot()
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (!Settings || Settings->bEnableSocialSystem)
+    {
+        ServerRequestSocialSnapshot();
+    }
+}
+
+void ADMFMMOPlayerController::ExecuteLocalSocialAction(const EDMFSocialActionType ActionType, const FString& SubjectUsername, const FGuid GuildId, const FString& TextValue, const bool bValue)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableSocialSystem)
+    {
+        HandleSocialActionResultPresentation(false, NSLOCTEXT("DMF", "SocialDisabledLocal", "The Social system is disabled on this server."));
+        return;
+    }
+    ServerExecuteSocialAction(ActionType, SubjectUsername, GuildId, TextValue, bValue);
+}
+
+TArray<FDMFNearbySocialPlayerEntry> ADMFMMOPlayerController::GetNearbySocialPlayers() const
+{
+    TArray<FDMFNearbySocialPlayerEntry> Result;
+    if (!IsLocalController() || GetNetMode() == NM_DedicatedServer)
+    {
+        return Result;
+    }
+
+    const APawn* LocalPawn = GetPawn();
+    UWorld* World = GetWorld();
+    if (!IsValid(LocalPawn) || !World)
+    {
+        return Result;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const float RadiusMeters = FMath::Clamp(Settings ? Settings->NearbyPlayerFriendDiscoveryRadiusMeters : 50.0f, 1.0f, 100000.0f);
+    const float RadiusCentimeters = RadiusMeters * 100.0f;
+    const float RadiusSquared = FMath::Square(RadiusCentimeters);
+
+    auto Canonical = [](const FString& Value)
+    {
+        return Value.TrimStartAndEnd().ToLower();
+    };
+
+    TSet<FString> FriendKeys;
+    for (const FDMFSocialFriendEntry& Friend : CachedSocialSnapshot.Friends)
+    {
+        const FString Key = Canonical(Friend.Username);
+        if (!Key.IsEmpty()) FriendKeys.Add(Key);
+    }
+
+    TSet<FString> IncomingKeys;
+    for (const FString& Username : CachedSocialSnapshot.PendingFriendRequests)
+    {
+        const FString Key = Canonical(Username);
+        if (!Key.IsEmpty()) IncomingKeys.Add(Key);
+    }
+
+    TSet<FString> OutgoingKeys;
+    for (const FString& Username : CachedSocialSnapshot.PendingOutgoingFriendRequests)
+    {
+        const FString Key = Canonical(Username);
+        if (!Key.IsEmpty()) OutgoingKeys.Add(Key);
+    }
+
+    TSet<FString> IgnoredKeys;
+    for (const FString& Username : CachedSocialSnapshot.IgnoredPlayers)
+    {
+        const FString Key = Canonical(Username);
+        if (!Key.IsEmpty()) IgnoredKeys.Add(Key);
+    }
+
+    // A short-lived reconnect transition can briefly leave two replicated avatars with the same public name.
+    // Keep only the nearest valid actor for that authenticated identity so the UI never duplicates a player.
+    TMap<FString, FDMFNearbySocialPlayerEntry> NearestByUsername;
+    for (TActorIterator<ADMFPlayerAvatarCharacter> It(World); It; ++It)
+    {
+        ADMFPlayerAvatarCharacter* Avatar = *It;
+        if (!IsValid(Avatar) || Avatar == LocalPawn || Avatar->IsActorBeingDestroyed())
+        {
+            continue;
+        }
+
+        const ADMFPlayerState* State = Avatar->GetPlayerState<ADMFPlayerState>();
+        if (!State)
+        {
+            continue;
+        }
+
+        const FString Username = State->GetPlayerName().TrimStartAndEnd();
+        const FString Key = Canonical(Username);
+        if (Username.IsEmpty() || Key.IsEmpty())
+        {
+            continue;
+        }
+
+        const float DistanceSquared = FVector::DistSquared(LocalPawn->GetActorLocation(), Avatar->GetActorLocation());
+        if (DistanceSquared > RadiusSquared)
+        {
+            continue;
+        }
+
+        const float DistanceMeters = FMath::Sqrt(DistanceSquared) / 100.0f;
+        if (FDMFNearbySocialPlayerEntry* Existing = NearestByUsername.Find(Key))
+        {
+            if (Existing->DistanceMeters <= DistanceMeters)
+            {
+                continue;
+            }
+        }
+
+        FDMFNearbySocialPlayerEntry Entry;
+        Entry.Username = Username;
+        Entry.DistanceMeters = DistanceMeters;
+        Entry.bIsFriend = FriendKeys.Contains(Key);
+        Entry.bHasIncomingFriendRequest = IncomingKeys.Contains(Key);
+        Entry.bHasOutgoingFriendRequest = OutgoingKeys.Contains(Key);
+        Entry.bIsIgnored = IgnoredKeys.Contains(Key);
+        NearestByUsername.Add(Key, MoveTemp(Entry));
+    }
+
+    NearestByUsername.GenerateValueArray(Result);
+    Result.Sort([](const FDMFNearbySocialPlayerEntry& A, const FDMFNearbySocialPlayerEntry& B)
+    {
+        if (!FMath::IsNearlyEqual(A.DistanceMeters, B.DistanceMeters, 0.001f))
+        {
+            return A.DistanceMeters < B.DistanceMeters;
+        }
+        return A.Username.Compare(B.Username, ESearchCase::IgnoreCase) < 0;
+    });
+    return Result;
+}
+
+void ADMFMMOPlayerController::RequestAddFriend(const FString& TargetUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::SendFriendRequest, TargetUsername); }
+void ADMFMMOPlayerController::RespondToFriendRequest(const FString& RequesterUsername, const bool bAccept) { ExecuteLocalSocialAction(EDMFSocialActionType::RespondFriendRequest, RequesterUsername, FGuid(), FString(), bAccept); }
+void ADMFMMOPlayerController::RequestCancelFriendRequest(const FString& TargetUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::CancelFriendRequest, TargetUsername); }
+void ADMFMMOPlayerController::RequestRemoveFriend(const FString& FriendUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::RemoveFriend, FriendUsername); }
+void ADMFMMOPlayerController::RequestSetFriendTracking(const FString& FriendUsername, const bool bEnabled) { ExecuteLocalSocialAction(EDMFSocialActionType::SetFriendTracking, FriendUsername, FGuid(), FString(), bEnabled); }
+void ADMFMMOPlayerController::RequestIgnorePlayer(const FString& TargetUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::IgnorePlayer, TargetUsername); }
+void ADMFMMOPlayerController::RequestRemoveIgnoredPlayer(const FString& TargetUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::RemoveIgnoredPlayer, TargetUsername); }
+void ADMFMMOPlayerController::RequestCreateGuild(const FString& GuildName) { ExecuteLocalSocialAction(EDMFSocialActionType::CreateGuild, FString(), FGuid(), GuildName); }
+void ADMFMMOPlayerController::RequestRenameGuild(const FString& GuildName) { ExecuteLocalSocialAction(EDMFSocialActionType::RenameGuild, FString(), FGuid(), GuildName); }
+void ADMFMMOPlayerController::RequestInvitePlayerToGuild(const FString& TargetUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::InvitePlayerToGuild, TargetUsername); }
+void ADMFMMOPlayerController::RespondToGuildInvite(const FGuid GuildId, const bool bAccept) { ExecuteLocalSocialAction(EDMFSocialActionType::RespondGuildInvite, FString(), GuildId, FString(), bAccept); }
+void ADMFMMOPlayerController::RequestApplyToGuild(const FGuid GuildId) { ExecuteLocalSocialAction(EDMFSocialActionType::ApplyToGuild, FString(), GuildId); }
+void ADMFMMOPlayerController::RespondToGuildApplication(const FString& ApplicantUsername, const bool bAccept) { ExecuteLocalSocialAction(EDMFSocialActionType::RespondGuildApplication, ApplicantUsername, FGuid(), FString(), bAccept); }
+void ADMFMMOPlayerController::RequestRemoveGuildMember(const FString& MemberUsername) { ExecuteLocalSocialAction(EDMFSocialActionType::RemoveGuildMember, MemberUsername); }
+void ADMFMMOPlayerController::RequestLeaveGuild() { ExecuteLocalSocialAction(EDMFSocialActionType::LeaveGuild); }
+void ADMFMMOPlayerController::RequestDisbandGuild() { ExecuteLocalSocialAction(EDMFSocialActionType::DisbandGuild); }
+
+void ADMFMMOPlayerController::ServerRequestSocialSnapshot_Implementation()
+{
+    UWorld* World = GetWorld();
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const double Now = World ? static_cast<double>(World->GetTimeSeconds()) : 0.0;
+    const double MinimumInterval = Settings
+        ? static_cast<double>(FMath::Clamp(Settings->MinimumSocialSnapshotRequestInterval, 0.1f, 5.0f))
+        : 0.35;
+    if ((Now - LastSocialSnapshotAcceptedServerTime) < MinimumInterval)
+    {
+        return;
+    }
+    LastSocialSnapshotAcceptedServerTime = Now;
+
+    if (ADMFMMOGameMode* MMOGameMode = World ? World->GetAuthGameMode<ADMFMMOGameMode>() : nullptr)
+    {
+        MMOGameMode->SendSocialSnapshot(this);
+    }
+}
+
+void ADMFMMOPlayerController::ServerExecuteSocialAction_Implementation(const EDMFSocialActionType ActionType, const FString& SubjectUsername, const FGuid GuildId, const FString& TextValue, const bool bValue)
+{
+    UWorld* World = GetWorld();
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const double Now = World ? static_cast<double>(World->GetTimeSeconds()) : 0.0;
+    const double MinimumInterval = Settings ? static_cast<double>(FMath::Clamp(Settings->MinimumSocialActionInterval, 0.05f, 5.0f)) : 0.15;
+    if ((Now - LastSocialActionAcceptedServerTime) < MinimumInterval)
+    {
+        ClientSocialActionResult(false, NSLOCTEXT("DMF", "SocialActionRateLimited", "Please wait a moment before making another Social change."));
+        return;
+    }
+    LastSocialActionAcceptedServerTime = Now;
+
+    // Bound generic string payloads before they reach persistence/search logic. Usernames are much shorter in the
+    // account system and guild names are capped at 64, so these are defensive network-abuse ceilings only.
+    if (SubjectUsername.Len() > 128 || TextValue.Len() > 256)
+    {
+        ClientSocialActionResult(false, NSLOCTEXT("DMF", "SocialPayloadTooLarge", "That Social request contains invalid text."));
+        return;
+    }
+
+    ADMFMMOGameMode* MMOGameMode = World ? World->GetAuthGameMode<ADMFMMOGameMode>() : nullptr;
+    FText Message;
+    const bool bSuccess = MMOGameMode && MMOGameMode->ExecuteSocialAction(this, ActionType, SubjectUsername, GuildId, TextValue, bValue, Message);
+    if (!MMOGameMode && Message.IsEmpty())
+    {
+        Message = NSLOCTEXT("DMF", "SocialAuthorityUnavailable", "Social services are temporarily unavailable.");
+    }
+    ClientSocialActionResult(bSuccess, Message);
+    if (MMOGameMode)
+    {
+        MMOGameMode->SendSocialSnapshot(this);
+    }
+}
+
+void ADMFMMOPlayerController::ClientReceiveSocialSnapshot_Implementation(const FDMFSocialSnapshot& SocialSnapshot)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    CachedSocialSnapshot = SocialSnapshot;
+    RefreshFriendTrackingPresentation();
+    if (PlayerSocialContextWidget)
+    {
+        PlayerSocialContextWidget->RefreshActions();
+    }
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->RefreshSocialData();
+    }
+    OnSocialSnapshotChanged.Broadcast(CachedSocialSnapshot);
+}
+
+void ADMFMMOPlayerController::ClientSocialActionResult_Implementation(const bool bSuccess, const FText& Message)
+{
+    HandleSocialActionResultPresentation(bSuccess, Message);
+}
+
+void ADMFMMOPlayerController::HandleSocialActionResultPresentation(const bool bSuccess, const FText& Message)
+{
+    if (!IsLocalController())
+    {
+        return;
+    }
+
+    if (!Message.IsEmpty())
+    {
+        RefreshWorldChatUI();
+        if (WorldChatWidget)
+        {
+            WorldChatWidget->AddLocalSystemMessage(Message);
+        }
+    }
+    if (DigimonInventoryWidget)
+    {
+        DigimonInventoryWidget->HandleSocialActionFeedback(bSuccess, Message);
+    }
+    OnSocialActionResult.Broadcast(bSuccess, Message);
+}
+
+void ADMFMMOPlayerController::OpenPlayerSocialContext(ADMFPlayerAvatarCharacter* TargetPlayer)
+{
+    if (!IsLocalController() || !IsValid(TargetPlayer) || TargetPlayer == GetPawn())
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && (!Settings->bEnableSocialSystem || !Settings->bEnablePlayerNameplateSocialContext))
+    {
+        return;
+    }
+
+    // Render immediately from the last owner-only snapshot, then ask authority for a throttled refresh so
+    // relationship/guild actions converge even if this context menu was opened after a long gameplay period.
+    RequestSocialSnapshot();
+    ClosePlayerSocialContextUI();
+    TSubclassOf<UDMFPlayerSocialContextWidget> WidgetClass = Settings ? Settings->PlayerSocialContextWidgetClass : nullptr;
+    if (!WidgetClass)
+    {
+        WidgetClass = UDMFPlayerSocialContextWidget::StaticClass();
+    }
+
+    PlayerSocialContextWidget = CreateWidget<UDMFPlayerSocialContextWidget>(this, WidgetClass);
+    if (!PlayerSocialContextWidget)
+    {
+        return;
+    }
+
+    PlayerSocialContextWidget->SetTargetPlayer(TargetPlayer);
+    PlayerSocialContextWidget->AddToViewport(650);
+
+    float MouseX = 0.0f;
+    float MouseY = 0.0f;
+    int32 ViewportX = 0;
+    int32 ViewportY = 0;
+    GetViewportSize(ViewportX, ViewportY);
+    if (GetMousePosition(MouseX, MouseY))
+    {
+        constexpr float Width = 286.0f;
+        constexpr float EstimatedHeight = 260.0f;
+        const float X = FMath::Clamp(MouseX + 14.0f, 8.0f, FMath::Max(8.0f, static_cast<float>(ViewportX) - Width - 8.0f));
+        const float Y = FMath::Clamp(MouseY + 10.0f, 8.0f, FMath::Max(8.0f, static_cast<float>(ViewportY) - EstimatedHeight - 8.0f));
+        PlayerSocialContextWidget->SetPositionInViewport(FVector2D(X, Y), false);
+    }
+}
+
+void ADMFMMOPlayerController::ClosePlayerSocialContextUI()
+{
+    if (PlayerSocialContextWidget)
+    {
+        PlayerSocialContextWidget->RemoveFromParent();
+        PlayerSocialContextWidget = nullptr;
+    }
+}
+
+ADMFPlayerAvatarCharacter* ADMFMMOPlayerController::FindOnlinePlayerAvatarByUsername(const FString& Username) const
+{
+    UWorld* World = GetWorld();
+    if (!World || Username.TrimStartAndEnd().IsEmpty())
+    {
+        return nullptr;
+    }
+
+    for (TActorIterator<ADMFPlayerAvatarCharacter> It(World); It; ++It)
+    {
+        ADMFPlayerAvatarCharacter* Avatar = *It;
+        if (!IsValid(Avatar) || Avatar == GetPawn())
+        {
+            continue;
+        }
+        if (const ADMFPlayerState* State = Avatar->GetPlayerState<ADMFPlayerState>())
+        {
+            if (State->GetPlayerName().Equals(Username, ESearchCase::IgnoreCase))
+            {
+                return Avatar;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void ADMFMMOPlayerController::DestroyFriendTrackerComponents()
+{
+    for (TPair<FString, TObjectPtr<UWidgetComponent>>& Pair : FriendTrackerComponents)
+    {
+        if (IsValid(Pair.Value))
+        {
+            Pair.Value->DestroyComponent();
+        }
+    }
+    FriendTrackerComponents.Reset();
+}
+
+void ADMFMMOPlayerController::RefreshFriendTrackingPresentation()
+{
+    if (!IsLocalController() || GetNetMode() == NM_DedicatedServer)
+    {
+        return;
+    }
+
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    if (Settings && !Settings->bEnableSocialSystem)
+    {
+        DestroyFriendTrackerComponents();
+        return;
+    }
+
+    TMap<FString, const FDMFSocialFriendEntry*> Desired;
+    for (const FDMFSocialFriendEntry& Friend : CachedSocialSnapshot.Friends)
+    {
+        if (Friend.bTrackingEnabled && Friend.bOnline && !Friend.Username.TrimStartAndEnd().IsEmpty())
+        {
+            Desired.Add(Friend.Username.TrimStartAndEnd().ToLower(), &Friend);
+        }
+    }
+
+    TArray<FString> ExistingKeys;
+    FriendTrackerComponents.GetKeys(ExistingKeys);
+    for (const FString& Key : ExistingKeys)
+    {
+        TObjectPtr<UWidgetComponent>* Existing = FriendTrackerComponents.Find(Key);
+        if (!Desired.Contains(Key) || !Existing || !IsValid(*Existing))
+        {
+            if (Existing && IsValid(*Existing))
+            {
+                (*Existing)->DestroyComponent();
+            }
+            FriendTrackerComponents.Remove(Key);
+        }
+    }
+
+    for (const TPair<FString, const FDMFSocialFriendEntry*>& Pair : Desired)
+    {
+        ADMFPlayerAvatarCharacter* FriendAvatar = FindOnlinePlayerAvatarByUsername(Pair.Value->Username);
+        if (!FriendAvatar)
+        {
+            if (TObjectPtr<UWidgetComponent>* Existing = FriendTrackerComponents.Find(Pair.Key))
+            {
+                if (IsValid(*Existing)) (*Existing)->DestroyComponent();
+                FriendTrackerComponents.Remove(Pair.Key);
+            }
+            continue;
+        }
+
+        if (TObjectPtr<UWidgetComponent>* Existing = FriendTrackerComponents.Find(Pair.Key))
+        {
+            if (IsValid(*Existing) && (*Existing)->GetOwner() == FriendAvatar)
+            {
+                if (UDMFFriendTrackerWidget* Tracker = Cast<UDMFFriendTrackerWidget>((*Existing)->GetUserWidgetObject()))
+                {
+                    Tracker->SetObservedFriend(FriendAvatar);
+                }
+                continue;
+            }
+            if (IsValid(*Existing)) (*Existing)->DestroyComponent();
+            FriendTrackerComponents.Remove(Pair.Key);
+        }
+
+        UWidgetComponent* TrackerComponent = NewObject<UWidgetComponent>(FriendAvatar, UWidgetComponent::StaticClass(), NAME_None, RF_Transient);
+        if (!TrackerComponent)
+        {
+            continue;
+        }
+
+        TSubclassOf<UDMFFriendTrackerWidget> TrackerClass = Settings ? Settings->FriendTrackerWidgetClass : nullptr;
+        if (!TrackerClass)
+        {
+            TrackerClass = UDMFFriendTrackerWidget::StaticClass();
+        }
+
+        TrackerComponent->SetIsReplicated(false);
+        TrackerComponent->SetWidgetSpace(EWidgetSpace::Screen);
+        TrackerComponent->SetDrawAtDesiredSize(true);
+        TrackerComponent->SetPivot(FVector2D(0.5f, 1.0f));
+        TrackerComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        TrackerComponent->SetGenerateOverlapEvents(false);
+        TrackerComponent->SetWidgetClass(TrackerClass);
+        if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+        {
+            TrackerComponent->SetOwnerPlayer(LocalPlayer);
+        }
+        TrackerComponent->RegisterComponent();
+        if (USceneComponent* FriendRoot = FriendAvatar->GetRootComponent())
+        {
+            TrackerComponent->AttachToComponent(FriendRoot, FAttachmentTransformRules::KeepRelativeTransform);
+        }
+
+        const float CapsuleHalfHeight = FriendAvatar->GetCapsuleComponent() ? FriendAvatar->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() : 96.0f;
+        const float NameplateOffset = Settings ? FMath::Max(0.0f, Settings->PlayerNameplateHeightOffset) : 34.0f;
+        const float TrackerOffset = Settings ? FMath::Max(0.0f, Settings->FriendTrackerHeightOffset) : 64.0f;
+        TrackerComponent->SetRelativeLocation(FVector(0.0f, 0.0f, CapsuleHalfHeight + NameplateOffset + TrackerOffset));
+        TrackerComponent->SetTickWhenOffscreen(false);
+        TrackerComponent->InitWidget();
+        if (UDMFFriendTrackerWidget* Tracker = Cast<UDMFFriendTrackerWidget>(TrackerComponent->GetUserWidgetObject()))
+        {
+            Tracker->SetObservedFriend(FriendAvatar);
+        }
+        FriendTrackerComponents.Add(Pair.Key, TrackerComponent);
     }
 }
 

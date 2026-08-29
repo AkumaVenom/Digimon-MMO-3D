@@ -15,13 +15,19 @@ class UDMFScanNotificationWidget;
 class UDMFExperienceNotificationWidget;
 class UDMFHomeTeleportNotificationWidget;
 class UDMFWorldChatWidget;
+class UDMFPlayerSocialContextWidget;
+class UDMFFriendTrackerWidget;
+class UWidgetComponent;
 class ADMFDigimonCharacter;
+class ADMFPlayerAvatarCharacter;
 class ADMFHealerActor;
 class ADMFDigimonVendorActor;
 class ADMFTargetingPresentationActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFWorldChatMessageReceived, FDMFWorldChatMessage, ChatMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFSocialSnapshotChanged, FDMFSocialSnapshot, SocialSnapshot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFSocialActionResult, bool, bSuccess, FText, Message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFHomeTeleportResult, bool, bSuccess, FText, Message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDMFDigimonVendorTransactionResult, bool, bSuccess, FText, Message, EDMFDigimonVendorTransactionType, TransactionType, FGuid, Identifier, int64, Price, int64, NewMoney);
 
@@ -96,6 +102,10 @@ public:
     /** Opens the shared Digimon menu directly on the persistent Party/Bank Digivolution terminal. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Digivolution|UI")
     void OpenDigivolutionUI();
+
+    /** Opens the shared Digimon menu directly on the persistent Social hub. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|UI")
+    void OpenSocialUI();
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Care|UI")
     bool IsCarePresentationActive() const { return bCarePresentationActive; }
@@ -229,6 +239,70 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|World Chat")
     FDMFWorldChatMessageReceived OnWorldChatMessageReceived;
 
+    /** Requests the authoritative owner-only Social snapshot. Safe to call when opening/reskinning the Social tab. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social")
+    void RequestSocialSnapshot();
+
+    /** Last owner-only snapshot received from authority; never replicated through PlayerState/world actors. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Social")
+    FDMFSocialSnapshot GetCachedSocialSnapshot() const { return CachedSocialSnapshot; }
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends") void RequestAddFriend(const FString& TargetUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends") void RespondToFriendRequest(const FString& RequesterUsername, bool bAccept);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends") void RequestCancelFriendRequest(const FString& TargetUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends") void RequestRemoveFriend(const FString& FriendUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friends") void RequestSetFriendTracking(const FString& FriendUsername, bool bEnabled);
+
+    /**
+     * Returns nearby replicated player avatars inside the global Project Settings radius, nearest first.
+     * This is owner-local discovery/presentation only; friend mutations remain server-authoritative.
+     */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Social|Friends|Nearby Players")
+    TArray<FDMFNearbySocialPlayerEntry> GetNearbySocialPlayers() const;
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Ignore") void RequestIgnorePlayer(const FString& TargetUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Ignore") void RequestRemoveIgnoredPlayer(const FString& TargetUsername);
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestCreateGuild(const FString& GuildName);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestRenameGuild(const FString& GuildName);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestInvitePlayerToGuild(const FString& TargetUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RespondToGuildInvite(FGuid GuildId, bool bAccept);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestApplyToGuild(FGuid GuildId);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RespondToGuildApplication(const FString& ApplicantUsername, bool bAccept);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestRemoveGuildMember(const FString& MemberUsername);
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestLeaveGuild();
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Guild") void RequestDisbandGuild();
+
+    /** Opens the owner-local dropdown next to the mouse cursor for an exact replicated player nameplate. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Nameplate Context")
+    void OpenPlayerSocialContext(ADMFPlayerAvatarCharacter* TargetPlayer);
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Nameplate Context")
+    void ClosePlayerSocialContextUI();
+
+    /** Reconciles local-only tracked-friend WidgetComponents against replicated online player avatars. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|Friend Tracking")
+    void RefreshFriendTrackingPresentation();
+
+    UFUNCTION(Server, Reliable)
+    void ServerRequestSocialSnapshot();
+
+    /** One validated transport RPC keeps the Social mutation surface compact while public wrappers remain strongly named. */
+    UFUNCTION(Server, Reliable)
+    void ServerExecuteSocialAction(EDMFSocialActionType ActionType, const FString& SubjectUsername, FGuid GuildId, const FString& TextValue, bool bValue);
+
+    UFUNCTION(Client, Reliable)
+    void ClientReceiveSocialSnapshot(const FDMFSocialSnapshot& SocialSnapshot);
+
+    UFUNCTION(Client, Reliable)
+    void ClientSocialActionResult(bool bSuccess, const FText& Message);
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Social")
+    FDMFSocialSnapshotChanged OnSocialSnapshotChanged;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Social")
+    FDMFSocialActionResult OnSocialActionResult;
+
     /** Opens the owner-local native BUY / SELL market UI for a nearby replicated vendor. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Vendor|UI")
     void OpenDigimonVendorUI(ADMFDigimonVendorActor* Vendor);
@@ -292,6 +366,17 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFWorldChatWidget> WorldChatWidget;
 
+    UPROPERTY(Transient)
+    TObjectPtr<UDMFPlayerSocialContextWidget> PlayerSocialContextWidget;
+
+    /** Last owner-only server snapshot. Social state is intentionally not public PlayerState replication. */
+    UPROPERTY(Transient)
+    FDMFSocialSnapshot CachedSocialSnapshot;
+
+    /** Client-only components attached to currently online tracked friends; keys are lowercase usernames. */
+    UPROPERTY(Transient)
+    TMap<FString, TObjectPtr<UWidgetComponent>> FriendTrackerComponents;
+
     /** Local-only presentation actor. It is never replicated and exists only for the owning local PlayerController. */
     UPROPERTY(Transient)
     TObjectPtr<ADMFTargetingPresentationActor> TargetingPresentationActor;
@@ -308,6 +393,8 @@ private:
     bool bPartyQuickAccessInputLocked = false;
 
     double LastWorldChatAcceptedServerTime = -1000000.0;
+    double LastSocialActionAcceptedServerTime = -1000000.0;
+    double LastSocialSnapshotAcceptedServerTime = -1000000.0;
     double LastReturnHomeAcceptedServerTime = -1000000.0;
     double LastDigimonVendorTransactionServerTime = -1000000.0;
     TArray<double> RecentWorldChatAcceptedServerTimes;
@@ -315,6 +402,7 @@ private:
     FTimerHandle StarterUIRetryTimer;
     FTimerHandle AvatarUIRetryTimer;
     FTimerHandle AvatarPossessionRetryTimer;
+    FTimerHandle FriendTrackerRefreshTimer;
     int32 AvatarPossessionRetryAttempts = 0;
 
     UFUNCTION()
@@ -353,6 +441,10 @@ private:
     bool IsMandatoryPlayerSkinSelectionActive() const;
     FString SanitizeWorldChatMessage(const FString& Message) const;
     void PlayWorldChatPresenceSound(EDMFWorldChatMessageType MessageType) const;
+    void ExecuteLocalSocialAction(EDMFSocialActionType ActionType, const FString& SubjectUsername = FString(), FGuid GuildId = FGuid(), const FString& TextValue = FString(), bool bValue = false);
+    void HandleSocialActionResultPresentation(bool bSuccess, const FText& Message);
+    void DestroyFriendTrackerComponents();
+    ADMFPlayerAvatarCharacter* FindOnlinePlayerAvatarByUsername(const FString& Username) const;
 
     void HandleDefaultTargetInput();
     void HandleWorldChatInput();
