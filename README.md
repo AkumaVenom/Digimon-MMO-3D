@@ -38,7 +38,7 @@ The game is being developed as a true multiplayer
 experience, allowing players to host and join worlds while maintaining
 their own account and Digimon progression.
 
-<img width="1920" height="1080" alt="MainScreen" src="https://github.com/user-attachments/assets/b44dadc3-24c4-4202-a84f-15b5f98cfa2b" />
+<img width="3840" height="2160" alt="0" src="https://github.com/user-attachments/assets/171ac9f7-543e-4a61-b655-f7aa542c67e7" />
 
 <img width="1920" height="1080" alt="1" src="https://github.com/user-attachments/assets/e58d5764-777e-43a7-8d57-d02529b9b188" />
 
@@ -106,6 +106,8 @@ Starter selection is tied directly to your player account,
 allowing your adventure and partner progression to remain associated
 with your character as the game continues to grow.
 
+<img width="3840" height="2160" alt="9" src="https://github.com/user-attachments/assets/b7422e65-3fa3-481b-9ca6-85eeda6d0c52" />
+
 ---
 
 # 🔍 Scan Data & Materialization
@@ -126,7 +128,7 @@ This system is inspired by the concept of Digimon being
 composed of digital information and makes building your collection part
 of the wider progression experience.
 
-<img width="1920" height="1080" alt="2- RaGEZONE" src="https://github.com/user-attachments/assets/9b041c5e-ceb0-4cce-a726-fe19576779bd" />
+<img width="3840" height="2160" alt="4" src="https://github.com/user-attachments/assets/b6cc380a-8efa-487d-b4e7-420d51662e72" />
 
 ---
 
@@ -150,7 +152,7 @@ Those Digivolution-family links are sourced from the same authored Digivolution 
 
 The DigiDex intentionally does **not** directly summon, recall, move, materialize, care for or Digivolve a Digimon. It provides polished encyclopedia presentation while the authoritative systems continue to own gameplay mutation.
 
-<img width="3805" height="2063" alt="1" src="https://github.com/user-attachments/assets/19e9647d-2bac-4519-a653-b9f8f68f6b2c" />
+<img width="3840" height="2160" alt="10" src="https://github.com/user-attachments/assets/90d13d2f-b31d-4abb-83f1-fd02a19eb774" />
 
 ---
 
@@ -263,7 +265,7 @@ Digivolution is part of account persistence, not a temporary visual state.
 
 The persistent owned Digimon stores its origin species and Digivolution history. Successful form changes preserve the same individual identity while progression such as Level, Experience, ABI, CAM, nickname, Care state and unspent attribute points remains attached to that Digimon. Authored path rules control how stat investments, equipped abilities and current vitals carry into the destination form.
 
-<img width="3809" height="2067" alt="2" src="https://github.com/user-attachments/assets/d8e427af-a10d-4ca7-8449-e2b6d24bd459" />
+<img width="3840" height="2160" alt="6" src="https://github.com/user-attachments/assets/c8a5c04b-9830-4637-ab17-81a1c9ee15b4" />
 
 ---
 
@@ -306,7 +308,7 @@ Once the eating sequence finishes, the Care interface returns and displays the D
 
 The wider Care System is planned to grow into additional needs, reactions and Digimon behaviours over time.
 
-<img width="1920" height="1080" alt="4- RaGEZONE" src="https://github.com/user-attachments/assets/c2518cb3-6800-4372-aba4-3d084f89b5e5" />
+<img width="3840" height="2160" alt="7" src="https://github.com/user-attachments/assets/f86e16fb-7e63-4d30-a099-f9e0e7185e56" />
 
 ---
 
@@ -377,6 +379,8 @@ collections without every Digimon needing to remain immediately active.
 The goal is to give players the freedom to collect, organize and raise many different Digimon while maintaining a smaller active group of partners.
 
 The established Digivolution system also supports eligible Bank / Box Digimon, allowing persistent stored Digimon to evolve without first being moved into the active Party when the configured rules permit it.
+
+<img width="3838" height="2160" alt="5" src="https://github.com/user-attachments/assets/c9878759-03c9-48a5-8e1f-509f61e00205" />
 
 ---
 
@@ -533,6 +537,11 @@ The project currently has working foundations for:
 - Digimon inventory and management foundations
 - Real-time Digimon gameplay foundations
 - Replicated Day/Night Cycle with 12 Hour Clock UI
+- Replicated Digimon Vendor - Buy And Sell Digimon
+
+<img width="3840" height="2160" alt="1" src="https://github.com/user-attachments/assets/f172b9ae-d406-493a-8d88-9683fb016af7" />
+
+<img width="3840" height="2160" alt="2" src="https://github.com/user-attachments/assets/8585c904-887e-481f-9cf7-d5a13aabb792" />
 
 ---
 
