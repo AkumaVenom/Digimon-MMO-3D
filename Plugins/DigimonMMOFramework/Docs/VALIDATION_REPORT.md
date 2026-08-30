@@ -1,3 +1,40 @@
+# v0.19.3-alpha validation summary
+
+Candidate: **Polished Combat Quickbar BITS HUD**  
+Baseline: runtime-accepted **v0.19.2-alpha_PolishedNearbyPlayerIgnoreAction**. The accepted Social/Guild/Friends/Ignore, chat presence, player capacity, vendor, reconnect/persistence and gameplay contracts are preserved.
+
+## BITS HUD validation
+
+- The native `UDMFCombatQuickBarWidget` adds one compact fixed-footprint **BITS** capsule in the existing header lane, using the same gold economy language and locale-aware `FText::AsNumber` formatting as the Digimon Exchange.
+- The display reads only `UDMFPlayerDigimonComponent::GetMoney()`. Backing `Money` is unchanged and remains `ReplicatedUsing=OnRep_Money` with `COND_OwnerOnly`, so another client never receives this account balance through the new HUD.
+- BITS refresh occurs through the quickbar's existing 0.15-second local presentation timer and is independent of `ActivePartnerActor`; recalling/not summoning a partner does not blank the account currency. No additional Tick or server polling loop was introduced.
+- The fixed 150×28 native capsule uses a down-only `UScaleBox`, preventing unusually large integer balances from growing into the adjacent clock or target header. The four ability-card lane is unchanged.
+- Blueprint children can bind optional `BitsText`. `bShowCombatQuickBarBits=True` is config-backed/Blueprint-readable under **UI → Combat Quick Access → Economy** and only controls presentation.
+
+## Authority / networking / persistence validation
+
+- **0 new RPCs**: the current RPC declaration set is byte-for-byte equivalent by name to v0.19.2 and remains **53** total. All 53 declarations have matching `_Implementation` functions.
+- **0 new replicated properties** are required by this feature. The existing authoritative `Money` property is reused directly.
+- Account SaveGame remains **schema v8**; no migration, currency conversion or persistent HUD state is added.
+- `DMFMMOGameMode.cpp` and `DMFAccountPersistenceSubsystem.cpp` are byte-for-byte unchanged from the runtime-accepted v0.19.2 baseline.
+- Vendor purchase/sale authority and battle-money reward authority remain unchanged; the HUD only observes the already committed owner balance.
+
+## Static validation
+
+- Plugin descriptor parses as valid JSON and reports `0.19.3-alpha` / integer version `1930`.
+- Candidate tree contains **154 files**, including **104 source/header/build files**. The only new path is `Docs/SETUP_COMBAT_QUICK_BAR_BITS.md`; no v0.19.2 path was removed.
+- Reflected totals: **55 UCLASS / 24 UENUM / 33 USTRUCT / 631 UFUNCTION / 1230 UPROPERTY**.
+- Public generated-header include ordering passes.
+- All **53 RPC** declarations have matching `_Implementation` functions, and the RPC name set is unchanged from v0.19.2.
+- Full framework `.h/.cpp` comment/string-aware `()[]{}` delimiter validation passes.
+- No merge-conflict markers are present.
+
+## Runtime acceptance still required
+
+Run `TEST_PLAN.md` **v0.19.3-alpha — Combat Quick Bar BITS HUD acceptance**. Critical acceptance is owner-isolated balance display on host/client, automatic change after an authoritative purchase/sale or battle-money reward, visibility while the partner is recalled, clean header layout at practical balances, and no regression to the accepted v0.19.2 Social/Guild/Ignore or existing vendor/economy systems.
+
+---
+
 # v0.19.2-alpha validation summary
 
 Candidate: **Nearby Player Ignore Action Polish**  

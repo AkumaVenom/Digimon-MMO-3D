@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 1920,
-  "VersionName": "0.19.2-alpha",
+  "Version": 1930,
+  "VersionName": "0.19.3-alpha",
   "FriendlyName": "Digimon MMO Framework",
-  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with persistent friends/ignore/guild social systems, nearest-first nearby-player friend/ignore discovery, nameplate player actions, owner-local friend distance tracking, authenticated WORLD-chat presence, global player capacity, vendor economy, reconnect-safe persistence, Day/Night, swimming/underwater, combat, DigiDex, Digivolution, Party/Bank, Care and Scan/Materialization.",
+  "Description": "Blueprint-first, data-asset/component-driven, server-authoritative multiplayer Digimon MMO framework for Unreal Engine 5.8 with persistent friends/ignore/guild social systems, nearest-first nearby-player friend/ignore discovery, nameplate player actions, owner-local friend distance tracking, a persistent owner-only BITS combat-HUD readout, authenticated WORLD-chat presence, global player capacity, vendor economy, reconnect-safe persistence, Day/Night, swimming/underwater, combat, DigiDex, Digivolution, Party/Bank, Care and Scan/Materialization.",
   "Category": "Gameplay",
   "CreatedBy": "Akuma / OpenAI",
   "CanContainContent": true,

@@ -12,6 +12,7 @@
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
+#include "Components/ScaleBox.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
@@ -123,6 +124,34 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
     }
 
     const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+
+    USizeBox* BitsSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("BitsContainer"));
+    BitsSize->SetWidthOverride(150.0f);
+    BitsSize->SetHeightOverride(28.0f);
+    BitsSize->SetVisibility(!Settings || Settings->bShowCombatQuickBarBits ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    NativeBitsContainer = BitsSize;
+    if (UHorizontalBoxSlot* BitsRowSlot = InfoRow->AddChildToHorizontalBox(BitsSize))
+    {
+        BitsRowSlot->SetHorizontalAlignment(HAlign_Center);
+        BitsRowSlot->SetVerticalAlignment(VAlign_Center);
+        BitsRowSlot->SetPadding(FMargin(10.0f, 0.0f, 0.0f, 0.0f));
+    }
+
+    UBorder* BitsBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("BitsBorder"));
+    DMFNativeUI::StylePanel(BitsBorder, FLinearColor(0.018f, 0.050f, 0.090f, 0.98f), FMargin(8.0f, 3.0f));
+    BitsSize->AddChild(BitsBorder);
+
+    UScaleBox* BitsScale = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass(), TEXT("BitsTextScale"));
+    BitsScale->SetStretch(EStretch::ScaleToFit);
+    BitsScale->SetStretchDirection(EStretchDirection::DownOnly);
+    BitsBorder->AddChild(BitsScale);
+
+    BitsText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("BitsText"));
+    BitsText->SetText(NSLOCTEXT("DMF", "CombatBitsSyncing", "BITS  --"));
+    BitsText->SetJustification(ETextJustify::Center);
+    DMFNativeUI::StyleText(BitsText, 13, DMFNativeUI::Gold(), true);
+    BitsScale->AddChild(BitsText);
+
     USizeBox* ClockSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("WorldClockContainer"));
     ClockSize->SetWidthOverride(168.0f);
     ClockSize->SetHeightOverride(28.0f);
@@ -232,6 +261,44 @@ void UDMFCombatQuickBarWidget::BuildNativeFallback()
     }
 }
 
+void UDMFCombatQuickBarWidget::RefreshBits()
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    const bool bShowBits = !Settings || Settings->bShowCombatQuickBarBits;
+
+    if (USizeBox* BitsContainer = NativeBitsContainer.Get())
+    {
+        BitsContainer->SetVisibility(bShowBits ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    }
+    if (!BitsText)
+    {
+        return;
+    }
+
+    BitsText->SetVisibility(bShowBits ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    if (!bShowBits)
+    {
+        return;
+    }
+
+    if (!BoundDigimonComponent)
+    {
+        BoundDigimonComponent = ResolveDigimonComponent();
+    }
+
+    if (!BoundDigimonComponent)
+    {
+        BitsText->SetText(NSLOCTEXT("DMF", "CombatBitsSyncing", "BITS  --"));
+        BitsText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));
+        return;
+    }
+
+    BitsText->SetText(FText::Format(
+        NSLOCTEXT("DMF", "CombatBitsFormat", "BITS  {0}"),
+        FText::AsNumber(FMath::Max<int64>(0, BoundDigimonComponent->GetMoney()))));
+    BitsText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Gold()));
+}
+
 ADMFDayNightSky* UDMFCombatQuickBarWidget::ResolveDayNightSky()
 {
     if (BoundDayNightSky.IsValid())
@@ -331,7 +398,9 @@ UDMFPlayerDigimonComponent* UDMFCombatQuickBarWidget::ResolveDigimonComponent() 
 
 void UDMFCombatQuickBarWidget::RefreshFromPartner()
 {
-    // World time is independent of partner availability and comes exclusively from the replicated Day/Night sky.
+    // Account currency and world time are independent of partner availability.
+    // BITS comes from the owner-only replicated account component; world time comes from the replicated Day/Night sky.
+    RefreshBits();
     RefreshWorldClock();
 
     if (!BoundDigimonComponent)

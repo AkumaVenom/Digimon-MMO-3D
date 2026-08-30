@@ -3,6 +3,7 @@
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Game/DMFTargetingPresentationActor.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Game/DMFWildDigimonCharacter.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Game/DMFWildDigimonSpawner.cpp"
+#include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Persistence/DMFAccountPersistenceSubsystem.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/Subsystems/DMFMusicSubsystem.cpp"
-#include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/UI/DMFCombatQuickBarWidget.cpp"
 #include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/UI/DMFDigimonInventoryEntryButton.cpp"
+#include "C:/Users/Leen/Documents/Unreal Projects/Digimon-MMO-3D/Plugins/DigimonMMOFramework/Source/DigimonMMOFramework/Private/UI/DMFDigimonInventoryWidget.cpp"

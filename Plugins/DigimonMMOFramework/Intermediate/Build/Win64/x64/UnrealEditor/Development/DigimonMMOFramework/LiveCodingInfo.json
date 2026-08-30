@@ -71,45 +71,45 @@
 			"DMFFrontendGameMode.cpp.obj",
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
-			"DMFNewPlayerStart.cpp.obj",
-			"DMFPlayerState.cpp.obj",
-			"DMFSessionSubsystem.cpp.obj",
 			"DMFMMOGameMode.cpp.obj",
 			"DMFMMOPlayerController.cpp.obj",
-			"DMFPlayerAvatarCharacter.cpp.obj"
+			"DMFNewPlayerStart.cpp.obj",
+			"DMFPlayerAvatarCharacter.cpp.obj",
+			"DMFPlayerState.cpp.obj",
+			"DMFSessionSubsystem.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.3.cpp.obj": [
 			"DMFSwimmableWater.cpp.obj",
 			"DMFTargetingPresentationActor.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFMusicSubsystem.cpp.obj",
-			"DMFCombatQuickBarWidget.cpp.obj",
-			"DMFDigimonInventoryEntryButton.cpp.obj",
 			"DMFAccountPersistenceSubsystem.cpp.obj",
+			"DMFMusicSubsystem.cpp.obj",
+			"DMFDigimonInventoryEntryButton.cpp.obj",
+			"DMFDigimonInventoryWidget.cpp.obj",
 			"DMFFrameworkSettings.cpp.obj",
-			"DMFDigimonInventoryWidget.cpp.obj"
+			"DMFCombatQuickBarWidget.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.4.cpp.obj": [
 			"DMFDigimonVendorWidget.cpp.obj",
 			"DMFExperienceNotificationWidget.cpp.obj",
+			"DMFFriendTrackerWidget.cpp.obj",
 			"DMFHomeTeleportNotificationWidget.cpp.obj",
 			"DMFLoginMainMenuWidget.cpp.obj",
 			"DMFPartyDestinationButton.cpp.obj",
 			"DMFPartyQuickBarWidget.cpp.obj",
 			"DMFPlayerSkinEntryButton.cpp.obj",
 			"DMFPlayerSkinSelectionWidget.cpp.obj",
+			"DMFPlayerSocialContextWidget.cpp.obj",
 			"DMFScanNotificationWidget.cpp.obj",
 			"DMFScanSpeciesEntryButton.cpp.obj",
+			"DMFSocialActionButton.cpp.obj",
 			"DMFStarterEntryButton.cpp.obj",
 			"DMFStarterSelectionWidget.cpp.obj",
 			"DMFWorldChatWidget.cpp.obj",
+			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DMFDigimonPresentationLibrary.cpp.obj",
-			"DMFFriendTrackerWidget.cpp.obj",
-			"DMFPlayerSocialContextWidget.cpp.obj",
-			"DMFSocialActionButton.cpp.obj",
-			"DMFWorldNameplateWidget.cpp.obj"
+			"DMFDigimonPresentationLibrary.cpp.obj"
 		]
 	}
 }

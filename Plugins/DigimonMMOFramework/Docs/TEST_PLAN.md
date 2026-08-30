@@ -1,4 +1,15 @@
-# UE5.8 Validation Plan — 0.19.2-alpha
+# UE5.8 Validation Plan — 0.19.3-alpha
+
+## v0.19.3-alpha — Combat Quick Bar BITS HUD acceptance
+
+1. Compile in UE5.8 and launch host + one remote client using different authenticated accounts.
+2. Confirm the native combat quickbar displays `BITS  <amount>` for each owning account and uses locale-aware integer grouping.
+3. Confirm BITS remains visible after recalling/not summoning the active partner.
+4. Buy or sell through the Digimon Exchange (or grant a normal authoritative battle-money reward) and confirm the local BITS HUD follows the replicated canonical Money value.
+5. Confirm the other player never displays the first account's balance; `Money` remains owner-only.
+6. Disable **UI → Combat Quick Access → Economy → Show Combat Quick Bar Bits** and confirm the capsule collapses without affecting abilities, clock, target, vendor economy or persistence.
+7. Re-enable the setting and confirm the BITS capsule returns cleanly beside the clock/target header without overlapping partner vitals or ability cards.
+8. Re-run v0.19.2 Nearby IGNORE/UNIGNORE, v0.19.1 Friends/Guild, v0.18.5 presence-chat and v0.18.3 vendor smoke tests to confirm no regression.
 
 ## S0 — v0.19.2 nearby-player Friends + Ignore discovery / persistent Social / Guild regression
 

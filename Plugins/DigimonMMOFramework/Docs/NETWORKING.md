@@ -1,5 +1,11 @@
 # Networking / Host Deployment
 
+## Combat quickbar BITS presentation (v0.19.3)
+
+The combat HUD does not introduce a networked currency channel. `UDMFCombatQuickBarWidget` reads the existing `UDMFPlayerDigimonComponent::Money` through `GetMoney()`. `Money` already replicates with `COND_OwnerOnly`, so only the owning connection receives its account balance and the server remains the sole mutation authority. The new `BitsText`/native capsule is local presentation over that state.
+
+Vendor purchases/sales, battle rewards and persistence continue to mutate the canonical server-side Money field through their existing authority paths. v0.19.3 adds **0 RPCs**, **0 replicated properties** and **0 SaveGame fields**; the framework remains at **53 RPCs** and account schema **v8**.
+
 ## World chat authenticated presence events (v0.18.5)
 
 Player presence is a server-owned chat event, not a client RPC command. `ADMFMMOGameMode::PostLogin` emits `PlayerJoined` only after authenticated account initialization/rehydration; `Logout` performs the existing disconnect persistence/partner cleanup transaction and then emits `PlayerLeft` before `Super::Logout` tears down the PlayerState. The username comes from the authenticated server account value.

@@ -1,4 +1,10 @@
 # Architecture
+## Persistent BITS HUD presentation architecture (v0.19.3)
+
+`UDMFPlayerDigimonComponent` remains the single account-economy source of truth. The bottom-center `UDMFCombatQuickBarWidget` now projects its existing owner-only replicated `Money` value into optional `BitsText` and the native gold BITS capsule. No HUD-owned balance is persisted or replicated. Because the currency is account state rather than active-partner state, the presentation is refreshed independently of whether `ActivePartnerActor` exists.
+
+The native capsule occupies only the header lane; ability cards and their command path are untouched. `bShowCombatQuickBarBits` is presentation configuration only. Blueprint subclasses may bind `BitsText` or replace the complete visual hierarchy while continuing to read the same server-authoritative owner state.
+
 
 ## Authenticated WORLD-chat presence presentation (v0.18.5)
 

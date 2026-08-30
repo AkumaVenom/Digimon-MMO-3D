@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.19.3-alpha — Polished Combat Quickbar BITS HUD
+
+### Added
+- Added a persistent **BITS** balance readout to the native combat ability quick-access header, using the same `BITS  1,234` terminology/number formatting as the Digimon Exchange.
+- Added optional Blueprint `BitsText` binding to `UDMFCombatQuickBarWidget` for project-authored quickbar skins.
+- Added **Project Settings → UI → Combat Quick Access → Economy → Show Combat Quick Bar Bits**, enabled by default.
+
+### Networking / authority
+- The HUD reads the existing owner-only replicated `UDMFPlayerDigimonComponent::Money` through `GetMoney()`; it does not introduce a client-authored currency cache.
+- No new RPCs or replicated properties were added. The framework remains at **53 RPCs**, and account SaveGame remains schema **v8**.
+- Vendor purchases/sales, battle rewards, persistence and all existing economy mutations remain server-authoritative and continue to update the canonical Money value.
+
+### Presentation
+- The BITS capsule sits in the combat header between partner vitals and the world-clock/target cluster, preserving the four ability-card lane.
+- The readout is independent of active-partner availability and continues displaying the player's account balance when the partner is recalled/not summoned.
+- Native presentation uses the established dark panel and gold economy accent so it is coherent with the Digimon Exchange without creating a separate HUD style. A down-only ScaleBox keeps unusually large balances inside the fixed capsule.
+
 ## 0.19.2-alpha — Nearby Player Ignore Action Polish
 
 ### Polished — complete Nearby Players social actions

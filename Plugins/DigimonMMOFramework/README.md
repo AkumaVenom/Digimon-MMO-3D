@@ -1,8 +1,14 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.19.2-alpha — Nearby Player Ignore Action Polish`
+**Version:** `0.19.3-alpha — Polished Combat Quickbar BITS HUD`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.19.3-alpha — Polished Combat Quickbar BITS HUD
+
+The persistent native **combat ability quick-access HUD** now shows the owning player's current **BITS** balance in a compact gold account-currency capsule beside the world clock and target header. The presentation intentionally matches the Digimon Exchange terminology and number formatting (`BITS  1,234`) while preserving the existing four ability cards, partner HP/SP, target state and world-clock lane. The BITS readout remains available when no partner is summoned because currency belongs to the authenticated player account rather than the active Digimon.
+
+The HUD reads the already-existing owner-only replicated `UDMFPlayerDigimonComponent::Money` through `GetMoney()`. Purchases, sales, battle rewards and other authoritative economy mutations therefore flow into the HUD automatically without a duplicate balance, client-authored currency, new RPC, or new replicated property. Project Settings → **UI → Combat Quick Access → Economy → Show Combat Quick Bar Bits** can hide only the native/optional BITS presentation; economy authority remains unchanged. Blueprint quickbar skins can bind the new optional `BitsText` field. The framework remains at **53 RPCs** and account persistence remains schema **v8**. See `Docs/SETUP_COMBAT_QUICK_BAR_BITS.md`.
 
 ## New in v0.19.2-alpha — Nearby Player Ignore Action Polish
 

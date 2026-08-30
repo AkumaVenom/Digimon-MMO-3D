@@ -281,6 +281,10 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI")
     TSubclassOf<UDMFCombatQuickBarWidget> CombatQuickBarWidgetClass;
 
+    /** Shows the owning account's authoritative replicated BITS balance inside the combat ability quick-access header. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Combat Quick Access|Economy")
+    bool bShowCombatQuickBarBits = true;
+
     /** Shows the replicated/interpolated Day/Night world clock inside the native combat ability quick-access header. */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="UI|Combat Quick Access|World Clock")
     bool bShowCombatQuickBarWorldClock = true;

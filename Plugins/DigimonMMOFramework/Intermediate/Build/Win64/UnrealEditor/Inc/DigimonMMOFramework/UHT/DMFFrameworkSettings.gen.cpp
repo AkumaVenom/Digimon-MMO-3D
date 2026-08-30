@@ -678,6 +678,16 @@ struct UHT_STATICS
 		{ "Category", "UI" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowCombatQuickBarBits_MetaData[] = {
+		{ "Category", "UI|Combat Quick Access|Economy" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Shows the owning account's authoritative replicated BITS balance inside the combat ability quick-access header. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Shows the owning account's authoritative replicated BITS balance inside the combat ability quick-access header." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bShowCombatQuickBarWorldClock_MetaData[] = {
 		{ "Category", "UI|Combat Quick Access|World Clock" },
 #if !UE_BUILD_SHIPPING
@@ -2185,6 +2195,11 @@ struct UHT_STATICS
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_LevelUpNotificationHoldSeconds;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ExperienceNotificationBottomSafeOffset;
 	static const UECodeGen_Private::FClassPropertyParams NewProp_CombatQuickBarWidgetClass;
+	static void NewProp_bShowCombatQuickBarBits_SetBit(void* Obj)
+	{
+		((UDMFFrameworkSettings*)Obj)->bShowCombatQuickBarBits = 1;
+	}
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowCombatQuickBarBits;
 	static void NewProp_bShowCombatQuickBarWorldClock_SetBit(void* Obj)
 	{
 		((UDMFFrameworkSettings*)Obj)->bShowCombatQuickBarWorldClock = 1;
@@ -2553,6 +2568,7 @@ const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNot
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds = { "LevelUpNotificationHoldSeconds", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, LevelUpNotificationHoldSeconds), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LevelUpNotificationHoldSeconds_MetaData), NewProp_LevelUpNotificationHoldSeconds_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset = { "ExperienceNotificationBottomSafeOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Float, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, ExperienceNotificationBottomSafeOffset), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExperienceNotificationBottomSafeOffset_MetaData), NewProp_ExperienceNotificationBottomSafeOffset_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_CombatQuickBarWidgetClass = { "CombatQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, CombatQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFCombatQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CombatQuickBarWidgetClass_MetaData), NewProp_CombatQuickBarWidgetClass_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowCombatQuickBarBits = { "bShowCombatQuickBarBits", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowCombatQuickBarBits_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowCombatQuickBarBits_MetaData), NewProp_bShowCombatQuickBarBits_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock = { "bShowCombatQuickBarWorldClock", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowCombatQuickBarWorldClock_MetaData), NewProp_bShowCombatQuickBarWorldClock_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase = { "bShowCombatQuickBarWorldClockPhase", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowCombatQuickBarWorldClockPhase_MetaData), NewProp_bShowCombatQuickBarWorldClockPhase_MetaData) };
 const UECodeGen_Private::FClassPropertyParams UHT_STATICS::NewProp_PartyQuickBarWidgetClass = { "PartyQuickBarWidgetClass", nullptr, (EPropertyFlags)0x0014000000004015, UECodeGen_Private::EPropertyGenFlags::Class, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartyQuickBarWidgetClass), Z_Construct_UClass_UClass, Z_Construct_UClass_UDMFPartyQuickBarWidget, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartyQuickBarWidgetClass_MetaData), NewProp_PartyQuickBarWidgetClass_MetaData) };
@@ -2744,6 +2760,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_LevelUpNotificationHoldSeconds,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_ExperienceNotificationBottomSafeOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_CombatQuickBarWidgetClass,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowCombatQuickBarBits,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowCombatQuickBarWorldClock,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bShowCombatQuickBarWorldClockPhase,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartyQuickBarWidgetClass,
@@ -2944,10 +2961,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 2701011016U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 926133529U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_80b057d2a746a64d61a52e5c68a8db35c9d82149{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_8073903b5f5faf307c0bc0eca1d85366e9d9204d{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

@@ -153,6 +153,7 @@ The bar occupies its own configurable HUD safe lane through `Party Quick Bar Bot
 The native quick bar is bottom-center and shows:
 
 - partner current/max HP and SP;
+- the owning account's current **BITS** balance in the compact gold economy capsule;
 - current commanded/combat target;
 - four ability cards;
 - ability key `[1]` through `[4]`;
@@ -161,7 +162,7 @@ The native quick bar is bottom-center and shows:
 - READY or remaining cooldown;
 - optional ability icon.
 
-The bar is presentation only. Ability execution still routes through the existing owning-player/server command path.
+The BITS readout is presentation only and reads the already replicated owner-only account Money value; it does not create a second currency source. It can be hidden independently through **UI → Combat Quick Access → Economy → Show Combat Quick Bar Bits**. Blueprint quickbar skins may bind optional `BitsText`. Ability execution still routes through the existing owning-player/server command path.
 
 ## 11. Blueprint reskinning remains supported
 

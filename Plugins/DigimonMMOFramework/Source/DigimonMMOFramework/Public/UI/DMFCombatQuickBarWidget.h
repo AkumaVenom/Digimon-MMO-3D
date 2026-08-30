@@ -63,6 +63,10 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UTextBlock> VitalsText;
 
+    /** Optional binding for Blueprint reskins. Displays the owning account's owner-only replicated BITS balance. */
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UTextBlock> BitsText;
+
     /** Optional binding for Blueprint reskins. Native fallback displays canonical replicated 12-hour world time here. */
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UTextBlock> WorldClockText;
@@ -84,12 +88,14 @@ private:
     TArray<TWeakObjectPtr<USizeBox>> NativeSlotIconContainers;
 
     TWeakObjectPtr<ADMFDayNightSky> BoundDayNightSky;
+    TWeakObjectPtr<USizeBox> NativeBitsContainer;
     TWeakObjectPtr<USizeBox> NativeWorldClockContainer;
     double NextDayNightSkyResolveAttemptSeconds = 0.0;
 
     FTimerHandle RefreshTimer;
 
     void BuildNativeFallback();
+    void RefreshBits();
     void RefreshWorldClock();
     ADMFDayNightSky* ResolveDayNightSky();
     UDMFPlayerDigimonComponent* ResolveDigimonComponent() const;
