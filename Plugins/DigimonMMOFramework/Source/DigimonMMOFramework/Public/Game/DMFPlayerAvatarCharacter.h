@@ -215,6 +215,10 @@ public:
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Vendor")
     bool InteractWithDigimonVendor(AActor* VendorActor);
 
+    /** Opens a nearby item vendor from a generic Actor reference; no Blueprint cast is required. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Vendor")
+    bool InteractWithItemVendor(AActor* VendorActor);
+
     /** Clears the current partner command target without requiring PlayerController/PlayerState casts. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Interaction|Digimon")
     void ClearDigimonTarget();

@@ -78,6 +78,13 @@ bool UDMFAccountPersistenceSubsystem::EnsureLoaded(FString& OutError)
             // registry. Existing accounts deserialize with empty social collections and no guild, requiring no rewrite.
             Database->SchemaVersion = 8;
         }
+
+        if (Database->SchemaVersion < 9)
+        {
+            // v9 adds the private persistent player item bag. Older accounts deserialize with an empty bag; stack
+            // identities/quantities are normalized by the authoritative player component when the account is loaded.
+            Database->SchemaVersion = 9;
+        }
     }
     else
     {

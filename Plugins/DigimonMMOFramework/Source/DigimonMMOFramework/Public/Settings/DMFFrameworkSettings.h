@@ -243,6 +243,10 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Party & Bank|Rules")
     bool bAllowPartySwitchingDuringCombat = false;
 
+    /** Maximum number of persistent item stacks in one player's private bag. Existing oversized saves are never truncated. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Items|Inventory", meta=(ClampMin="1", ClampMax="5000"))
+    int32 MaxPlayerItemStacks = 60;
+
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Partner")
     FVector PartnerSpawnOffset = FVector(150.0, 120.0, 0.0);
 

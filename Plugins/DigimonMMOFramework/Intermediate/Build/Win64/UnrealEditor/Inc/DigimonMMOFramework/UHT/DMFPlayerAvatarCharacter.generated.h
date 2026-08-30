@@ -56,6 +56,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execFindInteractionTarget); \
 	DECLARE_FUNCTION(execCommandDigimonAbilitySlot); \
 	DECLARE_FUNCTION(execClearDigimonTarget); \
+	DECLARE_FUNCTION(execInteractWithItemVendor); \
 	DECLARE_FUNCTION(execInteractWithDigimonVendor); \
 	DECLARE_FUNCTION(execInteractWithHealer); \
 	DECLARE_FUNCTION(execInteractWithDigimonAndAttack); \

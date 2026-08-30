@@ -23,6 +23,7 @@
 #include "Components/DMFPlayerDigimonComponent.h"
 #include "Data/DMFDigimonAbilityData.h"
 #include "Data/DMFDigimonSpeciesData.h"
+#include "Data/DMFItemData.h"
 #include "Data/DMFStarterRosterData.h"
 #include "Engine/AssetManager.h"
 #include "Engine/Texture2D.h"
@@ -31,6 +32,7 @@
 #include "Settings/DMFFrameworkSettings.h"
 #include "TimerManager.h"
 #include "UI/DMFDigimonInventoryEntryButton.h"
+#include "UI/DMFItemInventoryEntryButton.h"
 #include "UI/DMFScanSpeciesEntryButton.h"
 #include "UI/DMFNativeUIStyle.h"
 #include "UI/DMFPartyDestinationButton.h"
@@ -50,6 +52,10 @@ namespace DMFInventoryUI
     constexpr float DigiDexCardWidth = 174.0f;
     constexpr float DigiDexCardHeight = 196.0f;
     constexpr float DigiDexPortraitSize = 128.0f;
+    constexpr int32 ItemColumns = 4;
+    constexpr float ItemCardWidth = 176.0f;
+    constexpr float ItemCardHeight = 205.0f;
+    constexpr float ItemIconSize = 112.0f;
 
     FText EnumDisplay(const UEnum* EnumType, const int64 Value)
     {
@@ -111,6 +117,14 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     if (SocialTabButton)
     {
         SocialTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialTab);
+    }
+    if (ItemsTabButton)
+    {
+        ItemsTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleItemsTab);
+    }
+    if (UseSelectedItemButton)
+    {
+        UseSelectedItemButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleUseSelectedItem);
     }
     if (SocialFriendsTabButton) SocialFriendsTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialFriendsTab);
     if (SocialGuildTabButton) SocialGuildTabButton->OnClicked.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleSocialGuildTab);
@@ -183,6 +197,7 @@ void UDMFDigimonInventoryWidget::NativeConstruct()
     RefreshCareData();
     RefreshDigivolutionData();
     RefreshDigiDexData();
+    RefreshItemInventoryData();
     RefreshSocialData();
     RefreshTabPresentation();
 
@@ -213,6 +228,8 @@ void UDMFDigimonInventoryWidget::NativeDestruct()
     {
         BoundDigimonComponent->OnDigimonInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
+        BoundDigimonComponent->OnItemInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleItemInventoryChanged);
+        BoundDigimonComponent->OnItemUseResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleItemUseResult);
         BoundDigimonComponent->OnDigimonStorageActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
         BoundDigimonComponent->OnAttributePointSpendResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
@@ -365,6 +382,14 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     CareTabButton->AddChild(CareTabLabel);
     TabRow->AddChildToHorizontalBox(CareTabButton)->SetPadding(FMargin(0,0,8,0));
 
+    ItemsTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ItemsTabButton"));
+    DMFNativeUI::StyleButton(ItemsTabButton);
+    UTextBlock* ItemsTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ItemsTabLabel"));
+    ItemsTabLabel->SetText(NSLOCTEXT("DMF", "ItemsTabLabel", "ITEMS"));
+    DMFNativeUI::StyleText(ItemsTabLabel, 15, DMFNativeUI::Text(), true);
+    ItemsTabButton->AddChild(ItemsTabLabel);
+    TabRow->AddChildToHorizontalBox(ItemsTabButton)->SetPadding(FMargin(0,0,8,0));
+
     SocialTabButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("SocialTabButton"));
     DMFNativeUI::StyleButton(SocialTabButton);
     UTextBlock* SocialTabLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("SocialTabLabel"));
@@ -374,7 +399,7 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     TabRow->AddChildToHorizontalBox(SocialTabButton);
 
     UTextBlock* FutureTabsLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("FutureTabsLabel"));
-    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "FUTURE MODULES"));
+    FutureTabsLabel->SetText(NSLOCTEXT("DMF", "FutureTabsLabel", "ACCOUNT SYSTEMS"));
     DMFNativeUI::StyleText(FutureTabsLabel, 11, DMFNativeUI::Muted(), true);
     if (UHorizontalBoxSlot* FutureSlot = TabRow->AddChildToHorizontalBox(FutureTabsLabel)) { FutureSlot->SetSize(DMFNativeUI::FillSize()); FutureSlot->SetVerticalAlignment(VAlign_Center); FutureSlot->SetHorizontalAlignment(HAlign_Right); }
 
@@ -1361,6 +1386,82 @@ void UDMFDigimonInventoryWidget::BuildNativeFallbackUI()
     SocialGuildSearchInput=WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass(),TEXT("SocialGuildSearchInput")); DMFNativeUI::StyleInput(SocialGuildSearchInput); SocialGuildSearchInput->SetHintText(NSLOCTEXT("DMF","GuildSearchHint","Search guild name or owner…")); GuildSearchColumn->AddChildToVerticalBox(SocialGuildSearchInput)->SetPadding(FMargin(0,0,0,7));
     UScrollBox* GuildSearchScroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass()); if(UVerticalBoxSlot* S=GuildSearchColumn->AddChildToVerticalBox(GuildSearchScroll))S->SetSize(DMFNativeUI::FillSize()); SocialGuildSearchList=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); GuildSearchScroll->AddChild(SocialGuildSearchList);
 
+
+
+    // ---- ITEMS: private owner bag + Party target selector -----------------------------------------
+    ItemContentRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("ItemContentRow"));
+    if (UVerticalBoxSlot* ItemRootSlot = WindowColumn->AddChildToVerticalBox(ItemContentRow))
+    {
+        ItemRootSlot->SetSize(DMFNativeUI::FillSize());
+    }
+
+    USizeBox* ItemBagSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("ItemBagSize"));
+    ItemBagSize->SetWidthOverride(790.0f);
+    if (UHorizontalBoxSlot* BagSlot = ItemContentRow->AddChildToHorizontalBox(ItemBagSize))
+    {
+        BagSlot->SetPadding(FMargin(0,0,14,0));
+        BagSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    UBorder* ItemBagPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("ItemBagPanel"));
+    DMFNativeUI::StylePanel(ItemBagPanel, DMFNativeUI::PanelRaised(), FMargin(12));
+    ItemBagSize->AddChild(ItemBagPanel);
+    UVerticalBox* ItemBagColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("ItemBagColumn"));
+    ItemBagPanel->AddChild(ItemBagColumn);
+
+    UHorizontalBox* ItemBagHeader = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("ItemBagHeader"));
+    ItemBagColumn->AddChildToVerticalBox(ItemBagHeader)->SetPadding(FMargin(2,0,2,8));
+    UTextBlock* ItemBagTitle = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ItemBagTitle"));
+    ItemBagTitle->SetText(NSLOCTEXT("DMF","ItemBagTitle","PLAYER ITEM INVENTORY"));
+    DMFNativeUI::StyleText(ItemBagTitle,17,DMFNativeUI::Accent(),true);
+    ItemBagHeader->AddChildToHorizontalBox(ItemBagTitle)->SetSize(DMFNativeUI::FillSize());
+    ItemInventoryCountText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ItemInventoryCountText"));
+    DMFNativeUI::StyleText(ItemInventoryCountText,13,DMFNativeUI::Muted(),true);
+    ItemBagHeader->AddChildToHorizontalBox(ItemInventoryCountText)->SetHorizontalAlignment(HAlign_Right);
+
+    UScrollBox* ItemBagScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("ItemBagScroll"));
+    if (UVerticalBoxSlot* BagScrollSlot = ItemBagColumn->AddChildToVerticalBox(ItemBagScroll)) BagScrollSlot->SetSize(DMFNativeUI::FillSize());
+    ItemInventoryGrid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(), TEXT("ItemInventoryGrid"));
+    ItemInventoryGrid->SetSlotPadding(FMargin(5));
+    ItemBagScroll->AddChild(ItemInventoryGrid);
+
+    UBorder* ItemDetailsPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("ItemDetailsPanel"));
+    DMFNativeUI::StylePanel(ItemDetailsPanel, DMFNativeUI::PanelRaised(), FMargin(14));
+    if (UHorizontalBoxSlot* ItemDetailsSlot = ItemContentRow->AddChildToHorizontalBox(ItemDetailsPanel))
+    {
+        ItemDetailsSlot->SetSize(DMFNativeUI::FillSize());
+        ItemDetailsSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    UVerticalBox* ItemDetailsColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("ItemDetailsColumn"));
+    ItemDetailsPanel->AddChild(ItemDetailsColumn);
+    UTextBlock* ItemSelectedHeader = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+    ItemSelectedHeader->SetText(NSLOCTEXT("DMF","ItemSelectedHeader","SELECTED ITEM"));
+    DMFNativeUI::StyleText(ItemSelectedHeader,13,DMFNativeUI::Accent(),true);
+    ItemDetailsColumn->AddChildToVerticalBox(ItemSelectedHeader);
+
+    UHorizontalBox* ItemIdentityRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("ItemIdentityRow"));
+    ItemDetailsColumn->AddChildToVerticalBox(ItemIdentityRow)->SetPadding(FMargin(0,7,0,8));
+    USizeBox* ItemIconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("ItemSelectedIconBox"));
+    ItemIconBox->SetWidthOverride(110); ItemIconBox->SetHeightOverride(110);
+    ItemIdentityRow->AddChildToHorizontalBox(ItemIconBox)->SetPadding(FMargin(0,0,10,0));
+    UBorder* ItemIconBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    DMFNativeUI::StylePanel(ItemIconBorder,DMFNativeUI::SlotEmpty(),FMargin(5)); ItemIconBox->AddChild(ItemIconBorder);
+    ItemSelectedIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), TEXT("ItemSelectedIcon")); ItemIconBorder->AddChild(ItemSelectedIcon);
+    UVerticalBox* ItemIdentityText = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    if (UHorizontalBoxSlot* ItemTextSlot=ItemIdentityRow->AddChildToHorizontalBox(ItemIdentityText)){ItemTextSlot->SetSize(DMFNativeUI::FillSize());ItemTextSlot->SetVerticalAlignment(VAlign_Center);}
+    ItemSelectedNameText=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),TEXT("ItemSelectedNameText")); ItemSelectedNameText->SetAutoWrapText(true); DMFNativeUI::StyleText(ItemSelectedNameText,21,DMFNativeUI::Text(),true); ItemIdentityText->AddChildToVerticalBox(ItemSelectedNameText);
+    ItemSelectedMetaText=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),TEXT("ItemSelectedMetaText")); ItemSelectedMetaText->SetAutoWrapText(true); DMFNativeUI::StyleText(ItemSelectedMetaText,12,DMFNativeUI::Gold(),true); ItemIdentityText->AddChildToVerticalBox(ItemSelectedMetaText)->SetPadding(FMargin(0,2,0,0));
+
+    ItemSelectedDescriptionText=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),TEXT("ItemSelectedDescriptionText")); ItemSelectedDescriptionText->SetAutoWrapText(true); DMFNativeUI::StyleText(ItemSelectedDescriptionText,12,DMFNativeUI::Muted()); ItemDetailsColumn->AddChildToVerticalBox(ItemSelectedDescriptionText)->SetPadding(FMargin(0,0,0,8));
+    ItemUseStatusText=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),TEXT("ItemUseStatusText")); ItemUseStatusText->SetText(NSLOCTEXT("DMF","ItemInitialStatus","Select an item stack, choose a Party Digimon, then use the item.")); ItemUseStatusText->SetAutoWrapText(true); DMFNativeUI::StyleText(ItemUseStatusText,11,DMFNativeUI::Muted(),true); ItemDetailsColumn->AddChildToVerticalBox(ItemUseStatusText)->SetPadding(FMargin(0,0,0,8));
+
+    UTextBlock* ItemTargetHeader=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); ItemTargetHeader->SetText(NSLOCTEXT("DMF","ItemTargetHeader","SELECT TARGET • ACTIVE PARTY")); DMFNativeUI::StyleText(ItemTargetHeader,12,DMFNativeUI::Accent(),true); ItemDetailsColumn->AddChildToVerticalBox(ItemTargetHeader)->SetPadding(FMargin(0,2,0,5));
+    UScrollBox* ItemTargetScroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(),TEXT("ItemTargetScroll")); if(UVerticalBoxSlot* S=ItemDetailsColumn->AddChildToVerticalBox(ItemTargetScroll)){S->SetSize(DMFNativeUI::FillSize());}
+    ItemTargetGrid=WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass(),TEXT("ItemTargetGrid")); ItemTargetGrid->SetSlotPadding(FMargin(4)); ItemTargetScroll->AddChild(ItemTargetGrid);
+
+    UseSelectedItemButton=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(),TEXT("UseSelectedItemButton")); DMFNativeUI::StyleButton(UseSelectedItemButton,true); UTextBlock* UseItemLabel=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); UseItemLabel->SetText(NSLOCTEXT("DMF","UseSelectedItemLabel","USE ON SELECTED DIGIMON")); UseItemLabel->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(UseItemLabel,13,DMFNativeUI::Text(),true); UseSelectedItemButton->AddChild(UseItemLabel); ItemDetailsColumn->AddChildToVerticalBox(UseSelectedItemButton)->SetPadding(FMargin(0,10,0,0));
+
+    ItemContentRow->SetVisibility(ESlateVisibility::Collapsed);
+
     SocialContentRoot->SetVisibility(ESlateVisibility::Collapsed);
     SocialGuildContentRow->SetVisibility(ESlateVisibility::Collapsed);
 }
@@ -1380,6 +1481,8 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
     {
         BoundDigimonComponent->OnDigimonInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
+        BoundDigimonComponent->OnItemInventoryChanged.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleItemInventoryChanged);
+        BoundDigimonComponent->OnItemUseResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleItemUseResult);
         BoundDigimonComponent->OnDigimonStorageActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
         BoundDigimonComponent->OnAttributePointSpendResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.RemoveDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
@@ -1395,6 +1498,8 @@ void UDMFDigimonInventoryWidget::BindDigimonComponent()
     {
         BoundDigimonComponent->OnDigimonInventoryChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleInventoryChanged);
         BoundDigimonComponent->OnDigimonBankChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleBankChanged);
+        BoundDigimonComponent->OnItemInventoryChanged.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleItemInventoryChanged);
+        BoundDigimonComponent->OnItemUseResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleItemUseResult);
         BoundDigimonComponent->OnDigimonStorageActionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleStorageActionResult);
         BoundDigimonComponent->OnAttributePointSpendResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandleAttributePointSpendResult);
         BoundDigimonComponent->OnPartnerActionResult.AddUniqueDynamic(this, &UDMFDigimonInventoryWidget::HandlePartnerActionResult);
@@ -2244,6 +2349,7 @@ void UDMFDigimonInventoryWidget::SetActiveMenuTab(const EDMFDigimonMenuTab NewTa
     else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) RefreshDigiDexData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) RefreshDigivolutionData();
     else if (ActiveMenuTab == EDMFDigimonMenuTab::Social) RefreshSocialData();
+    else if (ActiveMenuTab == EDMFDigimonMenuTab::Items) RefreshItemInventoryData();
     else RefreshCareData();
 }
 
@@ -2269,6 +2375,7 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
     if (CareContentRow) CareContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Care ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (DigivolutionContentRow) DigivolutionContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Digivolution ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (DigiDexContentRow) DigiDexContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::DigiDex ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (ItemContentRow) ItemContentRow->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Items ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     if (SocialContentRoot) SocialContentRoot->SetVisibility(ActiveMenuTab == EDMFDigimonMenuTab::Social ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 
     DMFNativeUI::StyleButton(CollectionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Collection);
@@ -2277,6 +2384,7 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
     DMFNativeUI::StyleButton(DigivolutionTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Digivolution);
     DMFNativeUI::StyleButton(DigiDexTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::DigiDex);
     DMFNativeUI::StyleButton(CareTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Care);
+    DMFNativeUI::StyleButton(ItemsTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Items);
     DMFNativeUI::StyleButton(SocialTabButton, false, false, ActiveMenuTab == EDMFDigimonMenuTab::Social);
 
     if (DigiDexTabButton)
@@ -2300,6 +2408,7 @@ void UDMFDigimonInventoryWidget::RefreshTabPresentation()
         else if (ActiveMenuTab == EDMFDigimonMenuTab::DigiDex) Status = NSLOCTEXT("DMF","DigiDexTabStatus","Browse the complete implemented-species encyclopedia. DigiDex is read-only and never summons, moves or mutates Digimon.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Digivolution) Status = NSLOCTEXT("DMF","DigivolutionTabStatus","Inspect branching evolution paths for any Party or Bank Digimon. Requirements and transformation commits are server-authoritative.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Care) Status = NSLOCTEXT("DMF","CareTabStatus","Care for your summoned partner with unlimited DigiMeat and monitor its persistent virtual-pet needs.");
+        else if (ActiveMenuTab == EDMFDigimonMenuTab::Items) Status = NSLOCTEXT("DMF","ItemsTabStatus","Manage your private persistent item bag and use server-authoritative recovery capsules on a selected Party Digimon.");
         else if (ActiveMenuTab == EDMFDigimonMenuTab::Social) Status = ActiveSocialTab == EDMFSocialMenuTab::Friends
             ? NSLOCTEXT("DMF","SocialFriendsTabStatus","Discover nearby players, manage persistent friends and requests, toggle distance trackers, and control your personal ignore list.")
             : NSLOCTEXT("DMF","SocialGuildTabStatus","Create, manage, search and apply to persistent server-authoritative guilds without disruptive request popups.");
@@ -2664,6 +2773,198 @@ void UDMFDigimonInventoryWidget::HandleSocialActionFeedback(const bool bSuccess,
         DigimonStatusText->SetText(Message);
         DigimonStatusText->SetColorAndOpacity(FSlateColor(bSuccess ? DMFNativeUI::Success() : DMFNativeUI::Danger()));
     }
+}
+
+
+void UDMFDigimonInventoryWidget::RefreshItemInventoryData()
+{
+    BindDigimonComponent();
+    if (!BoundDigimonComponent || !ItemInventoryGrid)
+    {
+        return;
+    }
+
+    TArray<FDMFItemStack> Stacks = BoundDigimonComponent->GetItemInventory();
+    Stacks.Sort([this](const FDMFItemStack& A, const FDMFItemStack& B)
+    {
+        const UDMFItemData* AD = BoundDigimonComponent ? BoundDigimonComponent->ResolveItemData(A.ItemAssetId) : nullptr;
+        const UDMFItemData* BD = BoundDigimonComponent ? BoundDigimonComponent->ResolveItemData(B.ItemAssetId) : nullptr;
+        const int32 AP = AD ? AD->SortPriority : 0;
+        const int32 BP = BD ? BD->SortPriority : 0;
+        if (AP != BP) return AP < BP;
+        const FString AN = AD ? AD->DisplayName.ToString() : A.ItemAssetId.ToString();
+        const FString BN = BD ? BD->DisplayName.ToString() : B.ItemAssetId.ToString();
+        const int32 NameCmp = AN.Compare(BN, ESearchCase::IgnoreCase);
+        if (NameCmp != 0) return NameCmp < 0;
+        return A.StackId.ToString() < B.StackId.ToString();
+    });
+
+    if (!Stacks.ContainsByPredicate([&](const FDMFItemStack& Stack){ return Stack.StackId == SelectedItemStackId; }))
+    {
+        SelectedItemStackId = Stacks.IsEmpty() ? FGuid() : Stacks[0].StackId;
+    }
+
+    ItemInventoryGrid->ClearChildren();
+    if (Stacks.IsEmpty())
+    {
+        UBorder* EmptyCard = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        DMFNativeUI::StylePanel(EmptyCard, DMFNativeUI::SlotEmpty(), FMargin(10));
+        UTextBlock* EmptyText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+        EmptyText->SetText(NSLOCTEXT("DMF","ItemInventoryEmpty","NO ITEMS YET\nRewards, drops and future shop purchases will appear here."));
+        EmptyText->SetJustification(ETextJustify::Center);
+        EmptyText->SetAutoWrapText(true);
+        DMFNativeUI::StyleText(EmptyText, 11, DMFNativeUI::Muted(), true);
+        EmptyCard->AddChild(EmptyText);
+        if (UUniformGridSlot* EmptySlot = ItemInventoryGrid->AddChildToUniformGrid(EmptyCard, 0, 0))
+        {
+            EmptySlot->SetHorizontalAlignment(HAlign_Fill);
+            EmptySlot->SetVerticalAlignment(VAlign_Fill);
+        }
+    }
+    for (int32 Index=0; Index<Stacks.Num(); ++Index)
+    {
+        const FDMFItemStack& Stack = Stacks[Index];
+        UDMFItemData* Item = BoundDigimonComponent->ResolveItemData(Stack.ItemAssetId);
+        UDMFItemInventoryEntryButton* Button = WidgetTree->ConstructWidget<UDMFItemInventoryEntryButton>(UDMFItemInventoryEntryButton::StaticClass());
+        Button->InitializeItemEntry(Stack.StackId);
+        Button->OnItemStackPressed.AddUniqueDynamic(this,&UDMFDigimonInventoryWidget::HandleItemStackPressed);
+        DMFNativeUI::StyleButton(Button,false,false,Stack.StackId==SelectedItemStackId);
+
+        USizeBox* CardSize=WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); CardSize->SetWidthOverride(DMFInventoryUI::ItemCardWidth); CardSize->SetHeightOverride(DMFInventoryUI::ItemCardHeight); Button->AddChild(CardSize);
+        UVerticalBox* Card=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); CardSize->AddChild(Card);
+        USizeBox* IconSize=WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); IconSize->SetWidthOverride(DMFInventoryUI::ItemIconSize); IconSize->SetHeightOverride(DMFInventoryUI::ItemIconSize); Card->AddChildToVerticalBox(IconSize)->SetHorizontalAlignment(HAlign_Center);
+        UImage* Icon=WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()); IconSize->AddChild(Icon);
+        if (UTexture2D* Texture=Item ? Item->Icon.LoadSynchronous() : nullptr) Icon->SetBrushFromTexture(Texture,true); else Icon->SetColorAndOpacity(FLinearColor::Transparent);
+        UTextBlock* Name=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Name->SetText(Item && !Item->DisplayName.IsEmpty()?Item->DisplayName:FText::FromString(Stack.ItemAssetId.PrimaryAssetName.ToString())); Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true); DMFNativeUI::StyleText(Name,12,DMFNativeUI::Text(),true); Card->AddChildToVerticalBox(Name)->SetPadding(FMargin(2,4,2,0));
+        UTextBlock* Qty=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass()); Qty->SetText(FText::Format(NSLOCTEXT("DMF","ItemStackQty","QTY  {0}"),FText::AsNumber(Stack.Quantity))); Qty->SetJustification(ETextJustify::Center); DMFNativeUI::StyleText(Qty,11,DMFNativeUI::Gold(),true); Card->AddChildToVerticalBox(Qty)->SetPadding(FMargin(0,2,0,0));
+        if (UUniformGridSlot* InventoryGridSlot = ItemInventoryGrid->AddChildToUniformGrid(
+            Button,
+            Index / DMFInventoryUI::ItemColumns,
+            Index % DMFInventoryUI::ItemColumns))
+        {
+            InventoryGridSlot->SetHorizontalAlignment(HAlign_Fill);
+            InventoryGridSlot->SetVerticalAlignment(VAlign_Fill);
+        }
+    }
+
+    if (ItemInventoryCountText)
+    {
+        ItemInventoryCountText->SetText(FText::Format(NSLOCTEXT("DMF","ItemInventoryCount","{0} / {1} STACKS"),FText::AsNumber(Stacks.Num()),FText::AsNumber(BoundDigimonComponent->GetItemInventoryCapacity())));
+    }
+    RefreshSelectedItemDetails();
+}
+
+void UDMFDigimonInventoryWidget::RefreshSelectedItemDetails()
+{
+    if (!BoundDigimonComponent) return;
+    const TArray<FDMFItemStack> Stacks=BoundDigimonComponent->GetItemInventory();
+    const FDMFItemStack* Stack=Stacks.FindByPredicate([&](const FDMFItemStack& Entry){return Entry.StackId==SelectedItemStackId;});
+    UDMFItemData* Item=Stack?BoundDigimonComponent->ResolveItemData(Stack->ItemAssetId):nullptr;
+
+    if(ItemSelectedIcon)
+    {
+        if(UTexture2D* Texture=Item?Item->Icon.LoadSynchronous():nullptr){ItemSelectedIcon->SetBrushFromTexture(Texture,true);ItemSelectedIcon->SetVisibility(ESlateVisibility::Visible);}else{ItemSelectedIcon->SetVisibility(ESlateVisibility::Hidden);}
+    }
+    if(ItemSelectedNameText)
+    {
+        const FText FallbackName = Stack ? FText::FromName(Stack->ItemAssetId.PrimaryAssetName) : NSLOCTEXT("DMF","NoItemSelected","NO ITEM SELECTED");
+        ItemSelectedNameText->SetText(Item && !Item->DisplayName.IsEmpty() ? Item->DisplayName : FallbackName);
+    }
+    if(ItemSelectedMetaText)
+    {
+        if(Item && Stack)
+        {
+            const FText Category=DMFInventoryUI::EnumDisplay(StaticEnum<EDMFItemCategory>(),static_cast<int64>(Item->Category));
+            const FText Effect=DMFInventoryUI::EnumDisplay(StaticEnum<EDMFItemUseEffect>(),static_cast<int64>(Item->UseEffect));
+            ItemSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF","ItemSelectedMeta","{0}  •  {1}  •  QTY {2}"),Category,Effect,FText::AsNumber(Stack->Quantity)));
+        }
+        else if(Stack) ItemSelectedMetaText->SetText(FText::Format(NSLOCTEXT("DMF","ItemSelectedMissingDataMeta","ITEM DATA UNAVAILABLE  •  QTY {0}"),FText::AsNumber(Stack->Quantity)));
+        else ItemSelectedMetaText->SetText(FText::GetEmpty());
+    }
+    if(ItemSelectedDescriptionText)
+    {
+        FText Desc=Item?Item->Description:(Stack ? NSLOCTEXT("DMF","ItemMissingDataDescription","This saved stack is preserved, but its DMFItemData cannot currently be resolved. Check the DMFItem Asset Manager scan/cook configuration.") : FText::GetEmpty());
+        if(Item && Item->RestoreAmount>0 && Item->UseEffect!=EDMFItemUseEffect::None)
+        {
+            const FText RestoreLine=Item->UseEffect==EDMFItemUseEffect::RestoreHP
+                ? FText::Format(NSLOCTEXT("DMF","ItemRestoresHP","Restores up to {0} HP."),FText::AsNumber(Item->RestoreAmount))
+                : FText::Format(NSLOCTEXT("DMF","ItemRestoresSP","Restores up to {0} SP."),FText::AsNumber(Item->RestoreAmount));
+            Desc=FText::Format(NSLOCTEXT("DMF","ItemDescriptionWithEffect","{0}\n\n{1}"),Desc,RestoreLine);
+        }
+        ItemSelectedDescriptionText->SetText(Desc);
+    }
+    if(Stack) BP_OnItemSelectionChanged(*Stack,Item);
+
+    const TArray<FDMFDigimonInstance> Party=BoundDigimonComponent->GetPartyDigimon();
+    if(!Party.ContainsByPredicate([&](const FDMFDigimonInstance& D){return D.InstanceId==SelectedItemTargetDigimonId;}))
+    {
+        const FGuid Active=BoundDigimonComponent->GetActivePartnerInstanceId();
+        SelectedItemTargetDigimonId=Party.ContainsByPredicate([&](const FDMFDigimonInstance& D){return D.InstanceId==Active;})?Active:(Party.IsEmpty()?FGuid():Party[0].InstanceId);
+    }
+
+    if(ItemTargetGrid)
+    {
+        ItemTargetGrid->ClearChildren();
+        for(int32 Index=0;Index<Party.Num();++Index)
+        {
+            const FDMFDigimonInstance& D=Party[Index]; UDMFDigimonSpeciesData* Species=ResolveSpecies(D.SpeciesId);
+            UDMFDigimonInventoryEntryButton* Button=WidgetTree->ConstructWidget<UDMFDigimonInventoryEntryButton>(UDMFDigimonInventoryEntryButton::StaticClass()); Button->InitializeDigimonEntry(D.InstanceId); Button->OnDigimonPressed.AddUniqueDynamic(this,&UDMFDigimonInventoryWidget::HandleItemTargetPressed); DMFNativeUI::StyleButton(Button,false,false,D.InstanceId==SelectedItemTargetDigimonId);
+            UVerticalBox* Card=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass()); Button->AddChild(Card);
+            USizeBox* PortraitSize=WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()); PortraitSize->SetWidthOverride(92);PortraitSize->SetHeightOverride(82);Card->AddChildToVerticalBox(PortraitSize)->SetHorizontalAlignment(HAlign_Center); UImage* Portrait=WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());PortraitSize->AddChild(Portrait);if(UTexture2D* T=Species?Species->Portrait.LoadSynchronous():nullptr)Portrait->SetBrushFromTexture(T,true);else Portrait->SetColorAndOpacity(FLinearColor::Transparent);
+            UTextBlock* Name=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());Name->SetText(!D.Nickname.IsEmpty()?FText::FromString(D.Nickname):(Species?Species->DisplayName:FText::FromString(TEXT("Digimon"))));Name->SetJustification(ETextJustify::Center);Name->SetAutoWrapText(true);DMFNativeUI::StyleText(Name,10,DMFNativeUI::Text(),true);Card->AddChildToVerticalBox(Name)->SetPadding(FMargin(1,2,1,0));
+            UTextBlock* Vitals=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());Vitals->SetText(FText::Format(NSLOCTEXT("DMF","ItemTargetVitals","HP {0}/{1}  •  SP {2}/{3}"),FText::AsNumber(D.CurrentHP),FText::AsNumber(D.Stats.MaxHP),FText::AsNumber(D.CurrentSP),FText::AsNumber(D.Stats.MaxSP)));Vitals->SetJustification(ETextJustify::Center);Vitals->SetAutoWrapText(true);DMFNativeUI::StyleText(Vitals,9,D.CurrentHP<=0?DMFNativeUI::Danger():DMFNativeUI::Muted(),true);Card->AddChildToVerticalBox(Vitals)->SetPadding(FMargin(1,1,1,2));
+            if (UUniformGridSlot* TargetGridSlot = ItemTargetGrid->AddChildToUniformGrid(Button, Index / 3, Index % 3))
+            {
+                TargetGridSlot->SetHorizontalAlignment(HAlign_Fill);
+                TargetGridSlot->SetVerticalAlignment(VAlign_Fill);
+            }
+        }
+    }
+
+    bool bCanUse=Item && Stack && Item->bConsumable && Item->UseEffect!=EDMFItemUseEffect::None && SelectedItemTargetDigimonId.IsValid();
+    if(bCanUse)
+    {
+        const FDMFDigimonInstance* Target=Party.FindByPredicate([&](const FDMFDigimonInstance& D){return D.InstanceId==SelectedItemTargetDigimonId;});
+        if(!Target) bCanUse=false;
+        else if(Item->bRequiresLivingDigimon && Target->CurrentHP<=0 && !(Item->UseEffect==EDMFItemUseEffect::RestoreHP && Item->bCanRestoreDefeatedDigimon)) bCanUse=false;
+        else if(Item->UseEffect==EDMFItemUseEffect::RestoreHP && FMath::Clamp(Target->CurrentHP,0,FMath::Max(1,Target->Stats.MaxHP))>=FMath::Max(1,Target->Stats.MaxHP)) bCanUse=false;
+        else if(Item->UseEffect==EDMFItemUseEffect::RestoreSP && FMath::Clamp(Target->CurrentSP,0,FMath::Max(0,Target->Stats.MaxSP))>=FMath::Max(0,Target->Stats.MaxSP)) bCanUse=false;
+    }
+    if(UseSelectedItemButton) UseSelectedItemButton->SetIsEnabled(bCanUse);
+}
+
+void UDMFDigimonInventoryWidget::HandleItemStackPressed(const FGuid StackId)
+{
+    SelectedItemStackId=StackId;
+    if(ItemUseStatusText) ItemUseStatusText->SetText(NSLOCTEXT("DMF","ItemChooseTarget","Choose a Party Digimon, then use the selected item."));
+    RefreshItemInventoryData();
+}
+
+void UDMFDigimonInventoryWidget::HandleItemTargetPressed(const FGuid InstanceId)
+{
+    SelectedItemTargetDigimonId=InstanceId;
+    RefreshSelectedItemDetails();
+}
+
+void UDMFDigimonInventoryWidget::HandleUseSelectedItem()
+{
+    if(!BoundDigimonComponent || !SelectedItemStackId.IsValid() || !SelectedItemTargetDigimonId.IsValid()) return;
+    if(ItemUseStatusText){ItemUseStatusText->SetText(NSLOCTEXT("DMF","ItemUsePending","Applying item…"));ItemUseStatusText->SetColorAndOpacity(FSlateColor(DMFNativeUI::Muted()));}
+    BoundDigimonComponent->ServerUseItem(SelectedItemStackId,SelectedItemTargetDigimonId);
+}
+
+void UDMFDigimonInventoryWidget::HandleItemInventoryChanged()
+{
+    if(ActiveMenuTab==EDMFDigimonMenuTab::Items) RefreshItemInventoryData();
+}
+
+void UDMFDigimonInventoryWidget::HandleItemUseResult(const bool bSuccess, const FText Message, const FGuid StackId, const FPrimaryAssetId ItemAssetId, const FGuid DigimonInstanceId, const int32 RemainingQuantity, const int32 RestoredAmount)
+{
+    if(ItemUseStatusText){ItemUseStatusText->SetText(Message);ItemUseStatusText->SetColorAndOpacity(FSlateColor(bSuccess?DMFNativeUI::Success():DMFNativeUI::Danger()));}
+    BP_OnItemUseResult(bSuccess,Message,StackId,ItemAssetId,DigimonInstanceId,RemainingQuantity,RestoredAmount);
+    RefreshItemInventoryData();
+    RefreshInventory();
+    RefreshBankData();
 }
 
 void UDMFDigimonInventoryWidget::RefreshScanData()
@@ -3796,6 +4097,7 @@ void UDMFDigimonInventoryWidget::HandleBankTab() { SetActiveMenuTab(EDMFDigimonM
 void UDMFDigimonInventoryWidget::HandleScanMaterializeTab() { SetActiveMenuTab(EDMFDigimonMenuTab::ScanAndMaterialize); }
 void UDMFDigimonInventoryWidget::HandleCareTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Care); }
 void UDMFDigimonInventoryWidget::HandleSocialTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Social); }
+void UDMFDigimonInventoryWidget::HandleItemsTab() { SetActiveMenuTab(EDMFDigimonMenuTab::Items); }
 void UDMFDigimonInventoryWidget::HandleSocialFriendsTab() { SetActiveSocialTab(EDMFSocialMenuTab::Friends); }
 void UDMFDigimonInventoryWidget::HandleSocialGuildTab() { SetActiveSocialTab(EDMFSocialMenuTab::Guild); }
 

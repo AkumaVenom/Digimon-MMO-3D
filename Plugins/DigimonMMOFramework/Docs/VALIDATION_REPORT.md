@@ -1,3 +1,78 @@
+# v0.21.0-alpha validation summary
+
+Candidate: **Polished Replicated Item Vendor Exchange**  
+Baseline: runtime-accepted **v0.20.0-alpha_PolishedPlayerItemInventoryRecoveryCapsules**. The six recovery capsules, schema-v9 item persistence, live summoned-Digimon HP/SP restoration and host/client owner-only item inventory behavior are accepted baseline contracts.
+
+## Item vendor / shared-stock validation
+- Added Blueprint-derivable `ADMFItemVendorActor` with zero actor Tick, weighted `UDMFItemData` stock pool, independent stock quantity ranges/pricing multipliers and sparse authority-only rotation timer.
+- Stock is a single server-generated replicated array. `StockId`, ItemAssetId, unit buy price and remaining quantity are shared to every relevant connection; clients do not generate local rolls. Purchases decrement that one array, so other viewers receive the same new quantity through normal replication.
+- `StockGenerationSerial` and `NextStockRotationServerTimeSeconds` are replicated alongside stock for coherent generation tracking and a local countdown based on replicated GameState server time. Normal relevancy is deliberately retained for MMO scaling.
+- BUY reserves shared stock before account mutation, rejects stale/excess requests and restores the offer if the account commit fails. SELL never mutates shared BUY quantity.
+
+## Economy / inventory validation
+- BUY preflights the complete requested quantity against authoritative BITS and `GetAvailableItemCapacity`; existing partial stacks fill first, then additional stack GUIDs are created up to `MaxStackSize`. Over-capacity requests fail all-or-nothing.
+- SELL aggregates ownership across stacks and removes exact approved quantity. Key/Quest protection is enforced by both the vendor and player component. Canonical Data Asset SuggestedBuyPrice/SuggestedSellPrice plus vendor multipliers determine server quotes.
+- Transactions update canonical `Money` and the existing owner-only inventory, broadcast once, persist once and retain account schema **v9**.
+- Native BUY/SELL UI includes BITS, rotation countdown, shared/owned/capacity information, quantity controls/MAX and local two-step confirmation while retaining server revalidation.
+
+## Networking / static validation
+- New network surface is limited to `ServerRequestItemVendorTransaction` + `ClientItemVendorTransactionResult`; total RPC declarations are **57** and both have matching `_Implementation` functions.
+- There is no stock multicast, client RNG, vendor Tick, public player bag or second BITS channel.
+- `EDMFPlayerInteractionType::ItemVendor` and `EDMFItemVendorTransactionType` are appended/new without shifting prior serialized interaction ordinals.
+- Plugin descriptor is `0.21.0-alpha` / integer version `2100`.
+- Static audit: plugin descriptor JSON parses; the candidate contains **163 files / 111 source-header-build files**; all **158** accepted v0.20.0 paths are preserved with five new item-vendor source/UI/setup paths; reflected totals are **60 UCLASS / 27 UENUM / 39 USTRUCT / 711 UFUNCTION / 1341 UPROPERTY**. All **57 RPCs** (**25 Server / 23 Client / 9 NetMulticast**) have matching `_Implementation` functions, no duplicate RPC names exist, generated-header ordering passes, no merge markers are present, and the new item-vendor files contain no exact local `Slot` shadow hazard. UE5.8 UHT/C++ and PIE remain runtime acceptance gates and are not claimed by this report.
+- Final packaging is rebuilt from this audited tree and validated with `unzip -t` before delivery.
+
+## Runtime acceptance required
+Run `TEST_PLAN.md` **S0 — v0.21.0 replicated Item Vendor Exchange acceptance**, with special attention to host/client identical stock, shared quantity depletion, timed rotation convergence, concurrent final-stock purchases, multi-stack overflow, full-bag no-charge failure, protected selling, relog persistence and v0.20.0 regression.
+
+---
+
+# v0.20.0-alpha validation summary
+
+## UE5.8 compile repair
+- User build log identified two `C4458` failures in `DMFDigimonInventoryWidget.cpp`: local `Slot` identifiers shadowed inherited `UWidget::Slot`. Both identifiers were renamed to explicit `InventoryGridSlot` / `TargetGridSlot` names.
+- The repair changes presentation-local variable names only; no RPC, replication, persistence schema or gameplay authority contract changed.
+- The compile repair was subsequently runtime-validated with the full v0.20.0 item system; v0.20.0 is now the accepted baseline.
+
+Candidate: **Polished Player Item Inventory & Recovery Capsules**  
+Baseline: runtime-accepted **v0.19.3-alpha_PolishedCombatQuickBarBitsHUD**. v0.19.2 Social Friends/Ignore/Guild, v0.18.5 presence, v0.18.4 capacity, v0.18.3 vendor UI/economy, v0.18.2 reconnect/account authority and all earlier gameplay/persistence contracts are preserved.
+
+## Item inventory / capsule validation
+
+- `UDMFItemData` provides one data-driven Primary Asset contract for presentation, stack capacity, future economy hints and server-resolved use effects. The six requested HP/SP capsule sizes require only content Data Assets; no per-capsule C++ subclass or RPC is needed.
+- `FDMFReplicatedItemList` is a private owner-only Fast Array. Persistent stacks store only GUID + Primary Asset ID + quantity, and duplicate/invalid stack GUIDs are repaired during authoritative hydration.
+- `GrantItem` preflights complete capacity before mutating, fills existing stacks first and persists immediately. `RemoveItem` validates the complete requested quantity before removal. Both are authority-only integration surfaces.
+- Capsule use is transactional: authority calculates a legal clamped HP/SP result, consumes one stack unit, then commits the Digimon vital change. Full/illegal targets are rejected without consumption.
+- The summoned active partner uses `ApplyAuthoritativeRuntimeVitals`, which refreshes live replicated vitals without combat initialization/reset. Unsummoned Party/Bank changes stay private.
+- The native **ITEMS** page uses the existing shared menu shell and native style, supports stack selection, active-Party target selection, status feedback and optional Blueprint bindings/events.
+
+## Authority / networking / persistence
+
+- One new reliable Server RPC accepts only `StackId + TargetDigimonInstanceId`; one reliable owner Client RPC carries use-result presentation. Total RPC declarations are **55**.
+- One owner-only Fast Array property is added for item stacks. There is no multicast inventory state, per-tick network work, client-authored restore magnitude or public account-bag replication.
+- Account SaveGame advances **v8 → v9** by appending `ItemInventory`; old accounts deserialize with an empty array and retain all existing fields.
+- The configured `DMFItem` Primary Asset scan uses `AlwaysCook` under `/Game/DigimonData`, matching the framework's existing data-asset deployment model.
+
+## Static validation
+
+- Plugin descriptor parses as valid JSON and reports `0.20.0-alpha` / integer version `2000`.
+- Candidate tree contains **158 files**, including **107 source/header/build files**. No v0.19.3 path was removed; the four new paths are `DMFItemData.h`, the native item-entry button `.h/.cpp`, and `Docs/SETUP_PLAYER_ITEM_INVENTORY.md`.
+- Reflected totals: **57 UCLASS / 26 UENUM / 36 USTRUCT / 652 UFUNCTION / 1267 UPROPERTY**.
+- RPC declaration set is **55** total (**24 Server / 22 Client / 9 NetMulticast**). The only new RPC names relative to v0.19.3 are `ServerUseItem` and `ClientItemUseResult`; every RPC declaration has a matching `_Implementation` function and no duplicate RPC names exist.
+- `EDMFDigimonMenuTab` preserves every v0.19.3 value in its original order and appends only `Items`.
+- Public generated-header include ordering passes. Full framework `.h/.cpp` comment/string-aware `()[]{}` delimiter validation passes and no merge-conflict markers are present.
+- The complete v0.19.3 file set remains a subset of the candidate; no baseline source/document path was deleted.
+- Final packaged ZIP integrity is validated with `unzip -t`; every archived file reports OK.
+- UE5.8 compile/PIE/packaged multiplayer execution remains the required runtime acceptance step; this report does not claim runtime validation before that test.
+
+
+## Runtime acceptance — PASSED
+
+User runtime validation confirms all six Small/Medium/Large HP and SP Capsules, item-inventory relog persistence, live summoned-Digimon HP/SP restoration, and host/client owner-only inventory privacy are working correctly. **v0.20.0-alpha_PolishedPlayerItemInventoryRecoveryCapsules is the accepted baseline for v0.21.0 development.**
+
+---
+
 # v0.19.3-alpha validation summary
 
 Candidate: **Polished Combat Quickbar BITS HUD**  

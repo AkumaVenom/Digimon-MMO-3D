@@ -1,8 +1,28 @@
 # Digimon MMO Framework — UE5.8
 
-**Version:** `0.19.3-alpha — Polished Combat Quickbar BITS HUD`
+**Version:** `0.21.0-alpha — Polished Replicated Item Vendor Exchange`
 
 A source-first Unreal Engine 5.8 runtime plugin foundation for a multiplayer-only, server-authoritative, Blueprint-first Digimon MMORPG.
+
+## New in v0.21.0-alpha — Polished Replicated Item Vendor Exchange
+
+The framework now includes **`ADMFItemVendorActor`**, a placeable Blueprint-derivable item shop built in the same architectural style as the established Digimon Exchange. Each placed vendor owns a weighted item pool, randomized shared stock quantities, per-vendor pricing multipliers, BUY/SELL policy, interaction range and a server-owned stock-rotation schedule. The native **ITEM EXCHANGE** uses the same dark/navy, cyan and gold visual language as the Digimon vendor, with BUY/SELL tabs, item icons and descriptions, current BITS, synchronized stock countdown, owned/available quantities, explicit quantity controls (`-10 / -1 / +1 / +10 / MAX`) and two-step transaction confirmation. Blueprint subclasses can replace the mesh/presentation or widget class without taking gameplay authority away from C++.
+
+**Stock is shared replicated world state.** The server alone selects items, rolls quantities, decrements purchased stock and performs timed rotations. `ReplicatedStock`, generation serial and next server rotation timestamp replicate through the vendor actor, so all relevant clients converge on the same StockIds, items, unit prices and remaining quantities. The actor has no Tick; only the server timer mutates stock, while the UI's one-second local header timer formats the replicated countdown. A purchase reserves shared stock before account mutation to prevent re-entrant/double purchases, and successful quantity changes are forced out through normal actor replication.
+
+Item purchases are atomic against the existing v0.20 private bag: authority validates the selected stock GUID, requested quantity, BITS balance and **complete** stack capacity before committing. Matching partial stacks fill first and quantities larger than one stack automatically spill into new server-GUID stacks. If the whole requested quantity cannot fit, nothing is bought and no BITS are charged. Selling aggregates the player's owner-only stacks by item ID, removes the chosen quantity across stacks, credits BITS and persists once. **Key Items and Quest items are protected in both the vendor and player-component authority layers and can never be sold.** Prices come from the existing `UDMFItemData::SuggestedBuyPrice` / `SuggestedSellPrice` plus vendor tuning.
+
+Only one additional reliable request/result pair is added (**55 → 57 RPC declarations**). The client never sends a trusted price, stock quantity, BITS value, stack mutation or sell payout. Account SaveGame remains **schema v9** because the vendor reuses the accepted v0.20 bag/economy format. See `Docs/SETUP_ITEM_VENDOR.md` for the complete editor setup and `Docs/TEST_PLAN.md` for v0.21.0 multiplayer acceptance.
+
+## New in v0.20.0-alpha — Polished Player Item Inventory & Recovery Capsules
+
+The shared native **DIGIMON MENU** now has a complete **ITEMS** page for each authenticated player. The left side is a persistent item-bag grid with authored icons, names and stack quantities; the right side presents the selected item's effect and a compact **ACTIVE PARTY** target selector with live HP/SP. The page follows the existing dark/navy, cyan and gold native UI language and remains Blueprint-reskinnable through optional bindings/events. `ADMFMMOPlayerController::OpenItemsUI()` can open the common menu directly on this page.
+
+Items are authored as `UDMFItemData` Primary Assets rather than hard-coded capsule classes. The initial native effects are **Restore HP** and **Restore SP**, so the requested six recovery items are created entirely in content: Small / Medium / Large HP Capsule and Small / Medium / Large SP Capsule, each with its own icon, description, stack size and `RestoreAmount`. This same definition already carries category, sorting and optional suggested buy/sell pricing for later item shops. Authority-side `GrantItem`, `RemoveItem` and quantity queries provide clean hooks for future vendors, drops, quests, rewards, crafting or other Digimon systems.
+
+The bag is durable private account state. `FDMFItemStack` entries are carried by one owner-only Fast Array on `UDMFPlayerDigimonComponent`, and account persistence advances **schema v8 → v9** with a backward-compatible empty bag for existing accounts. Using an item sends only the stack GUID and owned Digimon GUID. The server re-resolves the item definition/effect, validates ownership and current HP/SP, rejects full/illegal targets without consumption, consumes exactly one stack unit on success, updates Party/Bank state, persists immediately and synchronizes a summoned partner through its normal replicated combat vitals without resetting battle state. This adds two reliable RPC declarations (**53 → 55**) and no per-frame inventory networking.
+
+See `Docs/SETUP_PLAYER_ITEM_INVENTORY.md` for the exact six-capsule Data Asset setup, Asset Manager scan rule, test grant workflow, native/Blueprint UI surface and future vendor integration notes.
 
 ## New in v0.19.3-alpha — Polished Combat Quickbar BITS HUD
 
@@ -669,7 +689,7 @@ Likewise, this alpha provides an out-of-the-box private-host login gate, not int
 
 The framework is being built around the feature direction of AkumaVenom's Digimon VPET World project: 3D exploration, real-time wild battles, scanning/materialization and virtual-pet care. This plugin is a new multiplayer architecture rather than a direct conversion of that project's Blueprint assets.
 
-See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SOCIAL_SYSTEM.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_SERVER_CAPACITY.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
+See `Docs/ARCHITECTURE.md`, `Docs/SETUP_DAY_NIGHT_SKY.md`, `Docs/SETUP_PLAYER_WORLD_LOCATION.md`, `Docs/SETUP_FRONTEND_BACKGROUND_PRESENTATION.md`, `Docs/SETUP_PLAYER_CAMERA_ZOOM.md`, `Docs/SETUP_GLOBAL_MUSIC.md`, `Docs/SETUP_PLAYER_AVATAR_SKINS.md`, `Docs/SETUP_PLAYER_FOOTSTEPS.md`, `Docs/SETUP_STARTER_SYSTEM.md`, `Docs/SETUP_COMBAT_SYSTEM.md`, `Docs/SETUP_PLAYER_INTERACTION_SYSTEM.md`, `Docs/SETUP_WILD_DIGIMON_SPAWNER.md`, `Docs/SETUP_MANUAL_COMBAT_HEALER_INVENTORY.md`, `Docs/SETUP_PLAYER_ITEM_INVENTORY.md`, `Docs/SETUP_WORLD_NAMEPLATES.md`, `Docs/SETUP_WORLD_CHAT.md`, `Docs/SETUP_SOCIAL_SYSTEM.md`, `Docs/SETUP_SERVER_ENDPOINT.md`, `Docs/SETUP_SERVER_CAPACITY.md`, `Docs/SETUP_ADMIN_HOSTING.md`, `Docs/SETUP_SCAN_MATERIALIZATION.md`, `Docs/SETUP_CARE_SYSTEM.md`, `Docs/NETWORKING.md`, `Docs/TEST_PLAN.md`, `Docs/ROADMAP.md` and `CHANGELOG.md`.
 
 
 ## Native frontend UI bootstrap (0.3.2; framework-owned background layering polished in v0.15.0)

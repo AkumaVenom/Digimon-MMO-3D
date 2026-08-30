@@ -1,4 +1,26 @@
 # Architecture
+
+## Replicated item-vendor economy architecture (v0.21.0)
+- `ADMFItemVendorActor` is a Blueprint-derivable, zero-tick world actor analogous to the Digimon Vendor but backed by `UDMFItemData`. Authority owns weighted stock generation, rotation, shared quantities and canonical pricing.
+- One bounded `ReplicatedStock` array is public vendor state. Every relevant client observes the same `StockId`, item, price and remaining quantity; clients never generate local vendor offers. Normal relevancy keeps distant MMO vendors from becoming global bandwidth consumers while late relevancy receives the current snapshot.
+- Rotation is sparse timer-driven authority work. `NextStockRotationServerTimeSeconds` lets local UI render a synchronized countdown from GameState server time without per-frame or per-second server RPCs.
+- BUY is a two-object authoritative transaction: the vendor reserves shared stock, then `UDMFPlayerDigimonComponent` preflights complete stack capacity/BITS, fills partial stacks, creates additional bounded stacks as necessary, charges and persists once. A rejected account commit restores the vendor offer.
+- SELL routes through vendor eligibility/pricing and an account transaction that removes quantities across stacks, credits BITS and persists once. Key and Quest category protection is duplicated at the account boundary as defense in depth.
+- Player inventory/BITS remain owner-only; only the vendor's intentionally public stock is shared. No SaveGame representation for vendor stock is introduced in v0.21.0; stock is world/session economy state like the existing rotating Digimon Vendor.
+- UI is native/reskinnable and presentation-only. The client sends transaction direction, server-issued StockId or owned ItemAssetId, and quantity; authority derives all financial and storage outcomes.
+
+## Persistent player item inventory architecture (v0.20.0)
+
+`UDMFPlayerDigimonComponent` remains the durable per-account gameplay boundary and now owns one additional private storage tier: `FDMFReplicatedItemList ReplicatedItemInventory`. It is a Fast Array using `COND_OwnerOnly`, matching the privacy/performance pattern already proven by Party and Bank. An item stack contains only a server-owned stack GUID, `FPrimaryAssetId` and quantity; presentation/effect metadata is resolved from `UDMFItemData`. Another client never needs the complete bag to render the owning player's public world representation.
+
+`UDMFItemData` is a Primary Data Asset and is intentionally useful beyond the first capsules. It owns stable identity, presentation, item category, maximum stack size, optional suggested economy values, sort priority and the framework-supported use effect. The persistent bag stores the Primary Asset ID instead of duplicating those authored fields, so balance/presentation changes remain data-driven. A temporarily unresolved asset does not cause the persisted stack to be deleted during account hydration.
+
+Mutations have one server-authoritative path. `GrantItem` and `RemoveItem` are authority-only integration functions for future game systems. `ServerUseItem` accepts only the selected stack GUID and target Digimon GUID, then re-resolves the stack, item asset, effect amount, target ownership/location and current vitals on authority. The transaction computes a legal HP/SP result before consuming one unit; rejected/full-stat uses therefore have no gameplay or inventory side effect. The committed Party/Bank Fast Array entry and item stack are marked dirty and the account is checkpointed immediately.
+
+A summoned target is not respawned or combat-reset. The component synchronizes the persistent individual with live combat vitals, commits the capsule result, then calls the non-reflected `UDMFDigimonCombatComponent::ApplyAuthoritativeRuntimeVitals` helper. This updates replicated HP/SP while preserving target, encounter latch, cooldowns, queued intent, automation and movement. Public observers receive only the already-existing Digimon combat replication, not the owner's private inventory.
+
+The native `UDMFDigimonInventoryWidget` appends an **ITEMS** page to the existing shared shell. It is presentation only: stack cards and Party targets are derived from owner state, while the use button invokes the same server request. Blueprint children can bind optional item widgets/events or replace the visual hierarchy without obtaining inventory authority. Account SaveGame schema v9 appends `ItemInventory`; all v8 Social/Guild and earlier account fields retain their existing serialized meaning.
+
 ## Persistent BITS HUD presentation architecture (v0.19.3)
 
 `UDMFPlayerDigimonComponent` remains the single account-economy source of truth. The bottom-center `UDMFCombatQuickBarWidget` now projects its existing owner-only replicated `Money` value into optional `BitsText` and the native gold BITS capsule. No HUD-owned balance is persisted or replicated. Because the currency is account state rather than active-partner state, the presentation is refreshed independently of whether `ActivePartnerActor` exists.

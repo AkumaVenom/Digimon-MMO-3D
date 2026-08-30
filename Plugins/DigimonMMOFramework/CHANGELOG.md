@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.21.0-alpha — Polished Replicated Item Vendor Exchange
+
+### Added — shared replicated rotating item stock
+- Added Blueprint-derivable `ADMFItemVendorActor`, following the established Digimon Vendor workflow while using `UDMFItemData` as the item/economy source. Each placed vendor owns an independent weighted pool, stock-slot count, per-entry quantity range, price multiplier and configurable real-time server rotation interval.
+- Stock is generated **only on the server** and published as replicated `FDMFItemVendorStockItem` snapshots (`StockId`, item Primary Asset ID, authoritative unit price, remaining shared quantity and generation serial). Every relevant connection therefore sees the same live stock; there is no per-client RNG or private shop roll.
+- Purchases decrement the one shared authoritative quantity before account mutation. Concurrent attempts for the final units are serialized by authority; stale/excess requests are rejected. Depleted offers disappear for everyone or may be refilled server-side when configured. Late/newly relevant clients receive the current stock snapshot.
+- Automatic rotation uses one sparse server timer and replicates the next server-time deadline. Vendor actors remain zero-tick and retain normal actor relevancy rather than becoming globally always-relevant.
+
+### Added — atomic multi-quantity BUY / SELL economy
+- Added server-side item capacity queries and atomic item-vendor purchase/sale helpers on `UDMFPlayerDigimonComponent`. A BUY preflights the complete requested quantity, available BITS and stack capacity before commit; partial stacks are filled first and quantities beyond one `MaxStackSize` automatically spill into new stacks. Full inventory rejects the complete purchase without charging or partially granting.
+- BUY clients submit only `Vendor + StockId + quantity`; the server re-resolves item identity, current shared quantity, price, distance, account state, BITS and capacity. Prices/BITS deltas are never trusted from client payloads.
+- SELL aggregates the same item across inventory stacks, removes the exact approved quantity, credits canonical BITS and persists once. `KeyItem` and `Quest` categories are protected both at vendor validation and again in the authoritative account transaction. Items with no positive `SuggestedSellPrice` remain non-sellable.
+- Existing `UDMFItemData::SuggestedBuyPrice` / `SuggestedSellPrice` are now the canonical economy inputs, with vendor-wide and per-pool multipliers for designer tuning. SaveGame remains **schema v9**.
+
+### Added — polished native Item Exchange
+- Added native `UDMFItemVendorWidget` with coherent **BUY / SELL** tabs, BITS header, synchronized stock countdown, item cards, stock/owned/capacity information, icon/details, unit/total quote and `-10 / -1 / +1 / +10 / MAX` quantity controls.
+- `MAX` is constrained by shared stock, affordability and remaining stack capacity. Financial actions use local two-step confirmation; stale state is still fully revalidated by authority.
+- The SELL list shows protected Key/Quest items as `PROTECTED`, and optional `bRequireItemInStockPoolToSell` allows specialty vendors without weakening category protection. Native UI remains Blueprint-reskinnable through `VendorWidgetClass` and Blueprint events.
+- Item-vendor interaction participates in the existing modal/input contract and closes conflicting Digimon menu/vendor/quickbar/chat interaction presentation while open.
+
+### Networking / compatibility
+- Added exactly one reliable Server item-vendor transaction RPC and one owner Client result RPC: framework total **55 → 57**. No transaction multicast, inventory Tick, client-generated stock or public player-bag replication is introduced.
+- Shared vendor stock uses bounded ordinary replicated actor state because it changes only on server rotations/purchases; private item stacks remain the accepted owner-only Fast Array.
+- Account persistence stays **schema v9**; v0.20.0 item stacks/capsules and all earlier authority/persistence contracts are structurally preserved.
+- See `Docs/SETUP_ITEM_VENDOR.md` for Blueprint setup, shared-stock behavior, pricing/quantity rules and multiplayer acceptance.
+
+
+## 0.20.0-alpha — Polished Player Item Inventory & Recovery Capsules
+
+### Candidate compile repair
+- Fixed UE5.8/MSVC `C4458` failures in the native ITEMS page by renaming two local `UUniformGridSlot` variables that shadowed `UWidget::Slot`. This is a compile-only repair; inventory authority, replication, persistence, capsule behavior and UI contracts are unchanged.
+
+### Added — persistent player item inventory
+- Added data-driven `UDMFItemData` Primary Assets with stable item identity, display text/icon, category, per-stack capacity, optional future buy/sell prices, sort priority and server-resolved use effects.
+- Added `FDMFItemStack` plus an owner-only `FDMFReplicatedItemList` Fast Array on `UDMFPlayerDigimonComponent`. Each stack has its own server-generated GUID, Primary Asset item ID and quantity; only changed private stacks replicate to the owning connection.
+- Added authority-only `GrantItem` / `RemoveItem` integration hooks and read-only inventory/query APIs for future item vendors, drops, quests, rewards, crafting and Digimon gameplay systems. Grants preflight complete stack capacity before mutation, so callers never receive an accidental partial grant.
+- Account SaveGame schema advances **v8 → v9** by appending the private item bag. Existing accounts migrate with an empty inventory and preserve all prior account/social/economy fields. Invalid or duplicate persisted stack GUIDs are normalized on authoritative hydration without discarding otherwise-valid item IDs.
+
+### Added — native Items menu + HP/SP capsules
+- Appended `Items` to `EDMFDigimonMenuTab` without shifting any earlier serialized tab value. The shared native **DIGIMON MENU** now includes a polished **ITEMS** page with icon cards, quantities, selected-item information, stack-capacity readout and an embedded active-Party target selector showing HP/SP.
+- Added native `RestoreHP` and `RestoreSP` item effects. Six project Data Assets can provide **Small / Medium / Large HP Capsules** and **Small / Medium / Large SP Capsules** simply by selecting the effect and authoring `RestoreAmount`; no capsule subclass is required.
+- Full-stat targets are rejected without consumption. Normal recovery capsules can be configured not to revive defeated Digimon. A successful use consumes exactly one authoritative stack unit, restores only the missing amount up to the Digimon's real maximum and persists immediately.
+- If the selected target is the summoned active partner, the server applies the committed persistent HP/SP directly to its live combat component without resetting target, encounter state, cooldowns, movement or automation; ordinary replicated combat vitals then update observers.
+- Added `OpenItemsUI()` and optional Blueprint bindings/events so a project can reskin the Items page while retaining the same inventory and item-use authority.
+
+### Networking / security / future integration
+- Clients send only `StackId + TargetDigimonInstanceId` through one reliable Server RPC. Authority re-resolves the owned stack, `UDMFItemData`, effect magnitude, target ownership, current vitals and legal-use policy; clients never submit trusted restore amounts or quantities.
+- One owner-only replicated Fast Array is added for private item stacks and one owner-only reliable result RPC returns presentation feedback. Framework RPC count is **53 → 55**. No Tick, multicast inventory stream or public replication of another account's bag is introduced.
+- The item data model already exposes suggested buy/sell pricing and server-side grant/remove APIs as clean extension points; a future item-shop vendor can add an atomic BITS + stack transaction without replacing the bag format or UI data contract.
+- See `Docs/SETUP_PLAYER_ITEM_INVENTORY.md` for the six capsule Data Asset recipe, Asset Manager rule, testing flow and Blueprint/C++ extension contract.
+
 ## 0.19.3-alpha — Polished Combat Quickbar BITS HUD
 
 ### Added

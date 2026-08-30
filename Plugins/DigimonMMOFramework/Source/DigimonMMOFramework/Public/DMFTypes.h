@@ -98,12 +98,23 @@ enum class EDMFPlayerInteractionType : uint8
     Unhandled,
 
     /** Appended in v0.18.0; existing serialized interaction values remain stable. */
-    DigimonVendor UMETA(DisplayName="Digimon Vendor")
+    DigimonVendor UMETA(DisplayName="Digimon Vendor"),
+
+    /** Appended in v0.21.0; existing serialized interaction values remain stable. */
+    ItemVendor UMETA(DisplayName="Item Vendor")
 };
 
 /** Transaction direction for the server-authoritative Digimon vendor economy. */
 UENUM(BlueprintType)
 enum class EDMFDigimonVendorTransactionType : uint8
+{
+    Buy,
+    Sell
+};
+
+/** Transaction direction for the server-authoritative item exchange. */
+UENUM(BlueprintType)
+enum class EDMFItemVendorTransactionType : uint8
 {
     Buy,
     Sell
@@ -158,6 +169,26 @@ struct DIGIMONMMOFRAMEWORK_API FDMFWorldChatMessage
     EDMFWorldChatMessageType MessageType = EDMFWorldChatMessageType::Player;
 };
 
+
+/** One persistent item stack owned by one authenticated account. */
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFItemStack
+{
+    GENERATED_BODY()
+
+    /** Server-created stack identity used for mutation requests; never reused as the item definition itself. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame, Category="Items")
+    FGuid StackId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame, Category="Items")
+    FPrimaryAssetId ItemAssetId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame, Category="Items", meta=(ClampMin="1"))
+    int32 Quantity = 1;
+
+    bool IsValid() const { return StackId.IsValid() && ItemAssetId.IsValid() && Quantity > 0; }
+};
+
 /** Current pages in the polished Digimon menu shell. Additional systems can extend this enum later. */
 UENUM(BlueprintType)
 enum class EDMFDigimonMenuTab : uint8
@@ -179,7 +210,10 @@ enum class EDMFDigimonMenuTab : uint8
     DigiDex UMETA(DisplayName="DigiDex"),
 
     /** Appended in v0.19. Persistent friends/ignore/guild social hub. */
-    Social UMETA(DisplayName="Social")
+    Social UMETA(DisplayName="Social"),
+
+    /** Appended in v0.20.0. Persistent player item bag; all prior tab ordinals remain stable. */
+    Items UMETA(DisplayName="Items")
 };
 
 /** Nested pages inside the extensible Social tab. */
@@ -739,6 +773,10 @@ struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Economy")
     int64 Money = 0;
 
+    /** Persistent private player item bag introduced in account schema v9. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Items")
+    TArray<FDMFItemStack> ItemInventory;
+
     /**
      * Per-account one-way marker for the v0.18 Digimon valuation provenance migration.
      * Legacy records deserialize as 0; current/new accounts are persisted as 1 so a legitimately
@@ -780,6 +818,36 @@ struct DIGIMONMMOFRAMEWORK_API FDMFAccountRecord
     /** Persistent inbound guild invitations. Stale/disbanded guild entries are ignored by authoritative acceptance. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Social|Guild")
     TArray<FDMFGuildInvite> PendingGuildInvites;
+};
+
+
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFReplicatedItemEntry : public FFastArraySerializerItem
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FDMFItemStack Stack;
+};
+
+USTRUCT(BlueprintType)
+struct DIGIMONMMOFRAMEWORK_API FDMFReplicatedItemList : public FFastArraySerializer
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<FDMFReplicatedItemEntry> Items;
+
+    bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
+    {
+        return FFastArraySerializer::FastArrayDeltaSerialize<FDMFReplicatedItemEntry, FDMFReplicatedItemList>(Items, DeltaParams, *this);
+    }
+};
+
+template<>
+struct TStructOpsTypeTraits<FDMFReplicatedItemList> : public TStructOpsTypeTraitsBase2<FDMFReplicatedItemList>
+{
+    enum { WithNetDeltaSerializer = true, };
 };
 
 USTRUCT(BlueprintType)

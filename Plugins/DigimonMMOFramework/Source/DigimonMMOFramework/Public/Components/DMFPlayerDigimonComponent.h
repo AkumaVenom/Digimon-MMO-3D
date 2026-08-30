@@ -10,6 +10,7 @@ class ADMFDigimonCarePropActor;
 class ADMFPlayerState;
 class UDMFDigimonCombatComponent;
 class UDMFDigimonSpeciesData;
+class UDMFItemData;
 struct FDMFDigivolutionRequirement;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFDigimonInventoryChanged);
@@ -23,6 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFBattleRewardGranted, FPrimary
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFDigimonExperienceProgressed, FDMFDigimonExperienceProgression, Progression);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDMFAttributePointSpendResult, bool, bSuccess, FText, Message, FGuid, DigimonInstanceId, EDMFDigimonAttributeStat, Stat, int32, NewStatValue, int32, RemainingPoints);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFMoneyChanged, int64, NewMoney);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDMFItemInventoryChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SevenParams(FDMFItemUseResult, bool, bSuccess, FText, Message, FGuid, StackId, FPrimaryAssetId, ItemAssetId, FGuid, DigimonInstanceId, int32, RemainingQuantity, int32, RestoredAmount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFPartnerActionResult, bool, bSuccess, FText, Message, FGuid, PartnerInstanceId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFPartyHealed, int32, DigimonHealed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFScanDataChanged, FPrimaryAssetId, SpeciesId, float, ScanPercent, bool, bMaterializationReady);
@@ -81,6 +84,13 @@ public:
 
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Economy")
     FDMFMoneyChanged OnMoneyChanged;
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Items")
+    FDMFItemInventoryChanged OnItemInventoryChanged;
+
+    /** Owner-only authoritative item-use feedback. */
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Items")
+    FDMFItemUseResult OnItemUseResult;
 
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Partner")
     FDMFPartnerActionResult OnPartnerActionResult;
@@ -175,6 +185,41 @@ public:
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Economy")
     int64 GetMoney() const { return Money; }
 
+    /** Private owner item bag. Fast-array replication sends only changed stacks to the owning connection. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items")
+    TArray<FDMFItemStack> GetItemInventory() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items")
+    int32 GetItemInventoryCapacity() const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items")
+    int32 GetTotalItemQuantity(FPrimaryAssetId ItemAssetId) const;
+
+    /** Maximum additional units of this item that can fit using partial stacks plus free stack slots. */
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items")
+    int32 GetAvailableItemCapacity(FPrimaryAssetId ItemAssetId) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items")
+    bool CanStoreItemQuantity(FPrimaryAssetId ItemAssetId, int32 Quantity) const;
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Items|Data")
+    UDMFItemData* ResolveItemData(FPrimaryAssetId ItemAssetId) const;
+
+    /** Authority-only grant hook for future vendors, drops, quest rewards and admin/gameplay systems. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Items")
+    bool GrantItem(FPrimaryAssetId ItemAssetId, int32 Quantity, int32& OutGrantedQuantity, FText& OutFailureReason);
+
+    /** Authority-only removal hook for future shops/crafting/quests. Removes across matching stacks atomically. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Items")
+    bool RemoveItem(FPrimaryAssetId ItemAssetId, int32 Quantity, FText& OutFailureReason);
+
+    /** Uses exactly one server-resolved item from a server-owned stack on one server-owned Digimon. */
+    UFUNCTION(Server, Reliable, BlueprintCallable, Category="Digimon MMO|Items")
+    void ServerUseItem(FGuid StackId, FGuid TargetDigimonInstanceId);
+
+    UFUNCTION(Client, Reliable)
+    void ClientItemUseResult(bool bSuccess, const FText& Message, FGuid StackId, FPrimaryAssetId ItemAssetId, FGuid DigimonInstanceId, int32 RemainingQuantity, int32 RestoredAmount);
+
     /** Server-only atomic vendor purchase. Price and offered Digimon are supplied only by the authoritative vendor actor. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Vendor")
     bool AuthorityPurchaseVendorDigimon(const FDMFDigimonInstance& OfferedDigimon, int64 PurchasePrice, bool bPreferBank, FGuid& OutNewInstanceId, EDMFDigimonStorageLocation& OutDestination, FText& OutFailureReason);
@@ -182,6 +227,14 @@ public:
     /** Server-only atomic vendor sale. Removes the exact owned individual, credits money, reconciles the active partner, and persists immediately. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Vendor")
     bool AuthoritySellDigimonToVendor(FGuid DigimonInstanceId, int64 SalePrice, bool bAllowStarterSale, bool bRequireAtLeastOnePartyDigimon, FDMFDigimonInstance& OutSoldDigimon, FText& OutFailureReason);
+
+    /** Atomic item-vendor purchase: preflights BITS + complete stack capacity, grants quantity, charges once, then saves once. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Item Vendor")
+    bool AuthorityPurchaseVendorItem(FPrimaryAssetId ItemAssetId, int32 Quantity, int64 TotalPrice, FText& OutFailureReason);
+
+    /** Atomic item-vendor sale: protects Key/Quest items, removes the exact quantity across stacks, credits BITS and saves once. */
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Economy|Item Vendor")
+    bool AuthoritySellItemToVendor(FPrimaryAssetId ItemAssetId, int32 Quantity, int64 TotalPrice, FText& OutFailureReason);
 
     /** Returns the authored/fallback EXP requirement to advance from CurrentLevel to CurrentLevel + 1. */
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Progression")
@@ -354,6 +407,10 @@ private:
     UPROPERTY(ReplicatedUsing=OnRep_Bank)
     FDMFReplicatedDigimonList ReplicatedBank;
 
+    /** Private owner-only persistent player item bag. */
+    UPROPERTY(ReplicatedUsing=OnRep_ItemInventory)
+    FDMFReplicatedItemList ReplicatedItemInventory;
+
     UPROPERTY(ReplicatedUsing=OnRep_ActivePartnerInstanceId)
     FGuid ActivePartnerInstanceId;
 
@@ -421,6 +478,9 @@ private:
     void OnRep_Bank();
 
     UFUNCTION()
+    void OnRep_ItemInventory();
+
+    UFUNCTION()
     void OnRep_ActivePartnerInstanceId();
 
     UFUNCTION()
@@ -453,6 +513,9 @@ private:
     const FDMFReplicatedDigimonEntry* FindInventoryEntry(FGuid InstanceId) const;
     FDMFReplicatedDigimonEntry* FindBankEntry(FGuid InstanceId);
     const FDMFReplicatedDigimonEntry* FindBankEntry(FGuid InstanceId) const;
+    FDMFReplicatedItemEntry* FindItemStack(FGuid StackId);
+    const FDMFReplicatedItemEntry* FindItemStack(FGuid StackId) const;
+    bool ConsumeItemStackQuantity(FDMFReplicatedItemEntry& Entry, int32 Quantity);
     bool IsPartyMutationAllowed(FText& OutFailure) const;
     void ReconcileActivePartnerAfterPartyMutation(FGuid PreviousActivePartnerId, bool bWasSummoned);
     void MarkPartyAndBankChanged(bool bPartyChanged, bool bBankChanged);

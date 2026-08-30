@@ -1,4 +1,5 @@
 # Production Roadmap
+- [x] **v0.21.0 candidate** Blueprint-derivable replicated Item Vendor Exchange: shared server-rotated stock, multi-quantity BUY/SELL, atomic BITS + stack-capacity transactions, Key/Quest sale protection and polished native UI. Runtime acceptance pending.
 - [x] **v0.17.3** Network-smoothing-compatible replicated swim presentation: remote/listen-server observers receive the flattened Surface/Underwater fallback without mesh-transform fighting or per-frame transform replication.
 
 - [x] v0.17.2 — persisted water restore/teleport reconciliation: immediate server water-state reconstruction, movement-mode recovery and local underwater presentation recovery without SaveGame swim flags.
@@ -95,9 +96,14 @@ The plugin is intentionally being built in dependency order rather than as isola
 - Native Party/Bank/Scan/Care and Party/combat quickbar layout hardening — IMPLEMENTED in v0.12.1 (scroll-clipped detail bodies, fixed Bank card sizing, compact HUD cards).
 - Polished replicated healer treatment presentation — IMPLEMENTED in v0.12.2 (exclusive one-player station lock, pulsing green interior light, Niagara-preferred/Cascade fallback VFX, spatial heal audio, Party + all Bank/Boxes restoration, Blueprint start/finish hooks).
 
-## Phase 5 — Player item inventory
-- Data-asset item definitions.
-- Replicated stack inventory.
+## Phase 5 — Player item inventory (core implemented in v0.20.0-alpha)
+- [x] Data-asset `UDMFItemData` definitions with presentation, stack, effect and future economy metadata.
+- [x] Persistent owner-only Fast Array stack inventory with schema-v9 migration.
+- [x] Polished native ITEMS page with active-Party target selection and Blueprint reskin hooks.
+- [x] Server-authoritative Small/Medium/Large HP/SP capsule behavior through reusable RestoreHP/RestoreSP effects.
+- [x] Authority-only grant/remove/query APIs for drops, quests, rewards and future economy systems.
+- [x] Dedicated item-shop vendor using shared replicated rotating stock and one authoritative BITS + stack capacity + grant/sale persistence transaction — IMPLEMENTED in v0.21.0-alpha candidate.
+- [ ] Additional item families (battle buffs, status recovery, evolution/care/quest/crafting items) as project design requires.
 - Native drag/drop item UI and quick slots.
 - Feed items integrated with Digimon care.
 

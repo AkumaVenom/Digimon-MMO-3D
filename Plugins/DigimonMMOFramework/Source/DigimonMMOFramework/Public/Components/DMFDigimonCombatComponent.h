@@ -77,7 +77,14 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat")
     void InitializeRuntimeVitals(int32 InCurrentHP, int32 InCurrentSP);
 
-    /** Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery. */
+    /**
+     * Generic server-side synchronization hook for persistent HP/SP changes that must immediately reach an
+     * already-spawned Digimon without disturbing its target, encounter latch, cooldowns, automation or movement.
+     * Intentionally non-reflected: gameplay systems should expose their own validated mutation surfaces.
+     */
+    void ApplyAuthoritativeRuntimeVitals(int32 InCurrentHP, int32 InCurrentSP);
+
+    /** Backward-compatible progression wrapper around ApplyAuthoritativeRuntimeVitals. */
     UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Digimon MMO|Combat|Progression")
     void RefreshRuntimeVitalsAfterProgression(int32 InCurrentHP, int32 InCurrentSP);
 

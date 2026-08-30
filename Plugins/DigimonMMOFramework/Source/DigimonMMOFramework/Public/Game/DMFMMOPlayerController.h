@@ -11,6 +11,7 @@ class UDMFPartyQuickBarWidget;
 class UDMFPlayerSkinSelectionWidget;
 class UDMFDigimonInventoryWidget;
 class UDMFDigimonVendorWidget;
+class UDMFItemVendorWidget;
 class UDMFScanNotificationWidget;
 class UDMFExperienceNotificationWidget;
 class UDMFHomeTeleportNotificationWidget;
@@ -22,6 +23,7 @@ class ADMFDigimonCharacter;
 class ADMFPlayerAvatarCharacter;
 class ADMFHealerActor;
 class ADMFDigimonVendorActor;
+class ADMFItemVendorActor;
 class ADMFTargetingPresentationActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDMFHealerInteractionResult, bool, bSuccess, FText, Message, int32, DigimonHealed);
@@ -30,6 +32,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDMFSocialSnapshotChanged, FDMFSocia
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFSocialActionResult, bool, bSuccess, FText, Message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDMFHomeTeleportResult, bool, bSuccess, FText, Message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDMFDigimonVendorTransactionResult, bool, bSuccess, FText, Message, EDMFDigimonVendorTransactionType, TransactionType, FGuid, Identifier, int64, Price, int64, NewMoney);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SevenParams(FDMFItemVendorTransactionResult, bool, bSuccess, FText, Message, EDMFItemVendorTransactionType, TransactionType, FPrimaryAssetId, ItemAssetId, int32, Quantity, int64, TotalPrice, int64, NewMoney);
 
 /**
  * MMO player controller with ready-to-use onboarding, avatar skin and Digimon combat UI routing.
@@ -106,6 +109,10 @@ public:
     /** Opens the shared Digimon menu directly on the persistent Social hub. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social|UI")
     void OpenSocialUI();
+
+    /** Opens the shared Digimon menu directly on the private persistent player item bag. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Items|UI")
+    void OpenItemsUI();
 
     UFUNCTION(BlueprintPure, Category="Digimon MMO|Care|UI")
     bool IsCarePresentationActive() const { return bCarePresentationActive; }
@@ -332,6 +339,35 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Vendor")
     FDMFDigimonVendorTransactionResult OnDigimonVendorTransactionResult;
 
+    /** Opens the owner-local native BUY / SELL item exchange for a nearby replicated item vendor. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Item Vendor|UI")
+    void OpenItemVendorUI(ADMFItemVendorActor* Vendor);
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Item Vendor|UI")
+    void CloseItemVendorUI();
+
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Item Vendor|UI")
+    void RefreshItemVendorUI();
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Item Vendor|UI")
+    bool IsItemVendorUIOpen() const { return ItemVendorWidget != nullptr; }
+
+    UFUNCTION(BlueprintPure, Category="Digimon MMO|Item Vendor|UI")
+    ADMFItemVendorActor* GetActiveItemVendor() const { return ActiveItemVendor; }
+
+    /** Client submits only selection identity + quantity. Stock, prices, BITS and inventory capacity are server-resolved. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Item Vendor")
+    void RequestItemVendorTransaction(ADMFItemVendorActor* Vendor, EDMFItemVendorTransactionType TransactionType, FGuid StockId, FPrimaryAssetId ItemAssetId, int32 Quantity);
+
+    UFUNCTION(Server, Reliable)
+    void ServerRequestItemVendorTransaction(ADMFItemVendorActor* Vendor, EDMFItemVendorTransactionType TransactionType, FGuid StockId, FPrimaryAssetId ItemAssetId, int32 Quantity);
+
+    UFUNCTION(Client, Reliable)
+    void ClientItemVendorTransactionResult(bool bSuccess, const FText& Message, EDMFItemVendorTransactionType TransactionType, FPrimaryAssetId ItemAssetId, int32 Quantity, int64 TotalPrice, int64 NewMoney);
+
+    UPROPERTY(BlueprintAssignable, Category="Digimon MMO|Item Vendor")
+    FDMFItemVendorTransactionResult OnItemVendorTransactionResult;
+
 private:
     UPROPERTY(Transient)
     TObjectPtr<UDMFStarterSelectionWidget> StarterWidget;
@@ -353,6 +389,12 @@ private:
 
     UPROPERTY(Transient)
     TObjectPtr<ADMFDigimonVendorActor> ActiveDigimonVendor;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UDMFItemVendorWidget> ItemVendorWidget;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ADMFItemVendorActor> ActiveItemVendor;
 
     UPROPERTY(Transient)
     TObjectPtr<UDMFScanNotificationWidget> ScanNotificationWidget;
@@ -397,6 +439,7 @@ private:
     double LastSocialSnapshotAcceptedServerTime = -1000000.0;
     double LastReturnHomeAcceptedServerTime = -1000000.0;
     double LastDigimonVendorTransactionServerTime = -1000000.0;
+    double LastItemVendorTransactionServerTime = -1000000.0;
     TArray<double> RecentWorldChatAcceptedServerTimes;
 
     FTimerHandle StarterUIRetryTimer;

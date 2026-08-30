@@ -1,4 +1,10 @@
-# Polished Native UI Setup — v0.14.8-alpha
+# Polished Native UI Setup — v0.20.0-alpha
+
+## v0.20.0 — Player ITEMS page
+
+The shared native **DIGIMON MENU** now includes **ITEMS**. The native page uses the established panel hierarchy and accent language: a scrollable four-column item-card bag on the left, selected-item identity/effect text on the right, and a compact active-Party target grid above the primary use action. Stack quantity and the global stack-capacity budget remain visible without exposing another player's private inventory.
+
+`UDMFItemData::Icon`, `DisplayName`, `Description`, `Category`, `UseEffect`, `RestoreAmount` and `SortPriority` drive presentation. A Blueprint child of `DMFDigimonInventoryWidget` can bind the optional `ItemsTabButton`, item grid/detail/target controls and use `BP_OnItemSelectionChanged` / `BP_OnItemUseResult`; the server-authoritative bag/effect path does not move into Blueprint UI. See `SETUP_PLAYER_ITEM_INVENTORY.md`.
 
 ## v0.13.1 — Digivolution owned-roster card hardening
 
@@ -89,7 +95,7 @@ Default input remains:
 
 `I -> Toggle Digimon Menu UI`
 
-The shared native menu now exposes six first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION**, **CARE**.
+The shared native menu now exposes eight first-class tabs in visual order: **PARTY**, **BANK / BOXES**, **SCAN & MATERIALIZE**, **DIGIDEX**, **DIGIVOLUTION**, **CARE**, **ITEMS**, **SOCIAL**.
 
 **PARTY** renders the active field roster (`MaxPartyDigimon`, six by default) with portrait, species/nickname, level, Active/Summoned/KO state and the existing selected-Digimon profile. The identity/portrait header remains fixed while the complete detail/action body scrolls vertically as one lane, so `SET ACTIVE / SUMMON`, `RECALL ACTIVE PARTNER`, and `MOVE TO BANK` remain reachable at short viewport heights. Those actions still route through server-owned state, and the final Party member cannot be deposited.
 

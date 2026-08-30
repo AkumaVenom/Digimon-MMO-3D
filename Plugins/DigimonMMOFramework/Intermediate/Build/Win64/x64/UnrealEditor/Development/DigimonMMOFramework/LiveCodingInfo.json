@@ -26,6 +26,10 @@
 			"DMFFrontendHUD.gen.cpp.obj",
 			"DMFHealerActor.gen.cpp.obj",
 			"DMFHomeTeleportNotificationWidget.gen.cpp.obj",
+			"DMFItemData.gen.cpp.obj",
+			"DMFItemInventoryEntryButton.gen.cpp.obj",
+			"DMFItemVendorActor.gen.cpp.obj",
+			"DMFItemVendorWidget.gen.cpp.obj",
 			"DMFLoginMainMenuWidget.gen.cpp.obj",
 			"DMFMMOGameMode.gen.cpp.obj",
 			"DMFMMOPlayerController.gen.cpp.obj",
@@ -57,8 +61,8 @@
 			"DMFWorldNameplateWidget.gen.cpp.obj",
 			"DMFWorldStateSaveGame.gen.cpp.obj",
 			"PerModuleInline.gen.cpp.obj",
-			"DMFDigimonCombatComponent.cpp.obj",
 			"DMFPlayerAvatarComponent.cpp.obj",
+			"DMFDigimonCombatComponent.cpp.obj",
 			"DMFPlayerDigimonComponent.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.2.cpp.obj": [
@@ -72,23 +76,24 @@
 			"DMFFrontendHUD.cpp.obj",
 			"DMFHealerActor.cpp.obj",
 			"DMFMMOGameMode.cpp.obj",
-			"DMFMMOPlayerController.cpp.obj",
 			"DMFNewPlayerStart.cpp.obj",
-			"DMFPlayerAvatarCharacter.cpp.obj",
-			"DMFPlayerState.cpp.obj",
-			"DMFSessionSubsystem.cpp.obj"
+			"DMFItemVendorActor.cpp.obj",
+			"DMFMMOPlayerController.cpp.obj",
+			"DMFPlayerAvatarCharacter.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.3.cpp.obj": [
+			"DMFPlayerState.cpp.obj",
+			"DMFSessionSubsystem.cpp.obj",
 			"DMFSwimmableWater.cpp.obj",
 			"DMFTargetingPresentationActor.cpp.obj",
 			"DMFWildDigimonCharacter.cpp.obj",
 			"DMFWildDigimonSpawner.cpp.obj",
-			"DMFAccountPersistenceSubsystem.cpp.obj",
 			"DMFMusicSubsystem.cpp.obj",
+			"DMFCombatQuickBarWidget.cpp.obj",
 			"DMFDigimonInventoryEntryButton.cpp.obj",
-			"DMFDigimonInventoryWidget.cpp.obj",
+			"DMFAccountPersistenceSubsystem.cpp.obj",
 			"DMFFrameworkSettings.cpp.obj",
-			"DMFCombatQuickBarWidget.cpp.obj"
+			"DMFDigimonInventoryWidget.cpp.obj"
 		],
 		"Module.DigimonMMOFramework.4.cpp.obj": [
 			"DMFDigimonVendorWidget.cpp.obj",
@@ -109,7 +114,9 @@
 			"DMFWorldChatWidget.cpp.obj",
 			"DMFWorldNameplateWidget.cpp.obj",
 			"DMFCredentialUtility.cpp.obj",
-			"DMFDigimonPresentationLibrary.cpp.obj"
+			"DMFDigimonPresentationLibrary.cpp.obj",
+			"DMFItemInventoryEntryButton.cpp.obj",
+			"DMFItemVendorWidget.cpp.obj"
 		]
 	}
 }

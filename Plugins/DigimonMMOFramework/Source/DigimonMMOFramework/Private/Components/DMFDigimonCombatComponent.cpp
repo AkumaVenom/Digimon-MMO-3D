@@ -78,7 +78,7 @@ void UDMFDigimonCombatComponent::InitializeRuntimeVitals(const int32 InCurrentHP
     OnVitalsChanged.Broadcast(CurrentHP, CurrentSP);
 }
 
-void UDMFDigimonCombatComponent::RefreshRuntimeVitalsAfterProgression(const int32 InCurrentHP, const int32 InCurrentSP)
+void UDMFDigimonCombatComponent::ApplyAuthoritativeRuntimeVitals(const int32 InCurrentHP, const int32 InCurrentSP)
 {
     ADMFDigimonCharacter* Digimon = Cast<ADMFDigimonCharacter>(GetOwner());
     if (!Digimon || !Digimon->HasAuthority())
@@ -96,6 +96,11 @@ void UDMFDigimonCombatComponent::RefreshRuntimeVitalsAfterProgression(const int3
     CurrentHP = NewHP;
     CurrentSP = NewSP;
     OnVitalsChanged.Broadcast(CurrentHP, CurrentSP);
+}
+
+void UDMFDigimonCombatComponent::RefreshRuntimeVitalsAfterProgression(const int32 InCurrentHP, const int32 InCurrentSP)
+{
+    ApplyAuthoritativeRuntimeVitals(InCurrentHP, InCurrentSP);
 }
 
 void UDMFDigimonCombatComponent::ConfigureAutomation(const bool bInAutoBattleEnabled, const float InAggroRange, const float InLeashRange, AActor* InFollowAnchor)

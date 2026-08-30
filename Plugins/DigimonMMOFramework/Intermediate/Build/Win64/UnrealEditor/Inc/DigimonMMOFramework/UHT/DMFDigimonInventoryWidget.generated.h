@@ -17,6 +17,7 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class UDMFDigimonSpeciesData;
+class UDMFItemData;
 class UDMFSocialActionButton;
 enum class EDMFDigimonAttributeStat : uint8;
 enum class EDMFDigimonMenuTab : uint8;
@@ -24,11 +25,12 @@ enum class EDMFDigimonStorageLocation : uint8;
 enum class EDMFSocialMenuTab : uint8;
 struct FDMFDigimonCareState;
 struct FDMFDigimonInstance;
+struct FDMFItemStack;
 struct FGuid;
 struct FPrimaryAssetId;
 
 // ********** Begin Class UDMFDigimonInventoryWidget ***********************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execHandlePartnerActionResult); \
 	DECLARE_FUNCTION(execHandleClose); \
 	DECLARE_FUNCTION(execHandleSpendBankSpeed); \
@@ -73,6 +75,12 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleSocialActionButtonPressed); \
 	DECLARE_FUNCTION(execHandleSocialGuildTab); \
 	DECLARE_FUNCTION(execHandleSocialFriendsTab); \
+	DECLARE_FUNCTION(execHandleItemUseResult); \
+	DECLARE_FUNCTION(execHandleItemInventoryChanged); \
+	DECLARE_FUNCTION(execHandleUseSelectedItem); \
+	DECLARE_FUNCTION(execHandleItemTargetPressed); \
+	DECLARE_FUNCTION(execHandleItemStackPressed); \
+	DECLARE_FUNCTION(execHandleItemsTab); \
 	DECLARE_FUNCTION(execHandleSocialTab); \
 	DECLARE_FUNCTION(execHandleDigiDexTab); \
 	DECLARE_FUNCTION(execHandleDigivolutionTab); \
@@ -98,17 +106,18 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleSocialActionFeedback); \
 	DECLARE_FUNCTION(execRefreshNearbyPlayersData); \
 	DECLARE_FUNCTION(execRefreshSocialData); \
+	DECLARE_FUNCTION(execRefreshItemInventoryData); \
 	DECLARE_FUNCTION(execRefreshCareData); \
 	DECLARE_FUNCTION(execRefreshScanData); \
 	DECLARE_FUNCTION(execRefreshBankData); \
 	DECLARE_FUNCTION(execRefreshInventory);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_UDMFDigimonInventoryWidget_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_UDMFDigimonInventoryWidget_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_UDMFDigimonInventoryWidget(ETypeConstructPhase); \
@@ -117,7 +126,7 @@ public: \
 	DECLARE_SERIALIZER(UDMFDigimonInventoryWidget)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API UDMFDigimonInventoryWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
@@ -129,14 +138,14 @@ public: \
 	NO_API virtual ~UDMFDigimonInventoryWidget();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_29_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_31_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_32_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_UI_DMFDigimonInventoryWidget_h_34_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

@@ -575,6 +575,18 @@ struct UHT_STATICS
 		{ "ToolTip", "Default safety policy. Disable only if the project intentionally supports mid-combat partner/Bank swaps." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxPlayerItemStacks_MetaData[] = {
+		{ "Category", "Items|Inventory" },
+		{ "ClampMax", "5000" },
+		{ "ClampMin", "1" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Maximum number of persistent item stacks in one player's private bag. Existing oversized saves are never truncated. */" },
+#endif
+		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Maximum number of persistent item stacks in one player's private bag. Existing oversized saves are never truncated." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PartnerSpawnOffset_MetaData[] = {
 		{ "Category", "Partner" },
 		{ "ModuleRelativePath", "Public/Settings/DMFFrameworkSettings.h" },
@@ -2177,6 +2189,7 @@ struct UHT_STATICS
 		((UDMFFrameworkSettings*)Obj)->bAllowPartySwitchingDuringCombat = 1;
 	}
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bAllowPartySwitchingDuringCombat;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxPlayerItemStacks;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_PartnerSpawnOffset;
 	static void NewProp_bEnableOwnedDigimonLeveling_SetBit(void* Obj)
 	{
@@ -2558,6 +2571,7 @@ const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxPartyDigimon
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxDigimonBankStorage = { "MaxDigimonBankStorage", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxDigimonBankStorage), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxDigimonBankStorage_MetaData), NewProp_MaxDigimonBankStorage_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DigimonBankSlotsPerPage = { "DigimonBankSlotsPerPage", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DigimonBankSlotsPerPage), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DigimonBankSlotsPerPage_MetaData), NewProp_DigimonBankSlotsPerPage_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat = { "bAllowPartySwitchingDuringCombat", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bAllowPartySwitchingDuringCombat_MetaData), NewProp_bAllowPartySwitchingDuringCombat_MetaData) };
+const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_MaxPlayerItemStacks = { "MaxPlayerItemStacks", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, MaxPlayerItemStacks), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxPlayerItemStacks_MetaData), NewProp_MaxPlayerItemStacks_MetaData) };
 const UECodeGen_Private::FStructPropertyParams UHT_STATICS::NewProp_PartnerSpawnOffset = { "PartnerSpawnOffset", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Struct, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, PartnerSpawnOffset), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PartnerSpawnOffset_MetaData), NewProp_PartnerSpawnOffset_MetaData) };
 const UECodeGen_Private::FBoolPropertyParams UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling = { "bEnableOwnedDigimonLeveling", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, nullptr, nullptr, 1, sizeof(bool), sizeof(UDMFFrameworkSettings), &UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEnableOwnedDigimonLeveling_MetaData), NewProp_bEnableOwnedDigimonLeveling_MetaData) };
 const UECodeGen_Private::FIntPropertyParams UHT_STATICS::NewProp_DefaultMaxDigimonLevel = { "DefaultMaxDigimonLevel", nullptr, (EPropertyFlags)0x0010000000004015, UECodeGen_Private::EPropertyGenFlags::Int, nullptr, nullptr, 1, STRUCT_OFFSET(UDMFFrameworkSettings, DefaultMaxDigimonLevel), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultMaxDigimonLevel_MetaData), NewProp_DefaultMaxDigimonLevel_MetaData) };
@@ -2750,6 +2764,7 @@ const UECodeGen_Private::FPropertyParamsBase* const UHT_STATICS::PropPointers[] 
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxDigimonBankStorage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DigimonBankSlotsPerPage,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bAllowPartySwitchingDuringCombat,
+	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_MaxPlayerItemStacks,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_PartnerSpawnOffset,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_bEnableOwnedDigimonLeveling,
 	(const UECodeGen_Private::FPropertyParamsBase*)&UHT_STATICS::NewProp_DefaultMaxDigimonLevel,
@@ -2961,10 +2976,10 @@ UDMFFrameworkSettings::~UDMFFrameworkSettings() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 926133529U) },
+		{ Z_Construct_UClass_UDMFFrameworkSettings, TEXT("UDMFFrameworkSettings"), &Z_Registration_Info_UClass_UDMFFrameworkSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFFrameworkSettings), 4087092749U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_8073903b5f5faf307c0bc0eca1d85366e9d9204d{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Settings_DMFFrameworkSettings_h__Script_DigimonMMOFramework_1bdaaa034d6995a651219becd89f430abe264bc8{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

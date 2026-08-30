@@ -19,10 +19,12 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class ADMFDigimonCharacter;
 class ADMFDigimonVendorActor;
 class ADMFHealerActor;
+class ADMFItemVendorActor;
 class ADMFPlayerAvatarCharacter;
 class ADMFTargetingPresentationActor;
 class UDMFWorldChatWidget;
 enum class EDMFDigimonVendorTransactionType : uint8;
+enum class EDMFItemVendorTransactionType : uint8;
 enum class EDMFSocialActionType : uint8;
 struct FDMFDigimonExperienceProgression;
 struct FDMFNearbySocialPlayerEntry;
@@ -32,7 +34,9 @@ struct FGuid;
 struct FPrimaryAssetId;
 
 // ********** Begin Class ADMFMMOPlayerController **************************************************
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual void ClientItemVendorTransactionResult_Implementation(bool bSuccess, FText const& Message, EDMFItemVendorTransactionType TransactionType, FPrimaryAssetId ItemAssetId, int32 Quantity, int64 TotalPrice, int64 NewMoney); \
+	virtual void ServerRequestItemVendorTransaction_Implementation(ADMFItemVendorActor* Vendor, EDMFItemVendorTransactionType TransactionType, FGuid StockId, FPrimaryAssetId ItemAssetId, int32 Quantity); \
 	virtual void ClientDigimonVendorTransactionResult_Implementation(bool bSuccess, FText const& Message, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier, int64 Price, int64 NewMoney); \
 	virtual void ServerRequestDigimonVendorTransaction_Implementation(ADMFDigimonVendorActor* Vendor, EDMFDigimonVendorTransactionType TransactionType, FGuid Identifier); \
 	virtual void ClientSocialActionResult_Implementation(bool bSuccess, FText const& Message); \
@@ -57,6 +61,14 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execHandleDigimonExperienceProgressed); \
 	DECLARE_FUNCTION(execHandleScanDataRewardGranted); \
 	DECLARE_FUNCTION(execHandleStarterRequirementChanged); \
+	DECLARE_FUNCTION(execClientItemVendorTransactionResult); \
+	DECLARE_FUNCTION(execServerRequestItemVendorTransaction); \
+	DECLARE_FUNCTION(execRequestItemVendorTransaction); \
+	DECLARE_FUNCTION(execGetActiveItemVendor); \
+	DECLARE_FUNCTION(execIsItemVendorUIOpen); \
+	DECLARE_FUNCTION(execRefreshItemVendorUI); \
+	DECLARE_FUNCTION(execCloseItemVendorUI); \
+	DECLARE_FUNCTION(execOpenItemVendorUI); \
 	DECLARE_FUNCTION(execClientDigimonVendorTransactionResult); \
 	DECLARE_FUNCTION(execServerRequestDigimonVendorTransaction); \
 	DECLARE_FUNCTION(execRequestDigimonVendorTransaction); \
@@ -128,6 +140,7 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execIsDigimonInventoryUIOpen); \
 	DECLARE_FUNCTION(execIsDigivolutionPresentationActive); \
 	DECLARE_FUNCTION(execIsCarePresentationActive); \
+	DECLARE_FUNCTION(execOpenItemsUI); \
 	DECLARE_FUNCTION(execOpenSocialUI); \
 	DECLARE_FUNCTION(execOpenDigivolutionUI); \
 	DECLARE_FUNCTION(execOpenCareUI); \
@@ -148,11 +161,11 @@ struct FPrimaryAssetId;
 	DECLARE_FUNCTION(execServerEnsureFrameworkPlayerAvatar);
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_CALLBACK_WRAPPERS
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_CALLBACK_WRAPPERS
 struct Z_Construct_UClass_ADMFMMOPlayerController_Statics;
 DIGIMONMMOFRAMEWORK_API UClass* Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase);
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_INCLASS_NO_PURE_DECLS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_INCLASS_NO_PURE_DECLS \
 private: \
 	friend struct ::Z_Construct_UClass_ADMFMMOPlayerController_Statics; \
 	friend DIGIMONMMOFRAMEWORK_API UClass* ::Z_Construct_UClass_ADMFMMOPlayerController(ETypeConstructPhase); \
@@ -161,7 +174,7 @@ public: \
 	DECLARE_SERIALIZER(ADMFMMOPlayerController)
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_ENHANCED_CONSTRUCTORS \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API ADMFMMOPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
@@ -173,14 +186,14 @@ public: \
 	NO_API virtual ~ADMFMMOPlayerController();
 
 
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_38_PROLOG
-#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_GENERATED_BODY \
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_PROLOG
+#define FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_CALLBACK_WRAPPERS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_INCLASS_NO_PURE_DECLS \
-	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_41_ENHANCED_CONSTRUCTORS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_CALLBACK_WRAPPERS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_INCLASS_NO_PURE_DECLS \
+	FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Game_DMFMMOPlayerController_h_44_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

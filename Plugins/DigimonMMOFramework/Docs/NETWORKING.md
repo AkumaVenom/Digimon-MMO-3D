@@ -1,5 +1,26 @@
 # Networking / Host Deployment
 
+## Shared item-vendor stock + transaction contract (v0.21.0)
+- A placed `ADMFItemVendorActor` replicates one server-authored `ReplicatedStock` snapshot plus generation serial and next-rotation server timestamp. This is deliberately **shared** shop state: all connections for which the vendor actor is relevant converge on the same offers, prices and remaining quantities.
+- The server alone rolls stock and executes the rotation timer. Clients do not run stock RNG, request periodic stock refreshes or replicate private variants. When stock changes because of a purchase/rotation, normal property replication updates every relevant observer; late relevancy receives current state.
+- Normal actor relevancy is retained instead of `bAlwaysRelevant`, preventing every item vendor in a large world from broadcasting to every remote connection. “Shared” means one authoritative state for the vendor, not a separate client-local list.
+- BUY payload: `Vendor + TransactionType + StockId + quantity`. Authority checks range, vendor state, current offer, shared quantity, item definition, unit/total price, canonical BITS and complete bag capacity before commit. Multi-stack spill is server-owned.
+- SELL payload: `Vendor + TransactionType + ItemAssetId + quantity`. Authority re-resolves ownership, category protection, acceptance policy and price, removes exact quantities across stacks and credits canonical BITS. Key/Quest sales are denied at two server layers.
+- One new reliable Server RPC and one owner Client result RPC raise the framework declaration total **55 → 57**. There is no multicast transaction stream and no new client-authored persistent/economy state.
+- Private `ReplicatedItemInventory` and `Money` remain owner-only. Vendor stock is intentionally public shared actor state. Account SaveGame remains **schema v9**.
+
+
+## Player item inventory + recovery capsule contract (v0.20.0)
+
+- `ReplicatedItemInventory` is one **owner-only Fast Array** on the connection-owned `UDMFPlayerDigimonComponent`. Delta replication sends stack changes only to the owning client; unrelated clients never receive another account's bag.
+- `ServerUseItem(StackId, TargetDigimonInstanceId)` is the only new client→server mutation request. The payload contains no item effect, restore amount, price, quantity, HP/SP value or arbitrary Digimon struct. Authority resolves all of those from its own account state and `UDMFItemData`.
+- `ClientItemUseResult(...)` is owner-only presentation feedback after authority has accepted/rejected the request. It cannot commit inventory or vitals. Together these increase the framework RPC declaration count from **53 to 55**.
+- `GrantItem` / `RemoveItem` are `BlueprintAuthorityOnly` server-side integration APIs, not remote client RPCs. Future drops, quests, rewards, crafting and vendor transactions can reuse them without adding a second inventory owner.
+- A successful HP/SP capsule updates the owner-only Party/Bank record and, when applicable, the already-public summoned Digimon combat component. Remote observers learn only that actor's normal replicated vitals. Inventory identity/quantity remains private.
+- Item use and grants are event-driven. There is no item Tick, polling RPC, replicated shop cache or multicast bag update. The native Items page rebuilds from local owner state/delegates.
+- Account schema is **v9**. Existing v8 records hydrate with an empty item array; valid item stacks persist by Primary Asset ID and are not discarded merely because a project temporarily misconfigures Asset Manager scanning.
+
+
 ## Combat quickbar BITS presentation (v0.19.3)
 
 The combat HUD does not introduce a networked currency channel. `UDMFCombatQuickBarWidget` reads the existing `UDMFPlayerDigimonComponent::Money` through `GetMoney()`. `Money` already replicates with `COND_OwnerOnly`, so only the owning connection receives its account balance and the server remains the sole mutation authority. The new `BitsText`/native capsule is local presentation over that state.

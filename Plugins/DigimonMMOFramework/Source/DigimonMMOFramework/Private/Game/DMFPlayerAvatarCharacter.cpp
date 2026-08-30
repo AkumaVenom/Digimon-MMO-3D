@@ -18,6 +18,7 @@
 #include "Game/DMFPlayerState.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFDigimonVendorActor.h"
+#include "Game/DMFItemVendorActor.h"
 #include "Game/DMFHealerActor.h"
 #include "Game/DMFMMOPlayerController.h"
 #include "Game/DMFSwimmableWater.h"
@@ -709,6 +710,11 @@ bool ADMFPlayerAvatarCharacter::InteractWithActor(AActor* TargetActor)
         return InteractWithDigimonVendor(TargetActor);
     }
 
+    if (Cast<ADMFItemVendorActor>(TargetActor))
+    {
+        return InteractWithItemVendor(TargetActor);
+    }
+
     BP_OnUnhandledInteraction(TargetActor);
     ReportInteractionResult(false, TargetActor, EDMFPlayerInteractionType::Unhandled, NSLOCTEXT("DMF", "InteractionUnhandled", "This actor has no native Digimon MMO interaction."));
     return false;
@@ -813,6 +819,26 @@ bool ADMFPlayerAvatarCharacter::InteractWithDigimonVendor(AActor* VendorActor)
     ReportInteractionResult(bOpened, Vendor, EDMFPlayerInteractionType::DigimonVendor,
         bOpened ? NSLOCTEXT("DMF", "InteractionVendorOpened", "Digimon vendor opened.")
                 : NSLOCTEXT("DMF", "InteractionVendorOpenFailed", "The Digimon vendor could not be opened."));
+    return bOpened;
+}
+
+bool ADMFPlayerAvatarCharacter::InteractWithItemVendor(AActor* VendorActor)
+{
+    ADMFItemVendorActor* Vendor = Cast<ADMFItemVendorActor>(VendorActor);
+    ADMFMMOPlayerController* DMFController = ResolveDMFPlayerController();
+    if (!IsLocallyControlled() || !IsValid(Vendor) || !DMFController || !Vendor->IsVendorEnabled()
+        || !Vendor->IsPlayerWithinTradeRange(DMFController))
+    {
+        ReportInteractionResult(false, VendorActor, EDMFPlayerInteractionType::ItemVendor, NSLOCTEXT("DMF", "InteractionInvalidItemVendor", "That item vendor is unavailable or out of range."));
+        return false;
+    }
+
+    LastInteractionActor = Vendor;
+    DMFController->OpenItemVendorUI(Vendor);
+    const bool bOpened = DMFController->IsItemVendorUIOpen();
+    ReportInteractionResult(bOpened, Vendor, EDMFPlayerInteractionType::ItemVendor,
+        bOpened ? NSLOCTEXT("DMF", "InteractionItemVendorOpened", "Item vendor opened.")
+                : NSLOCTEXT("DMF", "InteractionItemVendorOpenFailed", "The item vendor could not be opened."));
     return bOpened;
 }
 
@@ -941,6 +967,11 @@ FText ADMFPlayerAvatarCharacter::GetInteractionPromptForActor(AActor* TargetActo
     if (const ADMFDigimonVendorActor* Vendor = Cast<ADMFDigimonVendorActor>(TargetActor))
     {
         return Vendor->InteractionPrompt.IsEmpty() ? NSLOCTEXT("DMF", "InteractionPromptDigimonVendor", "Open Digimon Vendor") : Vendor->InteractionPrompt;
+    }
+
+    if (const ADMFItemVendorActor* Vendor = Cast<ADMFItemVendorActor>(TargetActor))
+    {
+        return Vendor->InteractionPrompt.IsEmpty() ? NSLOCTEXT("DMF", "InteractionPromptItemVendor", "Open Item Vendor") : Vendor->InteractionPrompt;
     }
 
     return FText::GetEmpty();

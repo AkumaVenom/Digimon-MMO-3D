@@ -1,6 +1,7 @@
 #include "Components/DMFPlayerDigimonComponent.h"
 #include "Components/DMFPlayerAvatarComponent.h"
 #include "Data/DMFDigimonSpeciesData.h"
+#include "Data/DMFItemData.h"
 #include "Data/DMFStarterRosterData.h"
 #include "Game/DMFDigimonCharacter.h"
 #include "Game/DMFDigimonCarePropActor.h"
@@ -79,6 +80,7 @@ void UDMFPlayerDigimonComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ReplicatedInventory, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ReplicatedBank, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ReplicatedItemInventory, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ActivePartnerInstanceId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, bStarterSelectionRequired, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(UDMFPlayerDigimonComponent, ActivePartnerActor, COND_OwnerOnly);
@@ -325,6 +327,165 @@ bool UDMFPlayerDigimonComponent::AuthoritySellDigimonToVendor(const FGuid Digimo
     if (GetOwner()) GetOwner()->ForceNetUpdate();
 
     OutFailureReason = FText::Format(NSLOCTEXT("DMF", "VendorSaleSuccess", "Sale complete. {0} Bits were added to your account and saved."), FText::AsNumber(SafeSalePrice));
+    return true;
+}
+
+
+bool UDMFPlayerDigimonComponent::AuthorityPurchaseVendorItem(const FPrimaryAssetId ItemAssetId, const int32 Quantity, const int64 TotalPrice, FText& OutFailureReason)
+{
+    OutFailureReason = FText::GetEmpty();
+    ADMFPlayerState* PlayerState = Cast<ADMFPlayerState>(GetOwner());
+    if (!PlayerState || !PlayerState->HasAuthority() || !bAuthoritativeAccountStateInitialized)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseAuthority", "Item purchases must be committed by the authoritative server after account initialization.");
+        return false;
+    }
+    if (Quantity <= 0 || Quantity > 999999)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseQuantity", "Choose a valid purchase quantity.");
+        return false;
+    }
+
+    UDMFItemData* Item = ResolveItemData(ItemAssetId);
+    if (!Item)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseMissingItem", "The server could not resolve that item definition.");
+        return false;
+    }
+
+    const int64 SafePrice = FMath::Max<int64>(0, TotalPrice);
+    if (SafePrice <= 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseInvalidPrice", "That vendor offer has an invalid price.");
+        return false;
+    }
+    if (Money < SafePrice)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseInsufficientBits", "You do not have enough BITS for that quantity.");
+        return false;
+    }
+    if (!CanStoreItemQuantity(ItemAssetId, Quantity))
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseInventoryFull", "Your item inventory does not have enough stack capacity for that quantity.");
+        return false;
+    }
+
+    const int32 MaxStack = FMath::Max(1, Item->MaxStackSize);
+    int32 Remaining = Quantity;
+    for (FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Remaining <= 0) break;
+        if (Entry.Stack.ItemAssetId != ItemAssetId || Entry.Stack.Quantity >= MaxStack) continue;
+        const int32 AddQuantity = FMath::Min(Remaining, MaxStack - Entry.Stack.Quantity);
+        Entry.Stack.Quantity += AddQuantity;
+        Remaining -= AddQuantity;
+        ReplicatedItemInventory.MarkItemDirty(Entry);
+    }
+    while (Remaining > 0 && ReplicatedItemInventory.Items.Num() < GetItemInventoryCapacity())
+    {
+        FDMFReplicatedItemEntry& NewEntry = ReplicatedItemInventory.Items.AddDefaulted_GetRef();
+        NewEntry.Stack.StackId = FGuid::NewGuid();
+        NewEntry.Stack.ItemAssetId = ItemAssetId;
+        NewEntry.Stack.Quantity = FMath::Min(Remaining, MaxStack);
+        Remaining -= NewEntry.Stack.Quantity;
+        ReplicatedItemInventory.MarkItemDirty(NewEntry);
+    }
+
+    // Capacity was preflighted on this authoritative game-thread transaction; failure here would indicate
+    // internal corruption, so do not charge the account if the full requested quantity was not staged.
+    if (Remaining != 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorPurchaseInternalCapacity", "The item inventory changed before the purchase could be committed. Please try again.");
+        return false;
+    }
+
+    ReplicatedItemInventory.MarkArrayDirty();
+    Money = FMath::Max<int64>(0, Money - SafePrice);
+    OnItemInventoryChanged.Broadcast();
+    OnMoneyChanged.Broadcast(Money);
+    PersistOwningPlayer();
+    if (GetOwner()) GetOwner()->ForceNetUpdate();
+
+    OutFailureReason = FText::Format(NSLOCTEXT("DMF", "ItemVendorPurchaseSuccess", "Purchase complete. {0} item(s) were added to your inventory and saved."), FText::AsNumber(Quantity));
+    return true;
+}
+
+bool UDMFPlayerDigimonComponent::AuthoritySellItemToVendor(const FPrimaryAssetId ItemAssetId, const int32 Quantity, const int64 TotalPrice, FText& OutFailureReason)
+{
+    OutFailureReason = FText::GetEmpty();
+    ADMFPlayerState* PlayerState = Cast<ADMFPlayerState>(GetOwner());
+    if (!PlayerState || !PlayerState->HasAuthority() || !bAuthoritativeAccountStateInitialized)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleAuthority", "Item sales must be committed by the authoritative server after account initialization.");
+        return false;
+    }
+    if (Quantity <= 0 || Quantity > 999999)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleQuantity", "Choose a valid sale quantity.");
+        return false;
+    }
+
+    UDMFItemData* Item = ResolveItemData(ItemAssetId);
+    if (!Item)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleMissingItem", "The server could not resolve that item definition.");
+        return false;
+    }
+    if (Item->Category == EDMFItemCategory::KeyItem)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleKeyProtected", "Key Items are protected and cannot be sold.");
+        return false;
+    }
+    if (Item->Category == EDMFItemCategory::Quest)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleQuestProtected", "Quest Items are protected and cannot be sold.");
+        return false;
+    }
+    if (GetTotalItemQuantity(ItemAssetId) < Quantity)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleInsufficientQuantity", "You no longer own that many of this item.");
+        return false;
+    }
+
+    const int64 SafePrice = FMath::Max<int64>(0, TotalPrice);
+    if (SafePrice <= 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleInvalidPrice", "That item has an invalid vendor payout.");
+        return false;
+    }
+
+    int32 Remaining = Quantity;
+    for (int32 Index = ReplicatedItemInventory.Items.Num() - 1; Index >= 0 && Remaining > 0; --Index)
+    {
+        FDMFReplicatedItemEntry& Entry = ReplicatedItemInventory.Items[Index];
+        if (Entry.Stack.ItemAssetId != ItemAssetId) continue;
+        const int32 RemoveQuantity = FMath::Min(Remaining, Entry.Stack.Quantity);
+        Entry.Stack.Quantity -= RemoveQuantity;
+        Remaining -= RemoveQuantity;
+        if (Entry.Stack.Quantity <= 0)
+        {
+            ReplicatedItemInventory.Items.RemoveAt(Index);
+            ReplicatedItemInventory.MarkArrayDirty();
+        }
+        else
+        {
+            ReplicatedItemInventory.MarkItemDirty(Entry);
+        }
+    }
+
+    if (Remaining != 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemVendorSaleInternalQuantity", "The item inventory changed before the sale could be committed. Please try again.");
+        return false;
+    }
+
+    Money = SafePrice > MAX_int64 - Money ? MAX_int64 : Money + SafePrice;
+    OnItemInventoryChanged.Broadcast();
+    OnMoneyChanged.Broadcast(Money);
+    PersistOwningPlayer();
+    if (GetOwner()) GetOwner()->ForceNetUpdate();
+
+    OutFailureReason = FText::Format(NSLOCTEXT("DMF", "ItemVendorSaleSuccess", "Sale complete. {0} BITS were added to your account and saved."), FText::AsNumber(SafePrice));
     return true;
 }
 
@@ -677,6 +838,7 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
 
     ReplicatedInventory.Items.Reset();
     ReplicatedBank.Items.Reset();
+    ReplicatedItemInventory.Items.Reset();
 
     const int32 PartyCapacity = GetPartyCapacity();
     const int64 NowUtcTicks = FDateTime::UtcNow().GetTicks();
@@ -818,6 +980,31 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
     ReplicatedInventory.MarkArrayDirty();
     ReplicatedBank.MarkArrayDirty();
 
+    // v0.20.0/schema-v9: item stacks are private account state. Never truncate an existing oversized bag
+    // during migration, and never discard a valid persisted item merely because an Asset Manager rule is
+    // temporarily missing. Invalid/duplicate stack GUIDs are repaired so mutation requests stay unambiguous.
+    TSet<FGuid> LoadedItemStackIds;
+    for (FDMFItemStack Stack : Record.ItemInventory)
+    {
+        if (!Stack.ItemAssetId.IsValid() || Stack.Quantity <= 0)
+        {
+            continue;
+        }
+        if (!Stack.StackId.IsValid() || LoadedItemStackIds.Contains(Stack.StackId))
+        {
+            do
+            {
+                Stack.StackId = FGuid::NewGuid();
+            }
+            while (LoadedItemStackIds.Contains(Stack.StackId));
+        }
+        LoadedItemStackIds.Add(Stack.StackId);
+        FDMFReplicatedItemEntry& NewItemEntry = ReplicatedItemInventory.Items.AddDefaulted_GetRef();
+        NewItemEntry.Stack = Stack;
+        ReplicatedItemInventory.MarkItemDirty(NewItemEntry);
+    }
+    ReplicatedItemInventory.MarkArrayDirty();
+
     ActivePartnerInstanceId = Record.ActivePartnerInstanceId;
     if (!FindInventoryEntry(ActivePartnerInstanceId))
     {
@@ -835,6 +1022,7 @@ void UDMFPlayerDigimonComponent::InitializeFromAccountRecord(const FDMFAccountRe
 
     OnDigimonInventoryChanged.Broadcast();
     OnDigimonBankChanged.Broadcast();
+    OnItemInventoryChanged.Broadcast();
     OnStarterRequirementChanged.Broadcast(bStarterSelectionRequired);
     for (const FDMFScanDataEntry& ScanEntry : ReplicatedScanData)
     {
@@ -857,8 +1045,367 @@ void UDMFPlayerDigimonComponent::ApplyToAccountRecord(FDMFAccountRecord& Record)
     Record.ActivePartnerInstanceId = ActivePartnerInstanceId;
     Record.bStarterSelected = !bStarterSelectionRequired && ActivePartnerInstanceId.IsValid();
     Record.Money = Money;
+    Record.ItemInventory = GetItemInventory();
     Record.DigimonEconomyProvenanceVersion = 1;
     Record.ScanData = ReplicatedScanData;
+}
+
+
+TArray<FDMFItemStack> UDMFPlayerDigimonComponent::GetItemInventory() const
+{
+    TArray<FDMFItemStack> Result;
+    Result.Reserve(ReplicatedItemInventory.Items.Num());
+    for (const FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Entry.Stack.IsValid())
+        {
+            Result.Add(Entry.Stack);
+        }
+    }
+    return Result;
+}
+
+int32 UDMFPlayerDigimonComponent::GetItemInventoryCapacity() const
+{
+    const UDMFFrameworkSettings* Settings = GetDefault<UDMFFrameworkSettings>();
+    return Settings ? FMath::Max(1, Settings->MaxPlayerItemStacks) : 60;
+}
+
+int32 UDMFPlayerDigimonComponent::GetTotalItemQuantity(const FPrimaryAssetId ItemAssetId) const
+{
+    int64 Total = 0;
+    for (const FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Entry.Stack.ItemAssetId == ItemAssetId)
+        {
+            Total += FMath::Max(0, Entry.Stack.Quantity);
+        }
+    }
+    return static_cast<int32>(FMath::Min<int64>(Total, MAX_int32));
+}
+
+int32 UDMFPlayerDigimonComponent::GetAvailableItemCapacity(const FPrimaryAssetId ItemAssetId) const
+{
+    UDMFItemData* Item = ResolveItemData(ItemAssetId);
+    if (!Item)
+    {
+        return 0;
+    }
+
+    const int32 MaxStack = FMath::Max(1, Item->MaxStackSize);
+    int64 Available = static_cast<int64>(FMath::Max(0, GetItemInventoryCapacity() - ReplicatedItemInventory.Items.Num())) * static_cast<int64>(MaxStack);
+    for (const FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Entry.Stack.ItemAssetId == ItemAssetId)
+        {
+            Available += FMath::Max(0, MaxStack - Entry.Stack.Quantity);
+        }
+    }
+    return static_cast<int32>(FMath::Min<int64>(Available, MAX_int32));
+}
+
+bool UDMFPlayerDigimonComponent::CanStoreItemQuantity(const FPrimaryAssetId ItemAssetId, const int32 Quantity) const
+{
+    return Quantity > 0 && GetAvailableItemCapacity(ItemAssetId) >= Quantity;
+}
+
+UDMFItemData* UDMFPlayerDigimonComponent::ResolveItemData(const FPrimaryAssetId ItemAssetId) const
+{
+    if (!ItemAssetId.IsValid() || ItemAssetId.PrimaryAssetType != FPrimaryAssetType(TEXT("DMFItem")))
+    {
+        return nullptr;
+    }
+
+    UAssetManager& AssetManager = UAssetManager::Get();
+    if (UDMFItemData* Loaded = AssetManager.GetPrimaryAssetObject<UDMFItemData>(ItemAssetId))
+    {
+        return Loaded;
+    }
+    const FSoftObjectPath Path = AssetManager.GetPrimaryAssetPath(ItemAssetId);
+    return Path.IsValid() ? Cast<UDMFItemData>(Path.TryLoad()) : nullptr;
+}
+
+FDMFReplicatedItemEntry* UDMFPlayerDigimonComponent::FindItemStack(const FGuid StackId)
+{
+    return ReplicatedItemInventory.Items.FindByPredicate([&](const FDMFReplicatedItemEntry& Entry){ return Entry.Stack.StackId == StackId; });
+}
+
+const FDMFReplicatedItemEntry* UDMFPlayerDigimonComponent::FindItemStack(const FGuid StackId) const
+{
+    return ReplicatedItemInventory.Items.FindByPredicate([&](const FDMFReplicatedItemEntry& Entry){ return Entry.Stack.StackId == StackId; });
+}
+
+bool UDMFPlayerDigimonComponent::GrantItem(const FPrimaryAssetId ItemAssetId, const int32 Quantity, int32& OutGrantedQuantity, FText& OutFailureReason)
+{
+    OutGrantedQuantity = 0;
+    OutFailureReason = FText::GetEmpty();
+    ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
+    if (!PS || !PS->HasAuthority() || !bAuthoritativeAccountStateInitialized)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemGrantAuthority", "Item inventory is not ready for authoritative mutation.");
+        return false;
+    }
+    if (Quantity <= 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemGrantQuantity", "Item quantity must be greater than zero.");
+        return false;
+    }
+
+    UDMFItemData* Item = ResolveItemData(ItemAssetId);
+    if (!Item)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemGrantMissingData", "The item definition could not be resolved by the server.");
+        return false;
+    }
+
+    const int32 MaxStack = FMath::Max(1, Item->MaxStackSize);
+    int64 AvailableCapacity = static_cast<int64>(FMath::Max(0, GetItemInventoryCapacity() - ReplicatedItemInventory.Items.Num())) * MaxStack;
+    for (const FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Entry.Stack.ItemAssetId == ItemAssetId)
+        {
+            AvailableCapacity += FMath::Max(0, MaxStack - Entry.Stack.Quantity);
+        }
+    }
+    if (AvailableCapacity < Quantity)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemBagInsufficientCapacity", "Your item inventory does not have enough stack capacity for that quantity.");
+        return false;
+    }
+
+    int32 Remaining = Quantity;
+    for (FDMFReplicatedItemEntry& Entry : ReplicatedItemInventory.Items)
+    {
+        if (Remaining <= 0) break;
+        if (Entry.Stack.ItemAssetId != ItemAssetId || Entry.Stack.Quantity >= MaxStack) continue;
+        const int32 Add = FMath::Min(Remaining, MaxStack - Entry.Stack.Quantity);
+        Entry.Stack.Quantity += Add;
+        Remaining -= Add;
+        OutGrantedQuantity += Add;
+        ReplicatedItemInventory.MarkItemDirty(Entry);
+    }
+
+    while (Remaining > 0 && ReplicatedItemInventory.Items.Num() < GetItemInventoryCapacity())
+    {
+        FDMFReplicatedItemEntry& Entry = ReplicatedItemInventory.Items.AddDefaulted_GetRef();
+        Entry.Stack.StackId = FGuid::NewGuid();
+        Entry.Stack.ItemAssetId = ItemAssetId;
+        Entry.Stack.Quantity = FMath::Min(Remaining, MaxStack);
+        Remaining -= Entry.Stack.Quantity;
+        OutGrantedQuantity += Entry.Stack.Quantity;
+        ReplicatedItemInventory.MarkItemDirty(Entry);
+    }
+
+    ReplicatedItemInventory.MarkArrayDirty();
+    OnItemInventoryChanged.Broadcast();
+    PersistOwningPlayer();
+    return Remaining == 0 && OutGrantedQuantity == Quantity;
+}
+
+bool UDMFPlayerDigimonComponent::RemoveItem(const FPrimaryAssetId ItemAssetId, const int32 Quantity, FText& OutFailureReason)
+{
+    OutFailureReason = FText::GetEmpty();
+    ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
+    if (!PS || !PS->HasAuthority() || !bAuthoritativeAccountStateInitialized || Quantity <= 0)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemRemoveInvalid", "Item removal request is invalid or inventory is not ready.");
+        return false;
+    }
+    if (GetTotalItemQuantity(ItemAssetId) < Quantity)
+    {
+        OutFailureReason = NSLOCTEXT("DMF", "ItemRemoveInsufficient", "Not enough of that item is available.");
+        return false;
+    }
+
+    int32 Remaining = Quantity;
+    for (int32 Index = ReplicatedItemInventory.Items.Num() - 1; Index >= 0 && Remaining > 0; --Index)
+    {
+        FDMFReplicatedItemEntry& Entry = ReplicatedItemInventory.Items[Index];
+        if (Entry.Stack.ItemAssetId != ItemAssetId) continue;
+        const int32 Remove = FMath::Min(Remaining, Entry.Stack.Quantity);
+        Entry.Stack.Quantity -= Remove;
+        Remaining -= Remove;
+        if (Entry.Stack.Quantity <= 0)
+        {
+            ReplicatedItemInventory.Items.RemoveAt(Index);
+            ReplicatedItemInventory.MarkArrayDirty();
+        }
+        else
+        {
+            ReplicatedItemInventory.MarkItemDirty(Entry);
+        }
+    }
+    OnItemInventoryChanged.Broadcast();
+    PersistOwningPlayer();
+    return true;
+}
+
+bool UDMFPlayerDigimonComponent::ConsumeItemStackQuantity(FDMFReplicatedItemEntry& Entry, const int32 Quantity)
+{
+    if (Quantity <= 0 || Entry.Stack.Quantity < Quantity)
+    {
+        return false;
+    }
+    Entry.Stack.Quantity -= Quantity;
+    if (Entry.Stack.Quantity <= 0)
+    {
+        const FGuid StackId = Entry.Stack.StackId;
+        const int32 Index = ReplicatedItemInventory.Items.IndexOfByPredicate([&](const FDMFReplicatedItemEntry& Candidate){ return Candidate.Stack.StackId == StackId; });
+        if (Index != INDEX_NONE)
+        {
+            ReplicatedItemInventory.Items.RemoveAt(Index);
+            ReplicatedItemInventory.MarkArrayDirty();
+        }
+    }
+    else
+    {
+        ReplicatedItemInventory.MarkItemDirty(Entry);
+    }
+    return true;
+}
+
+void UDMFPlayerDigimonComponent::ServerUseItem_Implementation(const FGuid StackId, const FGuid TargetDigimonInstanceId)
+{
+    auto Reject = [&](const FText& Message, const FPrimaryAssetId ItemId = FPrimaryAssetId(), const int32 Remaining = 0)
+    {
+        ClientItemUseResult(false, Message, StackId, ItemId, TargetDigimonInstanceId, Remaining, 0);
+    };
+
+    ADMFPlayerState* PS = Cast<ADMFPlayerState>(GetOwner());
+    if (!PS || !PS->HasAuthority() || !bAuthoritativeAccountStateInitialized)
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseNotReady", "Your item inventory is not ready yet."));
+        return;
+    }
+    if (bCareSequenceActive || bDigivolutionSequenceActive)
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseSequenceLocked", "Items cannot be used while a Care or Digivolution sequence is active."));
+        return;
+    }
+
+    FDMFReplicatedItemEntry* ItemEntry = FindItemStack(StackId);
+    if (!ItemEntry || !ItemEntry->Stack.IsValid())
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseMissingStack", "That item stack is no longer available."));
+        return;
+    }
+    const FPrimaryAssetId ItemAssetId = ItemEntry->Stack.ItemAssetId;
+    UDMFItemData* Item = ResolveItemData(ItemAssetId);
+    if (!Item || !Item->bConsumable || Item->UseEffect == EDMFItemUseEffect::None || Item->RestoreAmount <= 0)
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseNotUsable", "That item cannot be used from the inventory."), ItemAssetId, ItemEntry->Stack.Quantity);
+        return;
+    }
+
+    // If the target is the summoned partner, commit its latest live replicated combat vitals back into the
+    // persistent Party instance before calculating a capsule restore. This prevents stale menu data from healing
+    // from an earlier value while combat is active.
+    if (TargetDigimonInstanceId == ActivePartnerInstanceId && IsValid(ActivePartnerActor) && ActivePartnerActor->CombatComponent)
+    {
+        SynchronizeActivePartnerRuntimeForPersistence();
+    }
+
+    EDMFDigimonStorageLocation Location = EDMFDigimonStorageLocation::Party;
+    FDMFReplicatedDigimonEntry* TargetEntry = FindInventoryEntry(TargetDigimonInstanceId);
+    if (!TargetEntry)
+    {
+        TargetEntry = FindBankEntry(TargetDigimonInstanceId);
+        Location = EDMFDigimonStorageLocation::Bank;
+    }
+    if (!TargetEntry)
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseInvalidTarget", "Choose a Digimon owned by this account."), ItemAssetId, ItemEntry->Stack.Quantity);
+        return;
+    }
+
+    FDMFDigimonInstance& Digimon = TargetEntry->Digimon;
+    const bool bDefeated = Digimon.CurrentHP <= 0;
+    if (Item->bRequiresLivingDigimon && bDefeated && !(Item->UseEffect == EDMFItemUseEffect::RestoreHP && Item->bCanRestoreDefeatedDigimon))
+    {
+        Reject(NSLOCTEXT("DMF", "ItemUseDefeatedTarget", "That Digimon is defeated and cannot use this capsule."), ItemAssetId, ItemEntry->Stack.Quantity);
+        return;
+    }
+
+    int32 RestoredAmount = 0;
+    int32 NewHP = Digimon.CurrentHP;
+    int32 NewSP = Digimon.CurrentSP;
+    if (Item->UseEffect == EDMFItemUseEffect::RestoreHP)
+    {
+        const int32 MaxHP = FMath::Max(1, Digimon.Stats.MaxHP);
+        const int32 OldHP = FMath::Clamp(Digimon.CurrentHP, 0, MaxHP);
+        if (OldHP >= MaxHP)
+        {
+            Reject(NSLOCTEXT("DMF", "ItemUseHPFull", "That Digimon already has full HP."), ItemAssetId, ItemEntry->Stack.Quantity);
+            return;
+        }
+        const int32 MinHP = (OldHP <= 0 && Item->bCanRestoreDefeatedDigimon) ? 1 : 0;
+        const int64 CandidateHP = static_cast<int64>(OldHP) + static_cast<int64>(Item->RestoreAmount);
+        NewHP = static_cast<int32>(FMath::Clamp<int64>(CandidateHP, static_cast<int64>(MinHP), static_cast<int64>(MaxHP)));
+        RestoredAmount = NewHP - OldHP;
+    }
+    else if (Item->UseEffect == EDMFItemUseEffect::RestoreSP)
+    {
+        const int32 MaxSP = FMath::Max(0, Digimon.Stats.MaxSP);
+        const int32 OldSP = FMath::Clamp(Digimon.CurrentSP, 0, MaxSP);
+        if (OldSP >= MaxSP)
+        {
+            Reject(NSLOCTEXT("DMF", "ItemUseSPFull", "That Digimon already has full SP."), ItemAssetId, ItemEntry->Stack.Quantity);
+            return;
+        }
+        const int64 CandidateSP = static_cast<int64>(OldSP) + static_cast<int64>(Item->RestoreAmount);
+        NewSP = static_cast<int32>(FMath::Clamp<int64>(CandidateSP, static_cast<int64>(0), static_cast<int64>(MaxSP)));
+        RestoredAmount = NewSP - OldSP;
+    }
+
+    // Calculate first, consume second, commit vitals last. This keeps the use transaction side-effect free if
+    // the stack mutation ever fails validation and guarantees a rejected/full-stat use cannot heal for free.
+    if (RestoredAmount <= 0 || !ConsumeItemStackQuantity(*ItemEntry, 1))
+    {
+        const FDMFReplicatedItemEntry* RemainingEntry = FindItemStack(StackId);
+        Reject(NSLOCTEXT("DMF", "ItemUseNoEffect", "The item could not be consumed."), ItemAssetId, RemainingEntry ? RemainingEntry->Stack.Quantity : 0);
+        return;
+    }
+    Digimon.CurrentHP = NewHP;
+    Digimon.CurrentSP = NewSP;
+
+    if (Location == EDMFDigimonStorageLocation::Party)
+    {
+        ReplicatedInventory.MarkItemDirty(*TargetEntry);
+        OnDigimonInventoryChanged.Broadcast();
+    }
+    else
+    {
+        ReplicatedBank.MarkItemDirty(*TargetEntry);
+        OnDigimonBankChanged.Broadcast();
+    }
+
+    if (TargetDigimonInstanceId == ActivePartnerInstanceId && IsValid(ActivePartnerActor) && ActivePartnerActor->CombatComponent)
+    {
+        if (bDefeated && Digimon.CurrentHP > 0)
+        {
+            // Explicit revival-capable HP items use the established combat initialization semantics so a
+            // defeated live actor returns to Idle instead of retaining a Defeated state with positive HP.
+            ActivePartnerActor->CombatComponent->InitializeRuntimeVitals(Digimon.CurrentHP, Digimon.CurrentSP);
+        }
+        else
+        {
+            ActivePartnerActor->CombatComponent->ApplyAuthoritativeRuntimeVitals(Digimon.CurrentHP, Digimon.CurrentSP);
+        }
+    }
+
+    OnItemInventoryChanged.Broadcast();
+    PersistOwningPlayer();
+    const FDMFReplicatedItemEntry* RemainingEntry = FindItemStack(StackId);
+    const int32 RemainingQuantity = RemainingEntry ? RemainingEntry->Stack.Quantity : 0;
+    const FText Message = Item->UseEffect == EDMFItemUseEffect::RestoreHP
+        ? FText::Format(NSLOCTEXT("DMF", "ItemUseHPSuccess", "Restored {0} HP."), FText::AsNumber(RestoredAmount))
+        : FText::Format(NSLOCTEXT("DMF", "ItemUseSPSuccess", "Restored {0} SP."), FText::AsNumber(RestoredAmount));
+    ClientItemUseResult(true, Message, StackId, ItemAssetId, TargetDigimonInstanceId, RemainingQuantity, RestoredAmount);
+}
+
+void UDMFPlayerDigimonComponent::ClientItemUseResult_Implementation(const bool bSuccess, const FText& Message, const FGuid StackId, const FPrimaryAssetId ItemAssetId, const FGuid DigimonInstanceId, const int32 RemainingQuantity, const int32 RestoredAmount)
+{
+    OnItemUseResult.Broadcast(bSuccess, Message, StackId, ItemAssetId, DigimonInstanceId, RemainingQuantity, RestoredAmount);
 }
 
 bool UDMFPlayerDigimonComponent::ResolveStarterSpecies(const FPrimaryAssetId StarterSpeciesId, UDMFDigimonSpeciesData*& OutSpecies) const
@@ -2622,6 +3169,11 @@ void UDMFPlayerDigimonComponent::OnRep_Inventory()
 void UDMFPlayerDigimonComponent::OnRep_Bank()
 {
     OnDigimonBankChanged.Broadcast();
+}
+
+void UDMFPlayerDigimonComponent::OnRep_ItemInventory()
+{
+    OnItemInventoryChanged.Broadcast();
 }
 
 

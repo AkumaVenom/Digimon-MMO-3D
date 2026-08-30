@@ -16,8 +16,10 @@ class UProgressBar;
 class UEditableTextBox;
 class UDMFPlayerDigimonComponent;
 class UDMFDigimonSpeciesData;
+class UDMFItemData;
 class UDMFPartyDestinationButton;
 class UDMFSocialActionButton;
+class UDMFItemInventoryEntryButton;
 enum class EDMFSocialUIAction : uint8;
 
 /**
@@ -47,6 +49,10 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Care")
     void RefreshCareData();
+
+    /** Refreshes the private owner-only item bag and selected capsule target presentation. */
+    UFUNCTION(BlueprintCallable, Category="Digimon MMO|Items")
+    void RefreshItemInventoryData();
 
     /** Refreshes the owner-only persistent Social presentation from the controller's last authoritative snapshot. */
     UFUNCTION(BlueprintCallable, Category="Digimon MMO|Social")
@@ -96,6 +102,12 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Inventory")
     void BP_OnPartnerActionResult(bool bSuccess, const FText& Message, FGuid PartnerInstanceId);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Items")
+    void BP_OnItemSelectionChanged(FDMFItemStack ItemStack, UDMFItemData* ItemData);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Digimon MMO|Items")
+    void BP_OnItemUseResult(bool bSuccess, const FText& Message, FGuid StackId, FPrimaryAssetId ItemAssetId, FGuid DigimonInstanceId, int32 RemainingQuantity, int32 RestoredAmount);
 
 protected:
     /** Legacy/custom Blueprint list binding. Native fallback uses DigimonGrid. */
@@ -172,6 +184,19 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UButton> SocialTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+    TObjectPtr<UButton> ItemsTabButton;
+
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UUniformGridPanel> ItemInventoryGrid;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> ItemInventoryCountText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UImage> ItemSelectedIcon;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> ItemSelectedNameText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> ItemSelectedMetaText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> ItemSelectedDescriptionText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> ItemUseStatusText;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UUniformGridPanel> ItemTargetGrid;
+    UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UButton> UseSelectedItemButton;
 
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
     TObjectPtr<UUniformGridPanel> BankDigimonGrid;
@@ -385,6 +410,8 @@ private:
     FGuid SelectedDigivolutionInstanceId;
     FPrimaryAssetId SelectedDigivolutionTargetSpeciesId;
     FPrimaryAssetId SelectedDigiDexSpeciesId;
+    FGuid SelectedItemStackId;
+    FGuid SelectedItemTargetDigimonId;
     FString DigiDexSearchQuery;
     int32 DigiDexStageFilterIndex = INDEX_NONE;
     int32 DigiDexAttributeFilterIndex = INDEX_NONE;
@@ -404,6 +431,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> CareContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigivolutionContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> DigiDexContentRow;
+    UPROPERTY(Transient) TObjectPtr<UHorizontalBox> ItemContentRow;
     UPROPERTY(Transient) TObjectPtr<UVerticalBox> SocialContentRoot;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> SocialFriendsContentRow;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> SocialGuildContentRow;
@@ -415,6 +443,7 @@ private:
     void RefreshSelectedScanDetails();
     void RefreshSelectedDigivolutionDetails();
     void RefreshSelectedDigiDexDetails();
+    void RefreshSelectedItemDetails();
     TArray<UDMFDigimonSpeciesData*> GatherRegisteredDigiDexSpecies() const;
     void RefreshTabPresentation();
     void RefreshSocialTabPresentation();
@@ -463,6 +492,24 @@ private:
 
     UFUNCTION()
     void HandleSocialTab();
+
+    UFUNCTION()
+    void HandleItemsTab();
+
+    UFUNCTION()
+    void HandleItemStackPressed(FGuid StackId);
+
+    UFUNCTION()
+    void HandleItemTargetPressed(FGuid InstanceId);
+
+    UFUNCTION()
+    void HandleUseSelectedItem();
+
+    UFUNCTION()
+    void HandleItemInventoryChanged();
+
+    UFUNCTION()
+    void HandleItemUseResult(bool bSuccess, FText Message, FGuid StackId, FPrimaryAssetId ItemAssetId, FGuid DigimonInstanceId, int32 RemainingQuantity, int32 RestoredAmount);
 
     UFUNCTION()
     void HandleSocialFriendsTab();

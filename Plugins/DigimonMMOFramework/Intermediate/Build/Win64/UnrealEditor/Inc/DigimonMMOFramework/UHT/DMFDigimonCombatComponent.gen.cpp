@@ -2061,11 +2061,11 @@ struct UHT_STATICS
 	static constexpr UECodeGen_Private::FMetaDataPairParam Type_MetaData[] = {
 		{ "Category", "Digimon MMO|Combat|Progression" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery. */" },
+		{ "Comment", "/** Backward-compatible progression wrapper around ApplyAuthoritativeRuntimeVitals. */" },
 #endif
 		{ "ModuleRelativePath", "Public/Components/DMFDigimonCombatComponent.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Updates HP/SP after persistent level growth without tearing down combat state, target, encounter, cooldowns or recovery." },
+		{ "ToolTip", "Backward-compatible progression wrapper around ApplyAuthoritativeRuntimeVitals." },
 #endif
 	};
 #endif // WITH_METADATA
@@ -2633,7 +2633,7 @@ struct UHT_STATICS
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_OnRep_CurrentTarget, "OnRep_CurrentTarget" }, // f78e02a9f82092e06c9088643713e9fcb80571a5
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_OnRep_Vitals, "OnRep_Vitals" }, // 52b689957dcf2feaac43d138e3d7b7157cdec8d4
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_QueueOrExecuteAbilitySlot, "QueueOrExecuteAbilitySlot" }, // aafec1bcd573c9cfb6d6b0a31b68d9f3b78a1e55
-		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RefreshRuntimeVitalsAfterProgression, "RefreshRuntimeVitalsAfterProgression" }, // d2e66efc6237f8718c96736f5cc770f665a676f6
+		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RefreshRuntimeVitalsAfterProgression, "RefreshRuntimeVitalsAfterProgression" }, // bbb014a7e7fd4e1a199e8d60c10a951ae0567e9d
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_ResolveAbilityData, "ResolveAbilityData" }, // 4cd90dda9e6e2cb2e66df7babe5b7967a15dc1d6
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RestoreVitals, "RestoreVitals" }, // 571e9c31e23fbaa16ea2a3f4a61df5925fc01e1c
 		{ &Z_Construct_UFunction_UDMFDigimonCombatComponent_RestoreVitalsToMaximum, "RestoreVitalsToMaximum" }, // 46bd194816e918eb39c8b941bd491d1a038c048a
@@ -2769,10 +2769,10 @@ UDMFDigimonCombatComponent::~UDMFDigimonCombatComponent() {}
 struct UHT_STATICS
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 4031930842U) },
+		{ Z_Construct_UClass_UDMFDigimonCombatComponent, TEXT("UDMFDigimonCombatComponent"), &Z_Registration_Info_UClass_UDMFDigimonCombatComponent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UDMFDigimonCombatComponent), 2934500860U) },
 	};
 }; // UHT_STATICS 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_e3788f000cac9ba538418f842c5120ed28ae0372{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_Leen_Documents_Unreal_Projects_Digimon_MMO_3D_Plugins_DigimonMMOFramework_Source_DigimonMMOFramework_Public_Components_DMFDigimonCombatComponent_h__Script_DigimonMMOFramework_b288946080e3eabc8d878bc3be8a266c71d4eeec{
 	TEXT("/Script/DigimonMMOFramework"),
 	UHT_STATICS::ClassInfo, UE_ARRAY_COUNT(UHT_STATICS::ClassInfo),
 	nullptr, 0,

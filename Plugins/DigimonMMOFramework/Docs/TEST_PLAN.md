@@ -1,4 +1,34 @@
-# UE5.8 Validation Plan — 0.19.3-alpha
+# UE5.8 Validation Plan — 0.21.0-alpha
+
+## S0 — v0.21.0 replicated Item Vendor Exchange acceptance
+1. Derive a Blueprint from `DMFItemVendorActor`, populate at least six valid `DMFItemData` entries and confirm native interaction opens the BUY/SELL exchange with no custom widget required.
+2. Host + client view the **same vendor simultaneously**: StockId/item/price/quantity must match exactly. No per-client stock roll is acceptable.
+3. Trigger/wait for automatic server rotation. Both views must converge on the same new generation and synchronized server-time countdown; no actor Tick or polling RPC should be required.
+4. Buy from one connection while the other UI remains open. Shared remaining stock must update for the second connection automatically. When two players contend for the last units, aggregate successful purchases must never exceed authoritative stock.
+5. Exercise `-10/-1/+1/+10/MAX`; MAX must clamp to the minimum of shared stock, BITS affordability and bag capacity. Server must reject stale/excess quantities.
+6. Buy a quantity larger than the item's `MaxStackSize`; existing partial stacks must fill first and additional stacks must be created correctly. Fill the inventory and verify an over-capacity purchase grants nothing and charges zero BITS.
+7. SELL an eligible item quantity spanning several stacks. Verify exact removal, correct BITS payout, single-account persistence and correct relog result.
+8. Verify `KeyItem` and `Quest` entries display protected/non-sellable and a direct/stale RPC attempt still cannot sell them. Verify zero-sell-value items remain non-sellable.
+9. Move outside `InteractionRadius` with a stale UI and attempt BUY/SELL; authority must reject it. Disable buying/selling/vendor from server Blueprint hooks and verify clients refresh coherently.
+10. Confirm host/client private item bags and BITS remain owner-only even though the vendor's stock is intentionally shared.
+11. Place two differently configured item vendors and confirm each has independent server stock/rotation while each individual vendor remains consistent across clients.
+12. Re-run v0.20.0 acceptance: all six HP/SP capsules, relog inventory persistence, live summoned-partner restoration and owner-only bag privacy remain correct.
+
+
+## S0 — v0.20.0 player item inventory + HP/SP capsule acceptance
+
+1. Merge the supplied `DMFItem` Asset Manager rule, create the six Data Assets from `SETUP_PLAYER_ITEM_INVENTORY.md`, compile UE5.8, and launch a listen host plus one remote client using separate authenticated accounts. Grant clearly different capsule stacks to each account from **authority**. Confirm each ITEMS page shows only its owner's stacks/quantities.
+2. Verify stacking with one item whose `MaxStackSize` is small (for example 3): grant quantities that fill an existing stack and spill into a second stack. Confirm stack GUIDs are stable across save/relog, total quantity is correct and exceeding `MaxPlayerItemStacks` is rejected as one all-or-nothing grant rather than partially adding items.
+3. Damage a healthy Party Digimon. Use a Small HP Capsule. Confirm exactly one item is consumed, HP increases by `min(RestoreAmount, missing HP)`, never exceeds MaxHP, the selected Party card refreshes, and the account remains correct after reconnect.
+4. Repeat with Medium and Large HP Capsules, including a target whose missing HP is smaller than the authored restore value. Confirm only missing HP is restored. Attempt use at full HP and confirm the server rejects it and consumes **zero** quantity.
+5. Spend SP through normal combat, then repeat the equivalent Small / Medium / Large SP tests. SP must clamp to MaxSP and full-SP use must not consume an item.
+6. Set normal recovery assets to `bRequiresLivingDigimon=True` and HP assets to `bCanRestoreDefeatedDigimon=False`. Defeat a Party Digimon and confirm HP/SP capsules are rejected without consumption. This must not bypass the existing healer/revival policy.
+7. With the **summoned active partner** damaged/in combat, use an allowed capsule. Confirm the server restores the live actor's HP/SP immediately and normal replicated combat vitals/nameplate/HUD converge for observers without respawning the partner or clearing target, encounter state, cooldowns, movement or automation.
+8. Use capsules on a non-summoned Party Digimon. Confirm only private Party/account state changes and no unnecessary public actor/network presentation is created.
+9. Attempt malformed/stale requests from Blueprint/C++ where practical: random StackId, another stack after it reaches zero, invalid Digimon GUID, a Bank/Party GUID not owned by this account, and an unusable/`None` item. Also attempt use during an active Care sequence and during a Digivolution sequence. Every case must be rejected on authority without consumption or healing; normal battle use must remain allowed.
+10. Restart/reconnect existing pre-v0.20.0 accounts. Confirm schema-v9 migration preserves avatar, Party, Bank, active partner, BITS, world location, progression, Friends/Ignore/Guild and all other previous state while adding an initially empty bag.
+11. Exercise authority-side `GrantItem` / `RemoveItem` as future-integration hooks and confirm they persist/replicate correctly. Do not expose these authority-only functions as a trust path from arbitrary clients.
+12. Regression-test v0.19.3 combat BITS, v0.19.2 Ignore, v0.19.1 Friends/Guild, v0.18.5 presence, v0.18.3 Digimon vendor economy, reconnect/disconnect persistence, combat, Party/Bank, Digivolution, DigiDex, Care and healer behavior.
 
 ## v0.19.3-alpha — Combat Quick Bar BITS HUD acceptance
 
