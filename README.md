@@ -1,6 +1,6 @@
 # Digimon MMO 3D Framework — UE5.8
 
-http://digimonmmo3d.custom-gaming.net/index.php
+http://digimonmmo3d.custom-gaming.net/DigimonMMO3D/
 
 ### Explore the Digital World. Raise your partner. Build your collection. Fight together.
 
